@@ -21,10 +21,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.emory.mathcs.nlp.common.IOUtils;
-import edu.emory.mathcs.nlp.common.Splitter;
-import edu.emory.mathcs.nlp.common.StringUtils;
-import edu.emory.mathcs.nlp.common.TLanguage;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.Splitter;
+import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.common.util.TLanguage;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

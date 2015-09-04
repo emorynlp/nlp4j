@@ -19,11 +19,11 @@ import java.io.InputStream;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import edu.emory.mathcs.nlp.common.DSUtils;
-import edu.emory.mathcs.nlp.common.IOUtils;
-import edu.emory.mathcs.nlp.common.MetaUtils;
-import edu.emory.mathcs.nlp.common.StringUtils;
 import edu.emory.mathcs.nlp.common.collection.tree.CharAffixTree;
+import edu.emory.mathcs.nlp.common.util.DSUtils;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.MetaUtils;
+import edu.emory.mathcs.nlp.common.util.StringUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.tokenizer.dictionary;
 
-import edu.emory.mathcs.nlp.common.CharUtils;
+import edu.emory.mathcs.nlp.common.util.CharUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

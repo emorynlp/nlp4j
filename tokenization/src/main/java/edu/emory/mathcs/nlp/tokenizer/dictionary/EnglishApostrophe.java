@@ -15,8 +15,8 @@
  */
 package edu.emory.mathcs.nlp.tokenizer.dictionary;
 
-import edu.emory.mathcs.nlp.common.CharUtils;
-import edu.emory.mathcs.nlp.common.Splitter;
+import edu.emory.mathcs.nlp.common.util.CharUtils;
+import edu.emory.mathcs.nlp.common.util.Splitter;
 
 /**
  * @since 3.0.0

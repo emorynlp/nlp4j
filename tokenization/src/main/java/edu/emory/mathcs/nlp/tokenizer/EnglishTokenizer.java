@@ -20,9 +20,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.common.StringUtils;
-import edu.emory.mathcs.nlp.common.TLanguage;
 import edu.emory.mathcs.nlp.common.constant.CharConst;
+import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.common.util.TLanguage;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Compound;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.EnglishApostrophe;

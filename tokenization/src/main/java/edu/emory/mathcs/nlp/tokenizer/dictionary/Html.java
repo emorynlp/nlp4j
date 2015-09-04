@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import edu.emory.mathcs.nlp.common.IOUtils;
-import edu.emory.mathcs.nlp.common.Splitter;
-import edu.emory.mathcs.nlp.common.StringUtils;
 import edu.emory.mathcs.nlp.common.constant.PatternConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.Splitter;
+import edu.emory.mathcs.nlp.common.util.StringUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

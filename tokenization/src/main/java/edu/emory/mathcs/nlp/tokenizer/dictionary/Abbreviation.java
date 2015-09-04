@@ -18,8 +18,8 @@ package edu.emory.mathcs.nlp.tokenizer.dictionary;
 import java.io.InputStream;
 import java.util.Set;
 
-import edu.emory.mathcs.nlp.common.DSUtils;
-import edu.emory.mathcs.nlp.common.IOUtils;
+import edu.emory.mathcs.nlp.common.util.DSUtils;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

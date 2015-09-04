@@ -23,9 +23,9 @@ import jdk.nashorn.internal.ir.annotations.Ignore;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.nlp.common.IOUtils;
-import edu.emory.mathcs.nlp.common.Joiner;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.Joiner;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
