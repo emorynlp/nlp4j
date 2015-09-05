@@ -24,7 +24,7 @@ import java.util.Map;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.common.util.TLanguage;
+import edu.emory.mathcs.nlp.common.util.Language;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -33,7 +33,7 @@ public class Compound extends Dictionary
 {
 	private Map<String,int[]> m_compound;
 	
-	public Compound(TLanguage language)
+	public Compound(Language language)
 	{
 		switch (language)
 		{

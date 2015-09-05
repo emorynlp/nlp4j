@@ -19,13 +19,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.List;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
-
 import org.junit.Test;
 
-import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.Joiner;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -33,25 +29,23 @@ import edu.emory.mathcs.nlp.common.util.Joiner;
 public class TokenizerDemo
 {
 	@Test
-	@Ignore
 	public void tokenizeRaw() throws Exception
 	{
 		Tokenizer tokenizer = new EnglishTokenizer();
-		String inputFile = "src/test/resources/clearnlp-raw.txt";
+		String inputFile = "src/test/resources/emorynlp-raw.txt";
 		InputStream in = IOUtils.createFileInputStream(inputFile);
 		
 		for (List<String> tokens : tokenizer.segmentize(in))
-			System.out.println(Joiner.join(tokens, StringConst.SPACE));
+			System.out.println(tokens.toString());
 		
 		in.close();
 	}
 	
 	@Test
-	@Ignore
 	public void tokenizeLine() throws Exception
 	{
 		Tokenizer tokenizer = new EnglishTokenizer();
-		String inputFile = "src/test/resources/clearnlp-line.txt";
+		String inputFile = "src/test/resources/emorynlp-line.txt";
 		BufferedReader in = IOUtils.createBufferedReader(inputFile);
 		List<String> tokens;
 		String line;
@@ -59,7 +53,7 @@ public class TokenizerDemo
 		while ((line = in.readLine()) != null)
 		{
 			tokens = tokenizer.tokenize(line);
-			System.out.println(Joiner.join(tokens, StringConst.SPACE));
+			System.out.println(tokens.toString());
 		}
 		
 		in.close();

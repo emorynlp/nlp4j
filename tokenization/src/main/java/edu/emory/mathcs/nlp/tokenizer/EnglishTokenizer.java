@@ -22,7 +22,7 @@ import java.util.List;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.common.util.TLanguage;
+import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Compound;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.EnglishApostrophe;
@@ -46,7 +46,7 @@ public class EnglishTokenizer extends Tokenizer
 	{
 		d_apostrophe   = new EnglishApostrophe();
 		d_abbreviation = new Abbreviation();
-		d_compound     = new Compound(TLanguage.ENGLISH);
+		d_compound     = new Compound(Language.ENGLISH);
 		d_hyphen       = new EnglishHyphen();
 	}
 	
