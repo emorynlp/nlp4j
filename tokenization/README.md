@@ -1,4 +1,4 @@
-# Tokenization
+# Tokenizer
 
 Our tokenizer takes a raw text and splits tokens by their morphological aspects. It also groups tokens into sentences. Our tokenizer is based on the [LDC](https://www.ldc.upenn.edu/) tokenizer used for creating English Treebanks although it uses more robust heuristics. Here are some key features about our tokenizer.
 
