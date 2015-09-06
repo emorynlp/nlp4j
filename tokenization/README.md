@@ -31,7 +31,7 @@ java edu.emory.mathcs.nlp.bin.Tokenize -i <filepath> [-l <language> -ie <string>
 * If the `-line` flag is turned on, each line is treated as one sentence.
 
 
-The following command takes the input file ([emorynlp-raw.txt](../../test/resources/emorynlp-raw.txt)), and generates the output file ([emorynlp-raw.txt.tok](../../test/resources/emorynlp-raw.txt.tok)) where each sentence is in a separate line.
+The following command takes the input file ([emorynlp-raw.txt](src/test/resources/emorynlp-raw.txt)), and generates the output file ([emorynlp-raw.txt.tok](src/test/resources/emorynlp-raw.txt.tok)) where each sentence is in a separate line.
 
 ```
 java edu.emory.mathcs.nlp.bin.Tokenize -i emorynlp-raw.txt
@@ -39,4 +39,4 @@ java edu.emory.mathcs.nlp.bin.Tokenize -i emorynlp-raw.txt
 
 ## API
 
-[TokenizerDemo](test/main/java/edu/emory/mathcs/nlp/tokenizer/Totkenizer.java) shows how the tokenizer can be used in APIs.
+[TokenizerDemo](src/test/java/edu/emory/mathcs/nlp/tokenizer/TokenizerDemo.java) shows how the tokenizer can be used in APIs.
