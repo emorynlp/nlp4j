@@ -52,7 +52,7 @@ import edu.emory.mathcs.nlp.common.util.StringUtils;
 public class EnglishLemmatizerTest
 {
 	@Test
-	public void testEnglishMPAnalyzer() throws Exception
+	public void test() throws Exception
 	{
 		String[][] tokens = {
 				// abbreviation
