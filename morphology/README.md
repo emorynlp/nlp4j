@@ -56,4 +56,4 @@ some-body@google+.com         XX    #url#
 
 ## API
 
-[EnglishTokenizerTest](src/test/java/edu/emory/mathcs/nlp/lemmatizer/EnglishTokenizerTest.java) shows how the lemmatizer can be used in APIs.
+[EnglishLemmatizerTest](src/test/java/edu/emory/mathcs/nlp/lemmatizer/EnglishLemmatizerTest.java) shows how the lemmatizer can be used in APIs.
