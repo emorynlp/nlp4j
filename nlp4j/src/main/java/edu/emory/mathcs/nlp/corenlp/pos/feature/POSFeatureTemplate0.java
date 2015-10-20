@@ -20,34 +20,26 @@ import edu.emory.mathcs.nlp.corenlp.component.feature.Field;
 import edu.emory.mathcs.nlp.corenlp.pos.POSFeatureTemplate;
 
 /**
- * Minimum features.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSFeatureTemplate0 extends POSFeatureTemplate
+public class POSFeatureTemplate1 extends POSFeatureTemplate
 {
-	private static final long serialVersionUID = 8265193521014290387L;
+	private static final long serialVersionUID = 7072878555553683666L;
 
 	@Override
 	protected void init()
 	{
-		// form features 
+		// 1-gram features 
 		add(new FeatureItem<>(-2, Field.simplified_word_form));
 		add(new FeatureItem<>(-1, Field.simplified_word_form));
 		add(new FeatureItem<>( 0, Field.simplified_word_form));
 		add(new FeatureItem<>( 1, Field.simplified_word_form));
 		add(new FeatureItem<>( 2, Field.simplified_word_form));
-		
-		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
 
 		add(new FeatureItem<>(-1, Field.word_shape, 2));
 		add(new FeatureItem<>( 0, Field.word_shape, 2));
 		add(new FeatureItem<>( 1, Field.word_shape, 2));
 
-		// pos features
 		add(new FeatureItem<>(-3, Field.pos_tag));
 		add(new FeatureItem<>(-2, Field.pos_tag));
 		add(new FeatureItem<>(-1, Field.pos_tag));
@@ -56,6 +48,23 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		add(new FeatureItem<>( 2, Field.ambiguity_class));
 		add(new FeatureItem<>( 3, Field.ambiguity_class));
 
+		// 2-gram features
+		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form), new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>(+1, Field.uncapitalized_simplified_word_form));
+
+		add(new FeatureItem<>(-2, Field.pos_tag)        , new FeatureItem<>(-1, Field.pos_tag));
+		add(new FeatureItem<>(-1, Field.pos_tag)        , new FeatureItem<>( 1, Field.ambiguity_class));
+		add(new FeatureItem<>( 1, Field.ambiguity_class), new FeatureItem<>( 2, Field.ambiguity_class));
+
+		// 3-gram features
+		add(new FeatureItem<>(-2, Field.pos_tag), new FeatureItem<>(-1, Field.pos_tag)        , new FeatureItem<>(0, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.pos_tag), new FeatureItem<>(-1, Field.pos_tag)        , new FeatureItem<>(1, Field.ambiguity_class));
+		add(new FeatureItem<>(-1, Field.pos_tag), new FeatureItem<>( 0, Field.ambiguity_class), new FeatureItem<>(1, Field.ambiguity_class));
+		add(new FeatureItem<>(-1, Field.pos_tag), new FeatureItem<>( 1, Field.ambiguity_class), new FeatureItem<>(2, Field.ambiguity_class));
+
 		// affix features
 		add(new FeatureItem<>(0, Field.prefix, 2));
 		add(new FeatureItem<>(0, Field.prefix, 3));
@@ -63,10 +72,10 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		add(new FeatureItem<>(0, Field.suffix, 2));
 		add(new FeatureItem<>(0, Field.suffix, 3));
 		add(new FeatureItem<>(0, Field.suffix, 4));
-
+		
 		// orthographic features
 		addSet(new FeatureItem<>(0, Field.orthographic));
-
+		
 		// boolean features
 		addSet(new FeatureItem<>(0, Field.binary));
 	}
