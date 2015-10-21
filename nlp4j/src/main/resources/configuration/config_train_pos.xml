@@ -1,0 +1,20 @@
+<configuration>
+    <language>english</language>
+
+	<tsv>
+        <column index="0" field="form"/>
+        <column index="1" field="pos"/>
+    </tsv>
+
+    <optimizer>
+        <algorithm>adagrad-mini-batch</algorithm>
+        <l1_regularization>0.000002</l1_regularization>
+        <learning_rate>0.02</learning_rate>
+        <max_epochs>5</max_epochs>
+        <batch_size>5</batch_size>
+        <roll_in>0.95</roll_in>
+        <bias>0</bias>
+    </optimizer>
+    
+	<ambiguity_class_threshold>0.4</ambiguity_class_threshold>
+</configuration>
