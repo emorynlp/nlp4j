@@ -15,41 +15,20 @@
  */
 package edu.emory.mathcs.nlp.emorynlp.dep;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-
 import java.io.InputStream;
 
-import org.w3c.dom.Element;
-
-import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.emorynlp.utils.config.NLPConfig;
-import edu.emory.mathcs.nlp.emorynlp.utils.reader.TSVIndex;
+import edu.emory.mathcs.nlp.emorynlp.component.config.NLPConfig;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPConfig extends NLPConfig<DEPNode>
+public class DEPConfig extends NLPConfig<NLPNode>
 {
-	public DEPConfig() {super();}
+	public DEPConfig() {}
 	
 	public DEPConfig(InputStream in)
 	{
 		super(in);
-	}
-	
-	@Override
-	public TSVIndex<DEPNode> getTSVIndex()
-	{
-		Element eReader = XMLUtils.getFirstElementByTagName(xml, TSV);
-		Object2IntMap<String> map = getFieldMap(eReader);
-		
-		int form   = map.get(FIELD_FORM);
-		int pos    = map.get(FIELD_POS);
-		int lemma  = map.get(FIELD_LEMMA);
-		int feats  = map.get(FIELD_FEATS);
-		int headID = map.getOrDefault(FIELD_HEADID, -1);
-		int deprel = map.getOrDefault(FIELD_DEPREL, -1);
-		
-		return new DEPIndex(form, lemma, pos, feats, headID, deprel);
 	}
 }

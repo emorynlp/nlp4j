@@ -28,7 +28,7 @@ import edu.emory.mathcs.nlp.common.collection.ngram.Unigram;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectDoublePair;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.emorynlp.utils.node.NLPNode;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -45,14 +45,14 @@ public class AmbiguityClassMap implements Serializable
 		pos_count = new Bigram<>();
 	}
 	
-	public void add(POSNode[] nodes)
+	public void add(NLPNode[] nodes)
 	{
-		for (POSNode node : nodes) add(node);
+		for (NLPNode node : nodes) add(node);
 	}
 	
-	public void add(POSNode node)
+	public void add(NLPNode node)
 	{
-		pos_count.add(toKey(node), node.getPOSTag());
+		pos_count.add(toKey(node), node.getPartOfSpeechTag());
 	}
 	
 	public void expand(double threshold)

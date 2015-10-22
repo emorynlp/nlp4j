@@ -15,43 +15,25 @@
  */
 package edu.emory.mathcs.nlp.emorynlp.pos;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-
 import java.io.InputStream;
 
-import org.w3c.dom.Element;
-
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.emorynlp.utils.config.NLPConfig;
-import edu.emory.mathcs.nlp.emorynlp.utils.reader.TSVIndex;
+import edu.emory.mathcs.nlp.emorynlp.component.config.NLPConfig;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSConfig extends NLPConfig<POSNode>
+public class POSConfig extends NLPConfig<NLPNode>
 {
 	private double ambiguity_class_threshold;
 	
-	public POSConfig() {super();}
+	public POSConfig() {}
 	
 	public POSConfig(InputStream in)
 	{
 		super(in);
 		setAmbiguityClassThreshold(XMLUtils.getDoubleTextContentFromFirstElementByTagName(xml, "ambiguity_class_threshold"));
-	}
-	
-	@Override
-	public TSVIndex<POSNode> getTSVIndex()
-	{
-		Element eReader = XMLUtils.getFirstElementByTagName(xml, TSV);
-		Object2IntMap<String> map = getFieldMap(eReader);
-		
-		int form  = map.get(FIELD_FORM);
-		int pos   = map.get(FIELD_POS);
-		int lemma = map.getOrDefault(FIELD_LEMMA, -1);
-		int feats = map.getOrDefault(FIELD_FEATS, -1);
-		
-		return new POSIndex(form, lemma, pos, feats);
 	}
 	
 	public double getAmbiguityClassThreshold()

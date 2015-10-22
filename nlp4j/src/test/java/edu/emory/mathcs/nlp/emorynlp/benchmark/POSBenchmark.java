@@ -24,18 +24,17 @@ import org.junit.Test;
 import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.emorynlp.component.eval.AccuracyEval;
+import edu.emory.mathcs.nlp.emorynlp.component.eval.Eval;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
+import edu.emory.mathcs.nlp.emorynlp.component.reader.TSVReader;
+import edu.emory.mathcs.nlp.emorynlp.component.train.TrainInfo;
+import edu.emory.mathcs.nlp.emorynlp.component.util.NLPFlag;
 import edu.emory.mathcs.nlp.emorynlp.pos.AmbiguityClassMap;
-import edu.emory.mathcs.nlp.emorynlp.pos.POSIndex;
-import edu.emory.mathcs.nlp.emorynlp.pos.POSNode;
 import edu.emory.mathcs.nlp.emorynlp.pos.POSState;
 import edu.emory.mathcs.nlp.emorynlp.pos.POSTagger;
 import edu.emory.mathcs.nlp.emorynlp.pos.feature.POSFeatureTemplate0;
-import edu.emory.mathcs.nlp.emorynlp.utils.component.NLPFlag;
-import edu.emory.mathcs.nlp.emorynlp.utils.eval.AccuracyEval;
-import edu.emory.mathcs.nlp.emorynlp.utils.eval.Eval;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.emorynlp.utils.reader.TSVReader;
-import edu.emory.mathcs.nlp.emorynlp.utils.train.TrainInfo;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaGradMiniBatch;
@@ -52,7 +51,7 @@ public class POSBenchmark
 	@Test
 	public void benchmark() throws Exception
 	{
-		FeatureTemplate<POSNode,POSState<POSNode>> template = new POSFeatureTemplate0();
+		FeatureTemplate<NLPNode,POSState<NLPNode>> template = new POSFeatureTemplate0<NLPNode>();
 		WeightVector weights = new WeightVector();
 		StringModel model = new StringModel(weights);
 		TrainInfo info = new TrainInfo(100, 10, 0.95);
@@ -63,10 +62,10 @@ public class POSBenchmark
 		run(model, optimizer, rda, info, template);
 	}
 	
-	void run(StringModel model, OnlineOptimizer optimizer, Regularizer rda, TrainInfo info, FeatureTemplate<POSNode,POSState<POSNode>> template) throws Exception
+	void run(StringModel model, OnlineOptimizer optimizer, Regularizer rda, TrainInfo info, FeatureTemplate<NLPNode,POSState<NLPNode>> template) throws Exception
 	{
 		final String root = "/Users/jdchoi/Documents/Data/experiments/wsj/wsj-pos/";
-		TSVReader<POSNode> reader = new TSVReader<>(new POSIndex(0,1));
+		TSVReader reader = new TSVReader();
 		List<String> trnFiles = FileUtils.getFileList(root+"trn/", "pos");
 		List<String> devFiles = FileUtils.getFileList(root+"dev/", "pos");
 		Collections.sort(trnFiles);
@@ -79,8 +78,8 @@ public class POSBenchmark
 		
 		// collect training instances
 		Eval eval = new AccuracyEval();
-		POSTagger<POSNode> tagger = new POSTagger<>(optimizer, model, null, template, eval, map);
-		tagger.setTrainInfo(new TrainInfo[]{info});
+		POSTagger<NLPNode> tagger = new POSTagger<>();
+		tagger.setTrainInfos(new TrainInfo[]{info});
 
 		DoubleIntPair best = new DoubleIntPair(-1, -1);
 		double currScore;
@@ -102,16 +101,16 @@ public class POSBenchmark
 		System.out.printf("Best: %d - %5.2f\n", best.i, best.d);
 	}
 	
-	void iterate(TSVReader<POSNode> reader, List<String> filenames,  Consumer<POSNode[]> f, OnlineOptimizer optimizer) throws Exception
+	void iterate(TSVReader reader, List<String> filenames,  Consumer<NLPNode[]> f, OnlineOptimizer optimizer) throws Exception
 	{
 		int count = 0;
 		
 		for (String filename : filenames)
 		{
 			reader.open(IOUtils.createFileInputStream(filename));
-			POSNode[] nodes;
+			NLPNode[] nodes;
 			
-			while ((nodes = reader.next()) != null)
+			while ((nodes = reader.next(NLPNode::new)) != null)
 			{
 				f.accept(nodes);
 				count++;
@@ -127,14 +126,14 @@ public class POSBenchmark
 		}
 	}
 	
-	void iterate(TSVReader<POSNode> reader, List<String> filenames, Consumer<POSNode[]> f) throws Exception
+	void iterate(TSVReader reader, List<String> filenames, Consumer<NLPNode[]> f) throws Exception
 	{
 		for (String filename : filenames)
 		{
 			reader.open(IOUtils.createFileInputStream(filename));
-			POSNode[] nodes;
+			NLPNode[] nodes;
 			
-			while ((nodes = reader.next()) != null)
+			while ((nodes = reader.next(NLPNode::new)) != null)
 				f.accept(nodes);
 			
 			reader.close();	

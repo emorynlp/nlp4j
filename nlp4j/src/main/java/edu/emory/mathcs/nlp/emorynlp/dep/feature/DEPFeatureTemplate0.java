@@ -15,16 +15,17 @@
  */
 package edu.emory.mathcs.nlp.emorynlp.dep.feature;
 
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.Direction;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.FeatureItem;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.Field;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.Relation;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.Source;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.Direction;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureItem;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.Field;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.Relation;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.Source;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPFeatureTemplate0 extends DEPFeatureTemplate
+public class DEPFeatureTemplate0<N extends NLPNode> extends DEPFeatureTemplate<N>
 {
 	private static final long serialVersionUID = 4717085054409332081L;
 
@@ -45,20 +46,20 @@ public class DEPFeatureTemplate0 extends DEPFeatureTemplate
 		add(new FeatureItem<>(Source.k,  1, Field.lemma));
 		
 		// pos features
-		add(new FeatureItem<>(Source.i, -2, Field.pos_tag));
-		add(new FeatureItem<>(Source.i, -1, Field.pos_tag));
-		add(new FeatureItem<>(Source.i,  0, Field.pos_tag));
-		add(new FeatureItem<>(Source.i,  1, Field.pos_tag));
-		add(new FeatureItem<>(Source.i,  2, Field.pos_tag));
+		add(new FeatureItem<>(Source.i, -2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, -1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  2, Field.part_of_speech_tag));
 		
-		add(new FeatureItem<>(Source.j, -2, Field.pos_tag));
-		add(new FeatureItem<>(Source.j, -1, Field.pos_tag));
-		add(new FeatureItem<>(Source.j,  0, Field.pos_tag));
-		add(new FeatureItem<>(Source.j,  1, Field.pos_tag));
-		add(new FeatureItem<>(Source.j,  2, Field.pos_tag));
+		add(new FeatureItem<>(Source.j, -2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j, -1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j,  2, Field.part_of_speech_tag));
 		
-		add(new FeatureItem<>(Source.k,  1, Field.pos_tag));
-		add(new FeatureItem<>(Source.k,  2, Field.pos_tag));
+		add(new FeatureItem<>(Source.k,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.k,  2, Field.part_of_speech_tag));
 		
 		// valency features
 		add(new FeatureItem<>(Source.i, 0, Field.valency, Direction.all));
@@ -70,10 +71,10 @@ public class DEPFeatureTemplate0 extends DEPFeatureTemplate
 		add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.lemma));
 		add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.lemma));
 		
-		add(new FeatureItem<>(Source.i, Relation.h  , 0, Field.pos_tag));
-		add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.pos_tag));
-		add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.pos_tag));
-		add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.pos_tag));
+		add(new FeatureItem<>(Source.i, Relation.h  , 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.part_of_speech_tag));
 		
 		add(new FeatureItem<>(Source.i,               0, Field.dependency_label));
 		add(new FeatureItem<>(Source.i, Relation.lns, 0, Field.dependency_label));
@@ -87,10 +88,10 @@ public class DEPFeatureTemplate0 extends DEPFeatureTemplate
 		add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.lemma));
 		add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.lemma));
 		
-		add(new FeatureItem<>(Source.i, Relation.h2  , 0, Field.pos_tag));
-		add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.pos_tag));
-		add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.pos_tag));
-		add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.pos_tag));
+		add(new FeatureItem<>(Source.i, Relation.h2  , 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.part_of_speech_tag));
 		
 		add(new FeatureItem<>(Source.i, Relation.h   , 0, Field.dependency_label));
 		add(new FeatureItem<>(Source.i, Relation.lns2, 0, Field.dependency_label));

@@ -13,60 +13,65 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.emorynlp.dep;
+package edu.emory.mathcs.nlp.emorynlp.component.eval;
 
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.emorynlp.component.eval.Eval;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPEval implements Eval
+public class F1Eval implements Eval
 {
-	private int las, uas;
-	private int total;
+	private int total_system;
+	private int total_gold;
+	private int correct;
 	
-	public DEPEval()
+	public F1Eval()
 	{
 		clear();
 	}
 	
-	public void add(int las, int uas, int total)
+	public void add(int correct, int totalSystem, int totalGold)
 	{
-		this.las   += las;
-		this.uas   += uas;
-		this.total += total;
+		this.correct += correct;
+		total_system += totalSystem;
+		total_gold   += totalGold;
 	}
 	
+	public double getPrecision()
+	{
+		return MathUtils.accuracy(correct, total_system);
+	}
+	
+	public double getRecall()
+	{
+		return MathUtils.accuracy(correct, total_gold);
+	}
+	
+	public double getF1()
+	{
+		return MathUtils.getF1(getPrecision(), getRecall());
+	}
+	
+	@Override
 	public void clear()
 	{
-		las = uas = total = 0;
-	}
-	
-	public int total()
-	{
-		return total;
-	}
-	
-	public double getLAS()
-	{
-		return MathUtils.accuracy(las, total);
-	}
-	
-	public double getUAS()
-	{
-		return MathUtils.accuracy(uas, total);
+		correct = total_system = total_gold = 0;
 	}
 	
 	@Override
 	public double score()
 	{
-		return getLAS();
+		return getF1();
 	}
 	
 	@Override
 	public String toString()
 	{
-		return String.format("LAS = %5.2f, UAS = %5.2f", getLAS(), getUAS());
+		double p  = getPrecision();
+		double r  = getRecall();
+		double f1 = MathUtils.getF1(p, r);
+		
+		return String.format("F1: %5.2f, P: %5.2f, R: %5.2f", f1, p, r);
 	}
 }

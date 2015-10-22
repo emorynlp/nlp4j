@@ -15,14 +15,15 @@
  */
 package edu.emory.mathcs.nlp.emorynlp.dep.feature;
 
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.FeatureItem;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.Field;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.Source;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureItem;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.Field;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.Source;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPFeatureTemplate2 extends DEPFeatureTemplate
+public class DEPFeatureTemplate2<N extends NLPNode> extends DEPFeatureTemplate<N>
 {
 	private static final long serialVersionUID = 4717085054409332081L;
 

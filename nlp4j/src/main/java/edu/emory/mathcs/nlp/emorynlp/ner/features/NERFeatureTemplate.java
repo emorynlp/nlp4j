@@ -13,38 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.emorynlp.pos.feature;
+package edu.emory.mathcs.nlp.emorynlp.ner.features;
 
 import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureItem;
 import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
-import edu.emory.mathcs.nlp.emorynlp.pos.POSState;
+import edu.emory.mathcs.nlp.emorynlp.ner.NERState;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class POSFeatureTemplate<N extends NLPNode> extends FeatureTemplate<N,POSState<N>>
+public abstract class NERFeatureTemplate<N extends NLPNode> extends FeatureTemplate<N,NERState<N>>
 {
-	private static final long serialVersionUID = -243334323533999837L;
-	
-	public POSFeatureTemplate()	
+	private static final long serialVersionUID = 2750773840515707758L;
+
+	public NERFeatureTemplate()	
 	{
 		super();
 	}
-
+	
 //	========================= FEATURE EXTRACTORS =========================
 	
 	@Override
 	protected String getFeature(FeatureItem<?> item)
 	{
 		N node = state.getNode(item);
-		if (node == null) return null;
-		
-		switch (item.field)
-		{
-		case ambiguity_class: return state.getAmbiguityClass(node);
-		default: return getFeature(item, node);
-		}
+		return (node == null) ? null : getFeature(item, node);
 	}
 	
 	@Override

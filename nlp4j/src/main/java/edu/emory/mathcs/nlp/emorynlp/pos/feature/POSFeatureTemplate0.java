@@ -15,13 +15,14 @@
  */
 package edu.emory.mathcs.nlp.emorynlp.pos.feature;
 
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.FeatureItem;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.Field;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureItem;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.Field;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSFeatureTemplate0 extends POSFeatureTemplate
+public class POSFeatureTemplate0<N extends NLPNode> extends POSFeatureTemplate<N>
 {
 	private static final long serialVersionUID = 7072878555553683666L;
 
@@ -39,9 +40,9 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		add(new FeatureItem<>( 0, Field.word_shape, 2));
 		add(new FeatureItem<>( 1, Field.word_shape, 2));
 
-		add(new FeatureItem<>(-3, Field.pos_tag));
-		add(new FeatureItem<>(-2, Field.pos_tag));
-		add(new FeatureItem<>(-1, Field.pos_tag));
+		add(new FeatureItem<>(-3, Field.part_of_speech_tag));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
 		add(new FeatureItem<>( 0, Field.ambiguity_class));
 		add(new FeatureItem<>( 1, Field.ambiguity_class));
 		add(new FeatureItem<>( 2, Field.ambiguity_class));
@@ -54,15 +55,15 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>(+1, Field.uncapitalized_simplified_word_form));
 
-		add(new FeatureItem<>(-2, Field.pos_tag)        , new FeatureItem<>(-1, Field.pos_tag));
-		add(new FeatureItem<>(-1, Field.pos_tag)        , new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>( 1, Field.ambiguity_class), new FeatureItem<>( 2, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
+		add(new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
 
 		// 3-gram features
-		add(new FeatureItem<>(-2, Field.pos_tag), new FeatureItem<>(-1, Field.pos_tag)        , new FeatureItem<>(0, Field.ambiguity_class));
-		add(new FeatureItem<>(-2, Field.pos_tag), new FeatureItem<>(-1, Field.pos_tag)        , new FeatureItem<>(1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.pos_tag), new FeatureItem<>( 0, Field.ambiguity_class), new FeatureItem<>(1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.pos_tag), new FeatureItem<>( 1, Field.ambiguity_class), new FeatureItem<>(2, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>(0, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>(1, Field.ambiguity_class));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class)   , new FeatureItem<>(1, Field.ambiguity_class));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>(2, Field.ambiguity_class));
 
 		// affix features
 		add(new FeatureItem<>(0, Field.prefix, 2));

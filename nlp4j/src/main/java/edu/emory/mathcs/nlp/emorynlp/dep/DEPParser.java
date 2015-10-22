@@ -16,28 +16,28 @@
 package edu.emory.mathcs.nlp.emorynlp.dep;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import edu.emory.mathcs.nlp.emorynlp.utils.component.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.emorynlp.utils.eval.Eval;
-import edu.emory.mathcs.nlp.emorynlp.utils.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
-import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
+import edu.emory.mathcs.nlp.emorynlp.component.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.emorynlp.component.config.NLPConfig;
+import edu.emory.mathcs.nlp.emorynlp.component.eval.Eval;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPParser<N extends DEPNode> extends NLPOnlineComponent<N,DEPState<N>>
+public class DEPParser<N extends NLPNode> extends NLPOnlineComponent<N,DEPState<N>>
 {
 	private static final long serialVersionUID = 7031031976396726276L;
 
-	public DEPParser(StringModel model, OnlineOptimizer optimizer, FeatureTemplate<N,DEPState<N>> template, Eval eval)
+	public DEPParser(InputStream configuration)
 	{
-		super(new OnlineOptimizer[]{optimizer}, new StringModel[]{model}, null, template, eval);
+		super(configuration);
 	}
 	
-//	============================== LEXICONS ==============================
+//	============================== ABSTRACT METHODS ==============================
 
 	@Override
 	protected void readLexicons(ObjectInputStream in) throws IOException, ClassNotFoundException {}
@@ -45,7 +45,20 @@ public class DEPParser<N extends DEPNode> extends NLPOnlineComponent<N,DEPState<
 	@Override
 	protected void writeLexicons(ObjectOutputStream out) throws IOException {}
 	
-//	============================== PROCESS ==============================
+//	============================== ABSTRACT ==============================
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void setConfiguration(InputStream in)
+	{
+		setConfiguration((NLPConfig<N>)new DEPConfig(in));
+	}
+	
+	@Override
+	public Eval createEvaluator()
+	{
+		return new DEPEval();
+	}
 	
 	@Override
 	protected DEPState<N> initState(N[] nodes)

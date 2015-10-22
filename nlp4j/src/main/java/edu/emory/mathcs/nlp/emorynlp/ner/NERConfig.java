@@ -13,45 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.emorynlp.pos;
+package edu.emory.mathcs.nlp.emorynlp.ner;
 
+import java.io.InputStream;
+
+import edu.emory.mathcs.nlp.emorynlp.component.config.NLPConfig;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
-import edu.emory.mathcs.nlp.emorynlp.component.state.L2RState;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSState<N extends NLPNode> extends L2RState<N>
+public class NERConfig extends NLPConfig<NLPNode>
 {
-	private AmbiguityClassMap ambiguity_class_map;
+	public NERConfig() {}
 	
-	public POSState(N[] nodes, AmbiguityClassMap map)
+	public NERConfig(InputStream in)
 	{
-		super(nodes);
-		setAmbiguityClass(map);
-	}
-	
-	@Override
-	protected String getLabel(N node)
-	{
-		return node.getPartOfSpeechTag();
-	}
-	
-	@Override
-	protected String setLabel(N node, String label)
-	{
-		String s = node.getPartOfSpeechTag();
-		node.setPartOfSpeechTag(label);
-		return s;
-	}
-	
-	public String getAmbiguityClass(N node)
-	{
-		return ambiguity_class_map.get(node);
-	}
-	
-	public void setAmbiguityClass(AmbiguityClassMap map)
-	{
-		ambiguity_class_map = map;		
+		super(in);
 	}
 }

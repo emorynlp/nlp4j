@@ -19,15 +19,17 @@ import java.util.Arrays;
 import java.util.Set;
 
 import edu.emory.mathcs.nlp.common.util.DSUtils;
-import edu.emory.mathcs.nlp.emorynlp.utils.eval.Eval;
-import edu.emory.mathcs.nlp.emorynlp.utils.state.NLPState;
+import edu.emory.mathcs.nlp.emorynlp.component.eval.Eval;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureItem;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
+import edu.emory.mathcs.nlp.emorynlp.component.state.NLPState;
 import edu.emory.mathcs.nlp.machine_learning.prediction.StringPrediction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPState<N extends DEPNode> extends NLPState<N>
+public class DEPState<N extends NLPNode> extends NLPState<N>
 {
 	static public final String LEFT_ARC  = "LA-";
 	static public final String RIGHT_ARC = "RA-";
@@ -78,7 +80,7 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 	
 	private boolean isOracleReduce()
 	{
-		if (!getStack().hasHead()) return false;
+		if (!getStack().hasDependencyHead()) return false;
 		int s;
 		
 		for (int i=1; i<stack.size(); i++)
@@ -94,8 +96,8 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 	
 	boolean isOracleReduceEager()
 	{
-		DEPNode s = getStack();
-		if (!s.hasHead()) return false;
+		N s = getStack();
+		if (!s.hasDependencyHead()) return false;
 		
 		for (int i=input+1; i<nodes.length; i++)
 		{
@@ -116,12 +118,12 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 		
 		if (label.startsWith(LEFT_ARC))
 		{
-			DEPNode s = getStack();
-			DEPNode i = getInput();
+			NLPNode s = getStack();
+			NLPNode i = getInput();
 			
 			if (s != nodes[0] && !i.isDescendantOf(s))
 			{
-				s.setHead(i, label.substring(3));
+				s.setDependencyHead(i, label.substring(3));
 				label = REDUCE;
 			}
 			else
@@ -129,11 +131,11 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 		}
 		else if (label.startsWith(RIGHT_ARC))
 		{
-			DEPNode s = getStack();
-			DEPNode i = getInput();
+			NLPNode s = getStack();
+			NLPNode i = getInput();
 			
 			if (!s.isDescendantOf(i))
-				i.setHead(s, label.substring(3));
+				i.setDependencyHead(s, label.substring(3));
 
 			label = SHIFT;
 		}
@@ -177,7 +179,7 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 	
 	public N getStack(int window)
 	{
-		return getNode(stack.topInt(), window);
+		return getNode(stack.topInt(), window, true);
 	}
 	
 	public N getStack()
@@ -187,7 +189,7 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 	
 	public N getInput(int window)
 	{
-		return getNode(input, window);
+		return getNode(input, window, true);
 	}
 	
 	public N getInput()
@@ -201,7 +203,7 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 	public void evaluate(Eval eval)
 	{
 		int las = 0, uas = 0;
-		DEPNode node;
+		NLPNode node;
 		DEPArc  gold;
 		
 		for (int i=1; i<nodes.length; i++)
@@ -209,10 +211,10 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 			node = nodes [i];
 			gold = oracle[i];
 			
-			if (gold.isNode(node.getHead()))
+			if (gold.isNode(node.getDependencyHead()))
 			{
 				uas++;
-				if (gold.isLabel(node.getLabel())) las++;
+				if (gold.isLabel(node.getDependencyLabel())) las++;
 			}
 		}
 
@@ -229,5 +231,46 @@ public class DEPState<N extends DEPNode> extends NLPState<N>
 	public boolean isLast(N node)
 	{
 		return nodes[nodes.length-1] == node;
+	}
+
+	@SuppressWarnings("unchecked")
+	public N getNode(FeatureItem<?> item)
+	{
+		N node = null;
+		
+		switch (item.source)
+		{
+		case i: node = getStack (item.window); break;
+		case j: node = getInput (item.window); break;
+		case k: node = peekStack(item.window); break;
+		}
+		
+		return (N)getNode(node, item);
+	}
+	
+	protected NLPNode getNode(N node, FeatureItem<?> item)
+	{
+		if (node == null || item.relation == null)
+			return node;
+		
+		switch (item.relation)
+		{
+		case h   : return node.getDependencyHead();
+		case h2  : return node.getGrandDependencyHead();
+		case lmd : return node.getLeftMostDependent();
+		case lmd2: return node.getLeftMostDependent(1);
+		case lnd : return node.getLeftNearestDependent();
+		case lnd2: return node.getLeftNearestDependent(1);
+		case lns : return node.getLeftNearestSibling();
+		case lns2: return node.getLeftNearestSibling(1);
+		case rmd : return node.getRightMostDependent();
+		case rmd2: return node.getRightMostDependent(1);
+		case rnd : return node.getRightNearestDependent();
+		case rnd2: return node.getRightNearestDependent(1);
+		case rns : return node.getRightNearestSibling();
+		case rns2: return node.getRightNearestSibling(1);
+		}
+		
+		return null;
 	}
 }
