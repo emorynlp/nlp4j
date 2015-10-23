@@ -51,8 +51,8 @@ public class NERState<N extends NLPNode> extends L2RState<N>
 	@Override
 	public void evaluate(Eval eval)
 	{
-		Int2ObjectMap<String> gMap = BILOU.collectNamedEntityMap(oracle, String::toString);
-		Int2ObjectMap<String> sMap = BILOU.collectNamedEntityMap(nodes , this::getLabel);
+		Int2ObjectMap<String> gMap = BILOU.collectNamedEntityMap(oracle, String::toString, 1, nodes.length);
+		Int2ObjectMap<String> sMap = BILOU.collectNamedEntityMap(nodes , this::getLabel  , 1, nodes.length);
 		((F1Eval)eval).add(countCorrect(sMap, gMap), sMap.size(), gMap.size());
 	}
 	

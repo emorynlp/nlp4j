@@ -10,7 +10,7 @@
     </tsv>
     
     <global>
-        <clusters>brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</clusters>
+        <clusters>/Users/jdchoi/Emory/webpage/public_html/courses/cs571/dat/brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</clusters>
     </global>
 
     <optimizer>

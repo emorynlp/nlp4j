@@ -51,23 +51,27 @@ public enum BILOU
 		return toBILOUTag(newBILOU, toTag(tag));
 	}
 
-	public static <N>Int2ObjectMap<String> collectNamedEntityMap(N[] nodes, Function<N,String> f)
+	/**
+	 * @param beginIndex inclusive
+	 * @param endIndex exclusive
+	 */
+	public static <N>Int2ObjectMap<String> collectNamedEntityMap(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
 	{
 		Int2ObjectMap<String> map = new Int2ObjectOpenHashMap<>();
-		int i, beginIndex = -1, size = nodes.length;
+		int i, beginChunk = -1, size = nodes.length;
 		String tag;
 		
-		for (i=0; i<size; i++)
+		for (i=beginIndex; i<endIndex; i++)
 		{
 			tag = f.apply(nodes[i]);
 			if (tag == null || tag.length() < 3) continue;
 			
 			switch (toBILOU(tag))
 			{
-			case U: map.put(getKey(i,i,size), toTag(tag)); beginIndex = -1; break;
-			case B: beginIndex = i; break;
-			case L: if (0 <= beginIndex&&beginIndex < i) map.put(getKey(beginIndex,i,size), toTag(tag)); beginIndex = -1; break;
-			case O: beginIndex = -1; break;
+			case U: map.put(getKey(i,i,size), toTag(tag)); beginChunk = -1; break;
+			case B: beginChunk = i; break;
+			case L: if (0 <= beginChunk&&beginChunk < i) map.put(getKey(beginChunk,i,size), toTag(tag)); beginChunk = -1; break;
+			case O: beginChunk = -1; break;
 			case I: break;
 			}
 		}
