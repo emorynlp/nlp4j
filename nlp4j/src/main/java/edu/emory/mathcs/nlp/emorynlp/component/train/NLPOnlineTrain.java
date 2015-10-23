@@ -37,7 +37,6 @@ import edu.emory.mathcs.nlp.emorynlp.component.state.NLPState;
 import edu.emory.mathcs.nlp.emorynlp.component.util.NLPFlag;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
-import edu.emory.mathcs.nlp.machine_learning.vector.WeightVector;
 
 /**
  * Provide instances and methods for training NLP components.
@@ -99,11 +98,10 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 	/** Called by {@link #train(NLPConfig, TSVReader, List, List, NLPOnlineComponent)}. */
 	protected double train(List<String> trainFiles, List<String> developFiles, NLPOnlineComponent<N,?> component, TSVReader reader, OnlineOptimizer optimizer, StringModel model, TrainInfo info)
 	{
-		WeightVector weightVector = model.getWeightVector();
 		int bestEpoch = -1, bestNZW = -1, nzw;
 		Random rand = new XORShiftRandom(9);
 		double bestScore = 0, score;
-		float[] bestWeights = null;
+		byte[] bestModel = null;
 		Eval eval;
 		
 		for (int epoch=0; epoch<info.getMaxEpochs(); epoch++)
@@ -121,10 +119,10 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 			
 			if (bestScore < score || (bestScore == score && nzw < bestNZW))
 			{
-				bestNZW     = nzw;
-				bestEpoch   = epoch;
-				bestScore   = score;
-				bestWeights = weightVector.getWeights().toArray();
+				bestNZW   = nzw;
+				bestEpoch = epoch;
+				bestScore = score;
+				bestModel = model.toByteArray();
 			}
 			
 			BinUtils.LOG.info(String.format("%4d: %s, RollIn = %5.4f, Batch = %d, NZW = %d\n", epoch, eval.toString(), info.getRollInProbability(), info.getBatchSize(), nzw));
@@ -132,9 +130,9 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 		}
 		
 		BinUtils.LOG.info(String.format("Best: %5.2f, epoch: %d, nzw: %d\n", bestScore, bestEpoch, bestNZW));
-		weightVector.setWeights(bestWeights);
+		model.fromByteArray(bestModel);
 		
-		BinUtils.LOG.info(String.format("\nFeature reduction: %d -> ", model.getFeatureSize()));
+		BinUtils.LOG.info(String.format("Feature reduction: %d -> ", model.getFeatureSize()));
 		BinUtils.LOG.info(String.format("%d\n", model.shrink(0.00005f)));
 		
 		return bestScore; 

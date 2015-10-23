@@ -44,6 +44,9 @@ public enum Field
 	distance,
 	valency,
 	
+	// distributional semantics
+	clusters,
+	
 	// more
 	binary;	// set
 }

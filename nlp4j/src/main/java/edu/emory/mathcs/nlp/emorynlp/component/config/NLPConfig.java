@@ -25,6 +25,7 @@ import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 import edu.emory.mathcs.nlp.emorynlp.component.reader.TSVReader;
 import edu.emory.mathcs.nlp.emorynlp.component.train.TrainInfo;
+import edu.emory.mathcs.nlp.emorynlp.component.util.GlobalLexica;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaDeltaMiniBatch;
@@ -50,6 +51,7 @@ public abstract class NLPConfig<N extends NLPNode> implements ConfigXML
 	public NLPConfig(InputStream in)
 	{
 		xml = XMLUtils.getDocumentElement(in);
+		GlobalLexica.init(xml);
 	}
 	
 //	=================================== GETTERS & SETTERS ===================================  

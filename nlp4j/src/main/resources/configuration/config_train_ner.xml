@@ -8,6 +8,10 @@
         <column index="3" field="feats"/>
         <column index="4" field="nament"/>
     </tsv>
+    
+    <global>
+        <clusters>brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</clusters>
+    </global>
 
     <optimizer>
         <algorithm>adagrad</algorithm>

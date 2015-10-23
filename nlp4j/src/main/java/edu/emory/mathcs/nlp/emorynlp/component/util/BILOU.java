@@ -51,7 +51,7 @@ public enum BILOU
 		return toBILOUTag(newBILOU, toTag(tag));
 	}
 
-	static public <N>Int2ObjectMap<String> collectNamedEntityMap(N[] nodes, Function<N,String> f)
+	public static <N>Int2ObjectMap<String> collectNamedEntityMap(N[] nodes, Function<N,String> f)
 	{
 		Int2ObjectMap<String> map = new Int2ObjectOpenHashMap<>();
 		int i, beginIndex = -1, size = nodes.length;
@@ -75,7 +75,7 @@ public enum BILOU
 		return map;
 	}
 
-	public static int getKey(int beginIndex, int endIndex, int size)
+	private static int getKey(int beginIndex, int endIndex, int size)
 	{
 		return beginIndex * size + endIndex;
 	}

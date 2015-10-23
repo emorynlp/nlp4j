@@ -31,6 +31,7 @@ import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 import edu.emory.mathcs.nlp.emorynlp.component.node.Orthographic;
 import edu.emory.mathcs.nlp.emorynlp.component.state.NLPState;
+import edu.emory.mathcs.nlp.emorynlp.component.util.GlobalLexica;
 import edu.emory.mathcs.nlp.machine_learning.vector.StringVector;
 
 /**
@@ -172,6 +173,7 @@ public abstract class FeatureTemplate<N extends NLPNode,S extends NLPState<N>> i
 		{
 		case binary: return getBinaryFeatures(node);
 		case orthographic: return getOrthographicFeatures(node);
+		case clusters: return GlobalLexica.getClusterFeatures(node.getWordForm(), (Integer)item.value);
 		default: return null;
 		}
 	}
