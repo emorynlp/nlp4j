@@ -16,13 +16,12 @@
 package edu.emory.mathcs.nlp.tokenizer;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
-import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.common.util.Language;
+import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Compound;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.EnglishApostrophe;
@@ -87,11 +86,10 @@ public class EnglishTokenizer extends Tokenizer
 //	----------------------------------- Segmentize -----------------------------------
 	
 	@Override
-	public List<List<String>> segmentize(InputStream in)
+	public List<List<String>> segmentize(List<String> tokens)
 	{
 		List<List<String>> sentences = new ArrayList<>();
 		int[] brackets = new int[R_BRACKETS.length];
-		List<String> tokens = tokenize(in);
 		int bIndex, i, size = tokens.size();
 		boolean isTerminal = false;
 		String token;

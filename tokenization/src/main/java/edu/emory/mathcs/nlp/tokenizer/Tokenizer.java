@@ -15,9 +15,6 @@
  */
 package edu.emory.mathcs.nlp.tokenizer;
 
-import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
-import it.unimi.dsi.fastutil.chars.CharSet;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +36,8 @@ import edu.emory.mathcs.nlp.tokenizer.dictionary.Currency;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Dictionary;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Emoticon;
 import edu.emory.mathcs.nlp.tokenizer.dictionary.Unit;
+import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
+import it.unimi.dsi.fastutil.chars.CharSet;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -70,8 +69,13 @@ abstract public class Tokenizer
 	}
 	
 //	----------------------------------- Public methods -----------------------------------
+
+	public List<List<String>> segmentize(InputStream in)
+	{
+		return segmentize(tokenize(in));
+	}
 	
-	abstract public List<List<String>> segmentize(InputStream in);
+	abstract public List<List<String>> segmentize(List<String> tokens);
 	
 	/** @return a list of tokens in the specific input stream. */
 	public List<String> tokenize(InputStream in)
