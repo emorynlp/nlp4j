@@ -70,13 +70,6 @@ abstract public class Tokenizer
 	
 //	----------------------------------- Public methods -----------------------------------
 
-	public List<List<String>> segmentize(InputStream in)
-	{
-		return segmentize(tokenize(in));
-	}
-	
-	abstract public List<List<String>> segmentize(List<String> tokens);
-	
 	/** @return a list of tokens in the specific input stream. */
 	public List<String> tokenize(InputStream in)
 	{
@@ -107,6 +100,18 @@ abstract public class Tokenizer
 		List<String> tokens = tokenizeWhiteSpaces(s);
 		return tokens;
 	}
+	
+	public List<List<String>> segmentize(InputStream in)
+	{
+		return segmentize(tokenize(in));
+	}
+	
+	public List<List<String>> segmentize(String s)
+	{
+		return segmentize(tokenize(s));
+	}
+	
+	abstract public List<List<String>> segmentize(List<String> tokens);
 	
 //	----------------------------------- Tokenize -----------------------------------
 	
