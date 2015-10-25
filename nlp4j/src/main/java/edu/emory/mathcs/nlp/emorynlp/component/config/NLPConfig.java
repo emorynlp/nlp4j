@@ -121,10 +121,11 @@ public abstract class NLPConfig<N extends NLPNode> implements ConfigXML
 	private TrainInfo getTrainInfoAux(int index)
 	{
 		Element eOptimizer = XMLUtils.getElementByTagName(xml, OPTIMIZER, index);
-		int   maxEpochs = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCHS); 
-		int   batchSize = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
-		float rollIn    = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
-		return new TrainInfo(maxEpochs, batchSize, rollIn);
+		int   maxEpochs    = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCHS); 
+		int   batchSize    = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
+		float rollIn       = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
+		float shrinkRate   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, SHRINK_RATE);
+		return new TrainInfo(maxEpochs, batchSize, rollIn, shrinkRate);
 	}
 	
 //	=================================== OPTIMIZERS ===================================

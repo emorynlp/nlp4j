@@ -54,7 +54,7 @@ public class POSBenchmark
 		FeatureTemplate<NLPNode,POSState<NLPNode>> template = new POSFeatureTemplate0<NLPNode>();
 		WeightVector weights = new WeightVector();
 		StringModel model = new StringModel(weights);
-		TrainInfo info = new TrainInfo(100, 10, 0.95);
+		TrainInfo info = new TrainInfo(100, 10, 0.95f, 0.06f);
 //		OnlineOptimizer optimizer = new AdaGradMiniBatch(weights, 0.04f);
 //		OnlineOptimizer optimizer = new AdaGrad(weights, 0.04f, new RegularizedDualAveraging(weights, 0.000001f));
 		Regularizer rda = new RegularizedDualAveraging(weights, 0.000002f);

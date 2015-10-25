@@ -37,6 +37,7 @@ import edu.emory.mathcs.nlp.emorynlp.component.state.NLPState;
 import edu.emory.mathcs.nlp.emorynlp.component.util.NLPFlag;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
+import edu.emory.mathcs.nlp.machine_learning.optimization.reguralization.Regularizer;
 
 /**
  * Provide instances and methods for training NLP components.
@@ -58,8 +59,6 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 	public int feature_template = 0;
 	@Option(name="-m", usage="model file (optional)", required=false, metaVar="<filename>")
 	public String model_file = null;
-	@Option(name="-shrink", usage="model shrink lower bound (default: 0.0001)", required=false, metaVar="<float>")
-	public float shrink = 0.01f;
 	
 	public NLPOnlineTrain() {};
 	
@@ -89,34 +88,31 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 		TrainInfo[] info = component.getTrainInfos();
 		
 		for (int i=0; i<optimizers.length; i++)
-		{
-			BinUtils.LOG.info("\n"+optimizers[i].toString()+", bias = "+models[i].getBias()+"\n");
 			train(trainFiles, developFiles, component, reader, optimizers[i], models[i], info[i]);
-		}
 	}
 	
 	/** Called by {@link #train(NLPConfig, TSVReader, List, List, NLPOnlineComponent)}. */
 	protected double train(List<String> trainFiles, List<String> developFiles, NLPOnlineComponent<N,?> component, TSVReader reader, OnlineOptimizer optimizer, StringModel model, TrainInfo info)
 	{
-		int bestEpoch = -1, bestNZW = -1, nzw;
+		Regularizer l1 = optimizer.getL1Regularizer();
+		int bestEpoch = -1, bestNZW = -1, nzw, epoch;
 		Random rand = new XORShiftRandom(9);
 		double bestScore = 0, score;
 		byte[] bestModel = null;
-		Eval eval;
 		
-		for (int epoch=1; epoch<=info.getMaxEpochs(); epoch++)
+		BinUtils.LOG.info("\n"+optimizer.toString()+", bias = "+model.getBias()+", batch = "+info.getBatchSize()+"\n");
+		
+		for (epoch=1; epoch<=info.getMaxEpochs(); epoch++)
 		{
 			component.setFlag(NLPFlag.TRAIN);
-			if (optimizer.isL1Regularization()) optimizer.getL1Regularizer().shrink(shrink * epoch);
 			Collections.shuffle(trainFiles, rand);
+			if (l1 != null && info.getShrinkRate() > 0) l1.shrink(info.getShrinkRate() * (1-1f/epoch));
 			iterate(reader, trainFiles, component::process, optimizer, info);
-			
-			component.setFlag(NLPFlag.EVALUATE);
-			eval = component.getEval();
-			eval.clear();
-			iterate(reader, developFiles, component::process, optimizer, info);
-			score = eval.score();
+			score = evaluate(developFiles, component, reader);
 			nzw = optimizer.getWeightVector().countNonZeroWeights();
+			
+			BinUtils.LOG.info(String.format("%5d: %s, RollIn = %5.4f, NZW = %d\n", epoch, component.getEval().toString(), info.getRollInProbability(), nzw));
+			info.updateRollInProbability();
 			
 			if (bestScore < score || (bestScore == score && nzw < bestNZW))
 			{
@@ -125,21 +121,28 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 				bestScore = score;
 				bestModel = model.toByteArray();
 			}
-			
-			BinUtils.LOG.info(String.format("%4d: %s, RollIn = %5.4f, Batch = %d, NZW = %d\n", epoch, eval.toString(), info.getRollInProbability(), info.getBatchSize(), nzw));
-			info.updateRollInProbability();
 		}
 		
-		BinUtils.LOG.info(String.format("Best: %5.2f, epoch: %d, nzw: %d\n", bestScore, bestEpoch, bestNZW));
+		BinUtils.LOG.info(String.format(" Best: %5.2f, epoch: %d, nzw: %d\n", bestScore, bestEpoch, bestNZW));
 		model.fromByteArray(bestModel);
 		
-		if (shrink > 0)
+		if (l1 != null && info.getShrinkRate() > 0)
 		{
-			BinUtils.LOG.info(String.format("Feature reduction: %d -> ", model.getFeatureSize()));
-			BinUtils.LOG.info(String.format("%d\n", model.shrink(shrink)));	
+			int c = model.shrink(info.getShrinkRate() * (1-1f/epoch));
+			bestScore = evaluate(developFiles, component, reader);
+			BinUtils.LOG.info(String.format("Final: %5.2f, features: %d\n", bestScore, c));
 		}
 		
 		return bestScore; 
+	}
+	
+	protected double evaluate(List<String> developFiles, NLPOnlineComponent<N,?> component, TSVReader reader)
+	{
+		component.setFlag(NLPFlag.EVALUATE);
+		Eval eval = component.getEval();
+		eval.clear();
+		iterate(reader, developFiles, component::process);
+		return eval.score();
 	}
 	
 //	=================================== HELPERS ===================================
@@ -164,26 +167,19 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 				{
 					f.accept(nodes);
 					
-					if (optimizer != null)
+					if (optimizer != null && ++count == info.getBatchSize())
 					{
-						count++;
-						
-						if (count == info.getBatchSize())
-						{
-							optimizer.update();
-							count = 0;
-						}
+						optimizer.update();
+						count = 0;
 					}
-						
 				}
 			}
 			catch (IOException e) {e.printStackTrace();}
-			
-			if (optimizer != null && count > 0)
-				optimizer.update();
-			
 			reader.close();
 		}
+		
+		if (optimizer != null && count > 0)
+			optimizer.update();
 	}
 	
 	public void save(NLPOnlineComponent<N,S> component)

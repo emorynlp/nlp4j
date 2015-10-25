@@ -17,6 +17,7 @@
         <max_epochs>10</max_epochs>
         <batch_size>5</batch_size>
         <roll_in>0.95</roll_in>
+        <shrink_rate>0.06</shrink_rate>
         <bias>0</bias>
     </optimizer>
     
