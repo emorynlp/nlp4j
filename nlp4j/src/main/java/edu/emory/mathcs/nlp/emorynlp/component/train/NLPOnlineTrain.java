@@ -58,8 +58,8 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 	public int feature_template = 0;
 	@Option(name="-m", usage="model file (optional)", required=false, metaVar="<filename>")
 	public String model_file = null;
-	@Option(name="-xz", usage="xz compression preset ([0-9], default: 9)", required=false, metaVar="<integer>")
-	public int preset = 6;
+	@Option(name="-shrink", usage="model shrink lower bound (default: 0.0001)", required=false, metaVar="<float>")
+	public float shrink = 0.01f;
 	
 	public NLPOnlineTrain() {};
 	
@@ -104,9 +104,10 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 		byte[] bestModel = null;
 		Eval eval;
 		
-		for (int epoch=0; epoch<info.getMaxEpochs(); epoch++)
+		for (int epoch=1; epoch<=info.getMaxEpochs(); epoch++)
 		{
 			component.setFlag(NLPFlag.TRAIN);
+			if (optimizer.isL1Regularization()) optimizer.getL1Regularizer().shrink(shrink * epoch);
 			Collections.shuffle(trainFiles, rand);
 			iterate(reader, trainFiles, component::process, optimizer, info);
 			
@@ -132,8 +133,11 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 		BinUtils.LOG.info(String.format("Best: %5.2f, epoch: %d, nzw: %d\n", bestScore, bestEpoch, bestNZW));
 		model.fromByteArray(bestModel);
 		
-		BinUtils.LOG.info(String.format("Feature reduction: %d -> ", model.getFeatureSize()));
-		BinUtils.LOG.info(String.format("%d\n", model.shrink(0.00005f)));
+		if (shrink > 0)
+		{
+			BinUtils.LOG.info(String.format("Feature reduction: %d -> ", model.getFeatureSize()));
+			BinUtils.LOG.info(String.format("%d\n", model.shrink(shrink)));	
+		}
 		
 		return bestScore; 
 	}
@@ -184,7 +188,7 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 	
 	public void save(NLPOnlineComponent<N,S> component)
 	{
-		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(model_file, preset);
+		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(model_file);
 		
 		try
 		{

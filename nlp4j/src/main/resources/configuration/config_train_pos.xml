@@ -6,9 +6,9 @@
         <column index="1" field="pos"/>
     </tsv>
     
-    <global>
+    <globalx>
         <clusters>brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt.xz</clusters>
-    </global>
+    </globalx>
 
     <optimizer>
         <algorithm>adagrad-mini-batch</algorithm>
