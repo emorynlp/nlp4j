@@ -1,4 +1,4 @@
-# Lemmatizer
+# Lemmatization
 
 Our lemmatizer generates root forms of word tokens. It is a rule-based analyzer inspired by the [WordNet morphy](http://wordnet.princeton.edu/man/morphy.7WN.html) although it uses a larger dictionary gathered from various sources and more advanced heuristics. Coupled with the [StringUtils#toSimplifiedForm](https://github.com/emorynlp/common/blob/master/src/main/java/edu/emory/mathcs/nlp/common/util/StringUtils.java#L142) method, it normalizes numbers, redundant punctuation, hyperlinks, etc (see the examples below), which is found to be useful for several NLP tasks.
 
