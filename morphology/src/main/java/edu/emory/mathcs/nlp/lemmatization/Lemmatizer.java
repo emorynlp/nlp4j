@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.lemmatizer;
+package edu.emory.mathcs.nlp.lemmatization;
 
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 

@@ -38,7 +38,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package edu.emory.mathcs.nlp.lemmatizer;
+package edu.emory.mathcs.nlp.lemmatization;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,6 +46,8 @@ import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.lemmatization.EnglishLemmatizer;
+import edu.emory.mathcs.nlp.lemmatization.Lemmatizer;
 
 
 /** @author Jinho D. Choi ({@code jdchoi77@gmail.com}) */

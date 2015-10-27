@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.lemmatizer.morphology;
+package edu.emory.mathcs.nlp.lemmatization.morphology;
 
 import java.util.List;
 import java.util.Map;
