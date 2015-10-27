@@ -3,16 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>edu.emory.mathcs.nlp</groupId>
-  <artifactId>lemmatizer</artifactId>
+  <artifactId>lemmatization</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <url>http://nlp.mathcs.emory.edu</url>
   
   <scm>
-    <url>https://github.com/emorynlp/lemmatizer</url>
-    <connection>scm:git:git://github.com/emorynlp/lemmatizer.git</connection>
-    <developerConnection>scm:git:git@github.com:emorynlp/lemmatizer.git</developerConnection>
+    <url>https://github.com/emorynlp/lemmatization</url>
+    <connection>scm:git:git://github.com/emorynlp/lemmatization.git</connection>
+    <developerConnection>scm:git:git@github.com:emorynlp/lemmatization.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
