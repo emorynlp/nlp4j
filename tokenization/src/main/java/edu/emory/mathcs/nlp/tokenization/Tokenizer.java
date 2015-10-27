@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.tokenizer;
+package edu.emory.mathcs.nlp.tokenization;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,10 +32,10 @@ import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.MetaUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.tokenizer.dictionary.Currency;
-import edu.emory.mathcs.nlp.tokenizer.dictionary.Dictionary;
-import edu.emory.mathcs.nlp.tokenizer.dictionary.Emoticon;
-import edu.emory.mathcs.nlp.tokenizer.dictionary.Unit;
+import edu.emory.mathcs.nlp.tokenization.dictionary.Currency;
+import edu.emory.mathcs.nlp.tokenization.dictionary.Dictionary;
+import edu.emory.mathcs.nlp.tokenization.dictionary.Emoticon;
+import edu.emory.mathcs.nlp.tokenization.dictionary.Unit;
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 

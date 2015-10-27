@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.tokenizer.dictionary;
+package edu.emory.mathcs.nlp.tokenization.dictionary;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -31,8 +31,7 @@ import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Language;
-import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.tokenizer.Tokenizer;
+import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -41,7 +40,7 @@ public class Tokenize
 {
 	static public final String RAW  = "raw";
 	static public final String LINE = "line";
-	static public final String TSV  = "tsv";
+//	static public final String TSV  = "tsv";
 	
 	@Option(name="-l", usage="language (default: english)", required=false, metaVar="<language>")
 	private String language = Language.ENGLISH.toString();
@@ -51,7 +50,7 @@ public class Tokenize
 	private String input_ext = "*";
 	@Option(name="-oe", usage="output file extension (default: tok)", required=false, metaVar="<string>")
 	private String output_ext = "tok";
-	@Option(name="-format", usage="the format of the input data (default: )+RAW", required=false, metaVar="<byte>")
+	@Option(name="-format", usage="format of the input data (raw|line; default: raw)", required=false, metaVar="<string>")
 	private String type = RAW;
 	@Option(name="-threads", usage="number of threads (default: 2)", required=false, metaVar="<integer>")
 	protected int thread_size = 2;
@@ -100,26 +99,26 @@ public class Tokenize
 		out.close();
 	}
 	
-	public void tokenizeTSV(Tokenizer tokenizer, String inputFile, String outputFile) throws IOException
-	{
-		BufferedReader reader = IOUtils.createBufferedReader(inputFile);
-		PrintStream out = IOUtils.createBufferedPrintStream(outputFile);
-		String line;
-		String[] t;
-		
-		while ((line = reader.readLine()) != null)
-		{
-			t = Splitter.splitTabs(line);
-			
-			for (int i=0; i<t.length; i++)
-				t[i] = Joiner.join(tokenizer.tokenize(t[i]), StringConst.SPACE);
-			
-			out.println(Joiner.join(t, StringConst.TAB));
-		}
-		
-		reader.close();
-		out.close();
-	}
+//	public void tokenizeTSV(Tokenizer tokenizer, String inputFile, String outputFile) throws IOException
+//	{
+//		BufferedReader reader = IOUtils.createBufferedReader(inputFile);
+//		PrintStream out = IOUtils.createBufferedPrintStream(outputFile);
+//		String line;
+//		String[] t;
+//		
+//		while ((line = reader.readLine()) != null)
+//		{
+//			t = Splitter.splitTabs(line);
+//			
+//			for (int i=0; i<t.length; i++)
+//				t[i] = Joiner.join(tokenizer.tokenize(t[i]), StringConst.SPACE);
+//			
+//			out.println(Joiner.join(t, StringConst.TAB));
+//		}
+//		
+//		reader.close();
+//		out.close();
+//	}
 	
 	class NLPTask implements Runnable
 	{
@@ -145,7 +144,7 @@ public class Tokenize
 				{
 				case RAW : tokenizeRaw (tokenizer, input_file, output_file);
 				case LINE: tokenizeLINE(tokenizer, input_file, output_file);
-				case TSV : tokenizeTSV (tokenizer, input_file, output_file);
+//				case TSV : tokenizeTSV (tokenizer, input_file, output_file);
 				}
 			}
 			catch (Exception e) {e.printStackTrace();}

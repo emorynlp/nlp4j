@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.tokenizer;
+package edu.emory.mathcs.nlp.tokenization;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -22,6 +22,8 @@ import java.util.List;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
+import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

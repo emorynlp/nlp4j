@@ -13,31 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.tokenizer.dictionary;
+package edu.emory.mathcs.nlp.tokenization.dictionary;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-
-import org.junit.Test;
+import edu.emory.mathcs.nlp.common.util.CharUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class EnglishApostropheTest
+public abstract class Dictionary
 {
-	@Test
-	public void test()
+	static String ROOT = "edu/emory/mathcs/nlp/tokenizer/dictionary/";
+	
+	public String[] tokenize(String s)
 	{
-		EnglishApostrophe dt = new EnglishApostrophe();
-		
-		assertEquals("[he, 's]" , Arrays.toString(dt.tokenize("he's")));
-		assertEquals("[he, 'S]" , Arrays.toString(dt.tokenize("he'S")));
-		assertEquals("[do, n't]", Arrays.toString(dt.tokenize("don't")));
-		assertEquals("[do, 'nt]", Arrays.toString(dt.tokenize("do'nt")));
-		
-		assertTrue(dt.tokenize("he'dd") == null);
-		assertTrue(dt.tokenize("dont")  == null);
+		char[] lcs = s.toCharArray();
+		String lower = CharUtils.toLowerCase(lcs) ? new String(lcs) : s;
+		return tokenize(s, lower, lcs);
 	}
+	
+	/**
+	 * @param original the original string.
+	 * @param lower the lowercase of the original string.
+	 * @param lcs the lowercase character array of the original string.
+	 */
+	abstract public String[] tokenize(String original, String lower, char[] lcs);
 }
