@@ -41,4 +41,4 @@ java edu.emory.mathcs.nlp.bin.Tokenize -i emorynlp-raw.txt
 
 ## API
 
-[`TokenizerDemo`](src/test/java/edu/emory/mathcs/nlp/tokenizer/TokenizerDemo.java) shows how the tokenizer can be used in APIs.
+[`TokenizerDemo`](src/test/java/edu/emory/mathcs/nlp/tokenization/TokenizerDemo.java) shows how the tokenizer can be used in APIs.
