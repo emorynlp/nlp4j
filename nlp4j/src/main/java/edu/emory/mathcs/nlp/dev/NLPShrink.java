@@ -35,7 +35,7 @@ import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class ModelShrink
+public class NLPShrink
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<filename>")
 	public String configuration_file;
@@ -56,10 +56,10 @@ public class ModelShrink
 	@Option(name="-id", usage="model id (default: 0)", required=false, metaVar="<integer>")
 	public int model_id = 0;
 	
-	public <N,S>ModelShrink() {}
+	public <N,S>NLPShrink() {}
 	
 	@SuppressWarnings("unchecked")
-	public <S extends NLPState<NLPNode>>ModelShrink(String[] args) throws Exception
+	public <S extends NLPState<NLPNode>>NLPShrink(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
 		
@@ -116,7 +116,7 @@ public class ModelShrink
 	{
 		try
 		{
-			new ModelShrink(args);
+			new NLPShrink(args);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}
