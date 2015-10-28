@@ -25,18 +25,16 @@ import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 public class TrainInfo
 {
 	private float rollin_init, rollin_current;
-	private float shrink_rate;
 	private int max_epochs;
 	private int batch_size;
 	private Random random;
 	
-	public TrainInfo(int maxEpochs, int batchSize, float rollInProbability, float shrinkRate)
+	public TrainInfo(int maxEpochs, int batchSize, float rollInProbability)
 	{
 		random = new XORShiftRandom(9);
 		setMaxEpochs(maxEpochs);
 		setBatchSize(batchSize);
 		setRollInProbability(rollInProbability);
-		setShrinkRate(shrinkRate);
 	}
 	
 	public int getMaxEpochs()
@@ -77,15 +75,5 @@ public class TrainInfo
 	public boolean chooseGold()
 	{
 		return (rollin_current > 0) && (rollin_current >= 1 || rollin_current > random.nextDouble());
-	}
-	
-	public float getShrinkRate()
-	{
-		return shrink_rate;
-	}
-
-	public void setShrinkRate(float rate)
-	{
-		shrink_rate = rate;
 	}
 }

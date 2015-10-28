@@ -124,8 +124,7 @@ public abstract class NLPConfig<N extends NLPNode> implements ConfigXML
 		int   maxEpochs    = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCHS); 
 		int   batchSize    = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
 		float rollIn       = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
-		float shrinkRate   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, SHRINK_RATE);
-		return new TrainInfo(maxEpochs, batchSize, rollIn, shrinkRate);
+		return new TrainInfo(maxEpochs, batchSize, rollIn);
 	}
 	
 //	=================================== OPTIMIZERS ===================================

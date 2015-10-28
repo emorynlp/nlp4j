@@ -25,6 +25,7 @@ import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.emorynlp.component.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.emorynlp.component.eval.Eval;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 import edu.emory.mathcs.nlp.emorynlp.component.reader.TSVReader;
 import edu.emory.mathcs.nlp.emorynlp.component.state.NLPState;
@@ -44,8 +45,16 @@ public class ModelShrink
 	public String input_path;
 	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<string>")
 	public String input_ext = "*";
-	@Option(name="-r", usage="rate", required=false, metaVar="<string>")
-	public float rate = 0.001f;
+	@Option(name="-oe", usage="output file extension (default: shrink)", required=false, metaVar="<string>")
+	public String output_ext = "sk";
+	@Option(name="-start", usage="starting shrink rate (default: 0.05)", required=false, metaVar="<float>")
+	public float start = 0.05f;
+	@Option(name="-inc", usage="increment rate (default: 0.01)", required=false, metaVar="<float>")
+	public float increment = 0.01f;
+	@Option(name="-tolerance", usage="accuracy tolerance (default: 0.02)", required=false, metaVar="<float>")
+	public float tolerance = 0.02f;
+	@Option(name="-id", usage="model id (default: 0)", required=false, metaVar="<integer>")
+	public int model_id = 0;
 	
 	public <N,S>ModelShrink() {}
 	
@@ -57,29 +66,37 @@ public class ModelShrink
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
 		NLPOnlineComponent<NLPNode,S> component = (NLPOnlineComponent<NLPNode,S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
-		StringModel model = component.getModel();
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
+		StringModel model = component.getModels()[model_id];
 		
-		float f = 0f;
-		evaluate(inputFiles, component, f);
+		byte[] prevModel = model.toByteArray();
+		double score = evaluate(inputFiles, component, model, 0f), currScore;
 		
-		for (f=rate; f<=rate*10; f+=rate)
+		for (float f=start; ; f+=increment)
 		{
-			if (f > 0) model.shrink(f);
-			evaluate(inputFiles, component, f);
+			model.shrink(f);
+			currScore = evaluate(inputFiles, component, model, f);
+			
+			if (currScore + tolerance >= score)
+				prevModel = model.toByteArray();
+			else
+				break;
 		}
 		
-		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+rate);
+		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
+		model.fromByteArray(prevModel);
 		fout.writeObject(component);
 		fout.close();
 	}
 	
-	public <S extends NLPState<NLPNode>>void evaluate(List<String> inputFiles, NLPOnlineComponent<NLPNode,S> component, float rate) throws Exception
+	public <S extends NLPState<NLPNode>>double evaluate(List<String> inputFiles, NLPOnlineComponent<NLPNode,S> component, StringModel model, float rate) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		NLPNode[] nodes;
 		
 		component.setFlag(NLPFlag.EVALUATE);
+		Eval eval = component.getEval();
+		eval.clear();
 		
 		for (String inputFile : inputFiles)
 		{
@@ -91,7 +108,8 @@ public class ModelShrink
 			reader.close();
 		}
 		
-		System.out.println(String.format("%5.4f: %s -> %d", rate, component.getEval().toString(), component.getModel().getWeightVector().countNonZeroWeights()));
+		System.out.println(String.format("%5.4f: %s -> %d", rate, eval.toString(), model.getFeatureSize()));
+		return eval.score();
 	}
 	
 	static public void main(String[] args)

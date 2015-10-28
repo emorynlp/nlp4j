@@ -37,7 +37,6 @@ import edu.emory.mathcs.nlp.emorynlp.component.state.NLPState;
 import edu.emory.mathcs.nlp.emorynlp.component.util.NLPFlag;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
-import edu.emory.mathcs.nlp.machine_learning.optimization.reguralization.Regularizer;
 
 /**
  * Provide instances and methods for training NLP components.
@@ -94,7 +93,6 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 	/** Called by {@link #train(NLPConfig, TSVReader, List, List, NLPOnlineComponent)}. */
 	protected double train(List<String> trainFiles, List<String> developFiles, NLPOnlineComponent<N,?> component, TSVReader reader, OnlineOptimizer optimizer, StringModel model, TrainInfo info)
 	{
-		Regularizer l1 = optimizer.getL1Regularizer();
 		int bestEpoch = -1, bestNZW = -1, nzw, epoch;
 		Random rand = new XORShiftRandom(9);
 		double bestScore = 0, score;
@@ -106,7 +104,6 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 		{
 			component.setFlag(NLPFlag.TRAIN);
 			Collections.shuffle(trainFiles, rand);
-			if (l1 != null && info.getShrinkRate() > 0) l1.shrink(info.getShrinkRate() * (1-1f/epoch));
 			iterate(reader, trainFiles, component::process, optimizer, info);
 			score = evaluate(developFiles, component, reader);
 			nzw = optimizer.getWeightVector().countNonZeroWeights();
@@ -125,14 +122,6 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 		
 		BinUtils.LOG.info(String.format(" Best: %5.2f, epoch: %d, nzw: %d\n", bestScore, bestEpoch, bestNZW));
 		model.fromByteArray(bestModel);
-		
-		if (l1 != null && info.getShrinkRate() > 0)
-		{
-			int c = model.shrink(info.getShrinkRate() * (1-1f/epoch));
-			bestScore = evaluate(developFiles, component, reader);
-			BinUtils.LOG.info(String.format("Final: %5.2f, features: %d\n", bestScore, c));
-		}
-		
 		return bestScore; 
 	}
 	

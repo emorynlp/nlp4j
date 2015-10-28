@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.emorynlp.dep;
 
-import edu.emory.mathcs.nlp.emorynlp.component.node.AbstractArc;
+import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 
 /**
