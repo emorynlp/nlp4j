@@ -27,14 +27,18 @@ import java.util.StringJoiner;
 import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
 
+import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
 import edu.emory.mathcs.nlp.common.collection.list.SortedArrayList;
+import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
+import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.emorynlp.component.feature.Direction;
 import edu.emory.mathcs.nlp.emorynlp.component.feature.Field;
 import edu.emory.mathcs.nlp.emorynlp.component.reader.TSVReader;
 import edu.emory.mathcs.nlp.emorynlp.dep.DEPArc;
+import edu.emory.mathcs.nlp.emorynlp.srl.SRLArc;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -47,17 +51,18 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	static final String ROOT_TAG = "@#r$%";
 	
 	// core fields
-	protected String  word_form;
-	protected String  lemma;
-	protected String  pos_tag;
-	protected String  nament_tag;
-	protected FeatMap feat_map;
-	protected String  dependency_label;
-	protected NLPNode dependency_head;
+	protected String       word_form;
+	protected String       lemma;
+	protected String       pos_tag;
+	protected String       nament_tag;
+	protected FeatMap      feat_map;
+	protected String       dependency_label;
+	protected NLPNode      dependency_head;
+	protected List<SRLArc> semantic_heads;
 
 	// inferred fields
 	protected int id;
-	protected String  simplified_word_form;
+	protected String simplified_word_form;
 	protected SortedArrayList<NLPNode> dependent_list;
 	
 	public NLPNode() {}
@@ -104,6 +109,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		setDependencyLabel(deprel);
 		
 		dependent_list = new SortedArrayList<>();
+		semantic_heads = new ArrayList<>();
 	}
 	
 	public void setToRoot()
@@ -152,6 +158,22 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	public String getFeat(String key)
 	{
 		return feat_map.get(key);
+	}
+	
+	/** @return the value of the specific field. */
+	public String getValue(Field field)
+	{
+		switch (field)
+		{
+		case word_form: return getWordForm();
+		case simplified_word_form: return getSimplifiedWordForm();
+		case uncapitalized_simplified_word_form: return StringUtils.toLowerCase(getSimplifiedWordForm());
+		case lemma: return getLemma();
+		case part_of_speech_tag: return getPartOfSpeechTag();
+		case named_entity_tag: return getNamedEntityTag();
+		case dependency_label: return getDependencyLabel();
+		default: return null;
+		}
 	}
 	
 //	============================== SETTERS ==============================
@@ -1129,23 +1151,205 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		return hasDependencyHead() && node.isDependentOf(dependency_head);
 	}
 	
-//	============================== MORE GETTERS ==============================
-	
-	/** @return the value of the specific field. */
-	public String getValue(Field field)
+//	============================== SEMANTICS ==============================
+
+	/** @return a list of all semantic head arc of the node. */
+	public List<SRLArc> getSemanticHeadList()
 	{
-		switch (field)
-		{
-		case word_form: return getWordForm();
-		case simplified_word_form: return getSimplifiedWordForm();
-		case uncapitalized_simplified_word_form: return StringUtils.toLowerCase(getSimplifiedWordForm());
-		case lemma: return getLemma();
-		case part_of_speech_tag: return getPartOfSpeechTag();
-		case named_entity_tag: return getNamedEntityTag();
-		case dependency_label: return getDependencyLabel();
-		default: return null;
-		}
+		return semantic_heads;
 	}
+	
+	/** @return a list of all semantic head arc of the node with the given label. */
+	public List<SRLArc> getSemanticHeadList(String label)
+	{
+		List<SRLArc> list = new ArrayList<>();
+		
+		for (SRLArc arc : semantic_heads)
+		{
+			if (arc.isLabel(label))
+				list.add(arc);
+		}
+		
+		return list;
+	}
+	
+	/** @return semantic arc relationship between the node and another given node. */
+	public SRLArc getSemanticHeadArc(NLPNode node)
+	{
+		for (SRLArc arc : semantic_heads)
+		{
+			if (arc.isNode(node))
+				return arc;
+		}
+		
+		return null;
+	}
+	
+	/** @return the semantic arc relationship between the node and another given node with a given label. */
+	public SRLArc getSemanticHeadArc(NLPNode node, String label)
+	{
+		for (SRLArc arc : semantic_heads)
+		{
+			if (arc.equals(node, label))
+				return arc;
+		}
+		
+		return null;
+	}
+	
+	/** @return the semantic arc relationship between the node and another given node with a given pattern. */
+	public SRLArc getSemanticHeadArc(NLPNode node, Pattern pattern)
+	{
+		for (SRLArc arc : semantic_heads)
+		{
+			if (arc.equals(node, pattern))
+				return arc;
+		}
+		
+		return null;
+	}
+	
+	/** @return the semantic label of the given in relation to the node. */
+	public String getSemanticLabel(NLPNode node)
+	{
+		for (SRLArc arc : semantic_heads)
+		{
+			if (arc.isNode(node))
+				return arc.getLabel();
+		}
+		
+		return null;
+	}
+	
+	/** @return the first node that is found to have the semantic head of the given label from the node. */
+	public NLPNode getFirstSemanticHead(String label)
+	{
+		for (SRLArc arc : semantic_heads)
+		{
+			if (arc.isLabel(label))
+				return arc.getNode();
+		}
+		
+		return null;
+	}
+	
+	/** @return the first node that is found to have the semantic head of the given pattern from the node. */
+	public NLPNode getFirstSemanticHead(Pattern pattern)
+	{
+		for (SRLArc arc : semantic_heads)
+		{
+			if (arc.isLabel(pattern))
+				return arc.getNode();
+		}
+		
+		return null;
+	}
+	
+	/** @param arcs {@code Collection<SRLArc>} of the semantic heads. */
+	public void addSemanticHeads(Collection<SRLArc> arcs)
+	{
+		semantic_heads.addAll(arcs);
+	}
+	
+	/** Adds a node a give the given semantic label to the node. */
+	public void addSemanticHead(NLPNode head, String label)
+	{
+		addSemanticHead(new SRLArc(head, label));
+	}
+	
+	/** Adds a semantic arc to the node. */
+	public void addSemanticHead(SRLArc arc)
+	{
+		semantic_heads.add(arc);
+	}
+	
+	/** Sets semantic heads of the node. */
+	public void setSemanticHeads(List<SRLArc> arcs)
+	{
+		semantic_heads = arcs;
+	}
+	
+	/** Removes all semantic heads of the node in relation to a given node.
+	 * @return {@code true}, else {@code false} if nothing gets removed. 
+	 */
+	public boolean removeSemanticHead(NLPNode node)
+	{
+		for (SRLArc arc : semantic_heads)
+		{
+			if (arc.isNode(node))
+				return semantic_heads.remove(arc);
+		}
+		
+		return false;
+	}
+	
+	/** Removes a specific semantic head of the node. */
+	public boolean removeSemanticHead(SRLArc arc)
+	{
+		return semantic_heads.remove(arc);
+	}
+	
+	/** Removes a collection of specific semantic heads of the node. */
+	public void removeSemanticHeads(Collection<SRLArc> arcs)
+	{
+		semantic_heads.removeAll(arcs);
+	}
+	
+	/** Removes all semantic heads of the node that have the given label. */
+	public void removeSemanticHeads(String label)
+	{
+		semantic_heads.removeAll(getSemanticHeadList(label));
+	}
+	
+	/** Removes all semantic heads of the node. */
+	public void clearSemanticHeads()
+	{
+		semantic_heads.clear();
+	}
+	
+	/** @return {@code true}, else {@code false} if there is no SRLArc between the two nodes. */
+	public boolean isArgumentOf(NLPNode node)
+	{
+		return getSemanticHeadArc(node) != null;
+	}
+	
+	/** @return {@code true}, else {@code false} if there is no SRLArc with the given label. */
+	public boolean isArgumentOf(String label)
+	{
+		return getFirstSemanticHead(label) != null;
+	}
+	
+	/** @return {@code true}, else {@code false} if there is no SRLArc with the given pattern. */
+	public boolean isArgumentOf(Pattern pattern)
+	{
+		return getFirstSemanticHead(pattern) != null;
+	}
+	
+	/** @return {@code true}, else {@code false} if there is no SRLArc with the given label between the two node. */
+	public boolean isArgumentOf(NLPNode node, String label)
+	{
+		return getSemanticHeadArc(node, label) != null;
+	}
+	
+	/** @return {@code true}, else {@code false} if there is no SRLArc with the given pattern between the two node. */
+	public boolean isArgumentOf(NLPNode node, Pattern pattern)
+	{
+		return getSemanticHeadArc(node, pattern) != null;
+	}
+
+	/**
+	 * Consider this node as a predicate.
+	 * @param maxDepth  > 0.
+	 * @param maxHeight > 0.
+	 * @return list of (argument, lowest common ancestor) pairs.
+	 */
+	public List<Pair<NLPNode,NLPNode>> getArgumentCandidateList(int maxDepth, int maxHeight)
+	{
+		return null;
+	}
+	
+	
+//	============================== HELPERS ==============================
 	
 	@Override
 	public int compareTo(NLPNode node)
@@ -1165,6 +1369,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		join.add(toString(nament_tag));
 		join.add(feat_map.toString());
 		toStringDependency(join);
+		join.add(toStringSemantics(semantic_heads));
 		
 		return join.toString();
 	}
@@ -1186,5 +1391,14 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 			join.add(TSVReader.BLANK);
 			join.add(TSVReader.BLANK);
 		}
+	}
+	
+	private <T extends AbstractArc<NLPNode>>String toStringSemantics(List<T> arcs)
+	{
+		if (arcs == null || arcs.isEmpty())
+			return TSVReader.BLANK;
+		
+		Collections.sort(arcs);
+		return Joiner.join(arcs, AbstractArc.ARC_DELIM);
 	}
 }

@@ -27,18 +27,18 @@ public class DEPArc extends AbstractArc<NLPNode>
 
 	public DEPArc(NLPNode node, String label)
 	{
-		set(node, label);
+		super(node, label);
 	}
 
 	@Override
 	public String toString()
 	{
-		return n_node.getID() + DELIM + s_label;
+		return node.getID() + ARC_DELIM + label;
 	}
 	
 	@Override
 	public int compareTo(AbstractArc<NLPNode> arc)
 	{
-		return n_node.compareTo(arc.getNode());
+		return node.compareTo(arc.getNode());
 	}
 }
