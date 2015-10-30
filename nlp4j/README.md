@@ -11,13 +11,11 @@ The Emory NLP project provides software and resources for natural language proce
 
 ## Components
 
+* [Tokenization](https://github.com/emorynlp/tokenization).
 * [Part-of-speech tagging](md/component/part_of_speech_tagging.md).
-
-## Tutorials
-
-* [Create an NLP component](md/tutorial/nlp_component.md).
-
-## Specification
-
-* [Configuration format](md/specification/configuration.md).
-* [Part-of-speech tags](md/specification/part_of_speech_tags.md).
+* [Morphological analysis](https://github.com/emorynlp/morphological_analysis).
+* [Named entity recognition](md/component/named_entity_recognition.md).
+* [Dependency parsing](md/component/dependency_parsing.md).
+* [Semantic role labeling](md/component/semantic_role_labeling.md).
+* [Coreference resolution](md/component/coreference_resolution.md).
+* [Sentiment analysis](md/component/sentiment_analysis.md).
