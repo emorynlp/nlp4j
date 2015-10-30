@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.lemmatization.morphology;
+package edu.emory.mathcs.nlp.component.morph.english;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixMatcher;
+import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixReplacer;
 
 
 /**

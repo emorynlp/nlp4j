@@ -38,7 +38,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package edu.emory.mathcs.nlp.lemmatization;
+package edu.emory.mathcs.nlp.component.morph.english;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,12 +46,12 @@ import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.lemmatization.EnglishLemmatizer;
-import edu.emory.mathcs.nlp.lemmatization.Lemmatizer;
+import edu.emory.mathcs.nlp.component.morph.MorphAnalyzer;
+import edu.emory.mathcs.nlp.component.morph.english.EnglishMorphAnalyzer;
 
 
 /** @author Jinho D. Choi ({@code jdchoi77@gmail.com}) */
-public class EnglishLemmatizerTest
+public class EnglishMorphAnalyzerTest
 {
 	@Test
 	public void test() throws Exception
@@ -195,7 +195,7 @@ public class EnglishLemmatizerTest
 				{"....!!!!????----****====~~~~,,,,", "XX", "..!!??--**==~~,,"}
 		};
 		
-		Lemmatizer lemmatizer = new EnglishLemmatizer();
+		MorphAnalyzer<?> lemmatizer = new EnglishMorphAnalyzer<>();
 		String lemma;
 		
 		for (String[] token : tokens)

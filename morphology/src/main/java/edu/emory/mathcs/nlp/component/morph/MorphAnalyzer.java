@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.lemmatization;
+package edu.emory.mathcs.nlp.component.morph;
 
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.emorynlp.component.NLPComponent;
-import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
+import edu.emory.mathcs.nlp.component.util.NLPComponent;
+import edu.emory.mathcs.nlp.component.util.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class Lemmatizer<N extends NLPNode> implements NLPComponent<N>
+public abstract class MorphAnalyzer<N extends NLPNode> implements NLPComponent<N>
 {
 	@Override
 	public void process(N[] nodes)

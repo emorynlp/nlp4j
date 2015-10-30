@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.emory.mathcs.nlp.lemmatization;
+package edu.emory.mathcs.nlp.component.morph.english;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,18 +35,16 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
-import edu.emory.mathcs.nlp.lemmatization.morphology.AbstractAffixMatcher;
-import edu.emory.mathcs.nlp.lemmatization.morphology.EnglishAffixMatcherFactory;
-import edu.emory.mathcs.nlp.lemmatization.morphology.EnglishDerivation;
-import edu.emory.mathcs.nlp.lemmatization.morphology.EnglishInflection;
+import edu.emory.mathcs.nlp.component.morph.MorphAnalyzer;
+import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixMatcher;
+import edu.emory.mathcs.nlp.component.util.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class EnglishLemmatizer<N extends NLPNode> extends Lemmatizer<N>
+public class EnglishMorphAnalyzer<N extends NLPNode> extends MorphAnalyzer<N>
 {
-	final String ROOT = "edu/emory/mathcs/nlp/lemmatizer/english/";
+	final String ROOT = "edu/emory/mathcs/nlp/component/morph/english/";
 	
 	final String INFLECTION_SUFFIX		= ROOT + "inflection_suffix.xml";
 	final String ABBREVIATOIN_RULE		= ROOT + "abbreviation.rule";
@@ -82,7 +80,7 @@ public class EnglishLemmatizer<N extends NLPNode> extends Lemmatizer<N>
 //	====================================== CONSTRUCTORS ======================================
 	
 	/** Constructs an English morphological analyzer from the dictionary in resource. */
-	public EnglishLemmatizer()
+	public EnglishMorphAnalyzer()
 	{
 		Element inflection = XMLUtils.getDocumentElement(IOUtils.getInputStreamsFromResource(INFLECTION_SUFFIX));
 		Element derivationN2V = XMLUtils.getDocumentElement(IOUtils.getInputStreamsFromResource(DERIVATION_SUFFIX_N2V));

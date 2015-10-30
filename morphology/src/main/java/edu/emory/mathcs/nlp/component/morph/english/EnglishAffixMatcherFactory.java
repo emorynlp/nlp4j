@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.lemmatization.morphology;
+package edu.emory.mathcs.nlp.component.morph.english;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,8 @@ import org.w3c.dom.NodeList;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
+import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixMatcher;
+import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixReplacer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
