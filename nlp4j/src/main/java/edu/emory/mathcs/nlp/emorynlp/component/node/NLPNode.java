@@ -1345,9 +1345,41 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	 */
 	public List<Pair<NLPNode,NLPNode>> getArgumentCandidateList(int maxDepth, int maxHeight)
 	{
-		return null;
+		List<Pair<NLPNode,NLPNode>> list = new ArrayList<>();
+		int i, j, beginIndex, endIndex = 0;
+		NLPNode lca = this, prev;
+		
+		// descendents
+		for (NLPNode node : lca.getDependentList())
+			list.add(new Pair<>(node, lca));
+		
+		for (i=1; i<maxDepth; i++)
+		{
+			if (endIndex == list.size()) break;
+			beginIndex = endIndex;
+			endIndex   = list.size();
+			
+			for (j=beginIndex; j<endIndex; j++)
+			{
+				for (NLPNode node : list.get(j).o1.getDependentList())
+					list.add(new Pair<>(node, lca));
+			}
+		}
+		
+		// ancestors
+		for (i=0; i<maxHeight; i++)
+		{
+			prev = lca;
+			lca  = lca.getDependencyHead();
+			if (lca == null || !lca.hasDependencyHead()) break;
+			list.add(new Pair<>(lca, lca));
+			
+			for (NLPNode node : lca.getDependentList())
+				if (node != prev) list.add(new Pair<>(node, lca));
+		}
+		
+		return list;
 	}
-	
 	
 //	============================== HELPERS ==============================
 	

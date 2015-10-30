@@ -19,8 +19,10 @@
         <learning_rate>0.02</learning_rate>
         <max_epochs>300</max_epochs>
         <batch_size>5</batch_size>
+        <label_size>20</label_size>
+        <feature_size>1000000</feature_size>
+        <feature_hash>true</feature_hash>
         <roll_in>0.95</roll_in>
-        <shrink_rate>0.05</shrink_rate>
         <bias>0</bias>
     </optimizer>
     

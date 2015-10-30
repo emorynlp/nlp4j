@@ -26,11 +26,13 @@ import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 import edu.emory.mathcs.nlp.emorynlp.component.reader.TSVReader;
 import edu.emory.mathcs.nlp.emorynlp.component.train.TrainInfo;
 import edu.emory.mathcs.nlp.emorynlp.component.util.GlobalLexica;
+import edu.emory.mathcs.nlp.machine_learning.activation.SoftmaxFunction;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaDeltaMiniBatch;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaGrad;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaGradMiniBatch;
+import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaGradRegression;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.Perceptron;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.SoftmaxRegression;
 import edu.emory.mathcs.nlp.machine_learning.optimization.reguralization.RegularizedDualAveraging;
@@ -120,11 +122,15 @@ public abstract class NLPConfig<N extends NLPNode> implements ConfigXML
 	
 	private TrainInfo getTrainInfoAux(int index)
 	{
-		Element eOptimizer = XMLUtils.getElementByTagName(xml, OPTIMIZER, index);
-		int   maxEpochs    = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCHS); 
-		int   batchSize    = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
-		float rollIn       = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
-		return new TrainInfo(maxEpochs, batchSize, rollIn);
+		Element eOptimizer  = XMLUtils.getElementByTagName(xml, OPTIMIZER, index);
+		int     maxEpochs   = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCHS); 
+		int     batchSize   = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
+		int     labelSize   = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, LABEL_SIZE);
+		int     featureSize = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, FEATURE_SIZE);
+		boolean featureHash = XMLUtils.getBooleanTextContentFromFirstElementByTagName(eOptimizer, FEATURE_HASH);
+		float   bias        = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, BIAS);
+		float   rollIn      = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
+		return new TrainInfo(maxEpochs, batchSize, labelSize, featureSize, featureHash, bias, rollIn);
 	}
 	
 //	=================================== OPTIMIZERS ===================================
@@ -155,19 +161,13 @@ public abstract class NLPConfig<N extends NLPNode> implements ConfigXML
 		case PERCEPTRON         : optimizer = getPerceptron       (eOptimizer, model); break;
 		case SOFTMAX_REGRESSION : optimizer = getSoftmaxRegression(eOptimizer, model); break;
 		case ADAGRAD            : optimizer = getAdaGrad          (eOptimizer, model); break;
+		case ADAGRAD_REGRESSION : optimizer = getAdaGradRegression(eOptimizer, model); break;
 		case ADAGRAD_MINI_BATCH : optimizer = getAdaGradMiniBatch (eOptimizer, model); break;
 		case ADADELTA_MINI_BATCH: optimizer = getAdaDeltaMiniBatch(eOptimizer, model); break;
 		default: throw new IllegalArgumentException(algorithm+" is not a valid algorithm name."); 
 		}
 		
-		initOnlineOptimizer(eOptimizer, optimizer, model);
 		return optimizer;
-	}
-	
-	private void initOnlineOptimizer(Element eOptimizer, OnlineOptimizer optimizer, StringModel model)
-	{
-		float bias = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
-		model.setBias(bias);
 	}
 	
 	private Perceptron getPerceptron(Element eOptimizer, StringModel model)
@@ -179,7 +179,17 @@ public abstract class NLPConfig<N extends NLPNode> implements ConfigXML
 	private SoftmaxRegression getSoftmaxRegression(Element eOptimizer, StringModel model)
 	{
 		float learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
+		model.getWeightVector().setActivationFunction(new SoftmaxFunction());
 		return new SoftmaxRegression(model.getWeightVector(), learningRate);
+	}
+	
+	private AdaGradRegression getAdaGradRegression(Element eOptimizer, StringModel model)
+	{
+		float learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
+		float l1 = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, L1_REGULARIZATION);
+		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(model.getWeightVector(), l1) : null;
+		model.getWeightVector().setActivationFunction(new SoftmaxFunction());
+		return new AdaGradRegression(model.getWeightVector(), learningRate, rda);
 	}
 	
 	private AdaGrad getAdaGrad(Element eOptimizer, StringModel model)

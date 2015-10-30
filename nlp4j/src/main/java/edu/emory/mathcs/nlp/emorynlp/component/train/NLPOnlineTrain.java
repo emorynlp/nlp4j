@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.emorynlp.component.train;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.List;
@@ -31,12 +32,18 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.emorynlp.component.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.emorynlp.component.config.NLPConfig;
 import edu.emory.mathcs.nlp.emorynlp.component.eval.Eval;
+import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 import edu.emory.mathcs.nlp.emorynlp.component.reader.TSVReader;
 import edu.emory.mathcs.nlp.emorynlp.component.state.NLPState;
 import edu.emory.mathcs.nlp.emorynlp.component.util.NLPFlag;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModelHash;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModelMap;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
+import edu.emory.mathcs.nlp.machine_learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.machine_learning.vector.WeightVectorDynamic;
+import edu.emory.mathcs.nlp.machine_learning.vector.WeightVectorStatic;
 
 /**
  * Provide instances and methods for training NLP components.
@@ -66,15 +73,44 @@ public abstract class NLPOnlineTrain<N extends NLPNode,S extends NLPState<N>>
 		BinUtils.initArgs(args, this);
 	}
 	
-	/** Collects necessary lexicons for the component before training. */
-	protected abstract NLPOnlineComponent<N,S> createComponent(String configurationFile, List<String> inputFiles);
+	protected void initComponentSingleModel(NLPOnlineComponent<N,S> component, List<String> inputFiles)
+	{
+		NLPConfig<N> configuration = component.getConfiguration();
+		TrainInfo info = configuration.getTrainInfo();
+		WeightVector vector;
+		StringModel  model;
+		
+		if (info.featureHash())
+		{
+			vector = new WeightVectorStatic(info.getLabelSize(), info.getFeatureSize());
+			model  = new StringModelHash(vector, info.getFeatureSize(), info.getBias());
+		}
+		else
+		{
+			vector = new WeightVectorDynamic();
+			model  = new StringModelMap(vector, info.getBias());
+		}
+		
+		OnlineOptimizer optimizer = configuration.getOptimizer(model);
+		FeatureTemplate<N,S> template = createFeatureTemplate();
+		
+		component.setModel(model);
+		component.setTrainInfo(info);
+		component.setOptimizer(optimizer);
+		component.setFeatureTemplate(template);
+	}
+	
+	protected abstract void initComponent(NLPOnlineComponent<N,S> component, List<String> inputFiles);
+	protected abstract NLPOnlineComponent<N,S> createComponent(InputStream config);
+	protected abstract FeatureTemplate<N,S> createFeatureTemplate();
 	protected abstract N createNode();
 	
 	public void train()
 	{
 		List<String> trainFiles   = FileUtils.getFileList(train_path  , train_ext);
 		List<String> developFiles = FileUtils.getFileList(develop_path, develop_ext);
-		NLPOnlineComponent<N,S> component = createComponent(configuration_file, trainFiles);
+		NLPOnlineComponent<N,S> component = createComponent(IOUtils.createFileInputStream(configuration_file));
+		initComponent(component, trainFiles);
 		train(trainFiles, developFiles, component);
 		if (model_file != null) save(component);
 	}

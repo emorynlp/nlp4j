@@ -10,7 +10,7 @@
         <algorithm>adagrad-mini-batch</algorithm>
         <l1_regularization>0.000002</l1_regularization>
         <learning_rate>0.02</learning_rate>
-        <max_epochs>15</max_epochs>
+        <max_epochs>11</max_epochs>
         <batch_size>5</batch_size>
         <roll_in>0.95</roll_in>
         <label_size>50</label_size>

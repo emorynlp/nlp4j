@@ -49,7 +49,9 @@ public interface ConfigXML
 	String MAX_EPOCHS	= "max_epochs";
 	String BATCH_SIZE	= "batch_size";
 	String ROLL_IN		= "roll_in";
-	String SHRINK_RATE	= "shrink_rate";
+	String LABEL_SIZE	= "label_size";
+	String FEATURE_SIZE	= "feature_size";
+	String FEATURE_HASH	= "feature_hash";
 	String BIAS			= "bias";
 	
 	String L1_REGULARIZATION	= "l1_regularization";

@@ -15,21 +15,16 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
+import java.io.InputStream;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.emorynlp.component.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.emorynlp.component.config.NLPConfig;
 import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 import edu.emory.mathcs.nlp.emorynlp.component.train.NLPOnlineTrain;
-import edu.emory.mathcs.nlp.emorynlp.component.train.TrainInfo;
 import edu.emory.mathcs.nlp.emorynlp.ner.NERState;
 import edu.emory.mathcs.nlp.emorynlp.ner.NERTagger;
 import edu.emory.mathcs.nlp.emorynlp.ner.features.NERFeatureTemplate0;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
-import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
-import edu.emory.mathcs.nlp.machine_learning.vector.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -40,27 +35,20 @@ public class NERTrain extends NLPOnlineTrain<NLPNode,NERState<NLPNode>>
 	{
 		super(args);
 	}
+	
+	@Override
+	protected NLPOnlineComponent<NLPNode,NERState<NLPNode>> createComponent(InputStream config)
+	{
+		return new NERTagger<>(config);
+	}
 
 	@Override
-	protected NLPOnlineComponent<NLPNode,NERState<NLPNode>> createComponent(String configurationFile, List<String> inputFiles)
+	protected void initComponent(NLPOnlineComponent<NLPNode,NERState<NLPNode>> component, List<String> inputFiles)
 	{
-		NERTagger<NLPNode> component = new NERTagger<>(IOUtils.createFileInputStream(configurationFile));
-		NLPConfig<NLPNode> configuration = component.getConfiguration();
-		
-		WeightVector vector = new WeightVector();
-		StringModel model = new StringModel(vector);
-		TrainInfo info = configuration.getTrainInfo();
-		OnlineOptimizer optimizer = configuration.getOptimizer(model);
-		FeatureTemplate<NLPNode,NERState<NLPNode>> template = createFeatureTemplate();
-		
-		component.setModel(model);
-		component.setTrainInfo(info);
-		component.setOptimizer(optimizer);
-		component.setFeatureTemplate(template);
-		
-		return component;
+		initComponentSingleModel(component, inputFiles);
 	}
 	
+	@Override
 	protected FeatureTemplate<NLPNode,NERState<NLPNode>> createFeatureTemplate()
 	{
 		switch (feature_template)

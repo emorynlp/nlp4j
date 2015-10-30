@@ -49,7 +49,7 @@ public abstract class NLPOnlineComponent<N extends NLPNode,S extends NLPState<N>
 	protected NLPConfig<N>         config;
 	protected NLPFlag              flag;
 	protected Eval                 eval;
-	
+
 //	============================== CONSTRUCTORS ==============================
 	
 	public NLPOnlineComponent() {}
@@ -258,7 +258,7 @@ public abstract class NLPOnlineComponent<N extends NLPNode,S extends NLPState<N>
 			else
 			{
 				scores = model.scores(x);
-				yhat = MLUtils.argmax(scores);
+				yhat = MLUtils.argmax(scores, model.getLabelSize());
 			}
 			
 			state.next(new StringPrediction(model.getLabel(yhat), scores[yhat]));

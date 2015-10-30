@@ -31,6 +31,7 @@ import edu.emory.mathcs.nlp.emorynlp.component.reader.TSVReader;
 import edu.emory.mathcs.nlp.emorynlp.component.state.NLPState;
 import edu.emory.mathcs.nlp.emorynlp.component.util.NLPFlag;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -67,7 +68,7 @@ public class NLPShrink
 		NLPOnlineComponent<NLPNode,S> component = (NLPOnlineComponent<NLPNode,S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
-		StringModel model = component.getModels()[model_id];
+		StringModelMap model = (StringModelMap)component.getModels()[model_id];
 		
 		byte[] prevModel = model.toByteArray();
 		double score = evaluate(inputFiles, component, model, 0f), currScore;

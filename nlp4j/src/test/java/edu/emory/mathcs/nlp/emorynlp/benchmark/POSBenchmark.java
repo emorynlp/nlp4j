@@ -36,11 +36,13 @@ import edu.emory.mathcs.nlp.emorynlp.pos.POSState;
 import edu.emory.mathcs.nlp.emorynlp.pos.POSTagger;
 import edu.emory.mathcs.nlp.emorynlp.pos.feature.POSFeatureTemplate0;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModelMap;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaGradMiniBatch;
 import edu.emory.mathcs.nlp.machine_learning.optimization.reguralization.RegularizedDualAveraging;
 import edu.emory.mathcs.nlp.machine_learning.optimization.reguralization.Regularizer;
 import edu.emory.mathcs.nlp.machine_learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.machine_learning.vector.WeightVectorDynamic;
 
 
 /**
@@ -52,9 +54,9 @@ public class POSBenchmark
 	public void benchmark() throws Exception
 	{
 		FeatureTemplate<NLPNode,POSState<NLPNode>> template = new POSFeatureTemplate0<NLPNode>();
-		WeightVector weights = new WeightVector();
-		StringModel model = new StringModel(weights);
-		TrainInfo info = new TrainInfo(100, 10, 0.95f);
+		WeightVector weights = new WeightVectorDynamic();
+		StringModel model = new StringModelMap(weights);
+		TrainInfo info = new TrainInfo(100, 5, 50, 1000000, false, 0, 1);
 //		OnlineOptimizer optimizer = new AdaGradMiniBatch(weights, 0.04f);
 //		OnlineOptimizer optimizer = new AdaGrad(weights, 0.04f, new RegularizedDualAveraging(weights, 0.000001f));
 		Regularizer rda = new RegularizedDualAveraging(weights, 0.000002f);
@@ -93,7 +95,7 @@ public class POSBenchmark
 			eval.clear();
 			iterate(reader, devFiles, tagger::process);
 			currScore = eval.score();
-			System.out.printf("%4d: %5.2f%10d%10d\n", i, currScore, optimizer.getWeightVector().countNonZeroWeights(), optimizer.getWeightVector().size());
+			System.out.printf("%4d: %5.2f%10d\n", i, currScore, optimizer.getWeightVector().countNonZeroWeights());
 			if (best.d < currScore) best.set(currScore, i);
 			info.updateRollInProbability();
 		}
