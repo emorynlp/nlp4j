@@ -35,6 +35,7 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
+import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
 import edu.emory.mathcs.nlp.lemmatization.morphology.AbstractAffixMatcher;
 import edu.emory.mathcs.nlp.lemmatization.morphology.EnglishAffixMatcherFactory;
 import edu.emory.mathcs.nlp.lemmatization.morphology.EnglishDerivation;
@@ -43,7 +44,7 @@ import edu.emory.mathcs.nlp.lemmatization.morphology.EnglishInflection;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class EnglishLemmatizer extends Lemmatizer
+public class EnglishLemmatizer<N extends NLPNode> extends Lemmatizer<N>
 {
 	final String ROOT = "edu/emory/mathcs/nlp/lemmatizer/english/";
 	
