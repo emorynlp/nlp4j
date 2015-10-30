@@ -1,6 +1,6 @@
-# Lemmatization
+# Morphological Analysis
 
-Our lemmatizer generates root forms of word tokens. It is a rule-based analyzer inspired by the [WordNet morphy](http://wordnet.princeton.edu/man/morphy.7WN.html) although it uses a larger dictionary gathered from various sources and more advanced heuristics. Coupled with the [StringUtils#toSimplifiedForm](https://github.com/emorynlp/common/blob/master/src/main/java/edu/emory/mathcs/nlp/common/util/StringUtils.java#L142) method, it normalizes numbers, redundant punctuation, hyperlinks, etc (see the examples below), which is found to be useful for several NLP tasks.
+Our morphological analyzer generates root forms (lemmas) of word tokens. It is a rule-based analyzer inspired by the [WordNet morphy](http://wordnet.princeton.edu/man/morphy.7WN.html) although it uses a larger dictionary gathered from various sources and more advanced heuristics. It also normalizes numbers, redundant punctuation, hyperlinks, etc (see the examples below), which is found to be useful for several NLP tasks (see [`toSimplifiedForm`](https://github.com/emorynlp/common/blob/master/src/main/java/edu/emory/mathcs/nlp/common/util/StringUtils.java#L142)).
 
 ## Normalization
 
@@ -36,7 +36,7 @@ A/01                   XX    a/0
 $10.23,45:67-89/10%    XX    0
 ```
 
-Redundant punctuation chracters are collapsed.
+Redundant punctuation characters are collapsed.
 
 ```
 .!?-*=~,                                                    XX    .!?-*=~,
@@ -48,12 +48,12 @@ Redundant punctuation chracters are collapsed.
 Hyperlinks are normalized to `#hlink#`.
 
 ```
-http://www.google.com         XX    #url#
-www.google.com                XX    #url#
-mailto:somebody@google.com    XX    #url#
-some-body@google+.com         XX    #url#
+http://www.google.com         XX    #hlink#
+www.google.com                XX    #hlink#
+mailto:somebody@google.com    XX    #hlink#
+some-body@google+.com         XX    #hlink#
 ```
 
 ## API
 
-[EnglishLemmatizerTest](src/test/java/edu/emory/mathcs/nlp/lemmatizer/EnglishLemmatizerTest.java) shows how the lemmatizer can be used in APIs.
+[`EnglishLemmatizerTest`](src/test/java/edu/emory/mathcs/nlp/component/morph/english/EnglishMorphAnalyzerTest.java) shows how the anlayzer can be used in APIs.
