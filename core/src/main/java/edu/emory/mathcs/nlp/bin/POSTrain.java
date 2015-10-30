@@ -24,7 +24,6 @@ import edu.emory.mathcs.nlp.component.pos.POSConfig;
 import edu.emory.mathcs.nlp.component.pos.POSState;
 import edu.emory.mathcs.nlp.component.pos.POSTagger;
 import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate0;
-import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate1;
 import edu.emory.mathcs.nlp.component.util.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.util.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.util.feature.FeatureTemplate;
@@ -62,7 +61,6 @@ public class POSTrain extends NLPOnlineTrain<NLPNode,POSState<NLPNode>>
 		switch (feature_template)
 		{
 		case 0: return new POSFeatureTemplate0<NLPNode>();
-		case 1: return new POSFeatureTemplate1<NLPNode>();
 		default: throw new IllegalArgumentException("Unknown feature template: "+feature_template);
 		}
 	}

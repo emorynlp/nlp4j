@@ -25,6 +25,8 @@ public enum Field
 	word_form,
 	simplified_word_form,
 	uncapitalized_simplified_word_form,
+	undigitalized_word_form,
+	uncapitalized_undigitalized_word_form,
 	word_shape,
 	orthographic,	// set
 	prefix,
@@ -45,7 +47,7 @@ public enum Field
 	valency,
 	
 	// distributional semantics
-	clusters,
+	word_clusters,
 	
 	// more
 	binary;	// set

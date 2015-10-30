@@ -62,6 +62,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 
 	// inferred fields
 	protected int id;
+	protected String[] word_clusters;
 	protected String simplified_word_form;
 	protected SortedArrayList<NLPNode> dependent_list;
 	
@@ -167,7 +168,9 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		{
 		case word_form: return getWordForm();
 		case simplified_word_form: return getSimplifiedWordForm();
-		case uncapitalized_simplified_word_form: return StringUtils.toLowerCase(getSimplifiedWordForm());
+		case undigitalized_word_form: return StringUtils.toUndigitalizedForm(word_form, false);
+		case uncapitalized_simplified_word_form: return StringUtils.toLowerCase(simplified_word_form);
+		case uncapitalized_undigitalized_word_form: return StringUtils.toUndigitalizedForm(word_form, true);
 		case lemma: return getLemma();
 		case part_of_speech_tag: return getPartOfSpeechTag();
 		case named_entity_tag: return getNamedEntityTag();
@@ -176,6 +179,11 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		}
 	}
 	
+	public String[] getWordClusters()
+	{
+		return word_clusters;
+	}
+
 //	============================== SETTERS ==============================
 	
 	public void setID(int id)
@@ -219,6 +227,11 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		nament_tag = tag;
 	}
 	
+	public void setWordClusters(String[] clusters)
+	{
+		word_clusters = clusters;
+	}
+	
 //	============================== BOOLEANS ==============================
 	
 	public boolean isID(int id)
@@ -254,6 +267,11 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	public boolean isNamedEntityTag(String tag)
 	{
 		return tag.equals(nament_tag);
+	}
+	
+	public boolean hasWordClusters()
+	{
+		return word_clusters != null;
 	}
 	
 //	============================== DEPENDENCY GETTERS ==============================

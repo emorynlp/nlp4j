@@ -31,7 +31,6 @@ import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.util.node.NLPNode;
 import edu.emory.mathcs.nlp.component.util.node.Orthographic;
 import edu.emory.mathcs.nlp.component.util.state.NLPState;
-import edu.emory.mathcs.nlp.component.util.util.GlobalLexica;
 import edu.emory.mathcs.nlp.machine_learning.vector.StringVector;
 
 /**
@@ -149,19 +148,15 @@ public abstract class FeatureTemplate<N extends NLPNode,S extends NLPState<N>> i
 	
 	protected String getFeature(FeatureItem<?> item, N node)
 	{
+		String f = node.getValue(item.field);
+		if (f != null) return f;
+		
 		switch (item.field)
 		{
-		case word_form: return node.getWordForm();
-		case simplified_word_form: return node.getSimplifiedWordForm();
-		case uncapitalized_simplified_word_form: return StringUtils.toLowerCase(node.getSimplifiedWordForm());
 		case word_shape: return StringUtils.getShape(node.getWordForm(), (Integer)item.value);
 		case prefix: return getPrefix(node, (Integer)item.value);
 		case suffix: return getSuffix(node, (Integer)item.value);
-		case lemma: return node.getLemma();
-		case part_of_speech_tag: return node.getPartOfSpeechTag();
-		case named_entity_tag: return node.getNamedEntityTag();
 		case feats: return node.getFeat((String)item.value);
-		case dependency_label: return node.getDependencyLabel();
 		case valency: return node.getValency((Direction)item.value);
 		default: return null;
 		}
@@ -173,7 +168,7 @@ public abstract class FeatureTemplate<N extends NLPNode,S extends NLPState<N>> i
 		{
 		case binary: return getBinaryFeatures(node);
 		case orthographic: return getOrthographicFeatures(node);
-		case clusters: return GlobalLexica.getClusterFeatures(node.getWordForm(), (Integer)item.value);
+		case word_clusters: return node.getWordClusters();
 		default: return null;
 		}
 	}

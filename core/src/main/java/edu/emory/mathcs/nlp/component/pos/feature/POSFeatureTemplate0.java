@@ -80,8 +80,8 @@ public class POSFeatureTemplate0<N extends NLPNode> extends POSFeatureTemplate<N
 		addSet(new FeatureItem<>(0, Field.binary));
 		
 		// distributional semantics
-		addSet(new FeatureItem<>( 0, Field.clusters, 0));
-		addSet(new FeatureItem<>(-1, Field.clusters, 0));
-		addSet(new FeatureItem<>( 1, Field.clusters, 0));
+		addSet(new FeatureItem<>( 0, Field.word_clusters));
+		addSet(new FeatureItem<>(-1, Field.word_clusters));
+		addSet(new FeatureItem<>( 1, Field.word_clusters));
 	}
 }

@@ -20,6 +20,7 @@ import java.util.Set;
 import edu.emory.mathcs.nlp.component.util.eval.Eval;
 import edu.emory.mathcs.nlp.component.util.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.util.util.GlobalLexica;
 import edu.emory.mathcs.nlp.machine_learning.prediction.StringPrediction;
 
 /**
@@ -31,6 +32,7 @@ public abstract class NLPState<N extends NLPNode>
 
 	public NLPState(N[] nodes)
 	{
+		GlobalLexica.assignGlobalLexica(nodes);
 		this.nodes = nodes;
 	}
 	

@@ -16,72 +16,72 @@
 package edu.emory.mathcs.nlp.component.util.util;
 
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
+import edu.emory.mathcs.nlp.component.util.feature.Field;
+import edu.emory.mathcs.nlp.component.util.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class GlobalLexica
 {
-	static public List<Map<String,Set<String>>> clusters;
+	static public Map<String,Set<String>> word_clusters;
+	static private Field word_clusters_field;
 	
 	static public void init(Element doc)
 	{
 		Element eGlobal = XMLUtils.getFirstElementByTagName(doc, "global");
 		if (eGlobal == null) return;
-		
-		NodeList nodes = eGlobal.getElementsByTagName("clusters");
-		List<String> paths = new ArrayList<>();
-		
-		for (int i=0; i<nodes.getLength(); i++)
-			paths.add(XMLUtils.getTrimmedTextContent((Element)nodes.item(i)));
-		
-		initClusters(paths);
-	}
-	
-	static public void initClusters(List<String> paths)
-	{
-		BinUtils.LOG.info("Loading clusters:");
-		clusters = paths.stream().map(path -> getClusters(IOUtils.createObjectXZBufferedInputStream(path))).collect(Collectors.toList());
-		BinUtils.LOG.info("\n");
+		initWordCluster(eGlobal);
 	}
 	
 	@SuppressWarnings("unchecked")
-	static public Map<String,Set<String>> getClusters(ObjectInputStream in)
+	static public void initWordCluster(Element eGlobal)
 	{
-		Map<String,Set<String>> map = null;
-		BinUtils.LOG.info(".");
+		Element element = XMLUtils.getFirstElementByTagName(eGlobal, "word_clusters");
+		if (element == null) return;
+		
+		String path = XMLUtils.getTrimmedTextContent(element);
+		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(path);
+		BinUtils.LOG.info("Loading word clusters: ");
 		
 		try
 		{
-			map = (HashMap<String,Set<String>>)in.readObject();
+			word_clusters = (HashMap<String,Set<String>>)in.readObject();
+			word_clusters_field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, "field"));
 		}
 		catch (Exception e) {e.printStackTrace();}
 		
-		return map;
+		BinUtils.LOG.info(word_clusters.size()+"\n");
 	}
 	
-	static public String[] getClusterFeatures(String word, int index)
+	static public <N extends NLPNode>void assignGlobalLexica(N[] nodes)
 	{
-		if (clusters == null || !DSUtils.isRange(clusters, index)) return null;
-		Set<String> set = clusters.get(index).get(word);
-		if (set == null) return null;
-		String[] t = new String[set.size()];
-		set.toArray(t);
-		return t;
+		assignWordClusters(nodes);
+	}
+	
+	static public <N extends NLPNode>void assignWordClusters(N[] nodes)
+	{
+		if (word_clusters == null || nodes[0].hasWordClusters()) return;
+		nodes[0].setWordClusters(new String[]{});
+		Set<String> set;
+		N node;
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			node = nodes[i];
+			set  = word_clusters.get(node.getValue(word_clusters_field));
+			node.setWordClusters(DSUtils.toArray(set));
+		}
 	}
 	
 	
