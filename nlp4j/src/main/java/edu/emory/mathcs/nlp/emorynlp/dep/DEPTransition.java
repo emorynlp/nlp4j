@@ -15,41 +15,15 @@
  */
 package edu.emory.mathcs.nlp.emorynlp.dep;
 
-import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
-import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPArc extends AbstractArc<NLPNode>
+public interface DEPTransition
 {
-	private static final long serialVersionUID = -9099516205158258095L;
-	private double weight;
-	
-	public DEPArc(NLPNode node, String label)
-	{
-		super(node, label);
-	}
-	
-	public double getWeight()
-	{
-		return weight;
-	}
-
-	public void setWeight(double weight)
-	{
-		this.weight = weight;
-	}
-
-	@Override
-	public String toString()
-	{
-		return node.getID() + ARC_DELIM + label;
-	}
-	
-	@Override
-	public int compareTo(AbstractArc<NLPNode> arc)
-	{
-		return node.compareTo(arc.getNode());
-	}
+	String ARC_LEFT    = "L";
+	String ARC_RIGHT   = "R";
+	String ARC_NO      = "N";
+	String LIST_SHIFT  = "S";
+	String LIST_REDUCE = "R";
+	String LIST_PASS   = "P";
 }

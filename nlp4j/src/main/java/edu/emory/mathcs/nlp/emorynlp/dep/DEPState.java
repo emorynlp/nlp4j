@@ -15,10 +15,16 @@
  */
 package edu.emory.mathcs.nlp.emorynlp.dep;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Set;
 
-import edu.emory.mathcs.nlp.common.util.DSUtils;
+import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.emorynlp.component.eval.Eval;
 import edu.emory.mathcs.nlp.emorynlp.component.feature.FeatureItem;
 import edu.emory.mathcs.nlp.emorynlp.component.node.NLPNode;
@@ -29,23 +35,38 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPState<N extends NLPNode> extends NLPState<N>
+public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTransition
 {
-	static public final String LEFT_ARC  = "LA-";
-	static public final String RIGHT_ARC = "RA-";
-	static public final String SHIFT     = "S";
-	static public final String REDUCE    = "R";
+	static public final int IS_ROOT         = 0;
+	static public final int IS_DESC         = 1;
+	static public final int IS_DESC_NO_HEAD = 2;
+	static public final int NO_HEAD         = 3;
+	static public final int LEFT_ARC        = 4;
+	static public final int RIGHT_ARC       = 5;
 	
+	private List<PriorityQueue<DEPArc>> snd_heads;
 	private DEPArc[]     oracle;
 	private IntArrayList stack;
+	private IntArrayList inter;
 	private int          input;
 	
 	public DEPState(N[] nodes)
 	{
 		super(nodes);
 		stack = new IntArrayList();
+		inter = new IntArrayList();
 		input = 0;
 		shift();
+		
+		initSecondHeads();
+	}
+	
+	private void initSecondHeads()
+	{
+		snd_heads = new ArrayList<>();
+		
+		for (int i=0; i<nodes.length; i++)
+			snd_heads.add(new PriorityQueue<>(new DEPArcComparator()));
 	}
 	
 //	====================================== ORACLE ======================================
@@ -59,49 +80,75 @@ public class DEPState<N extends NLPNode> extends NLPState<N>
 	@Override
 	public Set<String> getZeroCost()
 	{
-		// left-arc: input is the head of stack
-		DEPArc o = oracle[stack.topInt()];
-		
-		if (o.isNode(getInput()))
-			return DSUtils.toHashSet(LEFT_ARC + o.getLabel());
-		
-		// right-arc: stack is the head of input
-		o = oracle[input];
-		
-		if (o.isNode(getStack()))
-			return DSUtils.toHashSet(RIGHT_ARC + o.getLabel());
-		
-		// reduce: stack has the head
-		if (isOracleReduce())
-			return DSUtils.toHashSet(REDUCE);
-		
-		return DSUtils.toHashSet(SHIFT);
+		DEPLabel label = getOracle();
+		return Collections.singleton(label.toString());
 	}
 	
-	private boolean isOracleReduce()
+	public DEPLabel getOracle()
 	{
-		if (!getStack().hasDependencyHead()) return false;
-		int s;
+		N stack = getStack();
+		N input = getInput();
+		DEPArc gold;
+		String list;
 		
-		for (int i=1; i<stack.size(); i++)
+		gold = oracle[stack.getID()];
+		
+		if (gold.isNode(input))
 		{
-			s = stack.peekInt(i);
-			
-			if (oracle[input].isNode(nodes[s]) || oracle[s].isNode(nodes[input]))
-				return true;
+			list = isOracleReduce(true) ? LIST_REDUCE : LIST_PASS;
+			return new DEPLabel(ARC_LEFT, list, gold.getLabel());
+		}
+					
+		gold = oracle[input.getID()];
+		
+		if (gold.isNode(stack))
+		{
+			list = isOracleShift() ? LIST_SHIFT : LIST_PASS;
+			return new DEPLabel(ARC_RIGHT, list, gold.getLabel());
 		}
 		
-		return false;
+		if      (isOracleShift())		list = LIST_SHIFT;
+		else if (isOracleReduce(false))	list = LIST_REDUCE;
+		else							list = LIST_PASS;
+		
+		return new DEPLabel(ARC_NO, list, StringConst.EMPTY);
 	}
 	
-	boolean isOracleReduceEager()
+	/** Called by {@link #getGoldLabel()}. */
+	private boolean isOracleShift()
 	{
-		N s = getStack();
-		if (!s.hasDependencyHead()) return false;
+		// if head(input) < stack
+		N stack = getStack();
 		
+		if (oracle[input].getNode().getID() < stack.getID())
+			return false;
+		
+		// if child(input) < stack
+		N input = getInput();
+		int i = 1;
+
+		while ((stack = peekStack(i++)) != null)
+		{
+			if (oracle[stack.getID()].isNode(input))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	/** Called by {@link #getGoldLabel()}. */
+	private boolean isOracleReduce(boolean hasHead)
+	{
+		// if stack has no head
+		N stack = getStack();
+		
+		if (!hasHead && !stack.hasDependencyHead())
+			return false;
+		
+		// if child(input) > stack 
 		for (int i=input+1; i<nodes.length; i++)
 		{
-			if (oracle[i].isNode(s))
+			if (oracle[i].isNode(stack))
 				return false;
 		}
 		
@@ -113,53 +160,28 @@ public class DEPState<N extends NLPNode> extends NLPState<N>
 	@Override
 	public void next(StringPrediction prediction)
 	{
-		String label = prediction.getLabel();
-//		System.out.println(label+" "+stack.toString()+" "+input);
+		DEPLabel label = new DEPLabel(prediction);
+		N stack = getStack();
+		N input = getInput();
 		
-		if (label.startsWith(LEFT_ARC))
+		if (label.isArc(ARC_LEFT))
 		{
-			NLPNode s = getStack();
-			NLPNode i = getInput();
-			
-			if (s != nodes[0] && !i.isDescendantOf(s))
-			{
-				s.setDependencyHead(i, label.substring(3));
-				label = REDUCE;
-			}
-			else
-				label = SHIFT;
+			stack.setDependencyHead(input, label.getDeprel());
+			if (label.isList(LIST_REDUCE)) reduce();
+			else pass();
 		}
-		else if (label.startsWith(RIGHT_ARC))
+		else if (label.isArc(ARC_RIGHT))
 		{
-			NLPNode s = getStack();
-			NLPNode i = getInput();
-			
-			if (!s.isDescendantOf(i))
-				i.setDependencyHead(s, label.substring(3));
-
-			label = SHIFT;
+			input.setDependencyHead(stack, label.getDeprel());
+			if (label.isList(LIST_SHIFT)) shift();
+			else pass();
 		}
-		else if (label.equals(REDUCE))
+		else
 		{
-			if (stack.size() == 1)
-				label = SHIFT;
+			if (label.isList(LIST_SHIFT)) shift();
+			else if (label.isList(LIST_REDUCE)) reduce();
+			else pass();
 		}
-		
-		switch (label)
-		{
-		case SHIFT : shift();  break;
-		case REDUCE: reduce(); break;
-		}
-	}
-	
-	public void shift()
-	{
-		stack.add(input++);
-	}
-	
-	public void reduce()
-	{
-		stack.pop();
 	}
 	
 	@Override
@@ -168,6 +190,29 @@ public class DEPState<N extends NLPNode> extends NLPState<N>
 		return input >= nodes.length;
 	}
 	
+	private void shift()
+	{
+		if (!inter.isEmpty())
+		{
+			for (int i=inter.size()-1; i>=0; i--) stack.push(inter.get(i));
+			inter.clear();
+		}
+		
+		stack.push(input++);
+	}
+	
+	private void reduce()
+	{
+		stack.pop();
+	}
+	
+	private void pass()
+	{
+		inter.push(stack.pop());
+	}
+	
+//	====================================== NODE ======================================
+
 	/**
 	 * @return the window'th top of the stack if exists; otherwise, -1.
 	 * @param window 0: top, 1: 2nd-top, so one.
@@ -197,42 +242,6 @@ public class DEPState<N extends NLPNode> extends NLPState<N>
 		return getInput(0);
 	}
 	
-//	====================================== EVALUATE ======================================
-
-	@Override
-	public void evaluate(Eval eval)
-	{
-		int las = 0, uas = 0;
-		NLPNode node;
-		DEPArc  gold;
-		
-		for (int i=1; i<nodes.length; i++)
-		{
-			node = nodes [i];
-			gold = oracle[i];
-			
-			if (gold.isNode(node.getDependencyHead()))
-			{
-				uas++;
-				if (gold.isLabel(node.getDependencyLabel())) las++;
-			}
-		}
-
-		((DEPEval)eval).add(las, uas, nodes.length-1);
-	}
-	
-//	============================== UTILITIES ==============================
-	
-	public boolean isFirst(N node)
-	{
-		return nodes[1] == node;
-	}
-	
-	public boolean isLast(N node)
-	{
-		return nodes[nodes.length-1] == node;
-	}
-
 	@SuppressWarnings("unchecked")
 	public N getNode(FeatureItem<?> item)
 	{
@@ -272,5 +281,153 @@ public class DEPState<N extends NLPNode> extends NLPState<N>
 		}
 		
 		return null;
+	}
+	
+//	====================================== 2nd Heads ======================================
+
+//	/** PRE: ps[0].isArc("NO"). */
+//	public void save2ndHead(StringPrediction[] ps)
+//	{
+//		if (ps[0].getScore() - ps[1].getScore() < 1)
+//		{
+//			DEPLabel label = new DEPLabel(ps[1].getLabel());
+//			if (label.isArc(ARC_NO)) return;
+//			DEPNode curr, head;
+//			
+//			if (label.isArc(ARC_LEFT))
+//			{
+//				curr = getStack();
+//				head = getInput();
+//			}
+//			else
+//			{
+//				head = getStack();
+//				curr = getInput();
+//			}
+//			
+//			snd_heads[curr.getID()].add(new ObjectDoublePair<DEPArc>(new DEPArc(head, label.getDeprel()), ps[1].getScore()));
+//		}
+//	}
+//	
+//	/** @param node has no head. */
+//	public boolean find2ndHead(DEPNode node)
+//	{
+//		DEPArc head;
+//		
+//		for (ObjectDoublePair<DEPArc> p : snd_heads[node.getID()])
+//		{
+//			head = p.o;
+//			
+//			if (!head.getNode().isDescendantOf(node))
+//			{
+//				node.setHead(head.getNode(), head.getLabel());
+//				return true;
+//			}
+//		}
+//		
+//		return false;
+//	}
+	
+	class DEPArcComparator implements Comparator<DEPArc>
+	{
+		@Override
+		public int compare(DEPArc o1, DEPArc o2)
+		{
+			return MathUtils.signum(o2.getWeight() - o1.getWeight());
+		}
+	}
+	
+//	====================================== EVALUATE ======================================
+
+	@Override
+	public void evaluate(Eval eval)
+	{
+		int las = 0, uas = 0;
+		DEPArc gold;
+		N node;
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			node = nodes [i];
+			gold = oracle[i];
+			
+			if (gold.isNode(node.getDependencyHead()))
+			{
+				uas++;
+				if (gold.isLabel(node.getDependencyLabel())) las++;
+			}
+		}
+
+		((DEPEval)eval).add(las, uas, nodes.length-1);
+	}
+	
+//	============================== INDICES ==============================
+
+	static public int[][] initLabelIndices(String[] labels)
+	{
+		int i, size = labels.length;
+		DEPLabel label;
+		
+		IntArrayList isRoot       = new IntArrayList();
+		IntArrayList isDesc       = new IntArrayList();
+		IntArrayList isDescNoHead = new IntArrayList();
+		IntArrayList noHead       = new IntArrayList();
+		IntArrayList leftArc      = new IntArrayList();
+		IntArrayList rightArc     = new IntArrayList();
+		
+		for (i=0; i<size; i++)
+		{
+			label = new DEPLabel(labels[i]);
+			
+			if (label.isList(LIST_SHIFT))
+				isRoot.add(i);
+			
+			if (label.isArc(ARC_NO))
+			{
+				isDesc.add(i);
+				if (!label.isList(LIST_REDUCE)) isDescNoHead.add(i);
+			}
+			else if (label.isArc(ARC_LEFT))
+				leftArc.add(i);
+			else if (label.isArc(ARC_RIGHT))
+				rightArc.add(i);
+			
+			if (!(label.isArc(ARC_NO) && label.isList(LIST_REDUCE)))
+				noHead.add(i);
+		}
+		
+		int[][] indices = new int[6][];
+		
+		initLabelIndices(indices, isRoot      , IS_ROOT);
+		initLabelIndices(indices, isDesc      , IS_DESC);
+		initLabelIndices(indices, isDescNoHead, IS_DESC_NO_HEAD);
+		initLabelIndices(indices, noHead      , NO_HEAD);
+		initLabelIndices(indices, leftArc     , LEFT_ARC);
+		initLabelIndices(indices, rightArc    , RIGHT_ARC);
+		
+		return indices;
+	}
+	
+	static private void initLabelIndices(int[][] indices, IntArrayList list, int index)
+	{
+		indices[index] = list.toIntArray();
+		Arrays.sort(indices[index]);
+	}
+	
+	public int[] getLabelIndices(int[][] indices)
+	{
+		N stack = getStack();
+		N input = getInput();
+		
+		if (stack.getID() == 0)
+			return indices[IS_ROOT];
+		else if (stack.isDescendantOf(input))
+			return indices[IS_DESC];
+		else if (input.isDescendantOf(stack))
+			return stack.hasDependencyHead() ? indices[IS_DESC] : indices[IS_DESC_NO_HEAD];
+		else if (!stack.hasDependencyHead())
+			return indices[NO_HEAD];
+		else
+			return null;
 	}
 }
