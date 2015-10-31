@@ -19,21 +19,21 @@ import java.io.InputStream;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
+import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.train.NLPOnlineTrain;
 import edu.emory.mathcs.nlp.component.pos.AmbiguityClassMap;
 import edu.emory.mathcs.nlp.component.pos.POSConfig;
 import edu.emory.mathcs.nlp.component.pos.POSState;
 import edu.emory.mathcs.nlp.component.pos.POSTagger;
 import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate0;
-import edu.emory.mathcs.nlp.component.util.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.util.config.NLPConfig;
-import edu.emory.mathcs.nlp.component.util.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
-import edu.emory.mathcs.nlp.component.util.train.NLPOnlineTrain;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTrain extends NLPOnlineTrain<NLPNode,POSState<NLPNode>>
+public class POSTrain extends NLPOnlineTrain<POSState>
 {
 	public POSTrain(String[] args)
 	{
@@ -41,26 +41,26 @@ public class POSTrain extends NLPOnlineTrain<NLPNode,POSState<NLPNode>>
 	}
 	
 	@Override
-	protected NLPOnlineComponent<NLPNode,POSState<NLPNode>> createComponent(InputStream config)
+	protected NLPOnlineComponent<POSState> createComponent(InputStream config)
 	{
-		return new POSTagger<>(config);
+		return new POSTagger(config);
 	}
 
 	@Override
-	protected void initComponent(NLPOnlineComponent<NLPNode,POSState<NLPNode>> component, List<String> inputFiles)
+	protected void initComponent(NLPOnlineComponent<POSState> component, List<String> inputFiles)
 	{
 		initComponentSingleModel(component, inputFiles);
 		
 		AmbiguityClassMap map = createAmbiguityClasseMap(component.getConfiguration(), inputFiles);
-		((POSTagger<NLPNode>)component).setAmbiguityClassMap(map);
+		((POSTagger)component).setAmbiguityClassMap(map);
 	}
 	
 	@Override
-	protected FeatureTemplate<NLPNode,POSState<NLPNode>> createFeatureTemplate()
+	protected FeatureTemplate<POSState> createFeatureTemplate()
 	{
 		switch (feature_template)
 		{
-		case 0: return new POSFeatureTemplate0<NLPNode>();
+		case 0: return new POSFeatureTemplate0();
 		default: throw new IllegalArgumentException("Unknown feature template: "+feature_template);
 		}
 	}
@@ -71,7 +71,7 @@ public class POSTrain extends NLPOnlineTrain<NLPNode,POSState<NLPNode>>
 		return new NLPNode();
 	}
 	
-	protected AmbiguityClassMap createAmbiguityClasseMap(NLPConfig<NLPNode> configuration, List<String> inputFiles)
+	protected AmbiguityClassMap createAmbiguityClasseMap(NLPConfig configuration, List<String> inputFiles)
 	{
 		BinUtils.LOG.info("Collecting lexicons:\n");
 		AmbiguityClassMap ac = new AmbiguityClassMap();
@@ -80,7 +80,7 @@ public class POSTrain extends NLPOnlineTrain<NLPNode,POSState<NLPNode>>
 		iterate(configuration.getTSVReader(), inputFiles, nodes -> ac.add(nodes));
 		ac.expand(config.getAmbiguityClassThreshold());
 		
-		BinUtils.LOG.info(String.format("- # of ambiguity classes: %d\n", ac.size()));
+		BinUtils.LOG.info(String.format("- # of ambiguity classes: %d\n\n", ac.size()));
 		return ac;
 	}
 	

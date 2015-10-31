@@ -28,7 +28,7 @@ import edu.emory.mathcs.nlp.common.collection.ngram.Unigram;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectDoublePair;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

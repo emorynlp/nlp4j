@@ -18,18 +18,18 @@ package edu.emory.mathcs.nlp.bin;
 import java.io.InputStream;
 import java.util.List;
 
+import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.train.NLPOnlineTrain;
 import edu.emory.mathcs.nlp.component.ner.NERState;
 import edu.emory.mathcs.nlp.component.ner.NERTagger;
 import edu.emory.mathcs.nlp.component.ner.features.NERFeatureTemplate0;
-import edu.emory.mathcs.nlp.component.util.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.util.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
-import edu.emory.mathcs.nlp.component.util.train.NLPOnlineTrain;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERTrain extends NLPOnlineTrain<NLPNode,NERState<NLPNode>>
+public class NERTrain extends NLPOnlineTrain<NERState>
 {
 	public NERTrain(String[] args)
 	{
@@ -37,23 +37,23 @@ public class NERTrain extends NLPOnlineTrain<NLPNode,NERState<NLPNode>>
 	}
 	
 	@Override
-	protected NLPOnlineComponent<NLPNode,NERState<NLPNode>> createComponent(InputStream config)
+	protected NLPOnlineComponent<NERState> createComponent(InputStream config)
 	{
-		return new NERTagger<>(config);
+		return new NERTagger(config);
 	}
 
 	@Override
-	protected void initComponent(NLPOnlineComponent<NLPNode,NERState<NLPNode>> component, List<String> inputFiles)
+	protected void initComponent(NLPOnlineComponent<NERState> component, List<String> inputFiles)
 	{
 		initComponentSingleModel(component, inputFiles);
 	}
 	
 	@Override
-	protected FeatureTemplate<NLPNode,NERState<NLPNode>> createFeatureTemplate()
+	protected FeatureTemplate<NERState> createFeatureTemplate()
 	{
 		switch (feature_template)
 		{
-		case  0: return new NERFeatureTemplate0<NLPNode>();
+		case  0: return new NERFeatureTemplate0();
 		default: throw new IllegalArgumentException("Unknown feature template: "+feature_template);
 		}
 	}

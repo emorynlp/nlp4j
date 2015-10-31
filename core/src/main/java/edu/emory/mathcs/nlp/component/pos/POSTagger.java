@@ -20,16 +20,16 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import edu.emory.mathcs.nlp.component.util.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.util.config.NLPConfig;
-import edu.emory.mathcs.nlp.component.util.eval.AccuracyEval;
-import edu.emory.mathcs.nlp.component.util.eval.Eval;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.common.eval.AccuracyEval;
+import edu.emory.mathcs.nlp.component.common.eval.Eval;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTagger<N extends NLPNode> extends NLPOnlineComponent<N,POSState<N>>
+public class POSTagger extends NLPOnlineComponent<POSState>
 {
 	private static final long serialVersionUID = -7926217238116337203L;
 	private AmbiguityClassMap ambiguity_class_map;
@@ -68,10 +68,9 @@ public class POSTagger<N extends NLPNode> extends NLPOnlineComponent<N,POSState<
 //	============================== ABSTRACT ==============================
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public void setConfiguration(InputStream in)
 	{
-		setConfiguration((NLPConfig<N>)new POSConfig(in));
+		setConfiguration((NLPConfig)new POSConfig(in));
 	}
 	
 	@Override
@@ -81,8 +80,17 @@ public class POSTagger<N extends NLPNode> extends NLPOnlineComponent<N,POSState<
 	}
 	
 	@Override
-	protected POSState<N> initState(N[] nodes)
+	protected POSState initState(NLPNode[] nodes)
 	{
-		return new POSState<>(nodes, ambiguity_class_map);
+		String[] ambi = getAmbiguityClasses(nodes);
+		return new POSState(nodes, ambi);
+	}
+	
+	public String[] getAmbiguityClasses(NLPNode[] nodes)
+	{
+		String[] ambi = new String[nodes.length];
+		for (int i=1; i<nodes.length; i++)
+			ambi[i] = ambiguity_class_map.get(nodes[i]);
+		return ambi;
 	}
 }

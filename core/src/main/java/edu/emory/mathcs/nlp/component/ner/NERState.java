@@ -17,31 +17,31 @@ package edu.emory.mathcs.nlp.component.ner;
 
 import java.util.Map.Entry;
 
-import edu.emory.mathcs.nlp.component.util.eval.Eval;
-import edu.emory.mathcs.nlp.component.util.eval.F1Eval;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
-import edu.emory.mathcs.nlp.component.util.state.L2RState;
-import edu.emory.mathcs.nlp.component.util.util.BILOU;
+import edu.emory.mathcs.nlp.component.common.eval.Eval;
+import edu.emory.mathcs.nlp.component.common.eval.F1Eval;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.state.L2RState;
+import edu.emory.mathcs.nlp.component.common.util.BILOU;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERState<N extends NLPNode> extends L2RState<N>
+public class NERState extends L2RState
 {
-	public NERState(N[] nodes)
+	public NERState(NLPNode[] nodes)
 	{
 		super(nodes);
 	}
 	
 	@Override
-	protected String getLabel(N node)
+	protected String getLabel(NLPNode node)
 	{
 		return node.getNamedEntityTag();
 	}
 	
 	@Override
-	protected String setLabel(N node, String label)
+	protected String setLabel(NLPNode node, String label)
 	{
 		String s = node.getNamedEntityTag();
 		node.setNamedEntityTag(label);

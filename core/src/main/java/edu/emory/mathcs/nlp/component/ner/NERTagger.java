@@ -20,16 +20,16 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import edu.emory.mathcs.nlp.component.util.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.util.config.NLPConfig;
-import edu.emory.mathcs.nlp.component.util.eval.Eval;
-import edu.emory.mathcs.nlp.component.util.eval.F1Eval;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.common.eval.Eval;
+import edu.emory.mathcs.nlp.component.common.eval.F1Eval;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERTagger<N extends NLPNode> extends NLPOnlineComponent<N,NERState<N>>
+public class NERTagger extends NLPOnlineComponent<NERState>
 {
 	private static final long serialVersionUID = 87807440372806016L;
 
@@ -57,10 +57,9 @@ public class NERTagger<N extends NLPNode> extends NLPOnlineComponent<N,NERState<
 //	============================== ABSTRACT ==============================
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public void setConfiguration(InputStream in)
 	{
-		setConfiguration((NLPConfig<N>)new NERConfig(in));
+		setConfiguration((NLPConfig)new NERConfig(in));
 	}
 	
 	@Override
@@ -70,8 +69,8 @@ public class NERTagger<N extends NLPNode> extends NLPOnlineComponent<N,NERState<
 	}
 	
 	@Override
-	protected NERState<N> initState(N[] nodes)
+	protected NERState initState(NLPNode[] nodes)
 	{
-		return new NERState<>(nodes);
+		return new NERState(nodes);
 	}
 }

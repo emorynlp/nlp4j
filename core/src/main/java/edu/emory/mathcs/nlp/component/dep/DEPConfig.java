@@ -17,13 +17,12 @@ package edu.emory.mathcs.nlp.component.dep;
 
 import java.io.InputStream;
 
-import edu.emory.mathcs.nlp.component.util.config.NLPConfig;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPConfig extends NLPConfig<NLPNode>
+public class DEPConfig extends NLPConfig
 {
 	public DEPConfig() {}
 	

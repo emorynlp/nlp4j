@@ -13,43 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.dep;
+package edu.emory.mathcs.nlp.component.common.eval;
 
-import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
-import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPArc extends AbstractArc<NLPNode>
+public class AccuracyEval implements Eval
 {
-	private static final long serialVersionUID = -9099516205158258095L;
-	private double weight;
+	private int correct;
+	private int total;
 	
-	public DEPArc(NLPNode node, String label)
+	public AccuracyEval()
 	{
-		super(node, label);
+		clear();
 	}
 	
-	public double getWeight()
+	public void add(int correct, int total)
 	{
-		return weight;
+		this.correct += correct;
+		this.total   += total;
 	}
-
-	public void setWeight(double weight)
+	
+	public int correct()
 	{
-		this.weight = weight;
+		return correct;
 	}
-
+	
+	public int total()
+	{
+		return total;
+	}
+	
+	@Override
+	public void clear()
+	{
+		correct = total = 0;
+	}
+	
+	@Override
+	public double score()
+	{
+		return MathUtils.accuracy(correct, total);
+	}
+	
 	@Override
 	public String toString()
 	{
-		return node.getID() + ARC_DELIM + label;
-	}
-	
-	@Override
-	public int compareTo(AbstractArc<NLPNode> arc)
-	{
-		return node.compareTo(arc.getNode());
+		return String.format("ACC = %5.2f", score());
 	}
 }

@@ -25,17 +25,17 @@ import java.util.Set;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.component.util.eval.Eval;
-import edu.emory.mathcs.nlp.component.util.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
-import edu.emory.mathcs.nlp.component.util.state.NLPState;
+import edu.emory.mathcs.nlp.component.common.eval.Eval;
+import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.state.NLPState;
 import edu.emory.mathcs.nlp.machine_learning.prediction.StringPrediction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTransition
+public class DEPState extends NLPState implements DEPTransition
 {
 	static public final int IS_ROOT         = 0;
 	static public final int IS_DESC         = 1;
@@ -50,7 +50,7 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 	private IntArrayList inter;
 	private int          input;
 	
-	public DEPState(N[] nodes)
+	public DEPState(NLPNode[] nodes)
 	{
 		super(nodes);
 		stack = new IntArrayList();
@@ -86,8 +86,8 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 	
 	public DEPLabel getOracle()
 	{
-		N stack = getStack();
-		N input = getInput();
+		NLPNode stack = getStack();
+		NLPNode input = getInput();
 		DEPArc gold;
 		String list;
 		
@@ -118,13 +118,13 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 	private boolean isOracleShift()
 	{
 		// if head(input) < stack
-		N stack = getStack();
+		NLPNode stack = getStack();
 		
 		if (oracle[input].getNode().getID() < stack.getID())
 			return false;
 		
 		// if child(input) < stack
-		N input = getInput();
+		NLPNode input = getInput();
 		int i = 1;
 
 		while ((stack = peekStack(i++)) != null)
@@ -140,7 +140,7 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 	private boolean isOracleReduce(boolean hasHead)
 	{
 		// if stack has no head
-		N stack = getStack();
+		NLPNode stack = getStack();
 		
 		if (!hasHead && !stack.hasDependencyHead())
 			return false;
@@ -161,8 +161,8 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 	public void next(StringPrediction prediction)
 	{
 		DEPLabel label = new DEPLabel(prediction);
-		N stack = getStack();
-		N input = getInput();
+		NLPNode stack = getStack();
+		NLPNode input = getInput();
 		
 		if (label.isArc(ARC_LEFT))
 		{
@@ -217,35 +217,34 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 	 * @return the window'th top of the stack if exists; otherwise, -1.
 	 * @param window 0: top, 1: 2nd-top, so one.
 	 */
-	public N peekStack(int window)
+	public NLPNode peekStack(int window)
 	{
 		return window < stack.size() ? nodes[stack.peekInt(window)] : null;
 	}
 	
-	public N getStack(int window)
+	public NLPNode getStack(int window)
 	{
 		return getNode(stack.topInt(), window, true);
 	}
 	
-	public N getStack()
-	{
-		return getStack(0);
-	}
-	
-	public N getInput(int window)
+	public NLPNode getInput(int window)
 	{
 		return getNode(input, window, true);
 	}
 	
-	public N getInput()
+	public NLPNode getStack()
+	{
+		return getStack(0);
+	}
+	
+	public NLPNode getInput()
 	{
 		return getInput(0);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public N getNode(FeatureItem<?> item)
+	public NLPNode getNode(FeatureItem<?> item)
 	{
-		N node = null;
+		NLPNode node = null;
 		
 		switch (item.source)
 		{
@@ -254,10 +253,10 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 		case k: node = peekStack(item.window); break;
 		}
 		
-		return (N)getNode(node, item);
+		return (NLPNode)getNode(node, item);
 	}
 	
-	protected NLPNode getNode(N node, FeatureItem<?> item)
+	protected NLPNode getNode(NLPNode node, FeatureItem<?> item)
 	{
 		if (node == null || item.relation == null)
 			return node;
@@ -344,7 +343,7 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 	{
 		int las = 0, uas = 0;
 		DEPArc gold;
-		N node;
+		NLPNode node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
@@ -416,8 +415,8 @@ public class DEPState<N extends NLPNode> extends NLPState<N> implements DEPTrans
 	
 	public int[] getLabelIndices(int[][] indices)
 	{
-		N stack = getStack();
-		N input = getInput();
+		NLPNode stack = getStack();
+		NLPNode input = getInput();
 		
 		if (stack.getID() == 0)
 			return indices[IS_ROOT];

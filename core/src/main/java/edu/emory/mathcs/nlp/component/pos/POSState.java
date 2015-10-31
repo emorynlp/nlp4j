@@ -15,43 +15,48 @@
  */
 package edu.emory.mathcs.nlp.component.pos;
 
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
-import edu.emory.mathcs.nlp.component.util.state.L2RState;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.state.L2RState;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSState<N extends NLPNode> extends L2RState<N>
+public class POSState extends L2RState
 {
-	private AmbiguityClassMap ambiguity_class_map;
+	private String[] ambiguity_classes;
 	
-	public POSState(N[] nodes, AmbiguityClassMap map)
+	public POSState(NLPNode[] nodes, String[] ambiguityClasses)
 	{
 		super(nodes);
-		setAmbiguityClass(map);
+		setAmbiguityClasses(ambiguityClasses);
 	}
 	
 	@Override
-	protected String getLabel(N node)
+	protected String getLabel(NLPNode node)
 	{
 		return node.getPartOfSpeechTag();
 	}
 	
 	@Override
-	protected String setLabel(N node, String label)
+	protected String setLabel(NLPNode node, String label)
 	{
 		String s = node.getPartOfSpeechTag();
 		node.setPartOfSpeechTag(label);
 		return s;
 	}
 	
-	public String getAmbiguityClass(N node)
+	public String getAmbiguityClass(NLPNode node)
 	{
-		return ambiguity_class_map.get(node);
+		return ambiguity_classes[node.getID()];
 	}
 	
-	public void setAmbiguityClass(AmbiguityClassMap map)
+	public String[] getAmbiguityClasses()
 	{
-		ambiguity_class_map = map;		
+		return ambiguity_classes;
+	}
+	
+	public void setAmbiguityClasses(String[] classes)
+	{
+		ambiguity_classes = classes;
 	}
 }

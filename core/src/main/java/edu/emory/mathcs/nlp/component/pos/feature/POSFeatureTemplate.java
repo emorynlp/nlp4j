@@ -15,15 +15,15 @@
  */
 package edu.emory.mathcs.nlp.component.pos.feature;
 
+import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.pos.POSState;
-import edu.emory.mathcs.nlp.component.util.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.util.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class POSFeatureTemplate<N extends NLPNode> extends FeatureTemplate<N,POSState<N>>
+public abstract class POSFeatureTemplate extends FeatureTemplate<POSState>
 {
 	private static final long serialVersionUID = -243334323533999837L;
 	
@@ -37,7 +37,7 @@ public abstract class POSFeatureTemplate<N extends NLPNode> extends FeatureTempl
 	@Override
 	protected String getFeature(FeatureItem<?> item)
 	{
-		N node = state.getNode(item);
+		NLPNode node = state.getNode(item);
 		if (node == null) return null;
 		
 		switch (item.field)
@@ -50,7 +50,7 @@ public abstract class POSFeatureTemplate<N extends NLPNode> extends FeatureTempl
 	@Override
 	protected String[] getFeatures(FeatureItem<?> item)
 	{
-		N node = state.getNode(item);
+		NLPNode node = state.getNode(item);
 		return (node == null) ? null : getFeatures(item, node);
 	}
 }

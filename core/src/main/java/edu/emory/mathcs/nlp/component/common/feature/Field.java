@@ -13,35 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pos;
+package edu.emory.mathcs.nlp.component.common.feature;
 
-import java.io.InputStream;
-
-import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSConfig extends NLPConfig
+public enum Field
 {
-	private double ambiguity_class_threshold;
+	// form features
+	word_form,
+	simplified_word_form,
+	uncapitalized_simplified_word_form,
+	undigitalized_word_form,
+	uncapitalized_undigitalized_word_form,
+	word_shape,
+	orthographic,	// set
+	prefix,
+	suffix,
+
+	// part-of-speech tagging features
+	lemma,
+	feats,
+	part_of_speech_tag,
+	ambiguity_class,
 	
-	public POSConfig() {}
+	// named entity recognition
+	named_entity_tag,
 	
-	public POSConfig(InputStream in)
-	{
-		super(in);
-		setAmbiguityClassThreshold(XMLUtils.getDoubleTextContentFromFirstElementByTagName(xml, "ambiguity_class_threshold"));
-	}
+	// dependency parsing features
+	dependency_label,
+	distance,
+	valency,
 	
-	public double getAmbiguityClassThreshold()
-	{
-		return ambiguity_class_threshold;
-	}
+	// distributional semantics
+	word_clusters,
 	
-	public void setAmbiguityClassThreshold(double threshold)
-	{
-		ambiguity_class_threshold = threshold;
-	}
+	// more
+	binary;	// set
 }

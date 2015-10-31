@@ -20,15 +20,15 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import edu.emory.mathcs.nlp.component.util.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.util.config.NLPConfig;
-import edu.emory.mathcs.nlp.component.util.eval.Eval;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.common.eval.Eval;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPParser<N extends NLPNode> extends NLPOnlineComponent<N,DEPState<N>>
+public class DEPParser extends NLPOnlineComponent<DEPState>
 {
 	private static final long serialVersionUID = 7031031976396726276L;
 
@@ -48,10 +48,9 @@ public class DEPParser<N extends NLPNode> extends NLPOnlineComponent<N,DEPState<
 //	============================== ABSTRACT ==============================
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void setConfiguration(InputStream in)
 	{
-		setConfiguration((NLPConfig<N>)new DEPConfig(in));
+		setConfiguration((NLPConfig)new DEPConfig(in));
 	}
 	
 	@Override
@@ -61,8 +60,8 @@ public class DEPParser<N extends NLPNode> extends NLPOnlineComponent<N,DEPState<
 	}
 	
 	@Override
-	protected DEPState<N> initState(N[] nodes)
+	protected DEPState initState(NLPNode[] nodes)
 	{
-		return new DEPState<>(nodes);
+		return new DEPState(nodes);
 	}
 }

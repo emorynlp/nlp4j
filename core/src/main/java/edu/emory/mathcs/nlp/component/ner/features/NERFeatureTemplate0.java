@@ -15,15 +15,14 @@
  */
 package edu.emory.mathcs.nlp.component.ner.features;
 
-import edu.emory.mathcs.nlp.component.util.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.util.feature.Field;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.common.feature.Field;
 
 /**
  * Minimum features.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERFeatureTemplate0<N extends NLPNode> extends NERFeatureTemplate<N>
+public class NERFeatureTemplate0 extends NERFeatureTemplate
 {
 	private static final long serialVersionUID = -3867869616627234917L;
 

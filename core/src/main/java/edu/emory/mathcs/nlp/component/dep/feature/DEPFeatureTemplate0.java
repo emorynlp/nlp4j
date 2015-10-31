@@ -15,17 +15,16 @@
  */
 package edu.emory.mathcs.nlp.component.dep.feature;
 
-import edu.emory.mathcs.nlp.component.util.feature.Direction;
-import edu.emory.mathcs.nlp.component.util.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.util.feature.Field;
-import edu.emory.mathcs.nlp.component.util.feature.Relation;
-import edu.emory.mathcs.nlp.component.util.feature.Source;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.feature.Direction;
+import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.common.feature.Field;
+import edu.emory.mathcs.nlp.component.common.feature.Relation;
+import edu.emory.mathcs.nlp.component.common.feature.Source;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPFeatureTemplate0<N extends NLPNode> extends DEPFeatureTemplate<N>
+public class DEPFeatureTemplate0 extends DEPFeatureTemplate
 {
 	private static final long serialVersionUID = 4717085054409332081L;
 

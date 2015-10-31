@@ -23,11 +23,11 @@ import org.kohsuke.args4j.Option;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.util.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
-import edu.emory.mathcs.nlp.component.util.reader.TSVReader;
-import edu.emory.mathcs.nlp.component.util.state.NLPState;
-import edu.emory.mathcs.nlp.component.util.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
+import edu.emory.mathcs.nlp.component.common.state.NLPState;
+import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -46,17 +46,17 @@ public class NLPEval
 	public <N,S>NLPEval() {}
 	
 	@SuppressWarnings("unchecked")
-	public <S extends NLPState<NLPNode>>NLPEval(String[] args) throws Exception
+	public <S extends NLPState>NLPEval(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
-		NLPOnlineComponent<NLPNode,S> component = (NLPOnlineComponent<NLPNode,S>)in.readObject();
+		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		evaluate(FileUtils.getFileList(input_path, input_ext), component);
 	}
 	
-	public <S extends NLPState<NLPNode>>void evaluate(List<String> inputFiles, NLPOnlineComponent<NLPNode,S> component) throws Exception
+	public <S extends NLPState>void evaluate(List<String> inputFiles, NLPOnlineComponent<S> component) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		long st, et, time = 0, tokens = 0, sentences = 0;

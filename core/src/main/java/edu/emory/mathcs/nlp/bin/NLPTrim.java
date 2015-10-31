@@ -25,12 +25,12 @@ import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.component.util.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.util.eval.Eval;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
-import edu.emory.mathcs.nlp.component.util.reader.TSVReader;
-import edu.emory.mathcs.nlp.component.util.state.NLPState;
-import edu.emory.mathcs.nlp.component.util.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.common.eval.Eval;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
+import edu.emory.mathcs.nlp.component.common.state.NLPState;
+import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModelHash;
 
@@ -61,12 +61,12 @@ public class NLPTrim
 	public <N,S>NLPTrim() {}
 	
 	@SuppressWarnings("unchecked")
-	public <S extends NLPState<NLPNode>>NLPTrim(String[] args) throws Exception
+	public <S extends NLPState>NLPTrim(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
-		NLPOnlineComponent<NLPNode,S> component = (NLPOnlineComponent<NLPNode,S>)in.readObject();
+		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
 		StringModelHash model = (StringModelHash)component.getModels()[model_id];
@@ -92,7 +92,7 @@ public class NLPTrim
 		fout.close();
 	}
 	
-	public <S extends NLPState<NLPNode>>double evaluate(List<String> inputFiles, NLPOnlineComponent<NLPNode,S> component, StringModel model, float rate, int count) throws Exception
+	public <S extends NLPState>double evaluate(List<String> inputFiles, NLPOnlineComponent<S> component, StringModel model, float rate, int count) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		NLPNode[] nodes;

@@ -13,35 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pos;
-
-import java.io.InputStream;
-
-import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
+package edu.emory.mathcs.nlp.component.common.util;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSConfig extends NLPConfig
+public enum NLPMode
 {
-	private double ambiguity_class_threshold;
-	
-	public POSConfig() {}
-	
-	public POSConfig(InputStream in)
-	{
-		super(in);
-		setAmbiguityClassThreshold(XMLUtils.getDoubleTextContentFromFirstElementByTagName(xml, "ambiguity_class_threshold"));
-	}
-	
-	public double getAmbiguityClassThreshold()
-	{
-		return ambiguity_class_threshold;
-	}
-	
-	public void setAmbiguityClassThreshold(double threshold)
-	{
-		ambiguity_class_threshold = threshold;
-	}
+	pos,
+	dep,
+	ner,
+	srl;
 }

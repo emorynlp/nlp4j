@@ -13,43 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.dep;
+package edu.emory.mathcs.nlp.component.common;
 
-import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPArc extends AbstractArc<NLPNode>
+public interface NLPComponent
 {
-	private static final long serialVersionUID = -9099516205158258095L;
-	private double weight;
-	
-	public DEPArc(NLPNode node, String label)
-	{
-		super(node, label);
-	}
-	
-	public double getWeight()
-	{
-		return weight;
-	}
-
-	public void setWeight(double weight)
-	{
-		this.weight = weight;
-	}
-
-	@Override
-	public String toString()
-	{
-		return node.getID() + ARC_DELIM + label;
-	}
-	
-	@Override
-	public int compareTo(AbstractArc<NLPNode> arc)
-	{
-		return node.compareTo(arc.getNode());
-	}
+	/** Processes the sequence of nodes. */
+	void process(NLPNode[] nodes);
 }

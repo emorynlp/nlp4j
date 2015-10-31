@@ -15,14 +15,13 @@
  */
 package edu.emory.mathcs.nlp.component.pos.feature;
 
-import edu.emory.mathcs.nlp.component.util.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.util.feature.Field;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.common.feature.Field;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSFeatureTemplateWSJ<N extends NLPNode> extends POSFeatureTemplate<N>
+public class POSFeatureTemplateWSJ extends POSFeatureTemplate
 {
 	private static final long serialVersionUID = 7072878555553683666L;
 
