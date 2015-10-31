@@ -47,7 +47,6 @@ import org.junit.Test;
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.morph.MorphAnalyzer;
-import edu.emory.mathcs.nlp.component.morph.english.EnglishMorphAnalyzer;
 
 
 /** @author Jinho D. Choi ({@code jdchoi77@gmail.com}) */
@@ -195,7 +194,7 @@ public class EnglishMorphAnalyzerTest
 				{"....!!!!????----****====~~~~,,,,", "XX", "..!!??--**==~~,,"}
 		};
 		
-		MorphAnalyzer<?> lemmatizer = new EnglishMorphAnalyzer<>();
+		MorphAnalyzer lemmatizer = new EnglishMorphAnalyzer();
 		String lemma;
 		
 		for (String[] token : tokens)

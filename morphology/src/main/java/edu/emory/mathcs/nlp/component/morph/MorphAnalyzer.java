@@ -16,18 +16,18 @@
 package edu.emory.mathcs.nlp.component.morph;
 
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.component.util.NLPComponent;
-import edu.emory.mathcs.nlp.component.util.node.NLPNode;
+import edu.emory.mathcs.nlp.component.common.NLPComponent;
+import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class MorphAnalyzer<N extends NLPNode> implements NLPComponent<N>
+public abstract class MorphAnalyzer implements NLPComponent
 {
 	@Override
-	public void process(N[] nodes)
+	public void process(NLPNode[] nodes)
 	{
-		N node;
+		NLPNode node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
