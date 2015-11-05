@@ -188,7 +188,7 @@ public abstract class NLPOnlineTrain<S extends NLPState>
 			
 			try
 			{
-				while ((nodes = reader.next(this::createNode)) != null)
+				while ((nodes = reader.next()) != null)
 				{
 					f.accept(nodes);
 					

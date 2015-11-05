@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Set;
 
 import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.common.eval.Eval;
@@ -230,26 +229,27 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 		OnlineOptimizer optimizer;
 		SparseInstance inst;
 		StringModel model;
+		int[] Z, labels;
 		TrainInfo info;
 		SparseVector x;
 		float[] scores;
 		int ydot, yhat;
 		int modelID;
-		int[] Z;
 		
 		while (!state.isTerminate())
 		{
 			modelID = getModelID(state);
 			model = models[modelID];
 			x = extractFeatures(state, model);
+			labels = state.getLabelCandidates();
 			
 			if (isTrain())
 			{
 				optimizer = optimizers[modelID];
 				info = train_info[modelID];
-				Z = getZeroCostLabels(state, model);
+				Z = state.getZeroCostLabels(model);
 				optimizer.expand(model.getLabelSize(), model.getFeatureSize());
-				scores = model.scores(x);
+				scores = model.scores(x, labels);
 				inst = new SparseInstance(Z, x, scores);
 				ydot = inst.getGoldLabel();
 				yhat = optimizer.setPredictedLabel(inst);
@@ -258,14 +258,18 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 			}
 			else
 			{
-				scores = model.scores(x);
+				scores = model.scores(x, labels);
 				yhat = MLUtils.argmax(scores, model.getLabelSize());
 			}
 			
 			state.next(new StringPrediction(model.getLabel(yhat), scores[yhat]));
 		}
 	
-		if (isEvaluate()) state.evaluate(eval);
+		if (isDecode() || isEvaluate())
+		{
+			postProcess(state);
+			if (isEvaluate()) state.evaluate(eval);
+		}
 	}
 	
 //	============================== HELPERS ==============================
@@ -278,16 +282,9 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 		return model.toSparseVector(vector);
 	}
 	
-	protected int[] getZeroCostLabels(S state, StringModel model)
-	{
-		Set<String> set = state.getZeroCost();
-		model.addLabels(set);
-		return model.getLabelIndexArray(set);
-	}
-	
 	/** @return the index of the current statistical model to be used. */
-	protected int getModelID(S state)
-	{
-		return 0;
-	}
+	protected int getModelID(S state) { return 0; }
+	
+	/** Post-processes if necessary. */
+	protected void postProcess(S state) {}
 }

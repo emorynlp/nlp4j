@@ -22,9 +22,7 @@ import java.util.List;
 import org.kohsuke.args4j.Option;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
-import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.common.eval.Eval;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
@@ -32,12 +30,11 @@ import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
 import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModelHash;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NLPTrim
+public class NLPDev
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<filename>")
 	public String configuration_file;
@@ -47,52 +44,28 @@ public class NLPTrim
 	public String input_path;
 	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<string>")
 	public String input_ext = "*";
-	@Option(name="-oe", usage="output file extension (default: shrink)", required=false, metaVar="<string>")
-	public String output_ext = "sk";
-	@Option(name="-start", usage="starting shrink rate (default: 0.05)", required=false, metaVar="<float>")
-	public float start = 0.05f;
-	@Option(name="-inc", usage="increment rate (default: 0.01)", required=false, metaVar="<float>")
-	public float increment = 0.01f;
-	@Option(name="-tolerance", usage="accuracy tolerance (default: 0.02)", required=false, metaVar="<float>")
-	public float tolerance = 0.02f;
-	@Option(name="-id", usage="model id (default: 0)", required=false, metaVar="<integer>")
-	public int model_id = 0;
+	@Option(name="-oe", usage="output file extension (default: cnlp)", required=false, metaVar="<string>")
+	public String output_ext = "cnlp";
 	
-	public <N,S>NLPTrim() {}
+	public <N,S>NLPDev() {}
 	
 	@SuppressWarnings("unchecked")
-	public <S extends NLPState>NLPTrim(String[] args) throws Exception
+	public <S extends NLPState>NLPDev(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
 		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
-		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
-		StringModelHash model = (StringModelHash)component.getModels()[model_id];
+//		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
 		
-		int count = 0;
-		byte[] prevModel = model.toByteArray();
-		double score = evaluate(inputFiles, component, model, 0, count), currScore;
-		
-		for (float f=start; ; f+=increment)
-		{
-			count += model.trim(f);
-			currScore = evaluate(inputFiles, component, model, f, count);
-			
-			if (currScore + tolerance >= score)
-				prevModel = model.toByteArray();
-			else
-				break;
-		}
 		
 		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
-		model.fromByteArray(prevModel);
 		fout.writeObject(component);
 		fout.close();
 	}
 	
-	public <S extends NLPState>double evaluate(List<String> inputFiles, NLPOnlineComponent<S> component, StringModel model, float rate, int count) throws Exception
+	public <S extends NLPState>double evaluate(List<String> inputFiles, NLPOnlineComponent<S> component, StringModel model, float rate) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		NLPNode[] nodes;
@@ -105,13 +78,13 @@ public class NLPTrim
 		{
 			reader.open(IOUtils.createFileInputStream(inputFile));
 			
-			while ((nodes = reader.next(NLPNode::new)) != null)
+			while ((nodes = reader.next()) != null)
 				component.process(nodes);
 			
 			reader.close();
 		}
 		
-		System.out.println(String.format("%5.4f: %s -> %5.2f", rate, eval.toString(), MathUtils.accuracy(count, model.getFeatureSize())));
+		System.out.println(String.format("%5.4f: %s -> %d", rate, eval.toString(), model.getFeatureSize()));
 		return eval.score();
 	}
 	
@@ -119,7 +92,7 @@ public class NLPTrim
 	{
 		try
 		{
-			new NLPTrim(args);
+			new NLPDev(args);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}

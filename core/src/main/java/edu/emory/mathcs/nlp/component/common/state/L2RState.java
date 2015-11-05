@@ -16,13 +16,12 @@
 package edu.emory.mathcs.nlp.component.common.state;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
 
 import edu.emory.mathcs.nlp.component.common.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.common.eval.Eval;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.prediction.StringPrediction;
 
 /**
@@ -47,9 +46,11 @@ public abstract class L2RState extends NLPState
 	}
 	
 	@Override
-	public Set<String> getZeroCost()
+	public int[] getZeroCostLabels(StringModel model)
 	{
-		return Collections.singleton(oracle[input]);
+		String label = oracle[input];
+		model.addLabel(label);
+		return new int[]{model.getLabelIndex(label)};
 	}
 	
 	protected abstract String setLabel(NLPNode node, String label);
@@ -72,7 +73,8 @@ public abstract class L2RState extends NLPState
 	@Override
 	public NLPNode getNode(FeatureItem<?> item)
 	{
-		return getNode(input, item.window);
+		NLPNode node = getNode(input, item.window);
+		return getRelativeNode(item, node);
 	}
 	
 //	============================== EVALUATION ==============================

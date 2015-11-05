@@ -15,12 +15,11 @@
  */
 package edu.emory.mathcs.nlp.component.common.state;
 
-import java.util.Set;
-
 import edu.emory.mathcs.nlp.component.common.eval.Eval;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.common.util.GlobalLexica;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.prediction.StringPrediction;
 
 /**
@@ -40,7 +39,7 @@ public abstract class NLPState
 	public abstract void saveOracle();
 	
 	/** @return the zero cost labels given the current state. */
-	public abstract Set<String> getZeroCost();
+	public abstract int[] getZeroCostLabels(StringModel model);
 	
 	/** Applies the prediction and moves onto the next state */
 	public abstract void next(StringPrediction prediction);
@@ -53,6 +52,11 @@ public abstract class NLPState
 	
 	/** Evaluates all predictions given the current input and the evaluator. */
 	public abstract void evaluate(Eval eval);
+	
+	public NLPNode[] getNodes()
+	{
+		return nodes;
+	}
 	
 	/** @return the node in the (index+window) position of {@link #nodes} if exists; otherwise, null. */
 	public NLPNode getNode(int index, int window)
@@ -67,6 +71,11 @@ public abstract class NLPState
 		return begin <= index && index < nodes.length ? nodes[index] : null;
 	}
 	
+	public int[] getLabelCandidates()
+	{
+		return null;
+	}
+	
 	public boolean isFirst(NLPNode node)
 	{
 		return nodes[1] == node; 
@@ -75,5 +84,31 @@ public abstract class NLPState
 	public boolean isLast(NLPNode node)
 	{
 		return nodes[nodes.length-1] == node;
+	}
+	
+	protected NLPNode getRelativeNode(FeatureItem<?> item, NLPNode node)
+	{
+		if (node == null || item.relation == null)
+			return node;
+		
+		switch (item.relation)
+		{
+		case h   : return node.getDependencyHead();
+		case h2  : return node.getGrandDependencyHead();
+		case lmd : return node.getLeftMostDependent();
+		case lmd2: return node.getLeftMostDependent(1);
+		case lnd : return node.getLeftNearestDependent();
+		case lnd2: return node.getLeftNearestDependent(1);
+		case lns : return node.getLeftNearestSibling();
+		case lns2: return node.getLeftNearestSibling(1);
+		case rmd : return node.getRightMostDependent();
+		case rmd2: return node.getRightMostDependent(1);
+		case rnd : return node.getRightNearestDependent();
+		case rnd2: return node.getRightNearestDependent(1);
+		case rns : return node.getRightNearestSibling();
+		case rns2: return node.getRightNearestSibling(1);
+		}
+		
+		return null;
 	}
 }

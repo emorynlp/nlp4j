@@ -64,6 +64,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	protected int id;
 	protected String[] word_clusters;
 	protected String simplified_word_form;
+	protected String undigitalized_word_form;
 	protected SortedArrayList<NLPNode> dependent_list;
 	
 	public NLPNode() {}
@@ -136,6 +137,11 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		return simplified_word_form;
 	}
 	
+	public String getUndigitalizedWordForm()
+	{
+		return undigitalized_word_form;
+	}
+	
 	public String getLemma()
 	{
 		return lemma;
@@ -168,9 +174,9 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		{
 		case word_form: return getWordForm();
 		case simplified_word_form: return getSimplifiedWordForm();
-		case undigitalized_word_form: return StringUtils.toUndigitalizedForm(word_form, false);
+		case undigitalized_word_form: return getUndigitalizedWordForm();
 		case uncapitalized_simplified_word_form: return StringUtils.toLowerCase(simplified_word_form);
-		case uncapitalized_undigitalized_word_form: return StringUtils.toUndigitalizedForm(word_form, true);
+		case uncapitalized_undigitalized_word_form: return StringUtils.toLowerCase(undigitalized_word_form);
 		case lemma: return getLemma();
 		case part_of_speech_tag: return getPartOfSpeechTag();
 		case named_entity_tag: return getNamedEntityTag();
@@ -195,6 +201,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	{
 		word_form = form;
 		simplified_word_form = StringUtils.toSimplifiedForm(form);
+		undigitalized_word_form = StringUtils.toUndigitalizedForm(form, false);
 	}
 	
 	public void setLemma(String lemma)

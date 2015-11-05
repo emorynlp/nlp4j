@@ -52,8 +52,8 @@ public class NLPShrink
 	public float start = 0.05f;
 	@Option(name="-inc", usage="increment rate (default: 0.01)", required=false, metaVar="<float>")
 	public float increment = 0.01f;
-	@Option(name="-tolerance", usage="accuracy tolerance (default: 0.02)", required=false, metaVar="<float>")
-	public float tolerance = 0.02f;
+	@Option(name="-lower", usage="lower bound (required)", required=true, metaVar="<float>")
+	public float lower_bound;
 	@Option(name="-id", usage="model id (default: 0)", required=false, metaVar="<integer>")
 	public int model_id = 0;
 	
@@ -71,14 +71,16 @@ public class NLPShrink
 		StringModelMap model = (StringModelMap)component.getModels()[model_id];
 		
 		byte[] prevModel = model.toByteArray();
-		double score = evaluate(inputFiles, component, model, 0f), currScore;
+		double currScore;
+		
+		evaluate(inputFiles, component, model, 0f);
 		
 		for (float f=start; ; f+=increment)
 		{
 			model.shrink(f);
 			currScore = evaluate(inputFiles, component, model, f);
 			
-			if (currScore + tolerance >= score)
+			if (lower_bound < currScore)
 				prevModel = model.toByteArray();
 			else
 				break;
@@ -103,7 +105,7 @@ public class NLPShrink
 		{
 			reader.open(IOUtils.createFileInputStream(inputFile));
 			
-			while ((nodes = reader.next(NLPNode::new)) != null)
+			while ((nodes = reader.next()) != null)
 				component.process(nodes);
 			
 			reader.close();

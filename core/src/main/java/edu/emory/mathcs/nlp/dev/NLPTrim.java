@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.bin;
+package edu.emory.mathcs.nlp.dev;
 
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.kohsuke.args4j.Option;
@@ -23,16 +24,20 @@ import org.kohsuke.args4j.Option;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.common.eval.Eval;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
 import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModelHash;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NLPEval
+public class NLPTrim
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<filename>")
 	public String configuration_file;
@@ -42,61 +47,79 @@ public class NLPEval
 	public String input_path;
 	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<string>")
 	public String input_ext = "*";
+	@Option(name="-oe", usage="output file extension (default: shrink)", required=false, metaVar="<string>")
+	public String output_ext = "sk";
+	@Option(name="-start", usage="starting shrink rate (default: 0.05)", required=false, metaVar="<float>")
+	public float start = 0.05f;
+	@Option(name="-inc", usage="increment rate (default: 0.01)", required=false, metaVar="<float>")
+	public float increment = 0.01f;
+	@Option(name="-tolerance", usage="accuracy tolerance (default: 0.02)", required=false, metaVar="<float>")
+	public float tolerance = 0.02f;
+	@Option(name="-id", usage="model id (default: 0)", required=false, metaVar="<integer>")
+	public int model_id = 0;
 	
-	public <N,S>NLPEval() {}
+	public <N,S>NLPTrim() {}
 	
 	@SuppressWarnings("unchecked")
-	public <S extends NLPState>NLPEval(String[] args) throws Exception
+	public <S extends NLPState>NLPTrim(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
 		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
-		evaluate(FileUtils.getFileList(input_path, input_ext), component);
+		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
+		StringModelHash model = (StringModelHash)component.getModels()[model_id];
+		
+		int count = 0;
+		byte[] prevModel = model.toByteArray();
+		double score = evaluate(inputFiles, component, model, 0, count), currScore;
+		
+		for (float f=start; ; f+=increment)
+		{
+			count += model.trim(f);
+			currScore = evaluate(inputFiles, component, model, f, count);
+			
+			if (currScore + tolerance >= score)
+				prevModel = model.toByteArray();
+			else
+				break;
+		}
+		
+		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
+		model.fromByteArray(prevModel);
+		fout.writeObject(component);
+		fout.close();
 	}
 	
-	public <S extends NLPState>void evaluate(List<String> inputFiles, NLPOnlineComponent<S> component) throws Exception
+	public <S extends NLPState>double evaluate(List<String> inputFiles, NLPOnlineComponent<S> component, StringModel model, float rate, int count) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
-		long st, et, time = 0, tokens = 0, sentences = 0;
 		NLPNode[] nodes;
 		
-		// warm-up
-		component.setFlag(NLPFlag.DECODE);		
-		reader.open(IOUtils.createFileInputStream(inputFiles.get(0)));
-		for (int i=0; i<100 && (nodes = reader.next()) != null; i++) component.process(nodes);
-		reader.close();
-		
 		component.setFlag(NLPFlag.EVALUATE);
+		Eval eval = component.getEval();
+		eval.clear();
 		
 		for (String inputFile : inputFiles)
 		{
 			reader.open(IOUtils.createFileInputStream(inputFile));
 			
 			while ((nodes = reader.next()) != null)
-			{
-				st = System.currentTimeMillis();
 				component.process(nodes);
-				et = System.currentTimeMillis();
-				time += et - st;
-				tokens += nodes.length - 1;
-				sentences++;
-			}
 			
 			reader.close();
 		}
 		
-		System.out.println(component.getEval().toString());
-		System.out.printf("Sent.  per sec: %5d\n", Math.round(1000d * sentences / time));
-		System.out.printf("Tokens per sec: %5d\n", Math.round(1000d * tokens    / time));
+		System.out.println(String.format("%5.4f: %s -> %5.2f", rate, eval.toString(), MathUtils.accuracy(count, model.getFeatureSize())));
+		return eval.score();
 	}
 	
 	static public void main(String[] args)
 	{
 		try
 		{
-			new NLPEval(args);
+			new NLPTrim(args);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}

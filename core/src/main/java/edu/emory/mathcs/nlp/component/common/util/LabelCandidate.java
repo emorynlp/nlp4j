@@ -13,17 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.bin;
+package edu.emory.mathcs.nlp.component.common.util;
+
+import java.io.Serializable;
+import java.util.Arrays;
+
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class Version
+public class LabelCandidate implements Serializable
 {
-	public static void main(String[] args)
+	private static final long serialVersionUID = 4998627796201632789L;
+	private IntSet set;
+	private int[]  array;
+	
+	public LabelCandidate()
 	{
-		System.out.println("Emory NLP Version 1.0.0");
-		System.out.println("Webpage: http://nlp.mathcs.emory.edu");
-		System.out.println("Contact: jinho.choi@emory.edu");
+		set = new IntOpenHashSet();
+		array = null;
+	}
+	
+	public void add(int index)
+	{
+		if (!set.contains(index))
+		{
+			set.add(index);
+			array = set.toIntArray();
+			Arrays.sort(array);
+		}
+	}
+	
+	public int[] get()
+	{
+		return array;
 	}
 }

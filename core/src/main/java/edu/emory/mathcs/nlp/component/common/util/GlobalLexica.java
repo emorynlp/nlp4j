@@ -44,6 +44,8 @@ public class GlobalLexica
 		initWordCluster(eGlobal);
 	}
 	
+//	=================================== INITIALIZATION ===================================
+	
 	@SuppressWarnings("unchecked")
 	static public void initWordCluster(Element eGlobal)
 	{
@@ -63,6 +65,28 @@ public class GlobalLexica
 		
 		BinUtils.LOG.info(word_clusters.size()+"\n");
 	}
+	
+	@SuppressWarnings("unchecked")
+	static public void initNamedEntityDictionary(Element eGlobal)
+	{
+		Element element = XMLUtils.getFirstElementByTagName(eGlobal, "word_clusters");
+		if (element == null) return;
+		
+		String path = XMLUtils.getTrimmedTextContent(element);
+		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(path);
+		BinUtils.LOG.info("Loading word clusters: ");
+		
+		try
+		{
+			word_clusters = (HashMap<String,Set<String>>)in.readObject();
+			word_clusters_field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, "field"));
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		BinUtils.LOG.info(word_clusters.size()+"\n");
+	}
+	
+//	=================================== SETTERS ===================================
 	
 	static public void assignGlobalLexica(NLPNode[] nodes)
 	{
