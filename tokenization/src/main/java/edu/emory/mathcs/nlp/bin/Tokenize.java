@@ -40,7 +40,7 @@ public class Tokenize
 {
 	static public final String RAW  = "raw";
 	static public final String LINE = "line";
-//	static public final String TSV  = "tsv";
+	static public final String TSV  = "tsv";
 	
 	@Option(name="-l", usage="language (default: english)", required=false, metaVar="<language>")
 	private String language = Language.ENGLISH.toString();
@@ -50,8 +50,10 @@ public class Tokenize
 	private String input_ext = "*";
 	@Option(name="-oe", usage="output file extension (default: tok)", required=false, metaVar="<string>")
 	private String output_ext = "tok";
-	@Option(name="-format", usage="format of the input data (raw|line; default: raw)", required=false, metaVar="<string>")
-	private String type = RAW;
+	@Option(name="-input_format", usage="format of the input data (raw|line; default: raw)", required=false, metaVar="<string>")
+	private String input_format = RAW;
+	@Option(name="-output_format", usage="format of the output data (line|tsv; default: line)", required=false, metaVar="<string>")
+	private String output_format = LINE;
 	@Option(name="-threads", usage="number of threads (default: 2)", required=false, metaVar="<integer>")
 	protected int thread_size = 2;
 	
@@ -79,8 +81,11 @@ public class Tokenize
 		InputStream in  = IOUtils.createFileInputStream(inputFile);
 		PrintStream out = IOUtils.createBufferedPrintStream(outputFile);
 		
+		String tok_delim = output_format.equals(LINE) ? StringConst.SPACE : StringConst.NEW_LINE;
+		String sen_delim = output_format.equals(LINE) ? StringConst.EMPTY : StringConst.NEW_LINE;
+		
 		for (List<String> tokens : tokenizer.segmentize(in))
-			out.println(Joiner.join(tokens, StringConst.SPACE));
+			out.println(Joiner.join(tokens, tok_delim)+sen_delim);
 		
 		in.close();
 		out.close();
@@ -92,8 +97,11 @@ public class Tokenize
 		PrintStream out = IOUtils.createBufferedPrintStream(outputFile);
 		String line;
 		
+		String tok_delim = output_format.equals(LINE) ? StringConst.SPACE : StringConst.NEW_LINE;
+		String sen_delim = output_format.equals(LINE) ? StringConst.EMPTY : StringConst.NEW_LINE;
+		
 		while ((line = reader.readLine()) != null)
-			out.println(Joiner.join(tokenizer.tokenize(line), StringConst.SPACE));
+			out.println(Joiner.join(tokenizer.tokenize(line), tok_delim)+sen_delim);
 		
 		reader.close();
 		out.close();
@@ -140,7 +148,7 @@ public class Tokenize
 			{
 				BinUtils.LOG.info(FileUtils.getBaseName(input_file)+"\n");
 				
-				switch (type)
+				switch (input_format)
 				{
 				case RAW : tokenizeRaw (tokenizer, input_file, output_file);
 				case LINE: tokenizeLINE(tokenizer, input_file, output_file);
