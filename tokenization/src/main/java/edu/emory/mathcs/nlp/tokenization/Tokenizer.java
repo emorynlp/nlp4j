@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.magicwerk.brownies.collections.GapList;
+
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
@@ -121,7 +123,7 @@ abstract public class Tokenizer
 	 */
 	private List<String> tokenizeWhiteSpaces(String s)
 	{
-		List<String> tokens = new ArrayList<>();
+		List<String> tokens = new GapList<>();
 		int i, len = s.length(), bIndex = 0;
 		char[] cs = s.toCharArray();
 		
@@ -163,6 +165,9 @@ abstract public class Tokenizer
 	/** Called by {@link #tokenizeMetaInfo(List, String)}. */
 	private int[] getMetaRange(String s)
 	{
+		if (MetaUtils.startsWithNetworkProtocol(s))
+			return new int[]{0, s.length()};
+		
 		int[] ps;
 		
 		if ((ps = d_emoticon.getEmoticonRange(s)) != null)
