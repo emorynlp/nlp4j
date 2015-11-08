@@ -18,7 +18,6 @@ package edu.emory.mathcs.nlp.component.common.state;
 import edu.emory.mathcs.nlp.component.common.eval.Eval;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
-import edu.emory.mathcs.nlp.component.common.util.GlobalLexica;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
 import edu.emory.mathcs.nlp.machine_learning.prediction.StringPrediction;
 
@@ -31,7 +30,6 @@ public abstract class NLPState
 
 	public NLPState(NLPNode[] nodes)
 	{
-		GlobalLexica.assignGlobalLexica(nodes);
 		this.nodes = nodes;
 	}
 	

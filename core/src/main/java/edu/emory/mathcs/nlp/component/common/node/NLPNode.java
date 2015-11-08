@@ -204,6 +204,11 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		undigitalized_word_form = StringUtils.toUndigitalizedForm(form, false);
 	}
 	
+	public void setSimplifiedWordForm(String form)
+	{
+		simplified_word_form = form;
+	}
+	
 	public void setLemma(String lemma)
 	{
 		this.lemma = lemma;

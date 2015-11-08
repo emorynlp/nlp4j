@@ -1,0 +1,12 @@
+<configuration>
+    <language>english</language>
+
+	<tsv>
+        <column index="0" field="form"/>
+    </tsv>
+    
+    <global>
+        <word_clusters field="word_form">/Users/jdchoi/Downloads/ainos/wiki_nyt_uncapitalized_simplified.brown.xz</word_clusters>
+        <uncapitalized_words>/Users/jdchoi/Downloads/ainos/wiki_nyt.lex.5.0.7.xz</uncapitalized_words>
+    </global>
+</configuration>

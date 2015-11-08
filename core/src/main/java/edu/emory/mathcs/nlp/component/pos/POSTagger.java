@@ -68,9 +68,11 @@ public class POSTagger extends NLPOnlineComponent<POSState>
 //	============================== ABSTRACT ==============================
 	
 	@Override
-	public void setConfiguration(InputStream in)
+	public NLPConfig setConfiguration(InputStream in)
 	{
-		setConfiguration((NLPConfig)new POSConfig(in));
+		NLPConfig config = (NLPConfig)new POSConfig(in);
+		setConfiguration(config);
+		return config;
 	}
 	
 	@Override

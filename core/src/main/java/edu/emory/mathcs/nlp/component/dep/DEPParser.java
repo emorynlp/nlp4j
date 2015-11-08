@@ -59,9 +59,11 @@ public class DEPParser extends NLPOnlineComponent<DEPState>
 //	============================== ABSTRACT ==============================
 
 	@Override
-	public void setConfiguration(InputStream in)
+	public NLPConfig setConfiguration(InputStream in)
 	{
-		setConfiguration((NLPConfig)new DEPConfig(in));
+		NLPConfig config = (NLPConfig)new DEPConfig(in);
+		setConfiguration(config);
+		return config;
 	}
 	
 	@Override

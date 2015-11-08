@@ -57,9 +57,11 @@ public class NERTagger extends NLPOnlineComponent<NERState>
 //	============================== ABSTRACT ==============================
 	
 	@Override
-	public void setConfiguration(InputStream in)
+	public NLPConfig setConfiguration(InputStream in)
 	{
-		setConfiguration((NLPConfig)new NERConfig(in));
+		NLPConfig config = (NLPConfig)new NERConfig(in);
+		setConfiguration(config);
+		return config;
 	}
 	
 	@Override

@@ -19,6 +19,7 @@ import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.feature.Field;
 
 /**
+ * Default features.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class POSFeatureTemplate0 extends POSFeatureTemplate

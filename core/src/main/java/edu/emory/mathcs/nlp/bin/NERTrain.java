@@ -43,10 +43,7 @@ public class NERTrain extends NLPOnlineTrain<NERState>
 	}
 
 	@Override
-	protected void initComponent(NLPOnlineComponent<NERState> component, List<String> inputFiles)
-	{
-		initComponentSingleModel(component, inputFiles);
-	}
+	protected void collect(NLPOnlineComponent<NERState> component, List<String> inputFiles) {}
 	
 	@Override
 	protected FeatureTemplate<NERState> createFeatureTemplate()

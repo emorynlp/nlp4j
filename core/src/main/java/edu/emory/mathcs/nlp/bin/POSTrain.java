@@ -20,7 +20,6 @@ import java.util.List;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.common.train.NLPOnlineTrain;
@@ -35,6 +34,8 @@ import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate0;
  */
 public class POSTrain extends NLPOnlineTrain<POSState>
 {
+	public POSTrain() {}
+	
 	public POSTrain(String[] args)
 	{
 		super(args);
@@ -47,12 +48,27 @@ public class POSTrain extends NLPOnlineTrain<POSState>
 	}
 
 	@Override
-	protected void initComponent(NLPOnlineComponent<POSState> component, List<String> inputFiles)
+	protected void collect(NLPOnlineComponent<POSState> component, List<String> inputFiles)
 	{
-		initComponentSingleModel(component, inputFiles);
+		POSTagger tagger = (POSTagger)component;
+		AmbiguityClassMap map = tagger.getAmbiguityClassMap();
+		POSConfig config = (POSConfig)component.getConfiguration();
 		
-		AmbiguityClassMap map = createAmbiguityClasseMap(component.getConfiguration(), inputFiles);
-		((POSTagger)component).setAmbiguityClassMap(map);
+		if (map == null)
+		{
+			map = new AmbiguityClassMap();
+			tagger.setAmbiguityClassMap(map);
+		}
+		
+		collectAmbiguityClasses(config, inputFiles, map);
+	}
+	
+	protected void collectAmbiguityClasses(POSConfig config, List<String> inputFiles, AmbiguityClassMap map)
+	{
+		BinUtils.LOG.info("Collecting lexicons:\n");
+		iterate(config.getTSVReader(), inputFiles, nodes -> map.add(nodes));
+		map.expand(config.getAmbiguityClassThreshold());
+		BinUtils.LOG.info(String.format("- # of ambiguity classes: %d\n\n", map.size()));
 	}
 	
 	@Override
@@ -71,21 +87,9 @@ public class POSTrain extends NLPOnlineTrain<POSState>
 		return new NLPNode();
 	}
 	
-	protected AmbiguityClassMap createAmbiguityClasseMap(NLPConfig configuration, List<String> inputFiles)
-	{
-		BinUtils.LOG.info("Collecting lexicons:\n");
-		AmbiguityClassMap ac = new AmbiguityClassMap();
-		POSConfig config = (POSConfig)configuration;
-		
-		iterate(configuration.getTSVReader(), inputFiles, nodes -> ac.add(nodes));
-		ac.expand(config.getAmbiguityClassThreshold());
-		
-		BinUtils.LOG.info(String.format("- # of ambiguity classes: %d\n\n", ac.size()));
-		return ac;
-	}
-	
 	static public void main(String[] args)
 	{
 		new POSTrain(args).train();
 	}
 }
+//GlobalLexica.assignGlobalLexica(nodes);

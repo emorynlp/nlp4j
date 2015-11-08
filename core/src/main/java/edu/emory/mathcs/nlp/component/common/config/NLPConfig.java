@@ -27,6 +27,8 @@ import edu.emory.mathcs.nlp.component.common.train.TrainInfo;
 import edu.emory.mathcs.nlp.component.common.util.GlobalLexica;
 import edu.emory.mathcs.nlp.machine_learning.activation.SoftmaxFunction;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModelHash;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModelMap;
 import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaDeltaMiniBatch;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaGrad;
@@ -35,6 +37,9 @@ import edu.emory.mathcs.nlp.machine_learning.optimization.method.AdaGradRegressi
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.Perceptron;
 import edu.emory.mathcs.nlp.machine_learning.optimization.method.SoftmaxRegression;
 import edu.emory.mathcs.nlp.machine_learning.optimization.reguralization.RegularizedDualAveraging;
+import edu.emory.mathcs.nlp.machine_learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.machine_learning.vector.WeightVectorDynamic;
+import edu.emory.mathcs.nlp.machine_learning.vector.WeightVectorStatic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -104,40 +109,65 @@ public abstract class NLPConfig implements ConfigXML
 	
 //	=================================== TRAIN INFO ===================================
 	
-	public TrainInfo getTrainInfo()
+	public int getMaxEpochs()
 	{
-		return getTrainInfoAux(0);
+		return XMLUtils.getIntegerTextContentFromFirstElementByTagName(xml, MAX_EPOCHS);
 	}
-	
-	public TrainInfo[] getTrainInfo(int size)
+
+	public TrainInfo[] getTrainInfos()
 	{
-		TrainInfo[] info = new TrainInfo[size];
+		NodeList list = xml.getElementsByTagName(OPTIMIZER);
+		TrainInfo[] info = new TrainInfo[list.getLength()];
 		
-		for (int i=0; i<size; i++)
-			info[i] = getTrainInfoAux(i);
+		for (int i=0; i<info.length; i++)
+			info[i] = getTrainInfo((Element)list.item(i));
 		
 		return info;
 	}
 	
-	private TrainInfo getTrainInfoAux(int index)
+	public TrainInfo getTrainInfo(Element eOptimizer)
 	{
-		Element eOptimizer  = XMLUtils.getElementByTagName(xml, OPTIMIZER, index);
-		int     maxEpochs   = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCHS); 
 		int     batchSize   = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
 		int     labelSize   = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, LABEL_SIZE);
 		int     featureSize = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, FEATURE_SIZE);
 		boolean featureHash = XMLUtils.getBooleanTextContentFromFirstElementByTagName(eOptimizer, FEATURE_HASH);
 		float   bias        = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, BIAS);
 		float   rollIn      = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
-		return new TrainInfo(maxEpochs, batchSize, labelSize, featureSize, featureHash, bias, rollIn);
+		return new TrainInfo(batchSize, bias, rollIn, labelSize, featureSize, featureHash);
+	}
+	
+//	=================================== MODELS ===================================
+	
+	public StringModel[] getStringModels(TrainInfo[] info)
+	{
+		StringModel[] models = new StringModel[info.length];
+		
+		for (int i=0; i<info.length; i++)
+			models[i] = getStringModel(info[i]);
+		
+		return models;
+	}
+	
+	public StringModel getStringModel(TrainInfo info)
+	{
+		WeightVector vector;
+		StringModel  model;
+		
+		if (info.featureHash())
+		{
+			vector = new WeightVectorStatic(info.getLabelSize(), info.getFeatureSize());
+			model  = new StringModelHash(vector, info.getFeatureSize(), info.getBias());
+		}
+		else
+		{
+			vector = new WeightVectorDynamic();
+			model  = new StringModelMap(vector, info.getBias());
+		}
+		
+		return model;
 	}
 	
 //	=================================== OPTIMIZERS ===================================
-	
-	public OnlineOptimizer getOptimizer(StringModel model)
-	{
-		return getOnlineOptimizer(model, 0);
-	}
 	
 	public OnlineOptimizer[] getOptimizers(StringModel[] models)
 	{

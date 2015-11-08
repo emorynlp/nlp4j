@@ -185,7 +185,7 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 	}
 	
 	public abstract Eval createEvaluator();
-	public abstract void setConfiguration(InputStream in);
+	public abstract NLPConfig setConfiguration(InputStream in);
 	
 //	============================== FLAGS ==============================
 	

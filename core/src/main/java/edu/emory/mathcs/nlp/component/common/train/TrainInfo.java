@@ -26,17 +26,25 @@ public class TrainInfo
 {
 	private float   rollin_init, rollin_current;
 	private float   bias;
-	private int     max_epochs;
 	private int     batch_size;
 	private int     label_size;
 	private int     feature_size;
 	private boolean feature_hash;
-	private Random random;
+	private Random  random;
 	
-	public TrainInfo(int maxEpochs, int batchSize, int labelSize, int featureSize, boolean featureHash, float bias, float rollInProbability)
+	public TrainInfo(int batchSize, float bias, float rollInProbability)
+	{
+		init(batchSize, bias, rollInProbability, 0, 0, false);
+	}
+	
+	public TrainInfo(int batchSize, float bias, float rollInProbability, int labelSize, int featureSize, boolean featureHash)
+	{
+		init(batchSize, bias, rollInProbability, labelSize, featureSize, featureHash);
+	}
+	
+	public void init(int batchSize, float bias, float rollInProbability, int labelSize, int featureSize, boolean featureHash)
 	{
 		random = new XORShiftRandom(9);
-		setMaxEpochs(maxEpochs);
 		setBatchSize(batchSize);
 		setLabelSize(labelSize);
 		setFeatureSize(featureSize);
@@ -45,16 +53,6 @@ public class TrainInfo
 		setRollInProbability(rollInProbability);
 	}
 	
-	public int getMaxEpochs()
-	{
-		return max_epochs;
-	}
-
-	public void setMaxEpochs(int epochs)
-	{
-		max_epochs = epochs;
-	}
-
 	public int getBatchSize()
 	{
 		return batch_size;

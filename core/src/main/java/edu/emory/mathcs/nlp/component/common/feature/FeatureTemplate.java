@@ -153,7 +153,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		
 		switch (item.field)
 		{
-		case word_shape: return StringUtils.getShape(node.getWordForm(), (Integer)item.value);
+		case word_shape: return StringUtils.getShape(node.getSimplifiedWordForm(), (Integer)item.value);
 		case prefix: return getPrefix(node, (Integer)item.value);
 		case suffix: return getSuffix(node, (Integer)item.value);
 		case feats: return node.getFeat((String)item.value);
@@ -206,7 +206,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 			list.add(Orthographic.HYPERLINK);
 		else
 		{
-			char[] cs = node.getWordForm().toCharArray();
+			char[] cs = node.getSimplifiedWordForm().toCharArray();
 			getOrthographicFeauturesAux(list, cs, state.isFirst(node));
 		}
 		

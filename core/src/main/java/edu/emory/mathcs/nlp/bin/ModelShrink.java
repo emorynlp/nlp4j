@@ -22,6 +22,7 @@ import java.util.List;
 import org.kohsuke.args4j.Option;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
+import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.common.eval.Eval;
@@ -30,11 +31,12 @@ import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
 import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
 import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
+import edu.emory.mathcs.nlp.machine_learning.model.StringModelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NLPDev
+public class ModelShrink
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<filename>")
 	public String configuration_file;
@@ -44,23 +46,48 @@ public class NLPDev
 	public String input_path;
 	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<string>")
 	public String input_ext = "*";
-	@Option(name="-oe", usage="output file extension (default: cnlp)", required=false, metaVar="<string>")
-	public String output_ext = "cnlp";
+	@Option(name="-oe", usage="output file extension (default: shrink)", required=false, metaVar="<string>")
+	public String output_ext = "sk";
+	@Option(name="-start", usage="starting shrink rate (default: 0.05)", required=false, metaVar="<float>")
+	public float start = 0.05f;
+	@Option(name="-inc", usage="increment rate (default: 0.01)", required=false, metaVar="<float>")
+	public float increment = 0.01f;
+	@Option(name="-lower", usage="lower bound (required)", required=true, metaVar="<float>")
+	public float lower_bound;
+	@Option(name="-id", usage="model id (default: 0)", required=false, metaVar="<integer>")
+	public int model_id = 0;
 	
-	public <N,S>NLPDev() {}
+	public <N,S>ModelShrink() {}
 	
 	@SuppressWarnings("unchecked")
-	public <S extends NLPState>NLPDev(String[] args) throws Exception
+	public <S extends NLPState>ModelShrink(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
 		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
-//		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
+		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
+		StringModelMap model = (StringModelMap)component.getModels()[model_id];
 		
+		byte[] prevModel = model.toByteArray();
+		double currScore;
+		
+		evaluate(inputFiles, component, model, 0f);
+		
+		for (float f=start; ; f+=increment)
+		{
+			model.shrink(f);
+			currScore = evaluate(inputFiles, component, model, f);
+			
+			if (lower_bound < currScore)
+				prevModel = model.toByteArray();
+			else
+				break;
+		}
 		
 		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
+		model.fromByteArray(prevModel);
 		fout.writeObject(component);
 		fout.close();
 	}
@@ -92,7 +119,7 @@ public class NLPDev
 	{
 		try
 		{
-			new NLPDev(args);
+			new ModelShrink(args);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}
