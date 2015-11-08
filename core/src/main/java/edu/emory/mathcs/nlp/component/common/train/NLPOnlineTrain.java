@@ -63,7 +63,7 @@ public abstract class NLPOnlineTrain<S extends NLPState>
 	public int feature_template = 0;
 	@Option(name="-m", usage="model file (optional)", required=false, metaVar="<filename>")
 	public String model_file = null;
-	@Option(name="-pm", usage="previous model file (optional)", required=false, metaVar="<filename>")
+	@Option(name="-p", usage="previously trained model file (optional)", required=false, metaVar="<filename>")
 	public String previous_model_file = null;
 	
 	public NLPOnlineTrain() {};
