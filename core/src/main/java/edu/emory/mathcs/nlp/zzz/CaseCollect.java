@@ -72,32 +72,30 @@ public class CaseCollect
 		{
 			count = e.getValue();
 			
-			if (count[1] > cutoff && MathUtils.divide(count[0], count[1]) > threshold && isAlphaNum(e.getKey()))
+			if (count[1] > cutoff && MathUtils.divide(count[0], count[1]) > threshold && isVocab(e.getKey()))
 				set.add(e.getKey());
 		}
 		
 		return set;
 	}
 	
-	public boolean isAlphaNum(String s)
+	public boolean isVocab(String s)
 	{
 		char[] cs = s.toCharArray();
-		boolean alpha = false;
 		char c;
 		
-		if (cs[0] == '#' || cs[0] == '%' || cs[0] == '@' || cs[0] == '(')
+		if (cs[0] == '#' || cs[0] == '%' || cs[0] == '@' || cs[0] == '(' || CharUtils.containsDigitPunctuationOnly(cs, 0, cs.length))
 			return false;
 		
 		for (int i=0; i<cs.length; i++)
 		{
 			c = cs[i];
-			alpha = alpha || CharUtils.isAlphabet(c);
-			
-			if (!CharUtils.isAlphabet(c) && !CharUtils.isPunctuation(c))
+
+			if (!CharUtils.isAlnum(c) && !CharUtils.isPunctuation(c))
 				return false;
 		}
 		
-		return alpha;
+		return true;
 	}
 	
 	@SuppressWarnings("unchecked")
