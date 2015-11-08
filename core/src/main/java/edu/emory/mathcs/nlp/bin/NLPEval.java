@@ -27,6 +27,7 @@ import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
+import edu.emory.mathcs.nlp.component.common.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
 
 /**
@@ -62,12 +63,6 @@ public class NLPEval
 		long st, et, time = 0, tokens = 0, sentences = 0;
 		NLPNode[] nodes;
 		
-		// warm-up
-		component.setFlag(NLPFlag.DECODE);		
-		reader.open(IOUtils.createFileInputStream(inputFiles.get(0)));
-		for (int i=0; i<100 && (nodes = reader.next()) != null; i++) component.process(nodes);
-		reader.close();
-		
 		component.setFlag(NLPFlag.EVALUATE);
 		
 		for (String inputFile : inputFiles)
@@ -77,6 +72,7 @@ public class NLPEval
 			while ((nodes = reader.next()) != null)
 			{
 				st = System.currentTimeMillis();
+				GlobalLexica.processGlobalLexica(nodes);
 				component.process(nodes);
 				et = System.currentTimeMillis();
 				time += et - st;

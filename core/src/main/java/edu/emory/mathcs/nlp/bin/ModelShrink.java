@@ -29,6 +29,7 @@ import edu.emory.mathcs.nlp.component.common.eval.Eval;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
+import edu.emory.mathcs.nlp.component.common.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
 import edu.emory.mathcs.nlp.learning.model.StringModel;
 import edu.emory.mathcs.nlp.learning.model.StringModelMap;
@@ -106,7 +107,10 @@ public class ModelShrink
 			reader.open(IOUtils.createFileInputStream(inputFile));
 			
 			while ((nodes = reader.next()) != null)
+			{
+				GlobalLexica.processGlobalLexica(nodes);
 				component.process(nodes);
+			}
 			
 			reader.close();
 		}
