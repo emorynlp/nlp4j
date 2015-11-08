@@ -65,10 +65,10 @@ public class POSTrain extends NLPOnlineTrain<POSState>
 	
 	protected void collectAmbiguityClasses(POSConfig config, List<String> inputFiles, AmbiguityClassMap map)
 	{
-		BinUtils.LOG.info("Collecting lexicons:\n");
+		BinUtils.LOG.info("Collecting ambiguity classes: ");
 		iterate(config.getTSVReader(), inputFiles, nodes -> map.add(nodes));
 		map.expand(config.getAmbiguityClassThreshold());
-		BinUtils.LOG.info(String.format("- # of ambiguity classes: %d\n\n", map.size()));
+		BinUtils.LOG.info(map.size()+"\n");
 	}
 	
 	@Override

@@ -19,12 +19,17 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import edu.emory.mathcs.nlp.common.util.CharUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
@@ -67,18 +72,42 @@ public class CaseCollect
 		{
 			count = e.getValue();
 			
-			if (count[1] > cutoff && MathUtils.divide(count[0], count[1]) > threshold)
+			if (count[1] > cutoff && MathUtils.divide(count[0], count[1]) > threshold && isAlphaNum(e.getKey()))
 				set.add(e.getKey());
 		}
 		
 		return set;
 	}
 	
+	public boolean isAlphaNum(String s)
+	{
+		char[] cs = s.toCharArray();
+		boolean alpha = false;
+		char c;
+		
+		if (cs[0] == '#' || cs[0] == '%' || cs[0] == '@' || cs[0] == '(')
+			return false;
+		
+		for (int i=0; i<cs.length; i++)
+		{
+			c = cs[i];
+			alpha = alpha || CharUtils.isAlphabet(c);
+			
+			if (!CharUtils.isAlphabet(c) && !CharUtils.isPunctuation(c))
+				return false;
+		}
+		
+		return alpha;
+	}
+	
 	@SuppressWarnings("unchecked")
 	static public void main(String[] args) throws Exception
 	{
-		ObjectInputStream  in  = IOUtils.createObjectXZBufferedInputStream (args[0]);
-		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(args[0]+"."+args[1]+"."+args[2]+".xz");
+		final String INPUT_FILE  = args[0];
+		final String OUTPUT_FILE = args[0]+"."+args[1]+"."+args[2]+".xz";
+		
+		ObjectInputStream  in  = IOUtils.createObjectXZBufferedInputStream (INPUT_FILE);
+		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(OUTPUT_FILE);
 		int cutoff = Integer.parseInt(args[1]);
 		double threshold = Double.parseDouble(args[2]);
 		
@@ -89,5 +118,11 @@ public class CaseCollect
 		
 		out.writeObject(set);
 		out.close();
+		
+		PrintStream fout = IOUtils.createBufferedPrintStream(OUTPUT_FILE+".txt");
+		List<String> list = new ArrayList<>(set);
+		Collections.sort(list);
+		for (String s : list) fout.println(s);
+		fout.close();
 	}
 }
