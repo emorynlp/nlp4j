@@ -40,8 +40,8 @@ import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
 import edu.emory.mathcs.nlp.component.common.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
-import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
+import edu.emory.mathcs.nlp.learning.model.StringModel;
+import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 
 /**
  * Provide instances and methods for training NLP components.

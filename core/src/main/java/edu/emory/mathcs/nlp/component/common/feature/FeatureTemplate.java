@@ -31,7 +31,7 @@ import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.common.node.Orthographic;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
-import edu.emory.mathcs.nlp.machine_learning.vector.StringVector;
+import edu.emory.mathcs.nlp.learning.vector.StringVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

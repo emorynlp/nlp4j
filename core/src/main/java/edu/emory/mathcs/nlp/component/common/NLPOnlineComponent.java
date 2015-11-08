@@ -28,13 +28,13 @@ import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
 import edu.emory.mathcs.nlp.component.common.train.TrainInfo;
 import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
-import edu.emory.mathcs.nlp.machine_learning.instance.SparseInstance;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
-import edu.emory.mathcs.nlp.machine_learning.optimization.OnlineOptimizer;
-import edu.emory.mathcs.nlp.machine_learning.prediction.StringPrediction;
-import edu.emory.mathcs.nlp.machine_learning.util.MLUtils;
-import edu.emory.mathcs.nlp.machine_learning.vector.SparseVector;
-import edu.emory.mathcs.nlp.machine_learning.vector.StringVector;
+import edu.emory.mathcs.nlp.learning.instance.SparseInstance;
+import edu.emory.mathcs.nlp.learning.model.StringModel;
+import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
+import edu.emory.mathcs.nlp.learning.prediction.StringPrediction;
+import edu.emory.mathcs.nlp.learning.util.MLUtils;
+import edu.emory.mathcs.nlp.learning.vector.SparseVector;
+import edu.emory.mathcs.nlp.learning.vector.StringVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

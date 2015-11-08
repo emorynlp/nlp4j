@@ -92,4 +92,3 @@ public class POSTrain extends NLPOnlineTrain<POSState>
 		new POSTrain(args).train();
 	}
 }
-//GlobalLexica.assignGlobalLexica(nodes);

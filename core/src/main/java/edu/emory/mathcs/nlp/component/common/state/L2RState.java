@@ -21,8 +21,8 @@ import edu.emory.mathcs.nlp.component.common.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.common.eval.Eval;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
-import edu.emory.mathcs.nlp.machine_learning.prediction.StringPrediction;
+import edu.emory.mathcs.nlp.learning.model.StringModel;
+import edu.emory.mathcs.nlp.learning.prediction.StringPrediction;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

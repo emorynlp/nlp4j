@@ -25,9 +25,9 @@ import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.common.eval.Eval;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
-import edu.emory.mathcs.nlp.machine_learning.util.MLUtils;
-import edu.emory.mathcs.nlp.machine_learning.vector.SparseVector;
+import edu.emory.mathcs.nlp.learning.model.StringModel;
+import edu.emory.mathcs.nlp.learning.util.MLUtils;
+import edu.emory.mathcs.nlp.learning.vector.SparseVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

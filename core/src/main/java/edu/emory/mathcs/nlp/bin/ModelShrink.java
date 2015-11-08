@@ -30,8 +30,8 @@ import edu.emory.mathcs.nlp.component.common.node.NLPNode;
 import edu.emory.mathcs.nlp.component.common.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.common.state.NLPState;
 import edu.emory.mathcs.nlp.component.common.util.NLPFlag;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModel;
-import edu.emory.mathcs.nlp.machine_learning.model.StringModelMap;
+import edu.emory.mathcs.nlp.learning.model.StringModel;
+import edu.emory.mathcs.nlp.learning.model.StringModelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
