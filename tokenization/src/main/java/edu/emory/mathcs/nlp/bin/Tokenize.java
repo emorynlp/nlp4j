@@ -91,7 +91,7 @@ public class Tokenize
 		out.close();
 	}
 	
-	public void tokenizeLINE(Tokenizer tokenizer, String inputFile, String outputFile) throws IOException
+	public void tokenizeLine(Tokenizer tokenizer, String inputFile, String outputFile) throws IOException
 	{
 		BufferedReader reader = IOUtils.createBufferedReader(inputFile);
 		PrintStream out = IOUtils.createBufferedPrintStream(outputFile);
@@ -151,7 +151,7 @@ public class Tokenize
 				switch (input_format)
 				{
 				case RAW : tokenizeRaw (tokenizer, input_file, output_file);
-				case LINE: tokenizeLINE(tokenizer, input_file, output_file);
+				case LINE: tokenizeLine(tokenizer, input_file, output_file);
 //				case TSV : tokenizeTSV (tokenizer, input_file, output_file);
 				}
 			}
