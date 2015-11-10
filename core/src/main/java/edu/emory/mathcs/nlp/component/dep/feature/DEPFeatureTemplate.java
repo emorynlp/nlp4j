@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.dep.feature;
 
+import java.util.Collection;
+
 import edu.emory.mathcs.nlp.component.common.feature.Direction;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
@@ -57,7 +59,7 @@ public abstract class DEPFeatureTemplate extends FeatureTemplate<DEPState>
 	}
 	
 	@Override
-	protected String[] getFeatures(FeatureItem<?> item)
+	protected Collection<String> getFeatures(FeatureItem<?> item)
 	{
 		// TODO Auto-generated method stub
 		return null;

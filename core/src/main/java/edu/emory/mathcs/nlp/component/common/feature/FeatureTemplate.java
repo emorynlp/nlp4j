@@ -20,7 +20,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -102,8 +102,8 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	public StringVector extractFeatures()
 	{
 		StringVector x = new StringVector();
+		Collection<String> t;
 		int i, type = 0;
-		String[] t;
 		String f;
 		
 		for (i=0; i<feature_list.size(); i++,type++)
@@ -144,7 +144,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	}
 	
 	protected abstract String getFeature(FeatureItem<?> item);
-	protected abstract String[] getFeatures(FeatureItem<?> item);
+	protected abstract Collection<String> getFeatures(FeatureItem<?> item);
 	
 	protected String getFeature(FeatureItem<?> item, NLPNode node)
 	{
@@ -154,6 +154,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		switch (item.field)
 		{
 		case word_shape: return StringUtils.getShape(node.getSimplifiedWordForm(), (Integer)item.value);
+		case uncapitalized_word_shape: return StringUtils.getShape(StringUtils.toLowerCase(node.getSimplifiedWordForm()), (Integer)item.value);
 		case prefix: return getPrefix(node, (Integer)item.value);
 		case suffix: return getSuffix(node, (Integer)item.value);
 		case feats: return node.getFeat((String)item.value);
@@ -162,13 +163,15 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		}
 	}
 	
-	protected String[] getFeatures(FeatureItem<?> item, NLPNode node)
+	protected Collection<String> getFeatures(FeatureItem<?> item, NLPNode node)
 	{
 		switch (item.field)
 		{
 		case binary: return getBinaryFeatures(node);
-		case orthographic: return getOrthographicFeatures(node);
+		case orthographic: return getOrthographicFeatures(node, true);
+		case orthographic_uncapitalized: return getOrthographicFeatures(node, false);
 		case word_clusters: return node.getWordClusters();
+		case named_entity_gazetteers: return node.getNamedEntityGazetteers();
 		default: return null;
 		}
 	}
@@ -187,18 +190,17 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		return (n < s.length()) ? StringUtils.toLowerCase(s.substring(s.length()-n)) : null;
 	}
 	
-	protected String[] getBinaryFeatures(NLPNode node)
+	protected List<String> getBinaryFeatures(NLPNode node)
 	{
-		String[] values = new String[2];
-		int index = 0;
+		List<String> values = new ArrayList<>();
 		
-		if (state.isFirst(node)) values[index++] = "0";
-		if (state.isLast (node)) values[index++] = "1";
+		if (state.isFirst(node)) values.add("0");
+		if (state.isLast (node)) values.add("1");
 		
-		return (index == 0) ? null : (index == values.length) ? values : Arrays.copyOf(values, index);
+		return values.isEmpty() ? null : values;
 	}
 	
-	protected String[] getOrthographicFeatures(NLPNode node)
+	protected List<String> getOrthographicFeatures(NLPNode node, boolean caseSensitive)
 	{
 		List<String> list = new ArrayList<>();
 		
@@ -207,14 +209,14 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		else
 		{
 			char[] cs = node.getSimplifiedWordForm().toCharArray();
-			getOrthographicFeauturesAux(list, cs, state.isFirst(node));
+			getOrthographicFeauturesAux(list, cs, state.isFirst(node), caseSensitive);
 		}
 		
-		return list.isEmpty() ? null : list.toArray(new String[list.size()]);
+		return list.isEmpty() ? null : list;
 	}
 	
 	/** Called by {@link #getOrthographic(boolean)}. */
-	protected void getOrthographicFeauturesAux(List<String> list, char[] cs, boolean isFirst)
+	protected void getOrthographicFeauturesAux(List<String> list, char[] cs, boolean isFirst, boolean caseSensitive)
 	{
 		boolean hasDigit  = false;
 		boolean hasPeriod = false;
@@ -270,9 +272,9 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		}
 		
 		if (allUpper)
-			list.add(Orthographic.ALL_UPPER);
+			{if (caseSensitive) list.add(Orthographic.ALL_UPPER);}
 		else if (allLower)
-			list.add(Orthographic.ALL_LOWER);
+			{if (caseSensitive) list.add(Orthographic.ALL_LOWER);}
 		else if (allDigit)
 			list.add(Orthographic.ALL_DIGIT);
 		else if (allPunct)
@@ -280,9 +282,9 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		else if (allDigitOrPunct)
 			list.add(Orthographic.ALL_DIGIT_OR_PUNCT);
 		else if (noLower)
-			list.add(Orthographic.NO_LOWER);
+			{if (caseSensitive) list.add(Orthographic.NO_LOWER);}
 		
-		if (!allUpper)
+		if (caseSensitive && !allUpper)
 		{
 			if (fstUpper && !isFirst)
 				list.add(Orthographic.FST_UPPER);

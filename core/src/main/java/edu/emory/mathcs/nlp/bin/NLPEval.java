@@ -72,7 +72,7 @@ public class NLPEval
 			while ((nodes = reader.next()) != null)
 			{
 				st = System.currentTimeMillis();
-				GlobalLexica.processGlobalLexica(nodes);
+				GlobalLexica.assignGlobalLexica(nodes);
 				component.process(nodes);
 				et = System.currentTimeMillis();
 				time += et - st;

@@ -1,0 +1,33 @@
+1	Pierre	pierre	NNP	_	2	nn	_	_	_
+2	Vinken	vinken	NNP	_	9	nsubj	_	_	_
+3	,	,	,	_	2	punct	_	_	_
+4	61	0	CD	_	5	num	_	_	_
+5	years	year	NNS	_	6	npadvmod	_	_	_
+6	old	old	JJ	_	2	amod	_	_	_
+7	,	,	,	_	2	punct	_	_	_
+8	will	will	MD	_	9	aux	_	_	_
+9	join	join	VB	_	0	root	_	_	_
+10	the	the	DT	_	11	det	_	_	_
+11	board	board	NN	_	9	dobj	_	_	_
+12	as	as	IN	syn=CLR	9	prep	_	_	_
+13	a	a	DT	_	15	det	_	_	_
+14	nonexecutive	nonexecutive	JJ	_	15	amod	_	_	_
+15	director	director	NN	_	12	pobj	_	_	_
+16	Nov.	nov.	NNP	sem=TMP	9	npadvmod	_	_	_
+17	29	0	CD	_	16	num	_	_	_
+18	.	.	.	_	9	punct	_	_	_
+
+1	Mr.	mr.	NNP	_	2	nn	_	_	_
+2	Vinken	vinken	NNP	_	3	nsubj	_	_	_
+3	is	be	VBZ	_	0	root	_	_	_
+4	chairman	chairman	NN	syn=PRD	3	attr	_	_	_
+5	of	of	IN	_	4	prep	_	_	_
+6	Elsevier	elsevier	NNP	_	7	nn	_	_	_
+7	N.V.	n.v.	NNP	_	5	pobj	_	_	_
+8	,	,	,	_	7	punct	_	_	_
+9	the	the	DT	_	12	det	_	_	_
+10	Dutch	dutch	NNP	_	12	nn	_	_	_
+11	publishing	publish	VBG	_	12	amod	_	_	_
+12	group	group	NN	_	7	appos	_	_	_
+13	.	.	.	_	3	punct	_	_	_
+

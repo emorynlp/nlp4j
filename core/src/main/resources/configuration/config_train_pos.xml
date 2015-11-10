@@ -1,25 +1,22 @@
 <configuration>
-    <language>english</language>
-    
-    <model>general-en-pos.xz</model>
-
 	<tsv>
-        <column index="0" field="form"/>
-        <column index="1" field="pos"/>
+        <column index="1" field="form"/>
+        <column index="3" field="pos"/>
     </tsv>
-    
+
+    <lexica>
+        <word_clusters field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/lexica/word_clusters_english.xz</word_clusters>
+    </lexica>
+
     <optimizer>
         <algorithm>adagrad-mini-batch</algorithm>
-        <l1_regularization>0.000002</l1_regularization>
+        <l1_regularization>0.00001</l1_regularization>
         <learning_rate>0.02</learning_rate>
+        <max_epochs>40</max_epochs>
         <batch_size>5</batch_size>
         <roll_in>0.95</roll_in>
-        <label_size>50</label_size>
-        <feature_size>1500000</feature_size>
-        <feature_hash>true</feature_hash>
         <bias>0</bias>
     </optimizer>
-    
-	<max_epochs>15</max_epochs>
+
 	<ambiguity_class_threshold>0.4</ambiguity_class_threshold>
 </configuration>

@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.ner.features;
 
+import java.util.Collection;
+
 import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
@@ -48,7 +50,7 @@ public abstract class NERFeatureTemplate extends FeatureTemplate<NERState>
 	}
 	
 	@Override
-	protected String[] getFeatures(FeatureItem<?> item)
+	protected Collection<String> getFeatures(FeatureItem<?> item)
 	{
 		NLPNode node = state.getNode(item);
 		return (node == null) ? null : getFeatures(item, node);

@@ -73,7 +73,7 @@ public class TSVDecode
 			
 			while ((nodes = reader.next()) != null)
 			{
-				GlobalLexica.processGlobalLexica(nodes);
+				GlobalLexica.assignGlobalLexica(nodes);
 				component.process(nodes);
 				fout.println(Joiner.join(nodes, "\n", 1)+"\n");
 			}

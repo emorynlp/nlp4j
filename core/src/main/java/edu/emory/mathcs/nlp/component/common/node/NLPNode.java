@@ -62,10 +62,13 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 
 	// inferred fields
 	protected int id;
-	protected String[] word_clusters;
 	protected String simplified_word_form;
-	protected String undigitalized_word_form;
+	protected String uncapitalized_simplified_word_form;
 	protected SortedArrayList<NLPNode> dependent_list;
+	
+	// lexica
+	protected Set<String> word_clusters;
+	protected Set<String> named_entity_gazetteers;
 	
 	public NLPNode() {}
 	
@@ -137,9 +140,9 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		return simplified_word_form;
 	}
 	
-	public String getUndigitalizedWordForm()
+	public String getUncapitalizedSimplifiedWordForm()
 	{
-		return undigitalized_word_form;
+		return uncapitalized_simplified_word_form;
 	}
 	
 	public String getLemma()
@@ -174,9 +177,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		{
 		case word_form: return getWordForm();
 		case simplified_word_form: return getSimplifiedWordForm();
-		case undigitalized_word_form: return getUndigitalizedWordForm();
-		case uncapitalized_simplified_word_form: return StringUtils.toLowerCase(simplified_word_form);
-		case uncapitalized_undigitalized_word_form: return StringUtils.toLowerCase(undigitalized_word_form);
+		case uncapitalized_simplified_word_form: return getUncapitalizedSimplifiedWordForm();
 		case lemma: return getLemma();
 		case part_of_speech_tag: return getPartOfSpeechTag();
 		case named_entity_tag: return getNamedEntityTag();
@@ -185,9 +186,14 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		}
 	}
 	
-	public String[] getWordClusters()
+	public Set<String> getWordClusters()
 	{
 		return word_clusters;
+	}
+	
+	public Set<String> getNamedEntityGazetteers()
+	{
+		return named_entity_gazetteers;
 	}
 
 //	============================== SETTERS ==============================
@@ -201,12 +207,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	{
 		word_form = form;
 		simplified_word_form = StringUtils.toSimplifiedForm(form);
-		undigitalized_word_form = StringUtils.toUndigitalizedForm(form, false);
-	}
-	
-	public void setSimplifiedWordForm(String form)
-	{
-		simplified_word_form = form;
+		uncapitalized_simplified_word_form = StringUtils.toLowerCase(simplified_word_form);
 	}
 	
 	public void setLemma(String lemma)
@@ -239,9 +240,30 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		nament_tag = tag;
 	}
 	
-	public void setWordClusters(String[] clusters)
+	public void setWordClusters(Set<String> clusters)
 	{
 		word_clusters = clusters;
+	}
+	
+	public void addWordCluster(String cluster)
+	{
+		if (word_clusters == null)
+			word_clusters = new HashSet<>();
+		
+		word_clusters.add(cluster);
+	}
+	
+	public void setNamedEntityGazetteers(Set<String> gazetteers)
+	{
+		named_entity_gazetteers = gazetteers;
+	}
+	
+	public void addNamedEntityGazetteer(String gazetteer)
+	{
+		if (named_entity_gazetteers == null)
+			named_entity_gazetteers = new HashSet<>();
+		
+		named_entity_gazetteers.add(gazetteer);
 	}
 	
 //	============================== BOOLEANS ==============================

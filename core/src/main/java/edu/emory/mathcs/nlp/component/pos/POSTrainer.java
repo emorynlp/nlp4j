@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.bin;
+package edu.emory.mathcs.nlp.component.pos;
 
 import java.io.InputStream;
 import java.util.List;
@@ -22,25 +22,15 @@ import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
-import edu.emory.mathcs.nlp.component.common.train.NLPOnlineTrain;
-import edu.emory.mathcs.nlp.component.pos.AmbiguityClassMap;
-import edu.emory.mathcs.nlp.component.pos.POSConfig;
-import edu.emory.mathcs.nlp.component.pos.POSState;
-import edu.emory.mathcs.nlp.component.pos.POSTagger;
+import edu.emory.mathcs.nlp.component.common.train.NLPOnlineTrainer;
 import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate0;
+import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate1;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTrain extends NLPOnlineTrain<POSState>
+public class POSTrainer extends NLPOnlineTrainer<POSState>
 {
-	public POSTrain() {}
-	
-	public POSTrain(String[] args)
-	{
-		super(args);
-	}
-	
 	@Override
 	protected NLPOnlineComponent<POSState> createComponent(InputStream config)
 	{
@@ -72,12 +62,13 @@ public class POSTrain extends NLPOnlineTrain<POSState>
 	}
 	
 	@Override
-	protected FeatureTemplate<POSState> createFeatureTemplate()
+	protected FeatureTemplate<POSState> createFeatureTemplate(int id)
 	{
-		switch (feature_template)
+		switch (id)
 		{
 		case 0: return new POSFeatureTemplate0();
-		default: throw new IllegalArgumentException("Unknown feature template: "+feature_template);
+		case 1: return new POSFeatureTemplate1();
+		default: throw new IllegalArgumentException("Unknown feature template: "+id);
 		}
 	}
 	
@@ -85,10 +76,5 @@ public class POSTrain extends NLPOnlineTrain<POSState>
 	protected NLPNode createNode()
 	{
 		return new NLPNode();
-	}
-	
-	static public void main(String[] args)
-	{
-		new POSTrain(args).train();
 	}
 }

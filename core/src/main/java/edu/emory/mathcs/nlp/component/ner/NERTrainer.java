@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.bin;
+package edu.emory.mathcs.nlp.component.ner;
 
 import java.io.InputStream;
 import java.util.List;
@@ -21,21 +21,14 @@ import java.util.List;
 import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
-import edu.emory.mathcs.nlp.component.common.train.NLPOnlineTrain;
-import edu.emory.mathcs.nlp.component.ner.NERState;
-import edu.emory.mathcs.nlp.component.ner.NERTagger;
+import edu.emory.mathcs.nlp.component.common.train.NLPOnlineTrainer;
 import edu.emory.mathcs.nlp.component.ner.features.NERFeatureTemplate0;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERTrain extends NLPOnlineTrain<NERState>
+public class NERTrainer extends NLPOnlineTrainer<NERState>
 {
-	public NERTrain(String[] args)
-	{
-		super(args);
-	}
-	
 	@Override
 	protected NLPOnlineComponent<NERState> createComponent(InputStream config)
 	{
@@ -46,12 +39,12 @@ public class NERTrain extends NLPOnlineTrain<NERState>
 	protected void collect(NLPOnlineComponent<NERState> component, List<String> inputFiles) {}
 	
 	@Override
-	protected FeatureTemplate<NERState> createFeatureTemplate()
+	protected FeatureTemplate<NERState> createFeatureTemplate(int id)
 	{
-		switch (feature_template)
+		switch (id)
 		{
 		case  0: return new NERFeatureTemplate0();
-		default: throw new IllegalArgumentException("Unknown feature template: "+feature_template);
+		default: throw new IllegalArgumentException("Unknown feature template: "+id);
 		}
 	}
 	
@@ -59,10 +52,5 @@ public class NERTrain extends NLPOnlineTrain<NERState>
 	protected NLPNode createNode()
 	{
 		return new NLPNode();
-	}
-	
-	static public void main(String[] args)
-	{
-		new NERTrain(args).train();
 	}
 }

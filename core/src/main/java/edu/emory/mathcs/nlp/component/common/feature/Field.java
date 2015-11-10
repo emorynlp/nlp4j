@@ -25,10 +25,10 @@ public enum Field
 	word_form,
 	simplified_word_form,
 	uncapitalized_simplified_word_form,
-	undigitalized_word_form,
-	uncapitalized_undigitalized_word_form,
 	word_shape,
+	uncapitalized_word_shape,
 	orthographic,	// set
+	orthographic_uncapitalized,	// set
 	prefix,
 	suffix,
 
@@ -46,8 +46,9 @@ public enum Field
 	distance,
 	valency,
 	
-	// distributional semantics
+	// lexica
 	word_clusters,
+	named_entity_gazetteers,
 	
 	// more
 	binary;	// set

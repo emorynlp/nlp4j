@@ -19,17 +19,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import org.kohsuke.args4j.Option;
-
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
-import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
@@ -47,54 +45,52 @@ import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
  * Provide instances and methods for training NLP components.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class NLPOnlineTrain<S extends NLPState>
+public abstract class NLPOnlineTrainer<S extends NLPState>
 {
-	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<filename>")
-	public String configuration_file;
-	@Option(name="-t", usage="training path (required)", required=true, metaVar="<filepath>")
-	public String train_path;
-	@Option(name="-te", usage="training file extension (default: *)", required=false, metaVar="<string>")
-	public String train_ext = "*";
-	@Option(name="-d", usage="development path (required)", required=true, metaVar="<filepath>")
-	public String develop_path;
-	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
-	public String develop_ext = "*";
-	@Option(name="-f", usage="feature template ID (default: 0)", required=false, metaVar="integer")
-	public int feature_template = 0;
-	@Option(name="-m", usage="model file (optional)", required=false, metaVar="<filename>")
-	public String model_file = null;
-	@Option(name="-p", usage="previously trained model file (optional)", required=false, metaVar="<filename>")
-	public String previous_model_file = null;
-	
-	public NLPOnlineTrain() {};
-	
-	public NLPOnlineTrain(String[] args)
-	{
-		BinUtils.initArgs(args, this);
-	}
+	public NLPOnlineTrainer() {};
 	
 //	=================================== ABSTRACT ===================================
 
 	protected abstract void collect(NLPOnlineComponent<S> component, List<String> inputFiles);
 	protected abstract NLPOnlineComponent<S> createComponent(InputStream config);
-	protected abstract FeatureTemplate<S> createFeatureTemplate();
+	protected abstract FeatureTemplate<S> createFeatureTemplate(int id);
 	protected abstract NLPNode createNode();
 	
 //	=================================== COMPONENT ===================================
 	
-	public NLPOnlineComponent<S> initComponent(InputStream configStream)
+	@SuppressWarnings("unchecked")
+	public NLPOnlineComponent<S> initComponent(InputStream configStream, InputStream previousModelStream, int featureID)
 	{
-		NLPOnlineComponent<S> component = createComponent(configStream);
-		NLPConfig configuration = component.getConfiguration();
-		TrainInfo[] info = configuration.getTrainInfos();
-		StringModel[] models = configuration.getStringModels(info);
-		OnlineOptimizer[] optimizers = configuration.getOptimizers(models);
-		FeatureTemplate<S> template = createFeatureTemplate();
+		NLPOnlineComponent<S> component = null;
+		NLPConfig configuration = null;
+		StringModel[] models = null;
+		TrainInfo[] info;
 		
-		component.setModels(models);
-		component.setTrainInfos(info);
-		component.setOptimizers(optimizers);
-		component.setFeatureTemplate(template);
+		if (previousModelStream != null)
+		{
+			BinUtils.LOG.info("Loading the previous model:\n");
+			ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(previousModelStream);
+			
+			try
+			{
+				component = (NLPOnlineComponent<S>)oin.readObject();
+				configuration = component.setConfiguration(configStream);
+				models = component.getModels();
+				oin.close();
+			}
+			catch (Exception e) {e.printStackTrace();}
+		}
+		else
+		{
+			component = createComponent(configStream);
+			configuration = component.getConfiguration();
+			component.setFeatureTemplate(createFeatureTemplate(featureID));
+		}
+	
+		component.setTrainInfos(info = configuration.getTrainInfos());
+		if (models == null) component.setModels(models = configuration.getStringModels(info));
+		component.setOptimizers(configuration.getOptimizers(models));
+
 		return component;
 	}
 	
@@ -119,13 +115,13 @@ public abstract class NLPOnlineTrain<S extends NLPState>
 	
 //	=================================== TRAIN ===================================
 	
-	public void train()
+	public void train(List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile, int featureType)
 	{
-		List<String> trainFiles   = FileUtils.getFileList(train_path  , train_ext);
-		List<String> developFiles = FileUtils.getFileList(develop_path, develop_ext);
-		NLPOnlineComponent<S> component = initComponent(IOUtils.createFileInputStream(configuration_file));
+		InputStream configStream = IOUtils.createFileInputStream(configurationFile);
+		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
+		NLPOnlineComponent<S> component = initComponent(configStream, previousModelStream, featureType);
 		train(trainFiles, developFiles, component);
-		if (model_file != null) save(component);
+		if (modelFile != null) saveModel(component, IOUtils.createFileOutputStream(modelFile));
 	}
 	
 	public void train(List<String> trainFiles, List<String> developFiles, NLPOnlineComponent<S> component)
@@ -198,7 +194,7 @@ public abstract class NLPOnlineTrain<S extends NLPState>
 			{
 				while ((nodes = reader.next()) != null)
 				{
-					GlobalLexica.processGlobalLexica(nodes);
+					GlobalLexica.assignGlobalLexica(nodes);
 					f.accept(nodes);
 					update(optimizers, info, counts, false);
 				}
@@ -224,9 +220,9 @@ public abstract class NLPOnlineTrain<S extends NLPState>
 		}
 	}
 	
-	public void save(NLPOnlineComponent<S> component)
+	public void saveModel(NLPOnlineComponent<S> component, OutputStream stream)
 	{
-		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(model_file);
+		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(stream);
 		
 		try
 		{
