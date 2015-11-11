@@ -24,8 +24,8 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
  * `dep`: dependency parsing.
  * `srl`: semantic role labeling.
 * `-c` specifies the configuration file (see [configuration](#configuration)).
-* `-f` specifies the feature template ID (developers only; see [feature template](feature-template)).
-* `-m` specifies the model file to be saved in the [xz](http://tukaani.org) format; if not specified, the model is not saved.
+* `-f` specifies the feature template ID (developers only; see [feature template](#feature-template)).
+* `-m` specifies the model file to be saved in the [XZ](http://tukaani.org) format; if not specified, the model is not saved.
 * `-p` specifies the previously trained model used as the seed model.
 * `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the specific directory are trained.
 * `-te|de` specifies the training or development file extension. The default value `*` implies files with any extension. This option is used only when the training or development path `-t|d` points to a directory.
@@ -57,8 +57,8 @@ Sample configuration files can be found [here](../../src/main/resources/configur
     </tsv>
 
     <lexica>
-        <word_clusters field="uncapitalized_simplified_word_form">word_clusters_english.xz</word_clusters>
-        <named_entity_gazetteers field="uncapitalized_simplified_word_form">named_entity_gazetteers_english.xz</named_entity_gazetteers>
+        <word_clusters field="uncapitalized_simplified_word_form">brown-clusters-en.xz</word_clusters>
+        <named_entity_gazetteers field="uncapitalized_simplified_word_form">ner-gazetteers-en.xz</named_entity_gazetteers>
     </lexica>
 
     <optimizer>
@@ -73,7 +73,24 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 </configuration>
 ```
 
-* See [configuration](../specification/configuration.md#training) for details about the common fields.
+* `<tsv>` specifies the information for our [TSV reader](../../src/main/java/edu/emory/mathcs/nlp/component/common/reader/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample.tsv`](../../src/main/resources/dat/sample.tsv)):
+ * `form`   word form.
+ * `lemma`  lemma.
+ * `pos`    part-of-speech tag.
+ * `feats`  extra features.
+ * `dhead`  dependency head ID.
+ * `deprel` dependency label.
+ * `sheads` semantic heads.
+ * `nament` named entity tag.
+
+* `<lexica>` specifies the lexica used globally across different components. `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](../../src/main/java/edu/emory/mathcs/nlp/component/common/node/NLPNode.java#L174)).
+ * `<word_clusters>`: [`brown-clusters-en.xz `]().
+ * `<named_entity_gazetteers>`: [`ner-gazetteers-en`]().
+
+* `<optimizer>`
+
+### Part-of-Speech Tagging
+
 * `ambiguity_class_threshold`: discard ambiguity classes whose likelihoods are less than or equal to this threshold.
 
 ## Feature Template
@@ -81,3 +98,4 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 , `0`, is defined in [`POSFeatureTemplate`](../../src/main/java/edu/emory/mathcs/nlp/component/pos/POSFeatureTemplate.java). You can define your own feature templates and declare them in [`NLPTrain`](../../src/main/java/edu/emory/mathcs/nlp/bin/NLPTrain.java), which is useful for feature engineering
 
   The following shows the default configuration file: [`config_train_pos.xml`](../../src/main/resources/configuration/config_train_pos.xml).
+  
