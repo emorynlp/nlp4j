@@ -45,7 +45,7 @@ public class NLPTrain
 	protected String model_file = null;
 	@Option(name="-p", usage="previously trained model file (optional)", required=false, metaVar="<filename>")
 	protected String previous_model_file = null;
-	@Option(name="-mode", usage="mode (pos|ner|dep|srl)", required=true, metaVar="<string>")
+	@Option(name="-mode", usage="mode (required: pos|ner|dep|srl)", required=true, metaVar="<string>")
 	protected String mode = null;
 	
 	public NLPTrain(String[] args)
