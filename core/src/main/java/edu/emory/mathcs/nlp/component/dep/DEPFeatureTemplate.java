@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.dep.feature;
+package edu.emory.mathcs.nlp.component.dep;
 
 import java.util.Collection;
 
@@ -21,7 +21,6 @@ import edu.emory.mathcs.nlp.component.common.feature.Direction;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.common.node.NLPNode;
-import edu.emory.mathcs.nlp.component.dep.DEPState;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

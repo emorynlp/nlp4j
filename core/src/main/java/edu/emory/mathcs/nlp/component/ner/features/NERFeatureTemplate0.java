@@ -17,6 +17,7 @@ package edu.emory.mathcs.nlp.component.ner.features;
 
 import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.feature.Field;
+import edu.emory.mathcs.nlp.component.ner.NERFeatureTemplate;
 
 /**
  * Minimum features.

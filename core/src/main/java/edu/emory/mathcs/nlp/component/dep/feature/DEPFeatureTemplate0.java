@@ -20,6 +20,7 @@ import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.common.feature.Field;
 import edu.emory.mathcs.nlp.component.common.feature.Relation;
 import edu.emory.mathcs.nlp.component.common.feature.Source;
+import edu.emory.mathcs.nlp.component.dep.DEPFeatureTemplate;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
