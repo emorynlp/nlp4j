@@ -89,23 +89,23 @@ Sample configuration files can be found [here](../src/main/resources/configurati
 
 * `optimizer`specifies the optimizer to train a statistical model.
  * `algorithm`: perceptron, softmax, adagrad, agagrad-mini-batch, agadelta-mini-batch, agagrad-regression.
- * `l1_regularization`: [RDA](http://www.jmlr.org/papers/volume11/xiao10a/xiao10a.pdf) regularization parameter used for `adagrad-*`.
+ * `l1_regularization`: the [RDA](http://www.jmlr.org/papers/volume11/xiao10a/xiao10a.pdf) regularization parameter used for `adagrad-*`.
  * `learning_rate`: the learning rate.
- * `max_epochs`: the maximum number of epochs.
+ * `max_epochs`: the maximum number of epochs to be used for training.
  * `batch_size`: the number of sentences used to train `*-mini-batch`.
- * `roll_in`: the rate of using zero-cost labels (see [this paper](http://jmlr.org/proceedings/papers/v37/changb15.pdf)).
+ * `roll_in`: the rate of using zero-cost labels (see [this paper](http://jmlr.org/proceedings/papers/v37/changb15.pdf) for more details).
  * `bias`: the bias value.
 
 ### Part-of-Speech Tagging
 
-* `<ambiguity_class_threshold>` ambiguity classes whose likelihoods are less than or equal to this threshold will be discarded.
+* `<ambiguity_class_threshold>` ambiguity classes whose likelihoods are less than or equal to this threshold will be discarded during training.
 
 ## Feature Template
 
-Each component comes with the default feature template indicated by the `-f 0` option. The followings show the steps to create your own feature template.
+Each component comes with the default feature template indicated by the `-f 0` option. The followings show the steps to create and apply your own feature template.
 
 1. Clone this repository: `git clone https://github.com/emorynlp/component.git`.
 1. Go to the package for the component you want to create a feature template. Each component has its own package under [`component`](../src/main/java/edu/emory/mathcs/nlp/component). For instance, the part-of-speech tagger is implemented in [`component/pos`](../src/main/java/edu/emory/mathcs/nlp/component/pos/). Go to the feature package under the component (e.g., [`component/pos/feature`](../src/main/java/edu/emory/mathcs/nlp/component/pos/feature/)).
-1. Create a feature template by copying one of the default templates (e.g., [POSFeatureTemplate0](../src/main/java/edu/emory/mathcs/nlp/component/pos/feature/POSFeatureTemplate0.java)). Modify the template to add or remove more features.
-1. Add the new feature template to the component's trainer (e.g, [POSTrainer](../src/main/java/edu/emory/mathcs/nlp/component/pos/POSTrainer.java)). Add your template to the `createFeatureTemplate(int)` method with a unique ID.
+1. Create a feature template by copying one of the default templates (e.g., [`POSFeatureTemplate0`](../src/main/java/edu/emory/mathcs/nlp/component/pos/feature/POSFeatureTemplate0.java)). Modify the template to add or remove features.
+1. Add the new feature template to the component's trainer (e.g, [`POSTrainer`](../src/main/java/edu/emory/mathcs/nlp/component/pos/POSTrainer.java)). Add your template to the `createFeatureTemplate(int)` method with a unique ID.
 1. Run [`NLPTrain`](../src/main/java/edu/emory/mathcs/nlp/bin/NLPTrain.java) using the `-f ID` option, where `ID` is specified for the new feature template.
