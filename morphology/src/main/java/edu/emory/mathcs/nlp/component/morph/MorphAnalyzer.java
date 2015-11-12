@@ -16,8 +16,8 @@
 package edu.emory.mathcs.nlp.component.morph;
 
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.component.common.NLPComponent;
-import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.zzz.NLPComponent;
+import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
