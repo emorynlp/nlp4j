@@ -17,11 +17,11 @@ package edu.emory.mathcs.nlp.component.ner;
 
 import java.util.Map.Entry;
 
-import edu.emory.mathcs.nlp.component.common.eval.Eval;
-import edu.emory.mathcs.nlp.component.common.eval.F1Eval;
-import edu.emory.mathcs.nlp.component.common.node.NLPNode;
-import edu.emory.mathcs.nlp.component.common.state.L2RState;
-import edu.emory.mathcs.nlp.component.common.util.BILOU;
+import edu.emory.mathcs.nlp.component.zzz.eval.Eval;
+import edu.emory.mathcs.nlp.component.zzz.eval.F1Eval;
+import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
+import edu.emory.mathcs.nlp.component.zzz.state.L2RState;
+import edu.emory.mathcs.nlp.component.zzz.util.BILOU;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 /**

@@ -17,10 +17,10 @@ package edu.emory.mathcs.nlp.component.dep;
 
 import java.util.Collection;
 
-import edu.emory.mathcs.nlp.component.common.feature.Direction;
-import edu.emory.mathcs.nlp.component.common.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.common.node.NLPNode;
+import edu.emory.mathcs.nlp.component.zzz.feature.Direction;
+import edu.emory.mathcs.nlp.component.zzz.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.zzz.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

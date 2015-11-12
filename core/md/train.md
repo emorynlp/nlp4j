@@ -1,4 +1,4 @@
-# How to Train
+# How To Train
 
 ## Command
 
@@ -73,7 +73,7 @@ Sample configuration files can be found [here](../src/main/resources/configurati
 </configuration>
 ```
 
-* `<tsv>` specifies the configuration for our [TSV reader](../src/main/java/edu/emory/mathcs/nlp/component/common/reader/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample.tsv`](../src/main/resources/dat/sample.tsv)):
+* `<tsv>` specifies the configuration for our [TSV reader](../src/main/java/edu/emory/mathcs/nlp/component/zzz/reader/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample.tsv`](../src/main/resources/dat/sample.tsv)):
  * `form`&nbsp;&nbsp;&nbsp;&nbsp;: word form.
  * `lemma`&nbsp;&nbsp;: lemma.
  * `pos`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: part-of-speech tag.
@@ -83,7 +83,7 @@ Sample configuration files can be found [here](../src/main/resources/configurati
  * `sheads`: semantic heads.
  * `nament`: named entity tag.
 
-* `<lexica>` specifies the lexica used globally across multiple components. `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](../src/main/java/edu/emory/mathcs/nlp/component/common/node/NLPNode.java#L174)).
+* `<lexica>` specifies the lexica used globally across multiple components. `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](../src/main/java/edu/emory/mathcs/nlp/component/zzz/node/NLPNode.java#L174)).
  * `word_clusters`: [`brown-clusters-en.xz `]().
  * `named_entity_gazetteers`: [`ner-gazetteers-en`]().
 
@@ -98,15 +98,14 @@ Sample configuration files can be found [here](../src/main/resources/configurati
 
 ### Part-of-Speech Tagging
 
-* `ambiguity_class_threshold`: discard ambiguity classes whose likelihoods are less than or equal to this threshold.
+* `<ambiguity_class_threshold>` ambiguity classes whose likelihoods are less than or equal to this threshold will be discarded.
 
 ## Feature Template
 
 Each component comes with the default feature template indicated by the `-f 0` option. The followings show the steps to create your own feature template.
 
 1. Clone this repository: `git clone https://github.com/emorynlp/component.git`.
-2. Go to the package containing the component you want to create a feature template for. For instance, 
-, `0`, is defined in [`POSFeatureTemplate`](../src/main/java/edu/emory/mathcs/nlp/component/pos/POSFeatureTemplate.java). You can define your own feature templates and declare them in [`NLPTrain`](../src/main/java/edu/emory/mathcs/nlp/bin/NLPTrain.java), which is useful for feature engineering
-
-  The following shows the default configuration file: [`config_train_pos.xml`](../src/main/resources/configuration/config_train_pos.xml).
-  
+1. Go to the package for the component you want to create a feature template. Each component has its own package under [`component`](../src/main/java/edu/emory/mathcs/nlp/component). For instance, the part-of-speech tagger is implemented in [`component/pos`](../src/main/java/edu/emory/mathcs/nlp/component/pos/). Go to the feature package under the component (e.g., [`component/pos/feature`](../src/main/java/edu/emory/mathcs/nlp/component/pos/feature/)).
+1. Create a feature template by copying one of the default templates (e.g., [POSFeatureTemplate0](../src/main/java/edu/emory/mathcs/nlp/component/pos/feature/POSFeatureTemplate0.java)). Modify the template to add or remove more features.
+1. Add the new feature template to the component's trainer (e.g, [POSTrainer](../src/main/java/edu/emory/mathcs/nlp/component/pos/POSTrainer.java)). Add your template to the `createFeatureTemplate(int)` method with a unique ID.
+1. Run [`NLPTrain`](../src/main/java/edu/emory/mathcs/nlp/bin/NLPTrain.java) using the `-f ID` option, where `ID` is specified for the new feature template.

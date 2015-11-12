@@ -18,11 +18,11 @@ package edu.emory.mathcs.nlp.component.ner;
 import java.io.InputStream;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.component.common.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.common.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.common.node.NLPNode;
-import edu.emory.mathcs.nlp.component.common.train.NLPOnlineTrainer;
 import edu.emory.mathcs.nlp.component.ner.features.NERFeatureTemplate0;
+import edu.emory.mathcs.nlp.component.zzz.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.zzz.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
+import edu.emory.mathcs.nlp.component.zzz.train.NLPOnlineTrainer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

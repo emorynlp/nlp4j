@@ -16,7 +16,7 @@
 package edu.emory.mathcs.nlp.component.dep;
 
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.component.common.eval.Eval;
+import edu.emory.mathcs.nlp.component.zzz.eval.Eval;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

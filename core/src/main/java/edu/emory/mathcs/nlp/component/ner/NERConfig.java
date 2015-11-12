@@ -17,7 +17,7 @@ package edu.emory.mathcs.nlp.component.ner;
 
 import java.io.InputStream;
 
-import edu.emory.mathcs.nlp.component.common.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.zzz.config.NLPConfig;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
