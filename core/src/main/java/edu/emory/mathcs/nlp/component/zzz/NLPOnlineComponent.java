@@ -223,9 +223,7 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 	/** Process the sequence of the nodes given the state. */
 	public void process(NLPNode[] nodes, S state)
 	{
-		feature_template.setState(state);
 		if (!isDecode()) state.saveOracle();
-		
 		OnlineOptimizer optimizer;
 		SparseInstance inst;
 		StringModel model;
@@ -235,7 +233,7 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 		float[] scores;
 		int ydot, yhat;
 		int modelID;
-		
+
 		while (!state.isTerminate())
 		{
 			modelID = getModelID(state);
@@ -277,7 +275,7 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 	/** @return the vector consisting of all features extracted from the state. */
 	protected SparseVector extractFeatures(S state, StringModel model)
 	{
-		StringVector vector = feature_template.extractFeatures();
+		StringVector vector = feature_template.extractFeatures(state);
 		if (isTrain()) model.addFeatures(vector);
 		return model.toSparseVector(vector);
 	}

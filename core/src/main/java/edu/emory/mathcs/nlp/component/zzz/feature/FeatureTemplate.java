@@ -41,7 +41,6 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	private static final long serialVersionUID = -6755594173767815098L;
 	protected List<FeatureItem<?>[]> feature_list;
 	protected List<FeatureItem<?>>   feature_set;
-	protected S state;
 
 	public FeatureTemplate()
 	{
@@ -79,19 +78,6 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		feature_set.add(items);
 	}
 	
-//	============================== GETTERS & SETTERS ==============================
-	
-	public S getState()
-	{
-		return state;
-	}
-
-	public void setState(S state)
-	{
-		this.state = state;
-	}
-	
-	
 	public int size()
 	{
 		return feature_list.size() + feature_set.size();
@@ -99,7 +85,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	
 //	============================== EXTRACTOR ==============================
 	
-	public StringVector extractFeatures()
+	public StringVector extractFeatures(S state)
 	{
 		StringVector x = new StringVector();
 		Collection<String> t;
@@ -108,13 +94,13 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		
 		for (i=0; i<feature_list.size(); i++,type++)
 		{
-			f = getFeature(feature_list.get(i));
+			f = getFeature(state, feature_list.get(i));
 			if (f != null) x.add(type, f);
 		}
 		
 		for (i=0; i<feature_set.size(); i++,type++)
 		{
-			t = getFeatures(feature_set.get(i));
+			t = getFeatures(state, feature_set.get(i));
 			if (t != null) for (String s : t) x.add(type, s);
 		}
 		
@@ -122,19 +108,19 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	}
 	
 	/** Called by {@link #extractFeatures()}. */
-	protected String getFeature(FeatureItem<?>... items)
+	protected String getFeature(S state, FeatureItem<?>... items)
 	{
 		String f;
 		
 		if (items.length == 1)
-			return getFeature(items[0]);
+			return getFeature(state, items[0]);
 		else
 		{
 			StringJoiner join = new StringJoiner("_");
 			
 			for (FeatureItem<?> item : items)
 			{
-				f = getFeature(item);
+				f = getFeature(state, item);
 				if (f == null) return null;
 				join.add(f);
 			}
@@ -143,8 +129,8 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		}
 	}
 	
-	protected abstract String getFeature(FeatureItem<?> item);
-	protected abstract Collection<String> getFeatures(FeatureItem<?> item);
+	protected abstract String getFeature(S state, FeatureItem<?> item);
+	protected abstract Collection<String> getFeatures(S state, FeatureItem<?> item);
 	
 	protected String getFeature(FeatureItem<?> item, NLPNode node)
 	{
@@ -163,13 +149,13 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		}
 	}
 	
-	protected Collection<String> getFeatures(FeatureItem<?> item, NLPNode node)
+	protected Collection<String> getFeatures(S state, FeatureItem<?> item, NLPNode node)
 	{
 		switch (item.field)
 		{
-		case binary: return getBinaryFeatures(node);
-		case orthographic: return getOrthographicFeatures(node, true);
-		case orthographic_uncapitalized: return getOrthographicFeatures(node, false);
+		case binary: return getBinaryFeatures(state, node);
+		case orthographic: return getOrthographicFeatures(state, node, true);
+		case orthographic_uncapitalized: return getOrthographicFeatures(state, node, false);
 		case word_clusters: return node.getWordClusters();
 		case named_entity_gazetteers: return node.getNamedEntityGazetteers();
 		default: return null;
@@ -190,7 +176,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		return (n < s.length()) ? StringUtils.toLowerCase(s.substring(s.length()-n)) : null;
 	}
 	
-	protected List<String> getBinaryFeatures(NLPNode node)
+	protected List<String> getBinaryFeatures(S state, NLPNode node)
 	{
 		List<String> values = new ArrayList<>();
 		
@@ -200,7 +186,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		return values.isEmpty() ? null : values;
 	}
 	
-	protected List<String> getOrthographicFeatures(NLPNode node, boolean caseSensitive)
+	protected List<String> getOrthographicFeatures(S state, NLPNode node, boolean caseSensitive)
 	{
 		List<String> list = new ArrayList<>();
 		

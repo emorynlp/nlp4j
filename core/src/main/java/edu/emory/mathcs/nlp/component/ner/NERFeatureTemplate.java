@@ -36,7 +36,7 @@ public abstract class NERFeatureTemplate extends FeatureTemplate<NERState>
 //	========================= FEATURE EXTRACTORS =========================
 	
 	@Override
-	protected String getFeature(FeatureItem<?> item)
+	protected String getFeature(NERState state, FeatureItem<?> item)
 	{
 		NLPNode node = state.getNode(item);
 		if (node == null) return null;
@@ -49,9 +49,9 @@ public abstract class NERFeatureTemplate extends FeatureTemplate<NERState>
 	}
 	
 	@Override
-	protected Collection<String> getFeatures(FeatureItem<?> item)
+	protected Collection<String> getFeatures(NERState state, FeatureItem<?> item)
 	{
 		NLPNode node = state.getNode(item);
-		return (node == null) ? null : getFeatures(item, node);
+		return (node == null) ? null : getFeatures(state, item, node);
 	}
 }

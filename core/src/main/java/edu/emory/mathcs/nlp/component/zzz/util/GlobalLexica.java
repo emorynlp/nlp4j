@@ -88,7 +88,7 @@ public class GlobalLexica
 	@SuppressWarnings("unchecked")
 	static public void initNamedEntityGazetteers(XZInputStream in, Field field)
 	{
-		BinUtils.LOG.info("Loading named entity gazetteers:\n");
+		BinUtils.LOG.info("Loading named entity gazetteers\n");
 		
 		try
 		{

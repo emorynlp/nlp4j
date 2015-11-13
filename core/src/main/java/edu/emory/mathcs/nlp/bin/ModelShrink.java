@@ -66,7 +66,7 @@ public class ModelShrink
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
-		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject();
+		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject(); in.close();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
 		StringModelMap model = (StringModelMap)component.getModels()[model_id];

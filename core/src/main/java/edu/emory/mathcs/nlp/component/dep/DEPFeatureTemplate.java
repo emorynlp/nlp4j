@@ -39,9 +39,9 @@ public abstract class DEPFeatureTemplate extends FeatureTemplate<DEPState>
 //	========================= FEATURE EXTRACTORS =========================
 	
 	@Override
-	protected String getFeature(FeatureItem<?> item)
+	protected String getFeature(DEPState state, FeatureItem<?> item)
 	{
-		NLPNode node = getNode(item);
+		NLPNode node = getNode(state, item);
 		if (node == null) return null;
 		
 		switch (item.field)
@@ -58,13 +58,13 @@ public abstract class DEPFeatureTemplate extends FeatureTemplate<DEPState>
 	}
 	
 	@Override
-	protected Collection<String> getFeatures(FeatureItem<?> item)
+	protected Collection<String> getFeatures(DEPState state, FeatureItem<?> item)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	protected NLPNode getNode(FeatureItem<?> item)
+	protected NLPNode getNode(DEPState state, FeatureItem<?> item)
 	{
 		NLPNode node = null;
 		

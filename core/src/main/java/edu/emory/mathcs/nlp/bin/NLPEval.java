@@ -52,7 +52,7 @@ public class NLPEval
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
-		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject();
+		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject(); in.close();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		evaluate(FileUtils.getFileList(input_path, input_ext), component);
 	}
