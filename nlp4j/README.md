@@ -1,12 +1,13 @@
 # Emory NLP
 
-The Emory NLP project provides software and resources for natural language processing.  The project is developed by the [NLP Research Group](http://nlp.mathcs.emory.edu) at [Emory University](http://emory.edu) and under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0) license.
+The Emory NLP project provides software and resources for natural language processing. This project is under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0) license and developed by the [NLP Research Group](http://nlp.mathcs.emory.edu) at [Emory University](http://emory.edu).
 
 * Latest release: 1.0.0 (expected by 12/2015).
 
 ## Quick Start
 
 * [How to install](md/quickstart/installation.md).
+* [How to train](md/quickstart/train.md).
 * [How to decode](md/quickstart/decode.md).
 
 ## Components
