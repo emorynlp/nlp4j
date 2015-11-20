@@ -2,7 +2,7 @@
 
 ## Command
 
-The following shows the command to train an NLP component.
+The followings show the command to train an NLP component.
 
 ```
 java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath> -d <filepath> [-f <integer> -m <filename> -p <filename> -te <string> -de <string>]

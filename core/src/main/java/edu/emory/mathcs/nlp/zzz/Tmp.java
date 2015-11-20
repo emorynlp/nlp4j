@@ -15,46 +15,18 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
-import java.io.ObjectInputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import edu.emory.mathcs.nlp.common.collection.tree.PrefixNode;
-import edu.emory.mathcs.nlp.common.collection.tree.PrefixTree;
-import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.Joiner;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Tmp
 {
-	static public void toList(PrefixNode<String,Set<String>> node, List<String> list, String prefix)
+	public Tmp(String[] args)
 	{
-		if (node.hasValue())
-			list.add(prefix.trim()+"\t"+Joiner.join(node.getValue()," "));
 		
-		for (Entry<String,PrefixNode<String, Set<String>>> e : node.entrySet())
-			toList(e.getValue(), list, prefix+" "+e.getKey());
 	}
 	
-	@SuppressWarnings("unchecked")
 	static public void main(String[] args) throws Exception
 	{
-		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(args[0]);
-		PrefixTree<String,Set<String>> tree = (PrefixTree<String,Set<String>>)in.readObject();
-		in.close();
-		
-		List<String> list = new ArrayList<>();
-		toList(tree.getRoot(), list, "");
-		Collections.sort(list);
-		
-		PrintStream fout = IOUtils.createBufferedPrintStream(args[1]);
-		for (String s : list) fout.println(s);
-		fout.close();
+		new Tmp(args);
 	}
 }

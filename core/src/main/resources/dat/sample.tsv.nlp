@@ -1,0 +1,33 @@
+1	Pierre	pierre	NNP	_	_	_	_	_
+2	Vinken	vinken	NNP	_	_	_	_	_
+3	,	,	,	_	_	_	_	_
+4	61	0	CD	_	_	_	_	_
+5	years	year	NNS	_	_	_	_	_
+6	old	old	JJ	_	_	_	_	_
+7	,	,	,	_	_	_	_	_
+8	will	will	MD	_	_	_	_	_
+9	join	join	VB	_	_	_	_	_
+10	the	the	DT	_	_	_	_	_
+11	board	board	NN	_	_	_	_	_
+12	as	as	IN	_	_	_	_	_
+13	a	a	DT	_	_	_	_	_
+14	nonexecutive	nonexecutive	JJ	_	_	_	_	_
+15	director	director	NN	_	_	_	_	_
+16	Nov.	nov.	NNP	_	_	_	_	_
+17	29	0	CD	_	_	_	_	_
+18	.	.	.	_	_	_	_	_
+
+1	Mr.	mr.	NNP	_	_	_	_	_
+2	Vinken	vinken	NNP	_	_	_	_	_
+3	is	be	VBZ	_	_	_	_	_
+4	chairman	chairman	NN	_	_	_	_	_
+5	of	of	IN	_	_	_	_	_
+6	Elsevier	elsevier	NNP	_	_	_	_	_
+7	N.V.	n.v.	NNP	_	_	_	_	_
+8	,	,	,	_	_	_	_	_
+9	the	the	DT	_	_	_	_	_
+10	Dutch	dutch	JJ	_	_	_	_	_
+11	publishing	publishing	NN	_	_	_	_	_
+12	group	group	NN	_	_	_	_	_
+13	.	.	.	_	_	_	_	_
+

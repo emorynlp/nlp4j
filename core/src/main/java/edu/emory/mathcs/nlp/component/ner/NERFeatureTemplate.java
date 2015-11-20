@@ -39,13 +39,7 @@ public abstract class NERFeatureTemplate extends FeatureTemplate<NERState>
 	protected String getFeature(NERState state, FeatureItem<?> item)
 	{
 		NLPNode node = state.getNode(item);
-		if (node == null) return null;
-		
-		switch (item.field)
-		{
-		case ambiguity_class: return null; // To be filled.
-		default: return getFeature(item, node);
-		}
+		return (node == null) ? null : getFeature(item, node);
 	}
 	
 	@Override

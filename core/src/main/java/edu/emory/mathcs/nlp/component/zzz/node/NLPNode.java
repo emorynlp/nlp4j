@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.TreeSet;
 import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
 
@@ -261,7 +262,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	public void addNamedEntityGazetteer(String gazetteer)
 	{
 		if (named_entity_gazetteers == null)
-			named_entity_gazetteers = new HashSet<>();
+			named_entity_gazetteers = new TreeSet<>();
 		
 		named_entity_gazetteers.add(gazetteer);
 	}

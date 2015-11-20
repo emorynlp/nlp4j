@@ -17,6 +17,7 @@ package edu.emory.mathcs.nlp.component.ner;
 
 import java.util.Map.Entry;
 
+import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
 import edu.emory.mathcs.nlp.component.zzz.eval.Eval;
 import edu.emory.mathcs.nlp.component.zzz.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
@@ -51,20 +52,20 @@ public class NERState extends L2RState
 	@Override
 	public void evaluate(Eval eval)
 	{
-		Int2ObjectMap<String> gMap = BILOU.collectNamedEntityMap(oracle, String::toString, 1, nodes.length);
-		Int2ObjectMap<String> sMap = BILOU.collectNamedEntityMap(nodes , this::getLabel  , 1, nodes.length);
+		Int2ObjectMap<ObjectIntIntTriple<String>> gMap = BILOU.collectNamedEntityMap(oracle, String::toString, 1, nodes.length);
+		Int2ObjectMap<ObjectIntIntTriple<String>> sMap = BILOU.collectNamedEntityMap(nodes , this::getLabel  , 1, nodes.length);
 		((F1Eval)eval).add(countCorrect(sMap, gMap), sMap.size(), gMap.size());
 	}
 	
-	private int countCorrect(Int2ObjectMap<String> map1, Int2ObjectMap<String> map2)
+	private int countCorrect(Int2ObjectMap<ObjectIntIntTriple<String>> map1, Int2ObjectMap<ObjectIntIntTriple<String>> map2)
 	{
+		ObjectIntIntTriple<String> s2;
 		int count = 0;
-		String s2;
 		
-		for (Entry<Integer,String> p1 : map1.entrySet())
+		for (Entry<Integer,ObjectIntIntTriple<String>> p1 : map1.entrySet())
 		{
 			s2 = map2.get(p1.getKey());
-			if (s2 != null && s2.equals(p1.getValue())) count++; 
+			if (s2 != null && s2.o.equals(p1.getValue().o)) count++; 
 		}
 		
 		return count;

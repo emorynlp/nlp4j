@@ -17,6 +17,9 @@ package edu.emory.mathcs.nlp.component.zzz.util;
 
 import java.util.function.Function;
 
+import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
+import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntPair;
+import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
@@ -25,15 +28,11 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  */
 public enum BILOU
 {
-	B,
-	I,
-	L,
-	U,
-	O;
+	B,I,L,U,O;
 	
 	public static BILOU toBILOU(String tag)
 	{
-		return BILOU.valueOf(tag.substring(0,1));
+		return valueOf(tag.substring(0,1));
 	}
 
 	public static String toBILOUTag(BILOU bilou, String tag)
@@ -50,27 +49,29 @@ public enum BILOU
 	{
 		return toBILOUTag(newBILOU, toTag(tag));
 	}
+	
+//	============================== COLLECT ==============================
 
 	/**
 	 * @param beginIndex inclusive
 	 * @param endIndex exclusive
 	 */
-	public static <N>Int2ObjectMap<String> collectNamedEntityMap(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
+	public static <N>Int2ObjectMap<ObjectIntIntTriple<String>> collectNamedEntityMap(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
 	{
-		Int2ObjectMap<String> map = new Int2ObjectOpenHashMap<>();
+		Int2ObjectMap<ObjectIntIntTriple<String>> map = new Int2ObjectOpenHashMap<>();
 		int i, beginChunk = -1, size = nodes.length;
 		String tag;
 		
 		for (i=beginIndex; i<endIndex; i++)
 		{
 			tag = f.apply(nodes[i]);
-			if (tag == null || tag.length() < 3) continue;
+			if (tag == null) continue;
 			
 			switch (toBILOU(tag))
 			{
-			case U: map.put(getKey(i,i,size), toTag(tag)); beginChunk = -1; break;
+			case U: putNamedEntity(map, tag, i, i, size); beginChunk = -1; break;
 			case B: beginChunk = i; break;
-			case L: if (0 <= beginChunk&&beginChunk < i) map.put(getKey(beginChunk,i,size), toTag(tag)); beginChunk = -1; break;
+			case L: if (beginIndex <= beginChunk&&beginChunk < i) putNamedEntity(map, tag, beginChunk, i, size); beginChunk = -1; break;
 			case O: beginChunk = -1; break;
 			case I: break;
 			}
@@ -79,8 +80,92 @@ public enum BILOU
 		return map;
 	}
 
-	private static int getKey(int beginIndex, int endIndex, int size)
+	private static void putNamedEntity(Int2ObjectMap<ObjectIntIntTriple<String>> map, String tag, int beginIndex, int endIndex, int size)
 	{
-		return beginIndex * size + endIndex;
+		int key = beginIndex * size + endIndex;
+		map.put(key, new ObjectIntIntTriple<>(toTag(tag), beginIndex, endIndex));
+	}
+	
+//	============================== POST-PROCESS ==============================
+	
+	public static void postProcess(NLPNode[] nodes)
+	{
+		ObjectIntPair<String> begin = new ObjectIntPair<>();
+		NLPNode curr;
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			curr = nodes[i];
+			
+			switch (toBILOU(curr.getNamedEntityTag()))
+			{
+			case B: postProcessB(nodes, curr, begin); break;
+			case I: postProcessI(nodes, curr, begin); break;
+			case L: postProcessL(nodes, curr, begin); break;
+			case U: postProcessU(nodes, curr, begin); break;
+			case O: postProcessO(nodes, curr, begin); break;
+			}
+		}
+	}
+	
+	private static void postProcessB(NLPNode[] nodes, NLPNode curr, ObjectIntPair<String> begin)
+	{
+		if (curr.getID()+1 == nodes.length)		// B$
+		{
+			curr.setNamedEntityTag(changeChunkType(U, curr.getNamedEntityTag()));
+			begin.set(null, -1);
+			return;
+		}
+		else if (begin.o != null)
+		{
+			if (begin.i+1 == curr.getID())		// BB; TODO: BB -> BI?
+				nodes[begin.i].setNamedEntityTag(changeChunkType(U, begin.o));
+			else								// B(I)+B
+				postProcessL(nodes, nodes[curr.getID()-1], begin);
+		}
+		
+		begin.set(curr.getNamedEntityTag(), curr.getID());
+		curr.setNamedEntityTag(O.toString());
+	}
+	
+	private static void postProcessI(NLPNode[] nodes, NLPNode curr, ObjectIntPair<String> begin)
+	{
+		if (begin.o == null)	// (^|O|U|L)I; TODO: UI -> BI?
+			begin.set(curr.getNamedEntityTag(), curr.getID());
+		
+		curr.setNamedEntityTag(O.toString());
+	}
+	
+	private static void postProcessL(NLPNode[] nodes, NLPNode curr, ObjectIntPair<String> begin)
+	{
+		if (begin.o == null)	// (^|O|U|L)L; TODO: UL -> BL or LL -> IL?
+			curr.setNamedEntityTag(changeChunkType(U, curr.getNamedEntityTag()));
+		else
+		{
+			String tag = toTag(curr.getNamedEntityTag());
+			nodes[begin.i].setNamedEntityTag(toBILOUTag(B, tag));
+			
+			for (int i=begin.i+1; i<curr.getID(); i++)
+				nodes[i].setNamedEntityTag(toBILOUTag(I, tag));
+			
+			nodes[curr.getID()].setNamedEntityTag(toBILOUTag(L, tag));
+		}
+		
+		begin.set(null, -1);
+	}
+	
+	private static void postProcessU(NLPNode[] nodes, NLPNode curr, ObjectIntPair<String> begin)
+	{
+		if (begin.o != null)	// (B|I)U; TODO:
+		{
+			
+		}
+		
+		begin.set(null, -1);
+	}
+	
+	private static void postProcessO(NLPNode[] nodes, NLPNode curr, ObjectIntPair<String> begin)
+	{
+		begin.set(null, -1);
 	}
 }

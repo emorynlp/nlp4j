@@ -43,16 +43,10 @@ public class NERTagger extends NLPOnlineComponent<NERState>
 //	============================== LEXICONS ==============================
 
 	@Override
-	protected void readLexicons(ObjectInputStream in) throws IOException, ClassNotFoundException
-	{
-		
-	}
+	protected void readLexicons(ObjectInputStream in) throws IOException, ClassNotFoundException {}
 
 	@Override
-	protected void writeLexicons(ObjectOutputStream out) throws IOException
-	{
-		
-	}
+	protected void writeLexicons(ObjectOutputStream out) throws IOException {}
 	
 //	============================== ABSTRACT ==============================
 	
@@ -74,5 +68,13 @@ public class NERTagger extends NLPOnlineComponent<NERState>
 	protected NERState initState(NLPNode[] nodes)
 	{
 		return new NERState(nodes);
+	}
+	
+//	====================================== POST-PROCESS ======================================
+	
+	@Override
+	protected void postProcess(NERState state)
+	{
+		
 	}
 }

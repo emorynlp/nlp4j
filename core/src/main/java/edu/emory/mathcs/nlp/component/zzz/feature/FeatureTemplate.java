@@ -22,11 +22,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
+import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
+import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
 import edu.emory.mathcs.nlp.component.zzz.node.Orthographic;
@@ -145,6 +148,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		case suffix: return getSuffix(node, (Integer)item.value);
 		case feats: return node.getFeat((String)item.value);
 		case valency: return node.getValency((Direction)item.value);
+		case named_entity_gazetteers: return getNamedEntityGazetteers(node);
 		default: return null;
 		}
 	}
@@ -160,6 +164,12 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		case named_entity_gazetteers: return node.getNamedEntityGazetteers();
 		default: return null;
 		}
+	}
+	
+	protected String getNamedEntityGazetteers(NLPNode node)
+	{
+		Set<String> set = node.getNamedEntityGazetteers();
+		return set.isEmpty() ? null : Joiner.join(set, StringConst.UNDERSCORE);
 	}
 	
 	/** The prefix cannot be the entire word (e.g., getPrefix("abc", 3) -> null). */

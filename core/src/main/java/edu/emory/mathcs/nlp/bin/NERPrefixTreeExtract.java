@@ -89,6 +89,7 @@ public class NERPrefixTreeExtract
 	
 	static private String toKey(String s)
 	{
+//		return StringUtils.toSimplifiedForm(s);
 		return StringUtils.toLowerCase(StringUtils.toSimplifiedForm(s));
 	}
 	
