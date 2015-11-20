@@ -22,7 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Map.Entry;
 
 import edu.emory.mathcs.nlp.learning.vector.SparseItem;
 import edu.emory.mathcs.nlp.learning.vector.SparseVector;
@@ -31,6 +30,7 @@ import edu.emory.mathcs.nlp.learning.vector.StringVector;
 import edu.emory.mathcs.nlp.learning.vector.WeightVector;
 import edu.emory.mathcs.nlp.learning.vector.WeightVectorDynamic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 /**
@@ -152,9 +152,9 @@ public class StringModelMap extends StringModel
 		}
 		
 		WeightVector newWeights = new WeightVectorDynamic(weight_vector.getLabelSize(), count, weight_vector.getActivationFunction());
-		ObjectIterator<Entry<String,Integer>> it;
+		ObjectIterator<Entry<String>> it;
 		int oldIndex, newIndex;
-		Entry<String,Integer> e;
+		Entry<String> e;
 		
 		// bias weights
 		for (j=0; j<getLabelSize(); j++)
@@ -162,7 +162,7 @@ public class StringModelMap extends StringModel
 		
 		for (Object2IntMap<String> map : feature_map.getIndexMaps())
 		{
-			it = map.entrySet().iterator();
+			it = map.object2IntEntrySet().iterator();
 			
 			while (it.hasNext())
 			{

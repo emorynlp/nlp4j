@@ -18,11 +18,10 @@ package edu.emory.mathcs.nlp.component.ner;
 import java.io.InputStream;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.component.ner.features.NERFeatureTemplate0;
-import edu.emory.mathcs.nlp.component.zzz.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.zzz.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
-import edu.emory.mathcs.nlp.component.zzz.train.NLPOnlineTrainer;
+import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate0;
+import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.template.train.NLPOnlineTrainer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -46,11 +45,5 @@ public class NERTrainer extends NLPOnlineTrainer<NERState>
 		case  0: return new NERFeatureTemplate0();
 		default: throw new IllegalArgumentException("Unknown feature template: "+id);
 		}
-	}
-	
-	@Override
-	protected NLPNode createNode()
-	{
-		return new NLPNode();
 	}
 }

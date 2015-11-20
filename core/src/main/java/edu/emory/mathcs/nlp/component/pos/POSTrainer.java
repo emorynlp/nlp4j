@@ -21,10 +21,9 @@ import java.util.List;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate0;
 import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate1;
-import edu.emory.mathcs.nlp.component.zzz.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.zzz.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
-import edu.emory.mathcs.nlp.component.zzz.train.NLPOnlineTrainer;
+import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.template.train.NLPOnlineTrainer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -70,11 +69,5 @@ public class POSTrainer extends NLPOnlineTrainer<POSState>
 		case 1: return new POSFeatureTemplate1();
 		default: throw new IllegalArgumentException("Unknown feature template: "+id);
 		}
-	}
-	
-	@Override
-	protected NLPNode createNode()
-	{
-		return new NLPNode();
 	}
 }

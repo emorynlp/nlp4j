@@ -16,8 +16,8 @@
 package edu.emory.mathcs.nlp.component.pos.feature;
 
 import edu.emory.mathcs.nlp.component.pos.POSFeatureTemplate;
-import edu.emory.mathcs.nlp.component.zzz.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.zzz.feature.Field;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.template.feature.Field;
 
 /**
  * Default features.

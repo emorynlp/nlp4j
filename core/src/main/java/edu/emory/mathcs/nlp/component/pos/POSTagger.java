@@ -20,11 +20,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import edu.emory.mathcs.nlp.component.zzz.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.zzz.config.NLPConfig;
-import edu.emory.mathcs.nlp.component.zzz.eval.AccuracyEval;
-import edu.emory.mathcs.nlp.component.zzz.eval.Eval;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
+import edu.emory.mathcs.nlp.component.template.eval.Eval;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

@@ -23,12 +23,12 @@ import org.kohsuke.args4j.Option;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.zzz.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
-import edu.emory.mathcs.nlp.component.zzz.reader.TSVReader;
-import edu.emory.mathcs.nlp.component.zzz.state.NLPState;
-import edu.emory.mathcs.nlp.component.zzz.util.GlobalLexica;
-import edu.emory.mathcs.nlp.component.zzz.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
+import edu.emory.mathcs.nlp.component.template.state.NLPState;
+import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
+import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

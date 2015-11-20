@@ -15,15 +15,14 @@
  */
 package edu.emory.mathcs.nlp.component.ner;
 
-import java.util.Map.Entry;
-
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
-import edu.emory.mathcs.nlp.component.zzz.eval.Eval;
-import edu.emory.mathcs.nlp.component.zzz.eval.F1Eval;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
-import edu.emory.mathcs.nlp.component.zzz.state.L2RState;
-import edu.emory.mathcs.nlp.component.zzz.util.BILOU;
+import edu.emory.mathcs.nlp.component.template.eval.Eval;
+import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.state.L2RState;
+import edu.emory.mathcs.nlp.component.template.util.BILOU;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -62,7 +61,7 @@ public class NERState extends L2RState
 		ObjectIntIntTriple<String> s2;
 		int count = 0;
 		
-		for (Entry<Integer,ObjectIntIntTriple<String>> p1 : map1.entrySet())
+		for (Entry<ObjectIntIntTriple<String>> p1 : map1.int2ObjectEntrySet())
 		{
 			s2 = map2.get(p1.getKey());
 			if (s2 != null && s2.o.equals(p1.getValue().o)) count++; 

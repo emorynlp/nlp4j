@@ -15,11 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.ner;
 
-import java.util.Collection;
-
-import edu.emory.mathcs.nlp.component.zzz.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.zzz.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -27,25 +23,4 @@ import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
 public abstract class NERFeatureTemplate extends FeatureTemplate<NERState>
 {
 	private static final long serialVersionUID = 2750773840515707758L;
-
-	public NERFeatureTemplate()	
-	{
-		super();
-	}
-	
-//	========================= FEATURE EXTRACTORS =========================
-	
-	@Override
-	protected String getFeature(NERState state, FeatureItem<?> item)
-	{
-		NLPNode node = state.getNode(item);
-		return (node == null) ? null : getFeature(item, node);
-	}
-	
-	@Override
-	protected Collection<String> getFeatures(NERState state, FeatureItem<?> item)
-	{
-		NLPNode node = state.getNode(item);
-		return (node == null) ? null : getFeatures(state, item, node);
-	}
 }

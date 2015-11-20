@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
+import edu.emory.mathcs.nlp.component.template.util.BILOU;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 /**

@@ -18,14 +18,11 @@ package edu.emory.mathcs.nlp.common.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
@@ -33,8 +30,8 @@ import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
-import edu.emory.mathcs.nlp.common.util.DSUtils;
-import edu.emory.mathcs.nlp.common.util.FastUtils;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -49,10 +46,6 @@ public class DSUtilsTest
 		FastUtils.increment(map, "A", 1);
 		FastUtils.increment(map, "B", 1);
 		FastUtils.increment(map, "A", 1);
-		
-		List<Entry<String,Integer>> list = FastUtils.toEntryList(map, 0);
-		Collections.sort(list, Entry.comparingByValue());
-		assertEquals("[B=>1, A=>2]", list.toString());
 	}
 	
 	@Test

@@ -16,7 +16,7 @@
 package edu.emory.mathcs.nlp.component.dep;
 
 import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

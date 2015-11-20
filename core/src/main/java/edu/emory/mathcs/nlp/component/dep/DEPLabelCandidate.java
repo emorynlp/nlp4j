@@ -17,8 +17,8 @@ package edu.emory.mathcs.nlp.component.dep;
 
 import java.io.Serializable;
 
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
-import edu.emory.mathcs.nlp.component.zzz.util.LabelCandidate;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.util.LabelCandidate;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

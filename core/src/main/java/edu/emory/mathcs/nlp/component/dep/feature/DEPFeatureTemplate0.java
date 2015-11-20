@@ -16,11 +16,11 @@
 package edu.emory.mathcs.nlp.component.dep.feature;
 
 import edu.emory.mathcs.nlp.component.dep.DEPFeatureTemplate;
-import edu.emory.mathcs.nlp.component.zzz.feature.Direction;
-import edu.emory.mathcs.nlp.component.zzz.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.zzz.feature.Field;
-import edu.emory.mathcs.nlp.component.zzz.feature.Relation;
-import edu.emory.mathcs.nlp.component.zzz.feature.Source;
+import edu.emory.mathcs.nlp.component.template.feature.Direction;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.template.feature.Field;
+import edu.emory.mathcs.nlp.component.template.feature.Relation;
+import edu.emory.mathcs.nlp.component.template.feature.Source;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

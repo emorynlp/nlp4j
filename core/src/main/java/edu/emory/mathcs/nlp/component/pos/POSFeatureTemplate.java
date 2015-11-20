@@ -15,11 +15,9 @@
  */
 package edu.emory.mathcs.nlp.component.pos;
 
-import java.util.Collection;
-
-import edu.emory.mathcs.nlp.component.zzz.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.zzz.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -27,13 +25,6 @@ import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
 public abstract class POSFeatureTemplate extends FeatureTemplate<POSState>
 {
 	private static final long serialVersionUID = -243334323533999837L;
-	
-	public POSFeatureTemplate()	
-	{
-		super();
-	}
-
-//	========================= FEATURE EXTRACTORS =========================
 	
 	@Override
 	protected String getFeature(POSState state, FeatureItem<?> item)
@@ -46,12 +37,5 @@ public abstract class POSFeatureTemplate extends FeatureTemplate<POSState>
 		case ambiguity_class: return state.getAmbiguityClass(node);
 		default: return getFeature(item, node);
 		}
-	}
-	
-	@Override
-	protected Collection<String> getFeatures(POSState state, FeatureItem<?> item)
-	{
-		NLPNode node = state.getNode(item);
-		return (node == null) ? null : getFeatures(state, item, node);
 	}
 }

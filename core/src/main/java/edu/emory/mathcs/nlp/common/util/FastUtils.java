@@ -15,10 +15,6 @@
  */
 package edu.emory.mathcs.nlp.common.util;
 
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**
@@ -26,11 +22,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
  */
 public class FastUtils
 {
-	static public <T>List<Entry<T,Integer>> toEntryList(Object2IntMap<T> map, int cutoff)
-	{
-		return map.entrySet().stream().filter(e -> e.getValue() > cutoff).collect(Collectors.toList());
-	}
-
 	static public <K>int increment(Object2IntMap<K> map, K key)
 	{
 		return map.merge(key, 1, (oldCount, newCount) -> oldCount + newCount);

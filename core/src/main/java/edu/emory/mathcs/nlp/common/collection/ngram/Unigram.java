@@ -15,20 +15,19 @@
  */
 package edu.emory.mathcs.nlp.common.collection.ngram;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectDoublePair;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntPair;
 import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -83,7 +82,7 @@ public class Unigram<T> implements Serializable
 	{
 		List<ObjectIntPair<T>> list = new ArrayList<>();
 		
-		for (Entry<T,Integer> p : count_map.entrySet())
+		for (Entry<T> p : count_map.object2IntEntrySet())
 		{
 			if (p.getValue() > cutoff)
 				list.add(new ObjectIntPair<>(p.getKey(), p.getValue()));
@@ -97,7 +96,7 @@ public class Unigram<T> implements Serializable
 		List<ObjectDoublePair<T>> list = new ArrayList<>();
 		double d;
 		
-		for (Entry<T,Integer> p : count_map.entrySet())
+		for (Entry<T> p : count_map.object2IntEntrySet())
 		{
 			d = MathUtils.divide(p.getValue(), total_count);
 			if (d > threshold) list.add(new ObjectDoublePair<T>(p.getKey(), d));
@@ -116,7 +115,7 @@ public class Unigram<T> implements Serializable
 	{
 		Set<T> set = new HashSet<>();
 		
-		for (Entry<T,Integer> p : count_map.entrySet())
+		for (Entry<T> p : count_map.object2IntEntrySet())
 		{
 			if (p.getValue() > cutoff) set.add(p.getKey());
 		}
@@ -129,7 +128,7 @@ public class Unigram<T> implements Serializable
 		Set<T> set = new HashSet<>();
 		double d;
 		
-		for (Entry<T,Integer> p : count_map.entrySet())
+		for (Entry<T> p : count_map.object2IntEntrySet())
 		{
 			d = MathUtils.divide(p.getValue(), total_count);
 			if (d > threshold) set.add(p.getKey());

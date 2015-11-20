@@ -15,8 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.pos;
 
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
-import edu.emory.mathcs.nlp.component.zzz.state.L2RState;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.state.L2RState;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
