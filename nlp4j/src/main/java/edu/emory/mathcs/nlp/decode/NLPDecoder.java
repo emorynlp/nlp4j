@@ -31,12 +31,12 @@ import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.morph.english.EnglishMorphAnalyzer;
-import edu.emory.mathcs.nlp.component.zzz.NLPComponent;
-import edu.emory.mathcs.nlp.component.zzz.NLPOnlineComponent;
-import edu.emory.mathcs.nlp.component.zzz.node.NLPNode;
-import edu.emory.mathcs.nlp.component.zzz.reader.TSVReader;
-import edu.emory.mathcs.nlp.component.zzz.util.GlobalLexica;
-import edu.emory.mathcs.nlp.component.zzz.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.template.NLPComponent;
+import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
+import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
+import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 

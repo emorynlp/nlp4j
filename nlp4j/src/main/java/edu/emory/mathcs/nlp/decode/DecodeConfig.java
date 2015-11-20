@@ -20,7 +20,7 @@ import java.io.InputStream;
 import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.component.zzz.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
