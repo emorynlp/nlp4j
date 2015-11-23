@@ -33,6 +33,8 @@ public class EnglishTokenizerTest
 		Tokenizer t = new EnglishTokenizer();
 		String s, r;
 		
+//		System.out.println(t.tokenize("This building included: 30 toilets."));
+		
 		s = "500 million of 1986.[11]";
 		r = "[500, million, of, 1986, ., [, 11, ]]";
 		assertEquals(r, t.tokenize(s).toString());
