@@ -166,6 +166,11 @@ public class StringUtils
 		return toSimplifiedForm(s, false);
 	}
 	
+	static public String toUndigitalizedForm(String s)
+	{
+		return toUndigitalizedForm(s, false);
+	}
+	
 	static public String toUndigitalizedForm(String s, boolean uncapitalize)
 	{
 		char[] cs = s.toCharArray();

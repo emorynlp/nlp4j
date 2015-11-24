@@ -25,6 +25,7 @@ public enum Field
 	word_form,
 	simplified_word_form,
 	uncapitalized_simplified_word_form,
+	undigitalized_word_form,
 	word_shape,
 	uncapitalized_word_shape,
 	orthographic,	// set

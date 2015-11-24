@@ -23,7 +23,7 @@ import edu.emory.mathcs.nlp.component.template.feature.Field;
  * Minimum features.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERFeatureTemplate0 extends NERFeatureTemplate
+public class NERFeatureTemplate2 extends NERFeatureTemplate
 {
 	private static final long serialVersionUID = -3867869616627234917L;
 
@@ -68,7 +68,7 @@ public class NERFeatureTemplate0 extends NERFeatureTemplate
 		add(new FeatureItem<>( 1, Field.lemma), new FeatureItem<>( 0, Field.part_of_speech_tag));
 		
 //		add(new FeatureItem<>(-2, Field.named_entity_gazetteers), new FeatureItem<>(-1, Field.named_entity_gazetteers));
-//		add(new FeatureItem<>(-1, Field.named_entity_gazetteers), new FeatureItem<>( 0, Field.named_entity_gazetteers));
+		add(new FeatureItem<>(-1, Field.named_entity_gazetteers), new FeatureItem<>( 0, Field.named_entity_gazetteers));
 //		add(new FeatureItem<>( 0, Field.named_entity_gazetteers), new FeatureItem<>( 1, Field.named_entity_gazetteers));
 		add(new FeatureItem<>( 1, Field.named_entity_gazetteers), new FeatureItem<>( 2, Field.named_entity_gazetteers));
 		

@@ -64,6 +64,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	// inferred fields
 	protected int id;
 	protected String simplified_word_form;
+	protected String undigitalized_word_form;
 	protected String uncapitalized_simplified_word_form;
 	protected SortedArrayList<NLPNode> dependent_list;
 	
@@ -146,6 +147,11 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		return uncapitalized_simplified_word_form;
 	}
 	
+	public String getUndigitalizedWordForm()
+	{
+		return undigitalized_word_form;
+	}
+	
 	public String getLemma()
 	{
 		return lemma;
@@ -178,6 +184,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		{
 		case word_form: return getWordForm();
 		case simplified_word_form: return getSimplifiedWordForm();
+		case undigitalized_word_form: return getUndigitalizedWordForm();
 		case uncapitalized_simplified_word_form: return getUncapitalizedSimplifiedWordForm();
 		case lemma: return getLemma();
 		case part_of_speech_tag: return getPartOfSpeechTag();
@@ -208,6 +215,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	{
 		word_form = form;
 		simplified_word_form = StringUtils.toSimplifiedForm(form);
+		undigitalized_word_form = StringUtils.toUndigitalizedForm(form);
 		uncapitalized_simplified_word_form = StringUtils.toLowerCase(simplified_word_form);
 	}
 	

@@ -80,7 +80,7 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		// boolean features
 		addSet(new FeatureItem<>(0, Field.binary));
 		
-		// distributional semantics
+		// word cluster features
 		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>(-1, Field.word_clusters));
 		addSet(new FeatureItem<>( 1, Field.word_clusters));

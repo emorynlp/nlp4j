@@ -148,7 +148,7 @@ public class GlobalLexica
 	static public void assignNamedEntityGazetteers(NLPNode[] nodes)
 	{
 		if (named_entity_gazetteers == null) return;
-		List<ObjectIntIntTriple<Set<String>>> list = named_entity_gazetteers.getAll(nodes, 1, n -> getKey(n, named_entity_gazetteers_field), true, false);
+		List<ObjectIntIntTriple<Set<String>>> list = named_entity_gazetteers.getAll(nodes, 1, n -> getKey(n, named_entity_gazetteers_field), false, false);
 		
 		for (ObjectIntIntTriple<Set<String>> t : list)
 		{

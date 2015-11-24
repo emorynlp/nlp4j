@@ -184,7 +184,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	protected String getNamedEntityGazetteers(NLPNode node)
 	{
 		Set<String> set = node.getNamedEntityGazetteers();
-		return set.isEmpty() ? null : Joiner.join(set, StringConst.UNDERSCORE);
+		return set == null || set.isEmpty() || set.size() > 1 ? null : Joiner.join(set, StringConst.UNDERSCORE);
 	}
 	
 	/** The prefix cannot be the entire word (e.g., getPrefix("abc", 3) -> null). */
