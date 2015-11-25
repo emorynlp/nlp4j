@@ -5,7 +5,7 @@
     </tsv>
 
     <lexica>
-        <stop_words field="uncapitalized_simplified_word_form">/Users/jdchoi/Documents/EmoryNLP/models/src/main/resources/edu/emory/mathcs/nlp/lexica/en-stop-words-simplified-uncapitalized.xz</stop_words>
+        <stop_words field="uncapitalized_simplified_word_form">/Users/jdchoi/Documents/EmoryNLP/english-models/src/main/resources/edu/emory/mathcs/nlp/english/lexica/en-stop-words-simplified-uncapitalized.xz</stop_words>
     </lexica>
 
     <optimizer>
@@ -16,5 +16,5 @@
         <bias>0</bias>
     </optimizer>
     
-    <feat_key>r4</feat_key>
+    <feat_key>sentiment</feat_key>
 </configuration>

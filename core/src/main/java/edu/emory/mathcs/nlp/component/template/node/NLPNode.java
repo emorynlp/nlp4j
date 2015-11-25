@@ -1459,8 +1459,8 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		join.add(toString(word_form));
 		join.add(toString(lemma));
 		join.add(toString(pos_tag));
-		join.add(toString(nament_tag));
 		join.add(feat_map.toString());
+		join.add(toString(nament_tag));
 		toStringDependency(join);
 		join.add(toStringSemantics(semantic_heads));
 		

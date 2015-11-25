@@ -9,14 +9,14 @@
 
     <lexica>
         <word_clusters field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-uncapitalized.xz</word_clusters>
-        <named_entity_gazetteers field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-ner-gazetteers-simplified.xz</named_entity_gazetteers>
+        <named_entity_gazetteers field="simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-ner-gazetteers-simplified.xz</named_entity_gazetteers>
     </lexica>
 
     <optimizer>
         <algorithm>adagrad-mini-batch</algorithm>
-        <l1_regularization>0.00001</l1_regularization>
+        <l1_regularization>0.000015</l1_regularization>
         <learning_rate>0.02</learning_rate>
-        <max_epochs>40</max_epochs>
+        <max_epochs>20</max_epochs>
         <batch_size>5</batch_size>
         <roll_in>0.95</roll_in>
         <bias>0</bias>
