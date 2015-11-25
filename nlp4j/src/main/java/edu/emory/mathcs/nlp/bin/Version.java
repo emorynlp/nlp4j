@@ -22,8 +22,10 @@ public class Version
 {
 	public static void main(String[] args)
 	{
+		System.out.println("====================================");
 		System.out.println("Emory NLP Version 1.0.0");
 		System.out.println("Webpage: http://nlp.mathcs.emory.edu");
 		System.out.println("Contact: jinho.choi@emory.edu");
+		System.out.println("====================================");
 	}
 }

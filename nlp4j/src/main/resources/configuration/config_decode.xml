@@ -4,11 +4,11 @@
     </tsv>
 
     <lexica>
-        <word_clusters field="uncapitalized_simplified_word_form">/Users/jdchoi/Documents/EmoryNLP/models/src/main/resources/edu/emory/mathcs/nlp/lexica/brown-clusters-en.xz</word_clusters>
-        <named_entity_gazetteers field="uncapitalized_simplified_word_form">/Users/jdchoi/Documents/EmoryNLP/models/src/main/resources/edu/emory/mathcs/nlp/lexica/ner-gazetteers-en.xz</named_entity_gazetteers>
+        <word_clusters field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-uncapitalized.xz</word_clusters>
+        <named_entity_gazetteers field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-ner-gazetteers-simplified-uncapitalized.xz</named_entity_gazetteers>
     </lexica>
 
     <models>
-    	<pos>/Users/jdchoi/Documents/EmoryNLP/models/src/main/resources/edu/emory/mathcs/nlp/models/general-en-pos.xz</pos>
+    	<pos>edu/emory/mathcs/nlp/english/models/en-general-pos.xz</pos>
     </models>
 </configuration>

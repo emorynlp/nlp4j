@@ -72,7 +72,7 @@ public class NLPDecoder
 		setTokenizer(new EnglishTokenizer());
 		
 		BinUtils.LOG.info("Loading part-of-speech tagger\n");
-		components[0] = getComponent(IOUtils.createFileInputStream(config.getPartOfSpeechTagging()));
+		components[0] = getComponent(IOUtils.getInputStream(config.getPartOfSpeechTagging()));
 		
 		BinUtils.LOG.info("Loading morphological analyzer\n");
 		components[1] = new EnglishMorphAnalyzer();

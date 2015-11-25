@@ -1,32 +1,55 @@
-# Installation
+# How To Install
 
-## Install Java 8 and Maven 3 on Ubuntu
+1. Make sure the following tools are installed on your machine:
+ * [Git](https://git-scm.com): version 2 or above.
+ * [Java](http://www.oracle.com/technetwork/java/javase/): version 8 or above.
+ * [Maven](https://maven.apache.org): version 3 or above.
 
-* Install Java 8 by running the following commands:
+1. Clone this repository:
 
-   ```
-   sudo apt-add-repository ppa:webupd8team/java
-   sudo apt-get update
-   sudo apt-get install oracle-java8-installer
-   sudo apt-get install oracle-java8-set-default
-   ```
+	```bash
+	git clone https://github.com/emorynlp/emorynlp.git
+	```
 
-* Check the Java version.
+1. Change to the `emorynlp` directory:
 
-   ```
-   java -version
-   ```
+	```bash
+	cd emorynlp
+	```
+	
+1. Compile this project:
 
-* Install Maven 3 by running the following commands:
+	```bash
+	mvn compile
+	```
+	
+1. Run the following command:
 
-   ```
-   sudo apt-add-repository ppa:andrei-pozolotin/maven3
-   sudo apt-get update
-   sudo apt-get install maven3
-   ```
+	```bash
+	mvn exec:java -Dexec.mainClass="edu.emory.mathcs.nlp.bin.Version"
+	```
 
-* Check the Maven version.
+	If you see something like the following, it is properly installed.
 
-   ```
-   mvn -version
-   ```
+	```
+	Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
+	[INFO] Scanning for projects...
+	[INFO]                                                                         
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Building emorynlp 1.0.0
+	[INFO] ------------------------------------------------------------------------
+	[INFO] 
+	[INFO] --- exec-maven-plugin:1.4.0:java (default-cli) @ emorynlp ---
+	====================================
+	Emory NLP Version 1.0.0
+	Webpage: http://nlp.mathcs.emory.edu
+	Contact: jinho.choi@emory.edu
+	====================================
+	[INFO] ------------------------------------------------------------------------
+	[INFO] BUILD SUCCESS
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Total time: 0.739s
+	[INFO] Finished at: Tue Nov 24 20:08:59 EST 2015
+	[INFO] Final Memory: 11M/247M
+	[INFO] ------------------------------------------------------------------------
+	```
