@@ -20,7 +20,7 @@ import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 
 /**
- * Default features.
+ * Uncapitalized features.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class POSFeatureTemplate1 extends POSFeatureTemplate
@@ -44,6 +44,7 @@ public class POSFeatureTemplate1 extends POSFeatureTemplate
 		add(new FeatureItem<>(-3, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-2, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
+		
 		add(new FeatureItem<>( 0, Field.ambiguity_class));
 		add(new FeatureItem<>( 1, Field.ambiguity_class));
 		add(new FeatureItem<>( 2, Field.ambiguity_class));

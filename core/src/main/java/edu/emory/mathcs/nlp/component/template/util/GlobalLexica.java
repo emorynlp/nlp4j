@@ -66,7 +66,8 @@ public class GlobalLexica
 		Element element = XMLUtils.getFirstElementByTagName(eLexica, tag);
 		if (element == null) return;
 		
-		XZInputStream in = IOUtils.createXZBufferedInputStream(XMLUtils.getTrimmedTextContent(element));
+		String path = XMLUtils.getTrimmedTextContent(element);
+		XZInputStream in = IOUtils.createXZBufferedInputStream(IOUtils.getInputStream(path));
 		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, "field"));
 		f.accept(in, field);
 	}

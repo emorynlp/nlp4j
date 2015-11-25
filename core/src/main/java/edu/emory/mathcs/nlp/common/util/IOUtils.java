@@ -277,4 +277,10 @@ public class IOUtils
 	{
 		return IOUtils.class.getResourceAsStream(StringConst.FW_SLASH+path);
 	}
+	
+	public static InputStream getInputStream(String path)
+	{
+		InputStream in = IOUtils.getInputStreamsFromResource(path);
+		return (in != null) ? in : IOUtils.createFileInputStream(path);
+	}
 }

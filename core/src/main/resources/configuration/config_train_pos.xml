@@ -5,7 +5,7 @@
     </tsv>
 
     <lexica>
-        <word_clusters field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-uncapitalized.xz</word_clusters>
+        <word_clusters field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-uncapitalized.xz</word_clusters>
     </lexica>
 
     <optimizer>

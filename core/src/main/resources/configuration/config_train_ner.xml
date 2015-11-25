@@ -1,12 +1,15 @@
 <configuration>
 	<tsv>
         <column index="1" field="form"/>
+        <column index="2" field="lemma"/>
         <column index="3" field="pos"/>
+        <column index="4" field="feats"/>
+        <column index="5" field="nament"/>
     </tsv>
 
     <lexica>
-        <word_clusters field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-uncapitalized.xz</word_clusters>
-        <named_entity_gazetteers field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/lexica/en-ner-gazetteers-simplified-uncapitalized.xz</named_entity_gazetteers>
+        <word_clusters field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-uncapitalized.xz</word_clusters>
+        <named_entity_gazetteers field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-ner-gazetteers-simplified.xz</named_entity_gazetteers>
     </lexica>
 
     <optimizer>

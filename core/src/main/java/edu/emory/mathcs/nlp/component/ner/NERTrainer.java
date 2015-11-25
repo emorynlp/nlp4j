@@ -20,8 +20,6 @@ import java.util.List;
 
 import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate0;
 import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate1;
-import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate2;
-import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate3;
 import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.train.NLPOnlineTrainer;
@@ -47,12 +45,6 @@ public class NERTrainer extends NLPOnlineTrainer<NERState>
 		{
 		case  0: return new NERFeatureTemplate0();
 		case  1: return new NERFeatureTemplate1();
-		case  2: return new NERFeatureTemplate2();
-		case  3: return new NERFeatureTemplate3();
-//		case  4: return new NERFeatureTemplate4();
-//		case  5: return new NERFeatureTemplate5();
-//		case  6: return new NERFeatureTemplate6();
-//		case  7: return new NERFeatureTemplate7();
 		default: throw new IllegalArgumentException("Unknown feature template: "+id);
 		}
 	}
