@@ -1,66 +1,46 @@
 # Part-of-Speech Tagging
 
-## Training
+Our part-of-speech tagger processes about 68K tokens per second on an Intel Xeon 2.30GHz machine and shows state-of-the-art accuracy (97.5% on the OntoNotes Treebank).
 
-The following shows the command to train our part-of-speech tagger.
+* [Intrinsic and Extrinsic Evaluations of Word Embeddings](), Michael Zhai, Johnny Tan, Jinho D. Choi, Proceedings of the AAAI 2015 Student Program, Phoenix, AZ, 2015.
 
-```
-java edu.emory.mathcs.nlp.bin.POSTrain -c <filename> -t <filepath> -d <filepath> [-f <integer> -m <filename> -te <string> -de <string>]
+* [Fast and Robust Part-of-Speech Tagging Using Dynamic Model Selection](http://aclweb.org/anthology-new/P/P12/P12-2071.pdf), Jinho D. Choi, Martha Palmer, Proceedings of the 50th Annual Meeting of the Association for Computational Linguistics (ACL'12), 363-367, Jeju, Korea, 2012.
 
--c <filename> : configuration file (required)
--f <integer>  : feature template ID (default: 0)
--m <filename> : model file (optional)
--t <filepath> : training path (required)
--d <filepath> : development path (required)
--te <string>  : training file extension (default: *)
--de <string>  : development file extension (default: *)
-```
+## English Tagset
 
-* `-c` The default configuration: [`config_train_pos.xml`](../../src/main/resources/configuration/config_train_pos.xml) (see [below](#configuration) for more details).
-* `-f` The default feature template, `0`, is defined in [`POSFeatureTemplate`](../../src/main/java/edu/emory/mathcs/nlp/component/pos/POSFeatureTemplate.java). You can define your own feature templates and declare them in [`POSTrain`](../../src/main/java/edu/emory/mathcs/nlp/bin/POSTrain.java), which is useful for feature engineering (developers only).
-* `-m` If specified, the best statistical model is saved to the file as a compressed Java object.
-* `-t|d` The training or development path can point to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the specific directory are trained.
-* `-te|de` The training or development file extensions specifies the extensions of the training and development files. The default value `*` implies files with any extension. This option is used only when the training or development path `-t|d` points to a directory.
+### Words
 
-The following command takes [`config_train_pos.xml`](../../src/main/resources/configuration/config_train_pos.xml) and [`wsj_0001.dep`](../../src/main/resources/dat/wsj_0001.dep) for both training and development, and saves the best statistical model to `wsj_pos.xz`.
+| Tag | Description | Tag | Description |
+|---|---|---|---|
+| ADD | Email | POS | Possessive ending |
+| AFX | Affix | PRP | Personal pronoun |
+| CC | Coordinating conjunction | PRP$ | Possessive pronoun  |
+| CD | Cardinal number | RB | Adverb |
+| CODE | Code ID | RBR | Adverb, comparative |
+| DT | Determiner | RBS | Adverb, superlative |
+| EX | Existential there | RP | Particle |
+| FW | Foreign word | TO | To |
+| GW | Go with | UH | Interjection |
+| IN | Preposition or subordinating conjunction | VB | Verb, base form |
+| JJ | Adjective | VBD | Verb, past tense |
+| JJR | Adjective, comparative | VBG | Verb, gerund or present participle |
+| JJS | Adjective, superlative | VBN | Verb, past participle |
+| LS | List item marker | VBP | Verb, non-3rd person singular present |
+| MD | Modal | VBZ | Verb, 3rd person singular present |
+| NN | Noun, singular or mass | WDT | *Wh*-determiner |
+| NNS | Noun, plural | WP | *Wh*-pronoun |
+| NNP | Proper noun, singular | WP$ | *Wh*-pronoun, possessive |
+| NNPS | Proper noun, plural | WRB | *Wh*-adverb |
+| PDT | Predeterminer | XX | Unknown |
 
-```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.POSTrain -c config_train_pos.xml -t wsj_0001.dep -d wsj_0001.dep -m wsj_pos.xz
-```
+### Symbols
 
-* Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* Add the log4j configuration file ([`log4j.properties`](../../src/main/resources/configuration/log4j.properties)) to your classpath.
+| Tag | Description | Tag | Description |
+|---|---|---|---|
+| $ | Dollar | -LRB- | Left bracket |
+| : | Colon | -RRB- | Right bracket |
+| , | Comma | HYPH | Hyphen |
+| . | Period | NFP | Superfluous punctuation |
+| `` | Left quote | SYM | Symbol |
+| '' | Right quote | PUNC | General punctuation |
 
-## Configuration
-
-The following shows the default configuration file: [`config_train_pos.xml`](../../src/main/resources/configuration/config_train_pos.xml).
-
-```
-<configuration>
-    <language>english</language>
-
-	<tsv>
-        <column index="2" field="form"/>
-        <column index="4" field="pos"/>
-        <column index="5" field="feats"/>
-    </tsv>
-
-    <optimizer>
-        <algorithm>adadelta-mini-batch</algorithm>
-        <label_cutoff>4</label_cutoff>
-        <feature_cutoff>3</feature_cutoff>
-        <reset_weights>false</reset_weights>
-        <average>false</average>
-        <batch_ratio>0.1</batch_ratio>
-        <learning_rate>0.01</learning_rate>
-        <decaying_rate>0.4</decaying_rate>
-        <bias>0</bias>
-    </optimizer>
-    
-	<aggregate tolerance_delta="0.01" max_tolerance="5"/>
-	<ambiguity_class_threshold>0.4</ambiguity_class_threshold>
-</configuration>
-```
-
-* See [configuration](../specification/configuration.md#training) for details about the common fields.
-* `ambiguity_class_threshold`: discard ambiguity classes whose likelihoods are less than or equal to this threshold.

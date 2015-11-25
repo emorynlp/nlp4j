@@ -6,13 +6,13 @@ The Emory NLP project provides software and resources for natural language proce
 
 ## Core NLP
 
-Quick start
+Quick start:
 
-* [How to install](md/quickstart/installation.md).
+* [How to install](md/quickstart/install.md).
 * [How to train](https://github.com/emorynlp/corenlp/blob/master/md/train.md).
-* [How to decode](md/quickstart/
+* [How to decode](md/quickstart/decode.md).
 
-Components
+Components:
 
 * [Tokenization](https://github.com/emorynlp/tokenization).
 * [Morphological analysis](https://github.com/emorynlp/morphological_analysis).
