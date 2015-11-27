@@ -45,8 +45,8 @@ public class DecodeConfig extends NLPConfig
 		Element eModels = XMLUtils.getFirstElementByTagName(xml, "models");
 		
 		setPartOfSpeechTagging   (XMLUtils.getTextContentFromFirstElementByTagName(eModels, "pos"));
-		setNamedEntityRecognition(XMLUtils.getTextContentFromFirstElementByTagName(eModels, "dep"));
-		setDependencyParsing     (XMLUtils.getTextContentFromFirstElementByTagName(eModels, "ner"));
+		setNamedEntityRecognition(XMLUtils.getTextContentFromFirstElementByTagName(eModels, "ner"));
+		setDependencyParsing     (XMLUtils.getTextContentFromFirstElementByTagName(eModels, "dep"));
 		setSemanticRoleLabeling  (XMLUtils.getTextContentFromFirstElementByTagName(eModels, "srl"));
 	}
 	

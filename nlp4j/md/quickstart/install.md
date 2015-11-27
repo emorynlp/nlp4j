@@ -1,29 +1,30 @@
 # How To Install
 
-1. Make sure the following tools are installed on your machine:
- * [Git](https://git-scm.com): version 2 or above.
- * [Java](http://www.oracle.com/technetwork/java/javase/): version 8 or above.
- * [Maven](https://maven.apache.org): version 3 or above.
+* Make sure [Java 8](http://www.oracle.com/technetwork/java/javase/) and [Maven 3](https://maven.apache.org) are installed on your machine.
+* Create a maven project: [maven in 5 minutes](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html).
+* Move into the maven directory:
 
-1. Clone this repository:
-
-	```bash
-	git clone https://github.com/emorynlp/emorynlp.git
+	```
+	cd your_maven_project
 	```
 
-1. Change to the `emorynlp` directory:
+* Add the following dependency to `pom.xml`.
 
-	```bash
-	cd emorynlp
-	```
-	
-1. Compile this project:
-
-	```bash
-	mvn compile
+	```maven
+    <dependency>
+      <groupId>edu.emory.mathcs.nlp</groupId>
+      <artifactId>emorynlp</artifactId>
+      <version>RELEASE</version>
+    </dependency>
 	```
 	
-1. Run the following command:
+* Install the maven project:
+
+	```bash
+	mvn clean install
+	```
+	
+* Run the following command:
 
 	```bash
 	mvn exec:java -Dexec.mainClass="edu.emory.mathcs.nlp.bin.Version"
@@ -31,7 +32,7 @@
 
 	If you see something like the following, it is properly installed.
 
-	```
+	```bash
 	Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
 	[INFO] Scanning for projects...
 	[INFO]                                                                         

@@ -5,10 +5,11 @@
 
     <lexica>
         <word_clusters field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-uncapitalized.xz</word_clusters>
-        <named_entity_gazetteers field="uncapitalized_simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-ner-gazetteers-simplified-uncapitalized.xz</named_entity_gazetteers>
+        <named_entity_gazetteers field="simplified_word_form">edu/emory/mathcs/nlp/english/lexica/en-ner-gazetteers-simplified.xz</named_entity_gazetteers>
     </lexica>
 
     <models>
     	<pos>edu/emory/mathcs/nlp/english/models/en-general-pos.xz</pos>
+    	<ner>edu/emory/mathcs/nlp/english/models/en-general-ner.xz</ner>
     </models>
 </configuration>

@@ -77,6 +77,9 @@ public class NLPDecoder
 		BinUtils.LOG.info("Loading morphological analyzer\n");
 		components[1] = new EnglishMorphAnalyzer();
 		
+		BinUtils.LOG.info("Loading named entity recognizer\n");
+		components[1] = getComponent(IOUtils.getInputStream(config.getNamedEntityRecognition()));
+		
 		BinUtils.LOG.info("Finished loading\n");
 	}
 	
