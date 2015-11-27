@@ -56,10 +56,12 @@ public class DEPLabel implements Serializable, Comparable<DEPLabel>
 	
 	public void set(String label, double score)
 	{
-		int idx = label.indexOf(DELIM);
-		setArc   (label.substring(0, idx));
-		setList  (label.substring(idx+1, idx = label.lastIndexOf(DELIM)));
-		setDeprel(label.substring(idx+1));
+		int idx1 = label.indexOf(DELIM);
+		int idx2 = label.lastIndexOf(DELIM);
+		
+		setArc   (label.substring(0, idx1));
+		setList  (label.substring(idx1+1, idx2));
+		setDeprel(label.substring(idx2+1));
 		setScore (score);
 	}
 	
@@ -112,7 +114,6 @@ public class DEPLabel implements Serializable, Comparable<DEPLabel>
 	{
 		return isArc(label.getArc());
 	}
-
 	
 	public boolean isList(String label)
 	{

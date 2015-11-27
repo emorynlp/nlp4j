@@ -55,17 +55,17 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>(+1, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
 
 		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
 		add(new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
 
 		// 3-gram features
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>(0, Field.ambiguity_class));
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>(1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class)   , new FeatureItem<>(1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>(2, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class)   , new FeatureItem<>( 1, Field.ambiguity_class));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
 
 		// affix features
 		add(new FeatureItem<>(0, Field.prefix, 2));

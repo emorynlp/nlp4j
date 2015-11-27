@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.template.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
@@ -58,8 +60,27 @@ public enum BILOU
 	 */
 	public static <N>Int2ObjectMap<ObjectIntIntTriple<String>> collectNamedEntityMap(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
 	{
+		List<ObjectIntIntTriple<String>> list = collectNamedEntityList(nodes, f, beginIndex, endIndex);
 		Int2ObjectMap<ObjectIntIntTriple<String>> map = new Int2ObjectOpenHashMap<>();
-		int i, beginChunk = -1, size = nodes.length;
+		int key, size = nodes.length;
+		
+		for (ObjectIntIntTriple<String> t : list)
+		{
+			key = t.i1 * size + t.i2;
+			map.put(key, t);
+		}
+
+		return map;
+	}
+	
+	/**
+	 * @param beginIndex inclusive
+	 * @param endIndex exclusive
+	 */
+	public static <N>List<ObjectIntIntTriple<String>> collectNamedEntityList(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
+	{
+		List<ObjectIntIntTriple<String>> list = new ArrayList<>();
+		int i, beginChunk = -1;
 		String tag;
 		
 		for (i=beginIndex; i<endIndex; i++)
@@ -69,21 +90,20 @@ public enum BILOU
 			
 			switch (toBILOU(tag))
 			{
-			case U: putNamedEntity(map, tag, i, i, size); beginChunk = -1; break;
+			case U: putNamedEntity(list, tag, i, i); beginChunk = -1; break;
 			case B: beginChunk = i; break;
-			case L: if (beginIndex <= beginChunk&&beginChunk < i) putNamedEntity(map, tag, beginChunk, i, size); beginChunk = -1; break;
+			case L: if (beginIndex <= beginChunk&&beginChunk < i) putNamedEntity(list, tag, beginChunk, i); beginChunk = -1; break;
 			case O: beginChunk = -1; break;
 			case I: break;
 			}
 		}
 	
-		return map;
+		return list;
 	}
 
-	private static void putNamedEntity(Int2ObjectMap<ObjectIntIntTriple<String>> map, String tag, int beginIndex, int endIndex, int size)
+	private static void putNamedEntity(List<ObjectIntIntTriple<String>> list, String tag, int beginIndex, int endIndex)
 	{
-		int key = beginIndex * size + endIndex;
-		map.put(key, new ObjectIntIntTriple<>(toTag(tag), beginIndex, endIndex));
+		list.add(new ObjectIntIntTriple<>(toTag(tag), beginIndex, endIndex));
 	}
 	
 //	============================== POST-PROCESS ==============================

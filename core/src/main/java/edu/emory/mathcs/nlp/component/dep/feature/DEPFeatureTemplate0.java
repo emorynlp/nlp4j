@@ -32,7 +32,7 @@ public class DEPFeatureTemplate0 extends DEPFeatureTemplate
 	@Override
 	protected void init()
 	{
-		// lemma features 
+		// 1-gram features
 		add(new FeatureItem<>(Source.i, -1, Field.lemma));
 		add(new FeatureItem<>(Source.i,  0, Field.lemma));
 		add(new FeatureItem<>(Source.i,  1, Field.lemma));
@@ -43,64 +43,135 @@ public class DEPFeatureTemplate0 extends DEPFeatureTemplate
 		add(new FeatureItem<>(Source.j,  1, Field.lemma));
 		add(new FeatureItem<>(Source.j,  2, Field.lemma));
 		
-		add(new FeatureItem<>(Source.k,  1, Field.lemma));
+		add(new FeatureItem<>(Source.k, -1, Field.lemma));
 		
-		// pos features
 		add(new FeatureItem<>(Source.i, -2, Field.part_of_speech_tag));
 		add(new FeatureItem<>(Source.i, -1, Field.part_of_speech_tag));
 		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag));
 		add(new FeatureItem<>(Source.i,  1, Field.part_of_speech_tag));
 		add(new FeatureItem<>(Source.i,  2, Field.part_of_speech_tag));
 		
-		add(new FeatureItem<>(Source.j, -2, Field.part_of_speech_tag));
 		add(new FeatureItem<>(Source.j, -1, Field.part_of_speech_tag));
 		add(new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag));
 		add(new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag));
-		add(new FeatureItem<>(Source.j,  2, Field.part_of_speech_tag));
 		
-		add(new FeatureItem<>(Source.k,  1, Field.part_of_speech_tag));
-		add(new FeatureItem<>(Source.k,  2, Field.part_of_speech_tag));
+//		add(new FeatureItem<>(Source.k, -2, Field.part_of_speech_tag));
+//		add(new FeatureItem<>(Source.k, -1, Field.part_of_speech_tag));
+		
+		add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag));
+		
+		// 2-gram features
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.lemma));
+		add(new FeatureItem<>(Source.i,  0, Field.lemma)             , new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.lemma)             , new FeatureItem<>(Source.j,  0, Field.lemma));
+
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.k, -1, Field.part_of_speech_tag));
+//		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, -1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  1, Field.lemma));
+		
+		add(new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.k, -1, Field.part_of_speech_tag));
+//		add(new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  1, Field.lemma));
+		
+		add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.j, -1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.j,  1, Field.lemma));
+		
+//		add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i, -1, Field.part_of_speech_tag));
+//		add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i, -1, Field.lemma));
+//		add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i,  1, Field.lemma));
+		add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag));
+		
+		// 3-gram features
+		add(new FeatureItem<>(Source.i, -2, Field.part_of_speech_tag), new FeatureItem<>(Source.i, -1, Field.part_of_speech_tag), new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, -1, Field.part_of_speech_tag), new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.i,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j, -1, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  2, Field.part_of_speech_tag));
+
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.k, -2, Field.part_of_speech_tag));
+//		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.k, -1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, -1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.i,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, -2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, -1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  0, Field.part_of_speech_tag), new FeatureItem<>(Source.j,  3, Field.part_of_speech_tag));
 		
 		// valency features
-		add(new FeatureItem<>(Source.i, 0, Field.valency, Direction.all));
-		add(new FeatureItem<>(Source.j, 0, Field.valency, Direction.all));
+		add(new FeatureItem<>(Source.i, 0, Field.lemma), new FeatureItem<>(Source.i, 0, Field.valency, Direction.all));
+		add(new FeatureItem<>(Source.j, 0, Field.lemma), new FeatureItem<>(Source.j, 0, Field.valency, Direction.all));
 		
 		// 2nd-order features
-		add(new FeatureItem<>(Source.i, Relation.h  , 0, Field.lemma));
-		add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.lemma));
-		add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.lemma));
-		add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.lemma));
+		add(new FeatureItem<>(Source.i, Relation.h  , Field.lemma));
+		add(new FeatureItem<>(Source.i, Relation.rmd, Field.lemma));
+		add(new FeatureItem<>(Source.j, Relation.lmd, Field.lemma));
 		
-		add(new FeatureItem<>(Source.i, Relation.h  , 0, Field.part_of_speech_tag));
-		add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.part_of_speech_tag));
-		add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.part_of_speech_tag));
-		add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, Relation.h  , Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, Relation.rmd, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j, Relation.lmd, Field.part_of_speech_tag));
 		
-		add(new FeatureItem<>(Source.i,               0, Field.dependency_label));
-		add(new FeatureItem<>(Source.i, Relation.lns, 0, Field.dependency_label));
-		add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.dependency_label));
-		add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.dependency_label));
-		add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.dependency_label));
+		add(new FeatureItem<>(Source.i,            0, Field.dependency_label));
+		add(new FeatureItem<>(Source.j,            0, Field.dependency_label));
+		add(new FeatureItem<>(Source.i, Relation.lmd, Field.dependency_label));
+
+		add(new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.h  , Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.rmd, Field.part_of_speech_tag));
+		
+		add(new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i,            0, Field.dependency_label));
+		add(new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd, Field.dependency_label));
+		add(new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.rmd, Field.dependency_label));
+		
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.rmd, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, Relation.lmd, Field.part_of_speech_tag));
+		
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i,            0, Field.dependency_label));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd, Field.dependency_label));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lns, Field.dependency_label));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, Relation.lmd, Field.dependency_label));
 		
 		// 3rd-order features
-		add(new FeatureItem<>(Source.i, Relation.h2  , 0, Field.lemma));
-		add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.lemma));
-		add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.lemma));
-		add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.lemma));
+		add(new FeatureItem<>(Source.i, Relation.h2  , Field.lemma));
+		add(new FeatureItem<>(Source.i, Relation.rmd2, Field.lemma));
+		add(new FeatureItem<>(Source.j, Relation.lmd2, Field.lemma));
 		
-		add(new FeatureItem<>(Source.i, Relation.h2  , 0, Field.part_of_speech_tag));
-		add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.part_of_speech_tag));
-		add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.part_of_speech_tag));
-		add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, Relation.h2  , Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, Relation.rmd2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.j, Relation.lmd2, Field.part_of_speech_tag));
 		
-		add(new FeatureItem<>(Source.i, Relation.h   , 0, Field.dependency_label));
-		add(new FeatureItem<>(Source.i, Relation.lns2, 0, Field.dependency_label));
-		add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.dependency_label));
-		add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.dependency_label));
-		add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.dependency_label));
+		add(new FeatureItem<>(Source.i, Relation.h   , Field.dependency_label));
+		add(new FeatureItem<>(Source.j, Relation.h   , Field.dependency_label));
+		add(new FeatureItem<>(Source.i, Relation.lmd2, Field.dependency_label));
+		
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.h, Field.dependency_label));
+		add(new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.h, Field.dependency_label));
+		add(new FeatureItem<>(Source.j, 0, Field.lemma)             , new FeatureItem<>(Source.i, Relation.h, Field.dependency_label));
+		
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.rmd2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, Relation.lmd2, Field.part_of_speech_tag));
+		
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.h   , Field.dependency_label));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd2, Field.dependency_label));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lns2, Field.dependency_label));
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.j, Relation.lmd2, Field.dependency_label));		
+
+		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd2, Field.part_of_speech_tag));
 		
 		// boolean features
 		addSet(new FeatureItem<>(Source.i, 0, Field.binary));
 		addSet(new FeatureItem<>(Source.j, 0, Field.binary));
+		
+		// word cluster features
+		addSet(new FeatureItem<>(Source.i, 0, Field.word_clusters));
+		addSet(new FeatureItem<>(Source.j, 0, Field.word_clusters));
+		addSet(new FeatureItem<>(Source.i, 1, Field.word_clusters));
+		addSet(new FeatureItem<>(Source.j, 1, Field.word_clusters));
 	}
 }

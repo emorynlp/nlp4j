@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.ner;
 
+import java.util.List;
+
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
@@ -34,6 +36,8 @@ public class NERState extends L2RState
 		super(nodes);
 	}
 	
+//	============================== ORACLE ==============================
+	
 	@Override
 	protected String getLabel(NLPNode node)
 	{
@@ -43,10 +47,12 @@ public class NERState extends L2RState
 	@Override
 	protected String setLabel(NLPNode node, String label)
 	{
-		String s = node.getNamedEntityTag();
+		String s = node.getNamedEntityTag();	
 		node.setNamedEntityTag(label);
 		return s;
 	}
+	
+//	============================== EVALUATION ==============================
 
 	@Override
 	public void evaluate(Eval eval)
@@ -68,5 +74,69 @@ public class NERState extends L2RState
 		}
 		
 		return count;
+	}
+	
+//	============================== POST-PROCESS ==============================
+
+	public void postProcess()
+	{
+		for (int i=2; i<nodes.length; i++) postProcessBILOUAux(i);
+		List<ObjectIntIntTriple<String>> list = BILOU.collectNamedEntityList(nodes, this::getLabel, 1, nodes.length);
+		int i;
+		
+		for (i=1; i<nodes.length; i++)
+			nodes[i].setNamedEntityTag("O");
+		
+		for (ObjectIntIntTriple<String> t : list)
+		{
+			if (t.i1 == t.i2)
+				nodes[t.i1].setNamedEntityTag(BILOU.toBILOUTag(BILOU.U, t.o));
+			else
+			{
+				nodes[t.i1].setNamedEntityTag(BILOU.toBILOUTag(BILOU.B, t.o));
+				nodes[t.i2].setNamedEntityTag(BILOU.toBILOUTag(BILOU.L, t.o));
+				
+				for (i=t.i1+1; i<t.i2; i++)
+					nodes[i].setNamedEntityTag(BILOU.toBILOUTag(BILOU.I, t.o));
+			}
+		}
+	}
+	
+	@SuppressWarnings("incomplete-switch")
+	private void postProcessBILOUAux(int index)
+	{
+		NLPNode prev = nodes[index-1];
+		NLPNode curr = nodes[index];
+		BILOU p = BILOU.toBILOU(prev.getNamedEntityTag());
+		BILOU c = BILOU.toBILOU(curr.getNamedEntityTag());
+		
+		switch (p)
+		{
+		case I:
+			switch (c)
+			{
+			case U: curr.setNamedEntityTag(BILOU.changeChunkType(BILOU.I, curr.getNamedEntityTag())); break;	// IU -> II
+			}
+			break;
+		case L:
+			switch (c)
+			{
+			case I: prev.setNamedEntityTag(BILOU.changeChunkType(BILOU.I, prev.getNamedEntityTag())); break;	// LI -> II
+			}
+			break;
+		case O:
+			switch (c)
+			{
+			case I: prev.setNamedEntityTag(curr.getNamedEntityTag()); break;	// OI -> II
+			}
+			break;
+		case U:
+			switch (c)
+			{
+			case I: prev.setNamedEntityTag(BILOU.changeChunkType(BILOU.I, prev.getNamedEntityTag())); break;	// UI -> II
+			case L: prev.setNamedEntityTag(BILOU.changeChunkType(BILOU.B, prev.getNamedEntityTag())); break;	// UL -> BL
+			}
+			break;
+		}
 	}
 }

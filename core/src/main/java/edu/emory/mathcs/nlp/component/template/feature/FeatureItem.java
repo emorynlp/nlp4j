@@ -54,6 +54,11 @@ public class FeatureItem<T> implements Serializable
 		this(source, relation, window, field, null);
 	}
 	
+	public FeatureItem(Source source, Relation relation, Field field)
+	{
+		this(source, relation, 0, field, null);
+	}
+	
 	public FeatureItem(Source source, Relation relation, int window, Field field, T value)
 	{
 		this.source   = source;

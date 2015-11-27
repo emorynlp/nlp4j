@@ -149,7 +149,7 @@ public abstract class NLPOnlineTrainer<S extends NLPState>
 			score = evaluate(developFiles, component, reader);
 			for (TrainInfo in : info) in.updateRollInProbability();
 			nzw = Arrays.stream(optimizers).mapToInt(o -> o.getWeightVector().countNonZeroWeights()).sum();
-			BinUtils.LOG.info(String.format("%5d: %s, NZW = %d\n", epoch, component.getEval().toString(), nzw));
+			BinUtils.LOG.info(String.format("%5d: %s, NZW = %d, LABELS = %d\n", epoch, component.getEval().toString(), nzw, Arrays.stream(models).mapToInt(StringModel::getLabelSize).sum()));
 			
 			if (bestScore < score || (bestScore == score && nzw < bestNZW))
 			{

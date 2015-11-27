@@ -174,12 +174,7 @@ public class DEPState extends NLPState implements DEPTransition
 	
 	private void shift()
 	{
-		if (!inter.isEmpty())
-		{
-			for (int i=inter.size()-1; i>=0; i--) stack.push(inter.get(i));
-			inter.clear();
-		}
-		
+		while (!inter.isEmpty()) stack.push(inter.pop());
 		stack.push(input++);
 	}
 	
@@ -206,8 +201,8 @@ public class DEPState extends NLPState implements DEPTransition
 			window *= -1;
 			if (window < stack.size()) return nodes[stack.peekInt(window)];
 		}
-		else if (window < inter.size())
-			return nodes[inter.getInt(window)];
+		else if (window <= inter.size())
+			return nodes[inter.peekInt(window-1)];
 
 		return null;
 	}
@@ -232,6 +227,7 @@ public class DEPState extends NLPState implements DEPTransition
 		return getInput(0);
 	}
 	
+	@Override
 	public NLPNode getNode(FeatureItem<?> item)
 	{
 		NLPNode node = null;

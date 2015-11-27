@@ -51,10 +51,16 @@ public class DEPParser extends NLPOnlineComponent<DEPState>
 //	============================== ABSTRACT METHODS ==============================
 
 	@Override
-	protected void readLexicons(ObjectInputStream in) throws IOException, ClassNotFoundException {}
+	protected void readLexicons(ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		label_indices = (DEPLabelCandidate)in.readObject();
+	}
 
 	@Override
-	protected void writeLexicons(ObjectOutputStream out) throws IOException {}
+	protected void writeLexicons(ObjectOutputStream out) throws IOException
+	{
+		out.writeObject(label_indices);
+	}
 	
 //	============================== ABSTRACT ==============================
 

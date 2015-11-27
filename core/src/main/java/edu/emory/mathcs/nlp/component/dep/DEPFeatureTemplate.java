@@ -15,12 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.dep;
 
-import java.util.Collection;
-
-import edu.emory.mathcs.nlp.component.template.feature.Direction;
-import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -28,79 +23,4 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 public abstract class DEPFeatureTemplate extends FeatureTemplate<DEPState>
 {
 	private static final long serialVersionUID = -2218894375050796569L;
-
-	public DEPFeatureTemplate()	
-	{
-		init();
-	}
-	
-	protected abstract void init();
-	
-//	========================= FEATURE EXTRACTORS =========================
-	
-	@Override
-	protected String getFeature(DEPState state, FeatureItem<?> item)
-	{
-		NLPNode node = getNode(state, item);
-		if (node == null) return null;
-		
-		switch (item.field)
-		{
-		case word_form: return node.getWordForm();
-		case simplified_word_form: return node.getSimplifiedWordForm();
-		case lemma: return node.getLemma();
-		case part_of_speech_tag: return node.getPartOfSpeechTag();
-		case feats: return node.getFeat((String)item.value);
-		case dependency_label: return node.getDependencyLabel();
-		case valency: return node.getValency((Direction)item.value);
-		default: throw new IllegalArgumentException("Unsupported feature: "+item.field);
-		}
-	}
-	
-	@Override
-	protected Collection<String> getFeatures(DEPState state, FeatureItem<?> item)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	protected NLPNode getNode(DEPState state, FeatureItem<?> item)
-	{
-		NLPNode node = null;
-		
-		switch (item.source)
-		{
-		case i: node = state.getStack (item.window); break;
-		case j: node = state.getInput (item.window); break;
-		case k: node = state.peekStack(item.window); break;
-		}
-		
-		return getNode(node, item);
-	}
-	
-	protected NLPNode getNode(NLPNode node, FeatureItem<?> item)
-	{
-		if (node == null || item.relation == null)
-			return node;
-		
-		switch (item.relation)
-		{
-		case h   : return node.getDependencyHead();
-		case h2  : return node.getGrandDependencyHead();
-		case lmd : return node.getLeftMostDependent();
-		case lmd2: return node.getLeftMostDependent(1);
-		case lnd : return node.getLeftNearestDependent();
-		case lnd2: return node.getLeftNearestDependent(1);
-		case lns : return node.getLeftNearestSibling();
-		case lns2: return node.getLeftNearestSibling(1);
-		case rmd : return node.getRightMostDependent();
-		case rmd2: return node.getRightMostDependent(1);
-		case rnd : return node.getRightNearestDependent();
-		case rnd2: return node.getRightNearestDependent(1);
-		case rns : return node.getRightNearestSibling();
-		case rns2: return node.getRightNearestSibling(1);
-		}
-		
-		return null;
-	}
 }

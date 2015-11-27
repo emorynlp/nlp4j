@@ -227,8 +227,8 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	{
 		List<String> values = new ArrayList<>();
 		
-		if (state.isFirst(node)) values.add("0");
-		if (state.isLast (node)) values.add("1");
+		if      (state.isFirst(node)) values.add("0");
+		else if (state.isLast (node)) values.add("1");
 		
 		return values.isEmpty() ? null : values;
 	}

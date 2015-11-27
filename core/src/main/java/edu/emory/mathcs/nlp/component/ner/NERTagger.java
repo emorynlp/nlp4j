@@ -75,6 +75,6 @@ public class NERTagger extends NLPOnlineComponent<NERState>
 	@Override
 	protected void postProcess(NERState state)
 	{
-		
+		state.postProcess();
 	}
 }
