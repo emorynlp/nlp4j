@@ -36,6 +36,7 @@ public class DEPParser extends NLPOnlineComponent<DEPState>
 {
 	private static final long serialVersionUID = 7031031976396726276L;
 	private DEPLabelCandidate label_indices;
+	int tt = 0;
 
 	public DEPParser()
 	{

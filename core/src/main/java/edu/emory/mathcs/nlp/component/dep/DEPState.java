@@ -33,7 +33,7 @@ public class DEPState extends NLPState implements DEPTransition
 {
 	private DEPLabelCandidate label_indices;
 	private DEPArc[]          oracle;
-	private IntArrayList      stack;
+	public IntArrayList      stack;
 	private IntArrayList      inter;
 	private int               input;
 	
@@ -59,11 +59,31 @@ public class DEPState extends NLPState implements DEPTransition
 	public int[] getZeroCostLabels(StringModel model)
 	{
 		DEPLabel label = getOracle();
+		addZeroCost(model, label);
+		label = getZeroCost(model, label);
+		int index = addZeroCost(model, label);
+		return new int[]{index};
+	}
+	
+	private int addZeroCost(StringModel model, DEPLabel label)
+	{
 		String s = label.toString();
 		model.addLabel(s);
 		int index = model.getLabelIndex(s);
 		label_indices.add(label, index);
-		return new int[]{index};
+		return index;
+	}
+	
+	private DEPLabel getZeroCost(StringModel model, DEPLabel oracle)
+	{
+		NLPNode stack = getStack();
+		NLPNode input = getInput();
+		
+		if ((oracle.isArc(ARC_LEFT ) && (stack.hasDependencyHead() || input.isDescendantOf(stack))) ||
+			 oracle.isArc(ARC_RIGHT) && (input.hasDependencyHead() || stack.isDescendantOf(input)))
+			return getOracleNoX();
+		
+		return oracle;
 	}
 	
 	public DEPLabel getOracle()
@@ -89,6 +109,13 @@ public class DEPState extends NLPState implements DEPTransition
 			return new DEPLabel(ARC_RIGHT, list, gold.getLabel());
 		}
 		
+		return getOracleNoX();
+	}
+	
+	private DEPLabel getOracleNoX()
+	{
+		String list;
+		
 		if      (isOracleShift())		list = LIST_SHIFT;
 		else if (isOracleReduce(false))	list = LIST_REDUCE;
 		else							list = LIST_PASS;
@@ -107,9 +134,9 @@ public class DEPState extends NLPState implements DEPTransition
 		
 		// if child(input) < stack
 		NLPNode input = getInput();
-		int i = 1;
+		int i = 0;
 
-		while ((stack = peekStack(i++)) != null)
+		while ((stack = peekStack(--i)) != null)
 		{
 			if (oracle[stack.getID()].isNode(input))
 				return false;

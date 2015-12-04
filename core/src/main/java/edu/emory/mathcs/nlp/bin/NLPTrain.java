@@ -21,6 +21,7 @@ import org.kohsuke.args4j.Option;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
+import edu.emory.mathcs.nlp.component.dep.DEPTrainer;
 import edu.emory.mathcs.nlp.component.doc.DOCTrainer;
 import edu.emory.mathcs.nlp.component.ner.NERTrainer;
 import edu.emory.mathcs.nlp.component.pos.POSTrainer;
@@ -61,6 +62,7 @@ public class NLPTrain
 		{
 		case "pos": trainer = new POSTrainer(); break;
 		case "ner": trainer = new NERTrainer(); break;
+		case "dep": trainer = new DEPTrainer(); break;
 		case "doc": trainer = new DOCTrainer(); break;
 		default   : throw new IllegalArgumentException("Unsupported mode: "+mode);
 		}

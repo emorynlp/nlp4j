@@ -39,8 +39,8 @@ public abstract class StochasticGradientDescent extends OnlineOptimizer
 	{
 		for (SparseItem xi : instance.getVector())
 		{
-			updateWeight(instance.getGoldLabel()     , xi,  xi.getValue());
-			updateWeight(instance.getPredictedLabel(), xi, -xi.getValue());
+			updateWeight(instance.getGoldLabel()     , xi,  1);
+			updateWeight(instance.getPredictedLabel(), xi, -1);
 		}
 	}
  	
@@ -48,7 +48,7 @@ public abstract class StochasticGradientDescent extends OnlineOptimizer
 	{
 		for (SparseItem xi : instance.getVector())
 			for (int y=0; y<gradients.length; y++)
-				updateWeight(y, xi, gradients[y] * xi.getValue());
+				updateWeight(y, xi, gradients[y]);
 	}
  	
  	protected void updateWeight(int y, SparseItem xi, float gradient)

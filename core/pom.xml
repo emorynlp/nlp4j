@@ -109,37 +109,47 @@
     <dependency>
       <groupId>args4j</groupId>
       <artifactId>args4j</artifactId>
-      <version>RELEASE</version>
+      <version>2.32</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>RELEASE</version>
+      <version>1.2.17</version>
     </dependency>
     <dependency>
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
-      <version>RELEASE</version>
+      <version>1.5</version>
     </dependency>
     <dependency>
       <groupId>it.unimi.dsi</groupId>
       <artifactId>fastutil</artifactId>
-      <version>RELEASE</version>
+      <version>7.0.7</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-math3</artifactId>
-      <version>RELEASE</version>
+      <version>3.5</version>
 	</dependency>
 	<dependency>
       <groupId>org.magicwerk</groupId>
       <artifactId>brownies-collections</artifactId>
-      <version>RELEASE</version>
+      <version>0.9.11</version>
     </dependency>
     <dependency>
       <groupId>net.openhft</groupId>
       <artifactId>zero-allocation-hashing</artifactId>
-      <version>RELEASE</version>
+      <version>0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jblas</groupId>
+      <artifactId>jblas</artifactId>
+      <version>1.2.4</version>
     </dependency>
   </dependencies>
 </project>

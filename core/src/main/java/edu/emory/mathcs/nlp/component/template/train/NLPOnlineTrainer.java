@@ -119,11 +119,15 @@ public abstract class NLPOnlineTrainer<S extends NLPState>
 		InputStream configStream = IOUtils.createFileInputStream(configurationFile);
 		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
 		NLPOnlineComponent<S> component = initComponent(configStream, previousModelStream, featureType);
-		train(trainFiles, developFiles, component);
-		if (modelFile != null) saveModel(component, IOUtils.createFileOutputStream(modelFile));
+		
+		try
+		{
+			train(trainFiles, developFiles, modelFile, component);
+		}
+		catch (Exception e) {e.printStackTrace();}
 	}
 	
-	public void train(List<String> trainFiles, List<String> developFiles, NLPOnlineComponent<S> component)
+	public void train(List<String> trainFiles, List<String> developFiles, String modelFile, NLPOnlineComponent<S> component) throws Exception
 	{
 		NLPConfig config = component.getConfiguration();
 		TSVReader reader = config.getTSVReader();
@@ -132,7 +136,6 @@ public abstract class NLPOnlineTrainer<S extends NLPState>
 		TrainInfo[] info = component.getTrainInfos();
 		
 		int bestEpoch = -1, bestNZW = -1, maxEpochs = config.getMaxEpochs(), nzw;
-		byte[][] bestModels = new byte[models.length][];
 		Random rand = new XORShiftRandom(9);
 		double bestScore = 0, score;
 		
@@ -153,15 +156,16 @@ public abstract class NLPOnlineTrainer<S extends NLPState>
 			
 			if (bestScore < score || (bestScore == score && nzw < bestNZW))
 			{
-				bestNZW    = nzw;
-				bestEpoch  = epoch;
-				bestScore  = score;
-				for (int i=0; i<models.length; i++) bestModels[i] = models[i].toByteArray();
+				bestNZW   = nzw;
+				bestEpoch = epoch;
+				bestScore = score;
+				
+				if (modelFile != null)
+					saveModel(component, IOUtils.createFileOutputStream(modelFile));
 			}
 		}
-		
+
 		BinUtils.LOG.info(String.format(" Best: %5.2f, epoch: %d, nzw: %d\n\n", bestScore, bestEpoch, bestNZW));
-		for (int i=0; i<models.length; i++) models[i].fromByteArray(bestModels[i]);
 	}
 	
 	protected double evaluate(List<String> developFiles, NLPOnlineComponent<?> component, TSVReader reader)

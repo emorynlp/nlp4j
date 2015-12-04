@@ -227,19 +227,18 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 		OnlineOptimizer optimizer;
 		SparseInstance inst;
 		StringModel model;
-		int[] Z, labels;
 		TrainInfo info;
 		SparseVector x;
 		float[] scores;
 		int ydot, yhat;
 		int modelID;
+		int[] Z;
 
 		while (!state.isTerminate())
 		{
 			modelID = getModelID(state);
 			model = models[modelID];
 			x = extractFeatures(state, model);
-			labels = state.getLabelCandidates();
 			
 			if (isTrain())
 			{
@@ -247,7 +246,7 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 				info = train_info[modelID];
 				Z = state.getZeroCostLabels(model);
 				optimizer.expand(model.getLabelSize(), model.getFeatureSize());
-				scores = model.scores(x, labels);
+				scores = model.scores(x, state.getLabelCandidates());
 				inst = new SparseInstance(Z, x, scores);
 				ydot = inst.getGoldLabel();
 				yhat = optimizer.setPredictedLabel(inst);
@@ -256,13 +255,13 @@ public abstract class NLPOnlineComponent<S extends NLPState> implements NLPCompo
 			}
 			else
 			{
-				scores = model.scores(x, labels);
+				scores = model.scores(x, state.getLabelCandidates());
 				yhat = MLUtils.argmax(scores, model.getLabelSize());
 			}
 			
 			state.next(new StringPrediction(model.getLabel(yhat), scores[yhat]));
 		}
-	
+		
 		if (isDecode() || isEvaluate())
 		{
 			postProcess(state);

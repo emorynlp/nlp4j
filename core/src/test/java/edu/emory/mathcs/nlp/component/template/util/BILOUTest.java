@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.zzz.util;
+package edu.emory.mathcs.nlp.component.template.util;
 
 import static org.junit.Assert.assertEquals;
 

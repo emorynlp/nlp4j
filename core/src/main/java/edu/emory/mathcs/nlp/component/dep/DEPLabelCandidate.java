@@ -66,14 +66,17 @@ public class DEPLabelCandidate implements Serializable, DEPTransition
 	{
 		if (stack.getID() == 0)
 			return X_SHIFT.get();
-		else if (stack.isDescendantOf(input))
+		
+		if (stack.isDescendantOf(input))
 			return NO_X.get();
-		else if (input.isDescendantOf(stack))
+		
+		if (input.isDescendantOf(stack))
 			return stack.hasDependencyHead() ? NO_X.get() : NO_SHIFT_OR_PASS.get();
-		else if (!stack.hasDependencyHead())
+		
+		if (!stack.hasDependencyHead())
 			return NOT_NO_REDUCE.get();
-		else
-			return null;
+
+		return null;
 	}
 	
 	public int[] getLeftArcs()
