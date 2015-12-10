@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.dep.feature;
 
 import edu.emory.mathcs.nlp.component.dep.DEPFeatureTemplate;
+import edu.emory.mathcs.nlp.component.dep.DEPState;
 import edu.emory.mathcs.nlp.component.template.feature.Direction;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
@@ -173,5 +174,11 @@ public class DEPFeatureTemplate0 extends DEPFeatureTemplate
 		addSet(new FeatureItem<>(Source.j, 0, Field.word_clusters));
 		addSet(new FeatureItem<>(Source.i, 1, Field.word_clusters));
 		addSet(new FeatureItem<>(Source.j, 1, Field.word_clusters));
+	}
+	
+	@Override
+	public float[] createDenseVector(DEPState state)
+	{
+		return null;
 	}
 }

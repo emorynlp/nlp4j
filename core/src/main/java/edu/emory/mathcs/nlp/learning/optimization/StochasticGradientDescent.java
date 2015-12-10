@@ -15,52 +15,77 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization;
 
-import edu.emory.mathcs.nlp.learning.instance.SparseInstance;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
-import edu.emory.mathcs.nlp.learning.vector.SparseItem;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.FeatureVector;
+import edu.emory.mathcs.nlp.learning.util.Instance;
+import edu.emory.mathcs.nlp.learning.util.MajorVector;
+import edu.emory.mathcs.nlp.learning.util.SparseItem;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class StochasticGradientDescent extends OnlineOptimizer
 {
-	public StochasticGradientDescent(WeightVector vector, float learningRate)
+	private static final long serialVersionUID = -531288798885524823L;
+
+	public StochasticGradientDescent(WeightVector vector, float learningRate, float bias)
 	{
-		this(vector, learningRate, null);
+		this(vector, learningRate, bias, null);
 	}
 	
-	public StochasticGradientDescent(WeightVector vector, float learningRate, Regularizer l1)
+	public StochasticGradientDescent(WeightVector vector, float learningRate, float bias, Regularizer l1)
 	{
-		super(vector, learningRate, l1);
+		super(vector, learningRate, bias, l1);
 	}
 	
-	protected void trainClassification(SparseInstance instance)
+	protected void trainClassification(Instance instance)
 	{
-		for (SparseItem xi : instance.getVector())
+		FeatureVector x = instance.getFeatureVector();
+		int gold = instance.getGoldLabel();
+		int yhat = instance.getPredictedLabel();
+		
+		for (SparseItem xi : x.getSparseVector())
 		{
-			updateWeight(instance.getGoldLabel()     , xi,  1);
-			updateWeight(instance.getPredictedLabel(), xi, -1);
+			updateWeight(gold, xi.getIndex(),  xi.getValue(), true);
+			updateWeight(yhat, xi.getIndex(), -xi.getValue(), true);
+		}
+		
+		if (x.hasDenseVector())
+		{
+			float[] d = x.getDenseVector();
+			for (int xi=0; xi<d.length; xi++) updateWeight(gold, xi,  d[xi], false);
+			for (int xi=0; xi<d.length; xi++) updateWeight(yhat, xi, -d[xi], false);
 		}
 	}
  	
- 	protected void trainRegression(SparseInstance instance, float[] gradients)
+ 	protected void trainRegression(Instance instance, float[] gradients)
 	{
-		for (SparseItem xi : instance.getVector())
+ 		FeatureVector x = instance.getFeatureVector();
+ 		
+		for (SparseItem xi : x.getSparseVector())
 			for (int y=0; y<gradients.length; y++)
-				updateWeight(y, xi, gradients[y]);
+				updateWeight(y, xi.getIndex(), gradients[y] * xi.getValue(), true);
+		
+		if (x.hasDenseVector())
+		{
+			float[] d = x.getDenseVector();
+			
+			for (int y=0; y<gradients.length; y++)
+				for (int xi=0; xi<d.length; xi++)
+					updateWeight(y, xi, gradients[y] * d[xi], false);
+		}
 	}
  	
- 	protected void updateWeight(int y, SparseItem xi, float gradient)
+ 	protected void updateWeight(int y, int xi, float gradient, boolean sparse)
  	{
- 		int index = weight_vector.indexOf(y, xi.getIndex());
- 		float learningRate = getLearningRate(index);
+ 		MajorVector weights = weight_vector.getMajorVector(sparse);
+ 		int index = weights.indexOf(y, xi);
+ 		float learningRate = getLearningRate(index, sparse);
  		
 		if (isL1Regularization())
-			l1_regularizer.updateWeight(index, gradient, learningRate, steps);
+			l1_regularizer.updateWeight(index, gradient, learningRate, steps, sparse);
 		else
-			weight_vector.add(index, learningRate * gradient * xi.getValue());
+			weights.add(index, gradient * learningRate);
  	}
-
- 	protected abstract float getLearningRate(int index);
 }

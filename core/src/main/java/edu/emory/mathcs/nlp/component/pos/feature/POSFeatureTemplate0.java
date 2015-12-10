@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.pos.feature;
 
 import edu.emory.mathcs.nlp.component.pos.POSFeatureTemplate;
+import edu.emory.mathcs.nlp.component.pos.POSState;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 
@@ -36,6 +37,12 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		add(new FeatureItem<>( 0, Field.simplified_word_form));
 		add(new FeatureItem<>( 1, Field.simplified_word_form));
 		add(new FeatureItem<>( 2, Field.simplified_word_form));
+		
+		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
 
 		add(new FeatureItem<>(-1, Field.word_shape, 2));
 		add(new FeatureItem<>( 0, Field.word_shape, 2));
@@ -49,23 +56,6 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		add(new FeatureItem<>( 1, Field.ambiguity_class));
 		add(new FeatureItem<>( 2, Field.ambiguity_class));
 		add(new FeatureItem<>( 3, Field.ambiguity_class));
-
-		// 2-gram features
-		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form), new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
-
-		// 3-gram features
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class));
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class)   , new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
 
 		// affix features
 		add(new FeatureItem<>(0, Field.prefix, 2));
@@ -82,8 +72,29 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 		addSet(new FeatureItem<>(0, Field.binary));
 		
 		// word cluster features
-		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>(-1, Field.word_clusters));
+		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>( 1, Field.word_clusters));
+	}
+
+	@Override
+	public float[] createDenseVector(POSState state)
+	{
+//		int max = 2, len = 45;
+//		max = Math.min(state.getInputIndex() - 1, max);
+//		if (max <= 0) return null;
+//		
+//		float[] d = new float[len*max], e;
+//		
+//		for (int i=1; i<=max; i++)
+//		{
+//			e = state.getScores(state.getInputIndex()-i);
+//			System.arraycopy(e, 0, d, (i-1)*len, e.length);
+//		}
+//		
+//		return d;
+
+		return null;
+//		return state.getScores(state.getInputIndex()-1);
 	}
 }

@@ -15,12 +15,9 @@
  */
 package edu.emory.mathcs.nlp.component.pos;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -29,7 +26,7 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTagger extends NLPOnlineComponent<POSState>
+public class POSTagger extends OnlineComponent<POSState>
 {
 	private static final long serialVersionUID = -7926217238116337203L;
 	private AmbiguityClassMap ambiguity_class_map;
@@ -42,18 +39,6 @@ public class POSTagger extends NLPOnlineComponent<POSState>
 	}
 	
 //	============================== LEXICONS ==============================
-
-	@Override
-	protected void readLexicons(ObjectInputStream in) throws IOException, ClassNotFoundException
-	{
-		ambiguity_class_map = (AmbiguityClassMap)in.readObject();
-	}
-
-	@Override
-	protected void writeLexicons(ObjectOutputStream out) throws IOException
-	{
-		out.writeObject(ambiguity_class_map);
-	}
 	
 	public AmbiguityClassMap getAmbiguityClassMap()
 	{

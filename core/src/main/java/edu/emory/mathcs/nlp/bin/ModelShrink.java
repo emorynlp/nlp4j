@@ -24,15 +24,15 @@ import org.kohsuke.args4j.Option;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
-import edu.emory.mathcs.nlp.learning.model.StringModel;
-import edu.emory.mathcs.nlp.learning.model.StringModelMap;
+import edu.emory.mathcs.nlp.learning.zzz.StringModel;
+import edu.emory.mathcs.nlp.learning.zzz.StringModelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -66,7 +66,7 @@ public class ModelShrink
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
-		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject(); in.close();
+		OnlineComponent<S> component = (OnlineComponent<S>)in.readObject(); in.close();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
 		StringModelMap model = (StringModelMap)component.getModels()[model_id];
@@ -93,7 +93,7 @@ public class ModelShrink
 		fout.close();
 	}
 	
-	public <S extends NLPState>double evaluate(List<String> inputFiles, NLPOnlineComponent<S> component, StringModel model, float rate) throws Exception
+	public <S extends NLPState>double evaluate(List<String> inputFiles, OnlineComponent<S> component, StringModel model, float rate) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		NLPNode[] nodes;

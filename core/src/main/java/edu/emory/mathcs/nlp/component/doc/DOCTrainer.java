@@ -19,23 +19,23 @@ import java.io.InputStream;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.component.doc.features.DOCFeatureTemplate0;
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.train.NLPOnlineTrainer;
+import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DOCTrainer extends NLPOnlineTrainer<DOCState>
+public class DOCTrainer extends OnlineTrainer<DOCState>
 {
 	@Override
-	protected NLPOnlineComponent<DOCState> createComponent(InputStream config)
+	protected OnlineComponent<DOCState> createComponent(InputStream config)
 	{
 		return new DOCClassifier(config);
 	}
 
 	@Override
-	protected void collect(NLPOnlineComponent<DOCState> component, List<String> inputFiles) {}
+	protected void collect(OnlineComponent<DOCState> component, List<String> inputFiles) {}
 	
 	@Override
 	protected FeatureTemplate<DOCState> createFeatureTemplate(int id)

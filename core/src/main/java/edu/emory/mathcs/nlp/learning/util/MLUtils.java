@@ -77,4 +77,34 @@ public class MLUtils
 		
 		return maxIndex;
 	}
+	
+	static public int[] argmax2(float[] array)
+	{
+		return argmax2(array, array.length);
+	}
+	
+	static public int[] argmax2(float[] array, int size)
+	{
+		if (size < 2) return new int[]{0,-1};
+		int[] max = {0,1};
+		
+		if (array[0] < array[1])
+		{
+			max[0] = 1;
+			max[1] = 0;
+		}
+		
+		for (int i=2; i<size; i++)
+		{
+			if (array[max[0]] < array[i])
+			{
+				max[1] = max[0];
+				max[0] = i;
+			}
+			else if (array[max[1]] < array[i])
+				max[1] = i;
+		}
+		
+		return max;
+	}
 }

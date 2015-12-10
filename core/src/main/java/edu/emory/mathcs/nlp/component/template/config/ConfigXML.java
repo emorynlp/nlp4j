@@ -53,6 +53,11 @@ public interface ConfigXML
 	String FEATURE_SIZE	= "feature_size";
 	String FEATURE_HASH	= "feature_hash";
 	String BIAS			= "bias";
+	String HIDDEN		= "hidden";
+	String ACTIVATION	= "activation";
+	String SOFTMAX		= "softmax";
+	String SIGMOID		= "sigmoid";
+	String RANDOM_BOUND	= "random_bound";
 	
 	String L1_REGULARIZATION	= "l1_regularization";
 	String LEARNING_RATE		= "learning_rate";
@@ -67,4 +72,5 @@ public interface ConfigXML
 	String ADAGRAD_MINI_BATCH	= "adagrad-mini-batch";
 	String ADAGRAD_REGRESSION	= "adagrad-regression";
 	String ADADELTA_MINI_BATCH	= "adadelta-mini-batch";
+	String FFNN_SOFTMAX			= "ffnn-softmax";
 }

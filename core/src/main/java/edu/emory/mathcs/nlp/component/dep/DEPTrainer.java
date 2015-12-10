@@ -19,31 +19,23 @@ import java.io.InputStream;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate0;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate1;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate2;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate3;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate4;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate5;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate6;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate7;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate8;
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.train.NLPOnlineTrainer;
+import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPTrainer extends NLPOnlineTrainer<DEPState>
+public class DEPTrainer extends OnlineTrainer<DEPState>
 {
 	@Override
-	protected NLPOnlineComponent<DEPState> createComponent(InputStream config)
+	protected OnlineComponent<DEPState> createComponent(InputStream config)
 	{
 		return new DEPParser(config);
 	}
 
 	@Override
-	protected void collect(NLPOnlineComponent<DEPState> component, List<String> inputFiles) {}
+	protected void collect(OnlineComponent<DEPState> component, List<String> inputFiles) {}
 	
 	@Override
 	protected FeatureTemplate<DEPState> createFeatureTemplate(int id)
@@ -51,14 +43,6 @@ public class DEPTrainer extends NLPOnlineTrainer<DEPState>
 		switch (id)
 		{
 		case  0: return new DEPFeatureTemplate0();
-		case  1: return new DEPFeatureTemplate1();
-		case  2: return new DEPFeatureTemplate2();
-		case  3: return new DEPFeatureTemplate3();
-		case  4: return new DEPFeatureTemplate4();
-		case  5: return new DEPFeatureTemplate5();
-		case  6: return new DEPFeatureTemplate6();
-		case  7: return new DEPFeatureTemplate7();
-		case  8: return new DEPFeatureTemplate8();
 		default: throw new IllegalArgumentException("Unknown feature template: "+id);
 		}
 	}

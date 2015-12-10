@@ -22,8 +22,7 @@ import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
-import edu.emory.mathcs.nlp.learning.model.StringModel;
-import edu.emory.mathcs.nlp.learning.prediction.StringPrediction;
+import edu.emory.mathcs.nlp.learning.util.StringPrediction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 /**
@@ -31,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
  */
 public class DEPState extends NLPState implements DEPTransition
 {
-	private DEPLabelCandidate label_indices;
+//	private DEPLabelCandidate label_indices;
 	private DEPArc[]          oracle;
 	public IntArrayList      stack;
 	private IntArrayList      inter;
@@ -40,7 +39,7 @@ public class DEPState extends NLPState implements DEPTransition
 	public DEPState(NLPNode[] nodes, DEPLabelCandidate indices)
 	{
 		super(nodes);
-		label_indices = indices;
+//		label_indices = indices;
 		stack = new IntArrayList();
 		inter = new IntArrayList();
 		input = 0;
@@ -56,37 +55,34 @@ public class DEPState extends NLPState implements DEPTransition
 	}
 	
 	@Override
-	public int[] getZeroCostLabels(StringModel model)
+	public String getOracle()
 	{
-		DEPLabel label = getOracle();
-		addZeroCost(model, label);
-		label = getZeroCost(model, label);
-		int index = addZeroCost(model, label);
-		return new int[]{index};
+		DEPLabel label = getOracleLabel();
+		return label.toString();
 	}
 	
-	private int addZeroCost(StringModel model, DEPLabel label)
-	{
-		String s = label.toString();
-		model.addLabel(s);
-		int index = model.getLabelIndex(s);
-		label_indices.add(label, index);
-		return index;
-	}
+//	private int addZeroCost(StringModel model, DEPLabel label)
+//	{
+//		String s = label.toString();
+//		model.addLabel(s);
+//		int index = model.getLabelIndex(s);
+//		label_indices.add(label, index);
+//		return index;
+//	}
+//	
+//	private DEPLabel getZeroCost(StringModel model, DEPLabel oracle)
+//	{
+//		NLPNode stack = getStack();
+//		NLPNode input = getInput();
+//		
+//		if ((oracle.isArc(ARC_LEFT ) && (stack.hasDependencyHead() || input.isDescendantOf(stack))) ||
+//			 oracle.isArc(ARC_RIGHT) && (input.hasDependencyHead() || stack.isDescendantOf(input)))
+//			return getOracleNoX();
+//		
+//		return oracle;
+//	}
 	
-	private DEPLabel getZeroCost(StringModel model, DEPLabel oracle)
-	{
-		NLPNode stack = getStack();
-		NLPNode input = getInput();
-		
-		if ((oracle.isArc(ARC_LEFT ) && (stack.hasDependencyHead() || input.isDescendantOf(stack))) ||
-			 oracle.isArc(ARC_RIGHT) && (input.hasDependencyHead() || stack.isDescendantOf(input)))
-			return getOracleNoX();
-		
-		return oracle;
-	}
-	
-	public DEPLabel getOracle()
+	public DEPLabel getOracleLabel()
 	{
 		NLPNode stack = getStack();
 		NLPNode input = getInput();
@@ -293,17 +289,21 @@ public class DEPState extends NLPState implements DEPTransition
 		((DEPEval)eval).add(las, uas, nodes.length-1);
 	}
 	
-	@Override
-	public int[] getLabelCandidates()
-	{
-		return label_indices.get(getStack(), getInput());
-	}
-	
 	public void reset(int stackID, int inputID)
 	{
 		stack.clear();
 		inter.clear();
 		stack.push(stackID);
 		input = inputID;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#setScores(float[])
+	 */
+	@Override
+	public void setScores(float[] scores)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

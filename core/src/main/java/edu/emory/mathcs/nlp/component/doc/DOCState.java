@@ -20,8 +20,7 @@ import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
-import edu.emory.mathcs.nlp.learning.model.StringModel;
-import edu.emory.mathcs.nlp.learning.prediction.StringPrediction;
+import edu.emory.mathcs.nlp.learning.util.StringPrediction;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -49,10 +48,9 @@ public class DOCState extends NLPState
 	}
 	
 	@Override
-	public int[] getZeroCostLabels(StringModel model)
+	public String getOracle()
 	{
-		model.addLabel(oracle);
-		return new int[]{model.getLabelIndex(oracle)};
+		return oracle;
 	}
 	
 //	============================== TRANSITION ==============================
@@ -83,5 +81,15 @@ public class DOCState extends NLPState
 	{
 		int correct = oracle.equals(nodes[KEY_NODE].getFeat(feat_key)) ? 1 : 0;
 		((AccuracyEval)eval).add(correct, 1);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#setScores(float[])
+	 */
+	@Override
+	public void setScores(float[] scores)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

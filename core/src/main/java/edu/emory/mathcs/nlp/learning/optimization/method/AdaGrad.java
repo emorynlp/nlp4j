@@ -15,52 +15,65 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization.method;
 
-import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.learning.instance.SparseInstance;
 import edu.emory.mathcs.nlp.learning.optimization.AdaptiveGradientDescent;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
-import edu.emory.mathcs.nlp.learning.vector.SparseItem;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.FeatureVector;
+import edu.emory.mathcs.nlp.learning.util.Instance;
+import edu.emory.mathcs.nlp.learning.util.SparseItem;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class AdaGrad extends AdaptiveGradientDescent
 {
-	public AdaGrad(WeightVector vector, float learningRate)
+	private static final long serialVersionUID = -943369544382849727L;
+
+	public AdaGrad(WeightVector vector, float learningRate, float bias)
 	{
-		this(vector, learningRate, null);
+		this(vector, learningRate, bias, null);
 	}
 	
-	public AdaGrad(WeightVector vector, float learningRate, Regularizer l1)
+	public AdaGrad(WeightVector vector, float learningRate, float bias, Regularizer l1)
 	{
-		super(vector, learningRate, l1);
+		super(vector, learningRate, bias, l1);
 	}
 	
-	protected void updateDiagonals(SparseInstance instance)
+	private void updateDiagonals(Instance instance)
 	{
-		float g;
+		FeatureVector x = instance.getFeatureVector();
+		int gold = instance.getGoldLabel();
+		int yhat = instance.getPredictedLabel();
 		
-		for (SparseItem xi : instance.getVector())
+		for (SparseItem xi : x.getSparseVector())
 		{
-			g = (float)MathUtils.sq(xi.getValue());
-			diagonals.add(instance.getGoldLabel()     , xi.getIndex(), g);
-			diagonals.add(instance.getPredictedLabel(), xi.getIndex(), g);
+			updateDiagonal(gold, xi.getIndex(), xi.getValue(), true);
+			updateDiagonal(yhat, xi.getIndex(), xi.getValue(), true);
+		}
+		
+		if (x.hasDenseVector())
+		{
+			float[] d = x.getDenseVector();
+			for (int xi=0; xi<d.length; xi++) updateDiagonal(gold, xi, d[xi], false);
+			for (int xi=0; xi<d.length; xi++) updateDiagonal(yhat, xi, d[xi], false);	
 		}
 	}
 	
 	@Override
-	public void trainAux(SparseInstance instance)
+	public void trainAux(Instance instance)
 	{
 		updateDiagonals(instance);
 		trainClassification(instance);
 	}
 	
 	@Override
-	protected int getPredictedLabel(SparseInstance instance)
+	protected int getPredictedLabel(Instance instance)
 	{
-		return getPredictedLabelHinge(instance);
+		return getPredictedLabelHingeLoss(instance);
 	}
+	
+	@Override
+	public void updateMiniBatch() {}
 	
 	@Override
 	public String toString()

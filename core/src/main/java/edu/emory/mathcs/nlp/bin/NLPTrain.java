@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.kohsuke.args4j.Option;
@@ -25,7 +26,7 @@ import edu.emory.mathcs.nlp.component.dep.DEPTrainer;
 import edu.emory.mathcs.nlp.component.doc.DOCTrainer;
 import edu.emory.mathcs.nlp.component.ner.NERTrainer;
 import edu.emory.mathcs.nlp.component.pos.POSTrainer;
-import edu.emory.mathcs.nlp.component.template.train.NLPOnlineTrainer;
+import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -56,7 +57,10 @@ public class NLPTrain
 		BinUtils.initArgs(args, this);
 		List<String> trainFiles   = FileUtils.getFileList(train_path  , train_ext);
 		List<String> developFiles = FileUtils.getFileList(develop_path, develop_ext);
-		NLPOnlineTrainer<?> trainer;
+		OnlineTrainer<?> trainer;
+		
+		Collections.sort(trainFiles);
+		Collections.sort(developFiles);
 		
 		switch (mode)
 		{

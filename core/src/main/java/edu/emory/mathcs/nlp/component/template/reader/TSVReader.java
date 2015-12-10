@@ -36,13 +36,13 @@ public class TSVReader
 	static public String BLANK = StringConst.UNDERSCORE;
 	private BufferedReader reader;
 	
-	public int form;
-	public int lemma;
-	public int pos;
-	public int nament;
-	public int feats;
-	public int dhead;
-	public int deprel;
+	public int form   = -1;
+	public int lemma  = -1;
+	public int pos    = -1;
+	public int nament = -1;
+	public int feats  = -1;
+	public int dhead  = -1;
+	public int deprel = -1;
 	
 	public void open(InputStream in)
 	{

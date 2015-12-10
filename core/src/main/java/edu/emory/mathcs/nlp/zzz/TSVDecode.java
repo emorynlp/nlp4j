@@ -25,7 +25,7 @@ import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
@@ -55,12 +55,12 @@ public class TSVDecode
 		BinUtils.initArgs(args, this);
 		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
-		NLPOnlineComponent<S> component = (NLPOnlineComponent<S>)in.readObject();
+		OnlineComponent<S> component = (OnlineComponent<S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		evaluate(FileUtils.getFileList(input_path, input_ext), component);
 	}
 	
-	public <S extends NLPState>void evaluate(List<String> inputFiles, NLPOnlineComponent<S> component) throws Exception
+	public <S extends NLPState>void evaluate(List<String> inputFiles, OnlineComponent<S> component) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		PrintStream fout;

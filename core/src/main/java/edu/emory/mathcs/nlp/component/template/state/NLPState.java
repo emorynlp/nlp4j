@@ -18,8 +18,7 @@ package edu.emory.mathcs.nlp.component.template.state;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.learning.model.StringModel;
-import edu.emory.mathcs.nlp.learning.prediction.StringPrediction;
+import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -36,11 +35,16 @@ public abstract class NLPState
 	/** Clears and saves the gold-standard labels in the input nodes if available. */
 	public abstract void saveOracle();
 	
-	/** @return the zero cost labels given the current state. */
-	public abstract int[] getZeroCostLabels(StringModel model);
+	/** @return the gold label given the current state. */
+	public abstract String getOracle();
 	
-	/** Applies the prediction and moves onto the next state */
-	public abstract void next(StringPrediction prediction);
+	/**
+	 * Applies the prediction and moves onto the next state.
+	 * @param map retrieves the string label from its index. 
+	 * @param yhat predicated label.
+	 * @param scores scores of the labels.
+	 */
+	public abstract void next(LabelMap map, int yhat, float[] scores);
 	
 	/** @return true if no more state can be processed; otherwise, false. */
 	public abstract boolean isTerminate();
@@ -67,11 +71,6 @@ public abstract class NLPState
 		index += window;
 		int begin = includeRoot ? 0 : 1;
 		return begin <= index && index < nodes.length ? nodes[index] : null;
-	}
-	
-	public int[] getLabelCandidates()
-	{
-		return null;
 	}
 	
 	public boolean isFirst(NLPNode node)

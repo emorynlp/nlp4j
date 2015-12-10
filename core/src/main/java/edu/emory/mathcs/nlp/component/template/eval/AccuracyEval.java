@@ -61,6 +61,6 @@ public class AccuracyEval implements Eval
 	@Override
 	public String toString()
 	{
-		return String.format("ACC = %5.2f", score());
+		return String.format("acc = %5.2f", score());
 	}
 }

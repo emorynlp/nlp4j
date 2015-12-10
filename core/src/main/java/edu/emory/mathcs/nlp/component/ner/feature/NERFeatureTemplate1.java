@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.ner.feature;
 
 import edu.emory.mathcs.nlp.component.ner.NERFeatureTemplate;
+import edu.emory.mathcs.nlp.component.ner.NERState;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 
@@ -84,5 +85,11 @@ public class NERFeatureTemplate1 extends NERFeatureTemplate
 		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>( 1, Field.word_clusters));
 		addSet(new FeatureItem<>( 2, Field.word_clusters));
+	}
+	
+	@Override
+	public float[] createDenseVector(NERState state)
+	{
+		return null;
 	}
 }

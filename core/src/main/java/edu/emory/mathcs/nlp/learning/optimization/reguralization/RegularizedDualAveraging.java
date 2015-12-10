@@ -15,7 +15,8 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization.reguralization;
 
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.MajorVector;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -27,21 +28,22 @@ public class RegularizedDualAveraging extends Regularizer
 	public RegularizedDualAveraging(WeightVector vector, float rate)
 	{
 		super(vector, rate);
-		cumulative_penalty = vector.createEmptyVector();
+		cumulative_penalty = vector.createZeroVector();
 	}
 	
 	@Override
-	public void expand()
+	public void expand(int sparseFeatureSize, int denseFeatureSize, int labelSize)
 	{
-		cumulative_penalty.expand(weight_vector.getLabelSize(), weight_vector.getFeatureSize());
+		cumulative_penalty.expand(sparseFeatureSize, denseFeatureSize, labelSize);
 	}
 	
 	@Override
-	public void updateWeight(int index, float gradient, float learningRate, int steps)
+	public void updateWeight(int index, float gradient, float learningRate, int steps, boolean sparse)
  	{
-		cumulative_penalty.add(index, gradient);
+		MajorVector cum = cumulative_penalty.getMajorVector(sparse);
+		cum.add(index, gradient);
 		
-		float penalty = cumulative_penalty.get(index);
+		float penalty = cum.get(index);
 		float l1 = rate * steps;
 		float value;
 		
@@ -50,6 +52,6 @@ public class RegularizedDualAveraging extends Regularizer
 		else
 			value = learningRate * (penalty - Math.signum(penalty) * l1);
 		
-		weight_vector.set(index, value);
+		weight_vector.getMajorVector(sparse).set(index, value);
  	}
 }

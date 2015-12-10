@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.learning.prediction.StringPrediction;
+import edu.emory.mathcs.nlp.learning.util.StringPrediction;
 
 
 /**

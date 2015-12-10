@@ -15,12 +15,9 @@
  */
 package edu.emory.mathcs.nlp.component.doc;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -29,7 +26,7 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DOCClassifier extends NLPOnlineComponent<DOCState>
+public class DOCClassifier extends OnlineComponent<DOCState>
 {
 	private static final long serialVersionUID = 87807440372806016L;
 	private String feat_key;
@@ -40,14 +37,6 @@ public class DOCClassifier extends NLPOnlineComponent<DOCState>
 	{
 		super(configuration);
 	}
-	
-//	============================== LEXICONS ==============================
-
-	@Override
-	protected void readLexicons(ObjectInputStream in) throws IOException, ClassNotFoundException {}
-
-	@Override
-	protected void writeLexicons(ObjectOutputStream out) throws IOException {}
 	
 //	============================== ABSTRACT ==============================
 	

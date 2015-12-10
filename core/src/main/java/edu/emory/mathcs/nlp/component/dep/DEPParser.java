@@ -15,28 +15,24 @@
  */
 package edu.emory.mathcs.nlp.component.dep;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import edu.emory.mathcs.nlp.common.treebank.DEPTagEn;
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.learning.model.StringModel;
+import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
+import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
-import edu.emory.mathcs.nlp.learning.vector.SparseVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPParser extends NLPOnlineComponent<DEPState>
+public class DEPParser extends OnlineComponent<DEPState>
 {
 	private static final long serialVersionUID = 7031031976396726276L;
 	private DEPLabelCandidate label_indices;
-	int tt = 0;
 
 	public DEPParser()
 	{
@@ -47,20 +43,6 @@ public class DEPParser extends NLPOnlineComponent<DEPState>
 	{
 		super(configuration);
 		label_indices = new DEPLabelCandidate();
-	}
-	
-//	============================== ABSTRACT METHODS ==============================
-
-	@Override
-	protected void readLexicons(ObjectInputStream in) throws IOException, ClassNotFoundException
-	{
-		label_indices = (DEPLabelCandidate)in.readObject();
-	}
-
-	@Override
-	protected void writeLexicons(ObjectOutputStream out) throws IOException
-	{
-		out.writeObject(label_indices);
 	}
 	
 //	============================== ABSTRACT ==============================
@@ -112,7 +94,7 @@ public class DEPParser extends NLPOnlineComponent<DEPState>
 				if (max.isNull())
 					node.setDependencyHead(nodes[0], DEPTagEn.DEP_ROOT);
 				else
-					node.setDependencyHead(nodes[max.headId], new DEPLabel(models[0].getLabel(max.yhat)).getDeprel());
+					node.setDependencyHead(nodes[max.headId], new DEPLabel(optimizers[0].getLabel(max.yhat)).getDeprel());
 			}
 		}
 	}
@@ -121,9 +103,9 @@ public class DEPParser extends NLPOnlineComponent<DEPState>
 	{
 		int[] labels = (dir > 0) ? label_indices.getLeftArcs() : label_indices.getRightArcs();
 		NLPNode head, node = nodes[currID];
-		StringModel model = models[0];
+		OnlineOptimizer optimizer = optimizers[0];
 		float[] scores;
-		SparseVector x;
+		FeatureVector x;
 		int yhat;
 		
 		for (int headID=currID+dir; 0 <= headID&&headID < nodes.length; headID+=dir)
@@ -135,8 +117,8 @@ public class DEPParser extends NLPOnlineComponent<DEPState>
 				if (dir > 0)	state.reset(currID, headID);
 				else			state.reset(headID, currID);
 				
-				x = extractFeatures(state, model);
-				scores = model.scores(x, labels);
+				x = feature_template.createFeatureVector(state);
+				scores = optimizer.scores(x);
 				yhat = MLUtils.argmax(scores, labels);
 				if (max.score < scores[yhat]) max.set(headID, yhat, scores[yhat]);	
 			}

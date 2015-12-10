@@ -16,36 +16,38 @@
 package edu.emory.mathcs.nlp.learning.optimization.method;
 
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.learning.instance.SparseInstance;
 import edu.emory.mathcs.nlp.learning.optimization.AdaptiveGradientDescentMiniBatch;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.Instance;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class AdaGradMiniBatch extends AdaptiveGradientDescentMiniBatch
 {
-	public AdaGradMiniBatch(WeightVector vector, float learningRate)
+	private static final long serialVersionUID = -8912711630988471520L;
+
+	public AdaGradMiniBatch(WeightVector vector, float learningRate, float bias)
 	{
-		this(vector, learningRate, null);
+		this(vector, learningRate, bias, null);
 	}
 	
-	public AdaGradMiniBatch(WeightVector vector, float learningRate, Regularizer rda)
+	public AdaGradMiniBatch(WeightVector vector, float learningRate, float bias, Regularizer rda)
 	{
-		super(vector, learningRate, rda);
+		super(vector, learningRate, bias, rda);
 	}
 	
 	@Override
-	public void trainAux(SparseInstance instance)
+	public void trainAux(Instance instance)
 	{
 		trainClassification(instance);
 	}
 	
 	@Override
-	protected int getPredictedLabel(SparseInstance instance)
+	protected int getPredictedLabel(Instance instance)
 	{
-		return getPredictedLabelHinge(instance);
+		return getPredictedLabelHingeLoss(instance);
 	}
 	
 	@Override

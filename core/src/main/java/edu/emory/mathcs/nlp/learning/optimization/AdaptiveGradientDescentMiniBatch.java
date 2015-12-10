@@ -18,8 +18,8 @@ package edu.emory.mathcs.nlp.learning.optimization;
 import java.util.Arrays;
 
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
-import edu.emory.mathcs.nlp.learning.vector.SparseItem;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.MajorVector;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -28,73 +28,88 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public abstract class AdaptiveGradientDescentMiniBatch extends AdaptiveGradientDescent
 {
+	private static final long serialVersionUID = -9070887527388228842L;
 	protected WeightVector gradients;
-	protected IntSet updated_indices;
-	protected int batch_steps;
+	protected IntSet       sparse_updated_indices;
+	protected IntSet       dense_updated_indices;
+	protected int          batch_steps;
 	
-	public AdaptiveGradientDescentMiniBatch(WeightVector vector, float learningRate)
+	public AdaptiveGradientDescentMiniBatch(WeightVector vector, float learningRate, float bias)
 	{
-		this(vector, learningRate, null);
+		this(vector, learningRate, bias, null);
+	}
+	
+	public AdaptiveGradientDescentMiniBatch(WeightVector vector, float learningRate, float bias, Regularizer rda)
+	{
+		super(vector, learningRate, bias, rda);
+
 		batch_steps = 1;
-	}
-	
-	public AdaptiveGradientDescentMiniBatch(WeightVector vector, float learningRate, Regularizer rda)
-	{
-		super(vector, learningRate, rda);
-		gradients = vector.createEmptyVector();
-		updated_indices = new IntOpenHashSet();
+		gradients = vector.createZeroVector();
+		sparse_updated_indices = new IntOpenHashSet();
+		dense_updated_indices  = new IntOpenHashSet();
 	}
 	
 	@Override
-	public void expand(int labelSize, int featureSize)
+	protected boolean expand(int sparseFeatureSize, int denseFeatureSize, int labelSize)
 	{
-		super.expand(labelSize, featureSize);
-		gradients.expand(labelSize, featureSize);
+		boolean b = super.expand(sparseFeatureSize, denseFeatureSize, labelSize);
+		if (b) gradients.expand(sparseFeatureSize, denseFeatureSize, labelSize);
+		return b;
 	}
 	
 	@Override
- 	protected void updateWeight(int y, SparseItem xi, float gradient)
+	protected void updateWeight(int y, int xi, float gradient, boolean sparse)
  	{
-		int index = gradients.indexOf(y, xi.getIndex());
- 		gradients.add(index, xi.getValue() * gradient);
- 		updated_indices.add(index);
+		MajorVector g = gradients.getMajorVector(sparse);
+		int index = g.indexOf(y, xi);
+
+		g.add(index, gradient);
+ 		if (sparse)	sparse_updated_indices.add(index);
+ 		else		dense_updated_indices .add(index);
  	}
 	
 	@Override
-	public void update()
+	public void updateMiniBatch()
 	{
-		int[] indices = updated_indices.toIntArray();
-		Arrays.sort(indices);
-		updateDiagonals(indices);
-		updateWeights (indices);
-		clearGraidents(indices);
-		updated_indices.clear();
+		update(true);
+		update(false);
 		batch_steps++;
 	}
 	
-	protected void updateDiagonals(int[] indices)
+	protected void update(boolean sparse)
+	{
+		IntSet s = sparse ? sparse_updated_indices : dense_updated_indices;
+		MajorVector w = weight_vector.getMajorVector(sparse);
+		MajorVector d = diagonals    .getMajorVector(sparse);
+		MajorVector g = gradients    .getMajorVector(sparse);
+		
+		int[] indices = s.toIntArray();
+		Arrays.sort(indices);
+		
+		updateDiagonals(d, g, indices);
+		updateWeights  (w, g, indices, sparse);
+		clearGraidents (g, indices);
+		s.clear();
+	}
+	
+	protected void updateDiagonals(MajorVector diagonals, MajorVector gradients, int[] indices)
 	{
 		for (int index : indices)
 			diagonals.set(index, getDiagonal(diagonals.get(index), gradients.get(index)));
 	}
 	
-	protected void updateWeights(int[] indices)
+	protected void updateWeights(MajorVector weights, MajorVector gradients, int[] indices, boolean sparse)
 	{
 		for (int index : indices)
 		{
 			if (isL1Regularization())
-				l1_regularizer.updateWeight(index, gradients.get(index), getLearningRate(index), batch_steps);
+				l1_regularizer.updateWeight(index, gradients.get(index), getLearningRate(index, sparse), batch_steps, sparse);
 			else
-				updateWeight(index);
+				weights.add(index, gradients.get(index) * getLearningRate(index, sparse));
 		}
 	}
 	
-	protected void updateWeight(int index)
-	{
-		weight_vector.add(index, getLearningRate(index) * gradients.get(index));
-	}
-	
-	protected void clearGraidents(int[] indices)
+	protected void clearGraidents(MajorVector gradients, int[] indices)
 	{
 		for (int index : indices)
 			gradients.set(index, 0);

@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization.reguralization;
 
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -23,12 +23,10 @@ import edu.emory.mathcs.nlp.learning.vector.WeightVector;
 public abstract class Regularizer
 {
 	protected WeightVector weight_vector;
-//	protected IntSet retired;
 	protected float rate;
 
 	public Regularizer(WeightVector vector, float rate)
 	{
-//		retired = new IntOpenHashSet();
 		weight_vector = vector;
 		setRate(rate);
 	}
@@ -44,33 +42,8 @@ public abstract class Regularizer
 	}
 	
 	/** Expands the dimension of necessary vectors with respect to the weight vector. */
-	public abstract void expand();
+	public abstract void expand(int sparseFeatureSize, int denseFeatureSize, int labelSize);
 	
 	/** Updates the index'th weight of the weight vector with respect to the regularization. */
-	public abstract void updateWeight(int index, float gradient, float learningRate, int steps);
-	
-//	public void retire(float threshold)
-//	{
-//		int i, j, k, labelSize = weight_vector.getLabelSize(), featureSize = weight_vector.getFeatureSize();
-//		float min, max;
-//		
-//		for (i=1; i<featureSize; i++)
-//		{
-//			k = i * labelSize;
-//			max = weight_vector.get(k);
-//			min = weight_vector.get(k);
-//			
-//			for (j=1; j<labelSize; j++)
-//			{
-//				max = Math.max(max, weight_vector.get(k+j));
-//				min = Math.min(min, weight_vector.get(k+j));
-//			}
-//			
-//			if (Math.abs(max - min) < threshold)
-//			{
-//				for (j=0; j<labelSize; j++) weight_vector.set(k+j, 0);
-//				retired.add(i);
-//			}
-//		}
-//	}
+	public abstract void updateWeight(int index, float gradient, float learningRate, int steps, boolean sparse);
 }

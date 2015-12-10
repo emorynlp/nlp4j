@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.pos.feature;
 
 import edu.emory.mathcs.nlp.component.pos.POSFeatureTemplate;
+import edu.emory.mathcs.nlp.component.pos.POSState;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 
@@ -82,8 +83,14 @@ public class POSFeatureTemplate1 extends POSFeatureTemplate
 		addSet(new FeatureItem<>(0, Field.binary));
 		
 		// word cluster features
-		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>(-1, Field.word_clusters));
+		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>( 1, Field.word_clusters));
+	}
+	
+	@Override
+	public float[] createDenseVector(POSState state)
+	{
+		return null;
 	}
 }

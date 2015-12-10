@@ -24,32 +24,14 @@ import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
  */
 public class TrainInfo
 {
-	private float   rollin_init, rollin_current;
-	private float   bias;
-	private int     batch_size;
-	private int     label_size;
-	private int     feature_size;
-	private boolean feature_hash;
-	private Random  random;
+	private float  rollin_init, rollin_current;
+	private int    batch_size;
+	private Random random;
 	
-	public TrainInfo(int batchSize, float bias, float rollInProbability)
-	{
-		init(batchSize, bias, rollInProbability, 0, 0, false);
-	}
-	
-	public TrainInfo(int batchSize, float bias, float rollInProbability, int labelSize, int featureSize, boolean featureHash)
-	{
-		init(batchSize, bias, rollInProbability, labelSize, featureSize, featureHash);
-	}
-	
-	public void init(int batchSize, float bias, float rollInProbability, int labelSize, int featureSize, boolean featureHash)
+	public TrainInfo(int batchSize, float rollInProbability)
 	{
 		random = new XORShiftRandom(9);
 		setBatchSize(batchSize);
-		setLabelSize(labelSize);
-		setFeatureSize(featureSize);
-		setFeatureHash(featureHash);
-		setBias(bias);
 		setRollInProbability(rollInProbability);
 	}
 	
@@ -81,45 +63,5 @@ public class TrainInfo
 	public boolean chooseGold()
 	{
 		return (rollin_current > 0) && (rollin_current >= 1 || rollin_current > random.nextDouble());
-	}
-	
-	public int getLabelSize()
-	{
-		return label_size;
-	}
-
-	public void setLabelSize(int size)
-	{
-		label_size = size;
-	}
-	
-	public int getFeatureSize()
-	{
-		return feature_size;
-	}
-
-	public void setFeatureSize(int size)
-	{
-		feature_size = size;
-	}
-
-	public boolean featureHash()
-	{
-		return feature_hash;
-	}
-
-	public void setFeatureHash(boolean hash)
-	{
-		feature_hash = hash;
-	}
-	
-	public float getBias()
-	{
-		return bias;
-	}
-
-	public void setBias(float bias)
-	{
-		this.bias = bias;
 	}
 }

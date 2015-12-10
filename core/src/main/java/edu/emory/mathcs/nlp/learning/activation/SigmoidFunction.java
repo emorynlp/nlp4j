@@ -47,4 +47,10 @@ public class SigmoidFunction implements ActivationFunction
 		for (int i=0; i<scores.length; i++)
 			scores[i] = table.get(scores[i]);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Sigmoid";
+	}
 }

@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.doc.features;
 
 import edu.emory.mathcs.nlp.component.doc.DOCFeatureTemplate;
+import edu.emory.mathcs.nlp.component.doc.DOCState;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 
@@ -33,5 +34,11 @@ public class DOCFeatureTemplate0 extends DOCFeatureTemplate
 		// bag-of-word features
 //		addSet(new FeatureItem<>(0, Field.bag_of_words, false));
 		addSetWeighted(new FeatureItem<>(0, Field.bag_of_words_count, false));
+	}
+
+	@Override
+	public float[] createDenseVector(DOCState state)
+	{
+		return null;
 	}
 }

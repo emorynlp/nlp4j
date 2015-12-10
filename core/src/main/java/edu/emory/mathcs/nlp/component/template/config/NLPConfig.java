@@ -16,19 +16,23 @@
 package edu.emory.mathcs.nlp.component.template.config;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import edu.emory.mathcs.nlp.common.util.Language;
+import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.train.TrainInfo;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
+import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
+import edu.emory.mathcs.nlp.learning.activation.SigmoidFunction;
 import edu.emory.mathcs.nlp.learning.activation.SoftmaxFunction;
-import edu.emory.mathcs.nlp.learning.model.StringModel;
-import edu.emory.mathcs.nlp.learning.model.StringModelHash;
-import edu.emory.mathcs.nlp.learning.model.StringModelMap;
+import edu.emory.mathcs.nlp.learning.initialization.RandomWeightGenerator;
+import edu.emory.mathcs.nlp.learning.initialization.WeightGenerator;
+import edu.emory.mathcs.nlp.learning.neural.FeedForwardNeuralNetworkSoftmax;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.optimization.method.AdaDeltaMiniBatch;
 import edu.emory.mathcs.nlp.learning.optimization.method.AdaGrad;
@@ -37,9 +41,7 @@ import edu.emory.mathcs.nlp.learning.optimization.method.AdaGradRegression;
 import edu.emory.mathcs.nlp.learning.optimization.method.Perceptron;
 import edu.emory.mathcs.nlp.learning.optimization.method.SoftmaxRegression;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.RegularizedDualAveraging;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
-import edu.emory.mathcs.nlp.learning.vector.WeightVectorDynamic;
-import edu.emory.mathcs.nlp.learning.vector.WeightVectorStatic;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -127,59 +129,24 @@ public abstract class NLPConfig implements ConfigXML
 	
 	public TrainInfo getTrainInfo(Element eOptimizer)
 	{
-		int     batchSize   = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
-		int     labelSize   = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, LABEL_SIZE);
-		int     featureSize = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, FEATURE_SIZE);
-		boolean featureHash = XMLUtils.getBooleanTextContentFromFirstElementByTagName(eOptimizer, FEATURE_HASH);
-		float   bias        = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, BIAS);
-		float   rollIn      = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
-		return new TrainInfo(batchSize, bias, rollIn, labelSize, featureSize, featureHash);
-	}
-	
-//	=================================== MODELS ===================================
-	
-	public StringModel[] getStringModels(TrainInfo[] info)
-	{
-		StringModel[] models = new StringModel[info.length];
-		
-		for (int i=0; i<info.length; i++)
-			models[i] = getStringModel(info[i]);
-		
-		return models;
-	}
-	
-	public StringModel getStringModel(TrainInfo info)
-	{
-		WeightVector vector;
-		StringModel  model;
-		
-		if (info.featureHash())
-		{
-			vector = new WeightVectorStatic(info.getLabelSize(), info.getFeatureSize());
-			model  = new StringModelHash(vector, info.getFeatureSize(), info.getBias());
-		}
-		else
-		{
-			vector = new WeightVectorDynamic();
-			model  = new StringModelMap(vector, info.getBias());
-		}
-		
-		return model;
+		int     batchSize = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
+		float   rollIn    = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
+		return new TrainInfo(batchSize, rollIn);
 	}
 	
 //	=================================== OPTIMIZERS ===================================
 	
-	public OnlineOptimizer[] getOptimizers(StringModel[] models)
+	public OnlineOptimizer[] getOptimizers(TrainInfo[] infos)
 	{
-		OnlineOptimizer[] trainers = new OnlineOptimizer[models.length];
+		OnlineOptimizer[] trainers = new OnlineOptimizer[infos.length];
 		
-		for (int i=0; i<models.length; i++)
-			trainers[i] = getOnlineOptimizer(models[i], i);
+		for (int i=0; i<trainers.length; i++)
+			trainers[i] = getOnlineOptimizer(i);
 		
 		return trainers;
 	}
 	
-	private OnlineOptimizer getOnlineOptimizer(StringModel model, int index)
+	private OnlineOptimizer getOnlineOptimizer(int index)
 	{
 		Element eOptimizer = XMLUtils.getElementByTagName(xml, OPTIMIZER, index);
 		String  algorithm  = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, ALGORITHM);
@@ -187,62 +154,108 @@ public abstract class NLPConfig implements ConfigXML
 		
 		switch (algorithm)
 		{
-		case PERCEPTRON         : optimizer = getPerceptron       (eOptimizer, model); break;
-		case SOFTMAX_REGRESSION : optimizer = getSoftmaxRegression(eOptimizer, model); break;
-		case ADAGRAD            : optimizer = getAdaGrad          (eOptimizer, model); break;
-		case ADAGRAD_REGRESSION : optimizer = getAdaGradRegression(eOptimizer, model); break;
-		case ADAGRAD_MINI_BATCH : optimizer = getAdaGradMiniBatch (eOptimizer, model); break;
-		case ADADELTA_MINI_BATCH: optimizer = getAdaDeltaMiniBatch(eOptimizer, model); break;
+		case PERCEPTRON         : optimizer = getPerceptron       (eOptimizer); break;
+		case SOFTMAX_REGRESSION : optimizer = getSoftmaxRegression(eOptimizer); break;
+		case ADAGRAD            : optimizer = getAdaGrad          (eOptimizer); break;
+		case ADAGRAD_REGRESSION : optimizer = getAdaGradRegression(eOptimizer); break;
+		case ADAGRAD_MINI_BATCH : optimizer = getAdaGradMiniBatch (eOptimizer); break;
+		case ADADELTA_MINI_BATCH: optimizer = getAdaDeltaMiniBatch(eOptimizer); break;
+		case FFNN_SOFTMAX       : optimizer = getFeedForwardNeuralNetworkSoftmax(eOptimizer); break;
 		default: throw new IllegalArgumentException(algorithm+" is not a valid algorithm name."); 
 		}
 		
 		return optimizer;
 	}
 	
-	private Perceptron getPerceptron(Element eOptimizer, StringModel model)
+	private Perceptron getPerceptron(Element eOptimizer)
 	{
 		float learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
-		return new Perceptron(model.getWeightVector(), learningRate);
+		float bias         = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
+		WeightVector w     = new WeightVector();
+		return new Perceptron(w, learningRate, bias);
 	}
 	
-	private SoftmaxRegression getSoftmaxRegression(Element eOptimizer, StringModel model)
+	private SoftmaxRegression getSoftmaxRegression(Element eOptimizer)
 	{
 		float learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
-		model.getWeightVector().setActivationFunction(new SoftmaxFunction());
-		return new SoftmaxRegression(model.getWeightVector(), learningRate);
+		float bias         = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
+		WeightVector w     = new WeightVector();
+		return new SoftmaxRegression(w, learningRate, bias);
 	}
 	
-	private AdaGradRegression getAdaGradRegression(Element eOptimizer, StringModel model)
+	private AdaGradRegression getAdaGradRegression(Element eOptimizer)
 	{
 		float learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
-		float l1 = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, L1_REGULARIZATION);
-		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(model.getWeightVector(), l1) : null;
-		model.getWeightVector().setActivationFunction(new SoftmaxFunction());
-		return new AdaGradRegression(model.getWeightVector(), learningRate, rda);
+		float bias         = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
+		WeightVector w     = new WeightVector();
+		return new AdaGradRegression(w, learningRate, bias);
 	}
 	
-	private AdaGrad getAdaGrad(Element eOptimizer, StringModel model)
+	private AdaGrad getAdaGrad(Element eOptimizer)
 	{
 		float learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
-		float l1 = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, L1_REGULARIZATION);
-		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(model.getWeightVector(), l1) : null;
-		return new AdaGrad(model.getWeightVector(), learningRate, rda);
+		float bias         = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
+		float l1           = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, L1_REGULARIZATION);
+		WeightVector w     = new WeightVector();
+		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(w, l1) : null;
+		return new AdaGrad(w, learningRate, bias, rda);
 	}
 	
-	private AdaGradMiniBatch getAdaGradMiniBatch(Element eOptimizer, StringModel model)
+	private AdaGradMiniBatch getAdaGradMiniBatch(Element eOptimizer)
 	{
 		float learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
-		float l1 = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, L1_REGULARIZATION);
-		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(model.getWeightVector(), l1) : null;
-		return new AdaGradMiniBatch(model.getWeightVector(), learningRate, rda);
+		float bias         = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
+		float l1           = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, L1_REGULARIZATION);
+		WeightVector w     = new WeightVector();
+		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(w, l1) : null;
+		return new AdaGradMiniBatch(w, learningRate, bias, rda);
 	}
 	
-	private AdaDeltaMiniBatch getAdaDeltaMiniBatch(Element eOptimizer, StringModel model)
+	private AdaDeltaMiniBatch getAdaDeltaMiniBatch(Element eOptimizer)
 	{
 		float learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
 		float decayingRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, DECAYING_RATE);
-		float l1 = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, L1_REGULARIZATION);
-		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(model.getWeightVector(), l1) : null;
-		return new AdaDeltaMiniBatch(model.getWeightVector(), learningRate, decayingRate, rda);
+		float bias         = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
+		float l1           = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, L1_REGULARIZATION);
+		WeightVector w     = new WeightVector();
+		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(w, l1) : null;
+		return new AdaDeltaMiniBatch(w, learningRate, decayingRate, bias, rda);
+	}
+	
+	private FeedForwardNeuralNetworkSoftmax getFeedForwardNeuralNetworkSoftmax(Element eOptimizer)
+	{
+		float  learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
+		float  bias         = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
+		String hidden       = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, HIDDEN);
+		String activation   = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, ACTIVATION);
+		String bound        = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, RANDOM_BOUND);
+		
+		String[] t = Splitter.splitCommas(hidden);
+		int[] hiddenDimensions = Arrays.stream(t).mapToInt(Integer::parseInt).toArray();
+		
+		t = Splitter.splitCommas(activation);
+		ActivationFunction[] functions = toActivationFunction(t);
+		
+		t = Splitter.splitCommas(bound);
+		double[] bounds = Arrays.stream(t).mapToDouble(Double::parseDouble).toArray();
+		WeightGenerator generator = new RandomWeightGenerator((float)bounds[0], (float)bounds[1]);
+		
+		return new FeedForwardNeuralNetworkSoftmax(hiddenDimensions, functions, learningRate, bias, generator);
+	}
+	
+	private ActivationFunction[] toActivationFunction(String[] t)
+	{
+		ActivationFunction[] functions = new ActivationFunction[t.length];
+		
+		for (int i=0; i<t.length; i++)
+		{
+			switch (t[i])
+			{
+			case SIGMOID: functions[i] = new SigmoidFunction(); break;
+			case SOFTMAX: functions[i] = new SoftmaxFunction(); break;
+			}
+		}
+		
+		return functions;
 	}
 }

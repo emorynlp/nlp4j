@@ -20,23 +20,23 @@ import java.util.List;
 
 import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate0;
 import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate1;
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.train.NLPOnlineTrainer;
+import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERTrainer extends NLPOnlineTrainer<NERState>
+public class NERTrainer extends OnlineTrainer<NERState>
 {
 	@Override
-	protected NLPOnlineComponent<NERState> createComponent(InputStream config)
+	protected OnlineComponent<NERState> createComponent(InputStream config)
 	{
 		return new NERTagger(config);
 	}
 
 	@Override
-	protected void collect(NLPOnlineComponent<NERState> component, List<String> inputFiles) {}
+	protected void collect(OnlineComponent<NERState> component, List<String> inputFiles) {}
 	
 	@Override
 	protected FeatureTemplate<NERState> createFeatureTemplate(int id)

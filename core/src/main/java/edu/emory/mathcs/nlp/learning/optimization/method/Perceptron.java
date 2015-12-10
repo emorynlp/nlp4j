@@ -15,38 +15,43 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization.method;
 
-import edu.emory.mathcs.nlp.learning.instance.SparseInstance;
 import edu.emory.mathcs.nlp.learning.optimization.StochasticGradientDescent;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.Instance;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Perceptron extends StochasticGradientDescent
 {
-	public Perceptron(WeightVector vector, float learningRate)
+	private static final long serialVersionUID = 4996609767585176672L;
+
+	public Perceptron(WeightVector vector, float learningRate, float bias)
 	{
-		super(vector, learningRate);
+		super(vector, learningRate, bias);
 	}
 	
 	@Override
-	public void trainAux(SparseInstance instance)
+	public void trainAux(Instance instance)
 	{
 		trainClassification(instance);
 	}
 	
 	@Override
-	protected int getPredictedLabel(SparseInstance instance)
+	protected int getPredictedLabel(Instance instance)
 	{
 		float[] scores = instance.getScores();
 		return argmax(scores);
 	}
 	
 	@Override
-	protected float getLearningRate(int index)
+	protected float getLearningRate(int index, boolean sparse)
 	{
 		return learning_rate;
 	}
+	
+	@Override
+	public void updateMiniBatch() {}
 
 	@Override
 	public String toString()

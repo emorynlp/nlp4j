@@ -15,44 +15,46 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization.method;
 
-import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.learning.instance.SparseInstance;
+import edu.emory.mathcs.nlp.learning.activation.SoftmaxFunction;
 import edu.emory.mathcs.nlp.learning.optimization.AdaptiveGradientDescent;
-import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
-import edu.emory.mathcs.nlp.learning.vector.SparseItem;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.FeatureVector;
+import edu.emory.mathcs.nlp.learning.util.Instance;
+import edu.emory.mathcs.nlp.learning.util.SparseItem;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class AdaGradRegression extends AdaptiveGradientDescent
 {
-	public AdaGradRegression(WeightVector vector, float learningRate)
+	private static final long serialVersionUID = 6397042389113367031L;
+
+	public AdaGradRegression(WeightVector vector, float learningRate, float bias)
 	{
-		this(vector, learningRate, null);
+		super(vector, learningRate, bias, null);
+		if (!vector.hasActivationFunction()) vector.setActivationFunction(new SoftmaxFunction());
 	}
 	
-	public AdaGradRegression(WeightVector vector, float learningRate, Regularizer l1)
+	private void updateDiagonals(Instance instance, float[] gradients)
 	{
-		super(vector, learningRate, l1);
-	}
-	
-	private void updateDiagonals(SparseInstance instance, float[] gradients)
-	{
-		float g;
+		FeatureVector x = instance.getFeatureVector();
 		
-		for (SparseItem xi : instance.getVector())
-		{
+		for (SparseItem xi : x.getSparseVector())
 			for (int y=0; y<gradients.length; y++)
-			{
-				g = MathUtils.sq(xi.getValue() * gradients[y]);
-				diagonals.add(y, xi.getIndex(), g);
-			}
+				updateDiagonal(y, xi.getIndex(), gradients[y] * xi.getValue(), true);
+		
+		if (x.hasDenseVector())
+		{
+			float[] d = x.getDenseVector();
+			
+			for (int y=0; y<gradients.length; y++)
+				for (int xi=0; xi<d.length; xi++)
+					updateDiagonal(y, xi, gradients[y] * d[xi], false);
 		}
 	}
-
+	
 	@Override
-	public void trainAux(SparseInstance instance)
+	public void trainAux(Instance instance)
 	{
 		float[] gradients = getGradientsRegression(instance);
 		updateDiagonals(instance, gradients);
@@ -60,10 +62,13 @@ public class AdaGradRegression extends AdaptiveGradientDescent
 	}
 	
 	@Override
-	protected int getPredictedLabel(SparseInstance instance)
+	protected int getPredictedLabel(Instance instance)
 	{
 		return getPredictedLabelRegression(instance);
 	}
+	
+	@Override
+	public void updateMiniBatch() {}
 	
 	@Override
 	public String toString()

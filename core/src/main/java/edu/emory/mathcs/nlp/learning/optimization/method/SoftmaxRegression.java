@@ -15,38 +15,45 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization.method;
 
-import edu.emory.mathcs.nlp.learning.instance.SparseInstance;
+import edu.emory.mathcs.nlp.learning.activation.SoftmaxFunction;
 import edu.emory.mathcs.nlp.learning.optimization.StochasticGradientDescent;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.Instance;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class SoftmaxRegression extends StochasticGradientDescent
 {
-	public SoftmaxRegression(WeightVector vector, float learningRate)
+	private static final long serialVersionUID = -7590203168051761804L;
+
+	public SoftmaxRegression(WeightVector vector, float learningRate, float bias)
 	{
-		super(vector, learningRate);
+		super(vector, learningRate, bias);
+		if (!vector.hasActivationFunction()) vector.setActivationFunction(new SoftmaxFunction());
 	}
 	
 	@Override
-	public void trainAux(SparseInstance instance)
+	public void trainAux(Instance instance)
 	{
 		float[] gradients = getGradientsRegression(instance);
 		trainRegression(instance, gradients);
 	}
 	
 	@Override
-	protected int getPredictedLabel(SparseInstance instance)
+	protected int getPredictedLabel(Instance instance)
 	{
 		return getPredictedLabelRegression(instance);
 	}
 	
 	@Override
-	protected float getLearningRate(int index)
+	protected float getLearningRate(int index, boolean sparse)
 	{
 		return learning_rate;
 	}
+	
+	@Override
+	public void updateMiniBatch() {}
 	
 	@Override
 	public String toString()

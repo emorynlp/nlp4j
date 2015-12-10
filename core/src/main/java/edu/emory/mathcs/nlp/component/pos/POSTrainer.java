@@ -21,23 +21,23 @@ import java.util.List;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate0;
 import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate1;
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.train.NLPOnlineTrainer;
+import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTrainer extends NLPOnlineTrainer<POSState>
+public class POSTrainer extends OnlineTrainer<POSState>
 {
 	@Override
-	protected NLPOnlineComponent<POSState> createComponent(InputStream config)
+	protected OnlineComponent<POSState> createComponent(InputStream config)
 	{
 		return new POSTagger(config);
 	}
 
 	@Override
-	protected void collect(NLPOnlineComponent<POSState> component, List<String> inputFiles)
+	protected void collect(OnlineComponent<POSState> component, List<String> inputFiles)
 	{
 		POSTagger tagger = (POSTagger)component;
 		AmbiguityClassMap map = tagger.getAmbiguityClassMap();

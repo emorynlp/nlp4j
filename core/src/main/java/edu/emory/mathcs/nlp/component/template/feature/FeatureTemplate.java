@@ -15,11 +15,9 @@
  */
 package edu.emory.mathcs.nlp.component.template.feature;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -37,8 +35,11 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.node.Orthographic;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
-import edu.emory.mathcs.nlp.learning.prediction.StringPrediction;
-import edu.emory.mathcs.nlp.learning.vector.StringVector;
+import edu.emory.mathcs.nlp.learning.util.FeatureMap;
+import edu.emory.mathcs.nlp.learning.util.FeatureVector;
+import edu.emory.mathcs.nlp.learning.util.SparseItem;
+import edu.emory.mathcs.nlp.learning.util.SparseVector;
+import edu.emory.mathcs.nlp.learning.util.StringPrediction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -49,36 +50,23 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 public abstract class FeatureTemplate<S extends NLPState> implements Serializable
 {
 	private static final long serialVersionUID = -6755594173767815098L;
+	protected FeatureMap             feature_map;
 	protected List<FeatureItem<?>[]> feature_list;
 	protected List<FeatureItem<?>>   feature_set;
 	protected List<FeatureItem<?>>   feature_set_weighted;
-
+	protected Set<String>            feature_combo;
+	
 	public FeatureTemplate()
 	{
-		feature_list = new ArrayList<>();
-		feature_set  = new ArrayList<>();
+		feature_map   = new FeatureMap();
+		feature_list  = new ArrayList<>();
+		feature_set   = new ArrayList<>();
 		feature_set_weighted = new ArrayList<>();
+		feature_combo = new HashSet<>();
 		init();
 	}
 	
 	protected abstract void init();
-	
-//	============================== SERIALIZATION ==============================
-	
-	@SuppressWarnings("unchecked")
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-	{
-		feature_list = (List<FeatureItem<?>[]>)in.readObject();
-		feature_set  = (List<FeatureItem<?>>)  in.readObject();
-		feature_set_weighted = (List<FeatureItem<?>>)in.readObject();
-	}
-	
-	private void writeObject(ObjectOutputStream out) throws IOException
-	{
-		out.writeObject(feature_list);
-		out.writeObject(feature_set);
-		out.writeObject(feature_set_weighted);
-	}
 
 //	============================== INITIALIZATION ==============================
 
@@ -97,6 +85,21 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		feature_set_weighted.add(items);
 	}
 	
+	public void addFeatureCombination(String combo)
+	{
+		feature_combo.add(combo);
+	}
+	
+	public void addFeatureCombinations(List<String> combos)
+	{
+		for (String combo : combos)	addFeatureCombination(combo);
+	}
+	
+	public int getFeatureSize()
+	{
+		return feature_map.size();
+	}
+	
 	public int size()
 	{
 		return feature_list.size() + feature_set.size() + feature_set_weighted.size();
@@ -104,9 +107,14 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	
 //	============================== EXTRACTOR ==============================
 	
-	public StringVector extractFeatures(S state)
+	public FeatureVector createFeatureVector(S state, boolean add)
 	{
-		StringVector x = new StringVector();
+		return new FeatureVector(createSparseVector(state,add), createDenseVector(state));
+	}
+	
+	public SparseVector createSparseVector(S state, boolean add)
+	{
+		SparseVector x = new SparseVector();
 		Collection<StringPrediction> w;
 		Collection<String> t;
 		int i, type = 0;
@@ -115,23 +123,106 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		for (i=0; i<feature_list.size(); i++,type++)
 		{
 			f = getFeature(state, feature_list.get(i));
-			if (f != null) x.add(type, f);
+			add(x, type, f, 1, add);
 		}
 		
 		for (i=0; i<feature_set.size(); i++,type++)
 		{
 			t = getFeatures(state, feature_set.get(i));
-			if (t != null) for (String s : t) x.add(type, s);
+			if (t != null) for (String s : t) add(x, type, s, 1, add);
 		}
 		
 		for (i=0; i<feature_set_weighted.size(); i++,type++)
 		{
 			w = getFeaturesWeighted(state, feature_set_weighted.get(i));
-			if (w != null) for (StringPrediction s : w) x.add(type, s.getLabel(), s.getScore());
+			if (w != null) for (StringPrediction s : w) add(x, type, s.getLabel(), s.getScore(), add);
+		}
+		
+		if (!feature_combo.isEmpty())
+		{
+			List<SparseItem> ov = new ArrayList<>(x.getVector());
+			String combo;
+			int oi, oj;
+			
+			for (i=0; i<ov.size(); i++)
+			{
+				oi = ov.get(i).getIndex();
+				
+				for (int j=i+1; j<ov.size(); j++)
+				{
+					oj = ov.get(j).getIndex();
+					combo = getFeatureCombination(oi, oj);
+					if (feature_combo.contains(combo)) add(x, type, combo, 1, add);
+				}
+			}
+			
+//			ExecutorService pool = Executors.newFixedThreadPool(4);
+//			List<SparseItem> ov = new ArrayList<>(x.getVector());
+//			List<Future<List<String>>> list = new ArrayList<>();
+//			
+//			for (i=0; i<ov.size(); i++)
+//				list.add(pool.submit(new ComboTask(ov, i)));
+//			
+//			for (Future<List<String>> future : list)
+//			{
+//				try
+//				{
+//					for (String s : future.get())
+//						add(x, type, s, 1, add);
+//				}
+//				catch (Exception e) {e.printStackTrace();}
+//			}
+//			
+//			pool.shutdown();
 		}
 		
 		return x;
 	}
+	
+//	class ComboTask implements Callable<List<String>>
+//	{
+//		private List<SparseItem> ov;
+//		private int i;
+//		
+//		public ComboTask(List<SparseItem> ov, int i)
+//		{
+//			this.ov = ov;
+//			this.i  = i;
+//		}
+//		
+//		@Override
+//		public List<String> call()
+//		{
+//			List<String> list = new ArrayList<>();
+//			
+//			for (int j=i+1; j<ov.size(); j++)
+//			{
+//				String key = getCombo(ov.get(i).getIndex(), ov.get(j).getIndex());
+//				if (feature_combo.contains(key)) list.add(key);
+//			}
+//
+//			return list;
+//		}
+//	}
+	
+	static public String getFeatureCombination(int... indices)
+	{
+		Arrays.sort(indices);
+		StringJoiner join = new StringJoiner("_");
+		for (int index : indices) join.add(Integer.toString(index));
+		return join.toString();
+	}
+	
+	private void add(SparseVector x, int type, String value, float weight, boolean add)
+	{
+		if (value != null)
+		{
+			int index = add ? feature_map.add(type, value) : feature_map.index(type, value);
+			if (index > 0) x.add(index, weight);
+		}
+	}
+	
+	public abstract float[] createDenseVector(S state);
 	
 //	============================== SINGLE FEATURES ==============================
 	

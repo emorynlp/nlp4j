@@ -15,41 +15,83 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.StringJoiner;
 
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.learning.instance.SparseInstance;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
+import edu.emory.mathcs.nlp.learning.util.FeatureVector;
+import edu.emory.mathcs.nlp.learning.util.Instance;
+import edu.emory.mathcs.nlp.learning.util.LabelMap;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.SparseVector;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class OnlineOptimizer
+public abstract class OnlineOptimizer implements Serializable
 {
+	private static final long serialVersionUID = -7750497048585331648L;
+	
+	// model to be saved
 	protected WeightVector weight_vector;
-	protected Regularizer l1_regularizer;
-	protected float learning_rate;
-	protected int   steps;
+	protected LabelMap     label_map;
+	protected float        bias;
 	
-	public OnlineOptimizer(WeightVector vector, float learningRate)
+	// for training
+	protected Regularizer  l1_regularizer;
+	protected float        learning_rate;
+	protected int          steps;
+	
+//	=================================== CONSTRUCTORS ===================================
+	
+	public OnlineOptimizer(WeightVector vector, float learningRate, float bias)
 	{
-		this(vector, learningRate, null);
+		this(vector, learningRate, bias, null);
 	}
 	
-	public OnlineOptimizer(WeightVector vector, float learningRate, Regularizer l1)
+	public OnlineOptimizer(WeightVector vector, float learningRate, float bias, Regularizer l1)
 	{
-		steps = 1;
-		setL1Regularizer(l1);
+		label_map   = new LabelMap();
 		setWeightVector(vector);
-		learning_rate = learningRate;
+		setBias(bias);
+
+		setLearningRate(learningRate);
+		setL1Regularizer(l1);
+		steps = 1;
 	}
 	
-//	=================================== GETTERS/SETTERS ===================================
+	public void adapt(OnlineOptimizer optimizer)
+	{
+		weight_vector = optimizer.weight_vector;
+		label_map     = optimizer.label_map;
+		bias          = optimizer.bias;
+	}
 	
-	/** @return the weight vector. */
+//	=================================== SERIALIZATION ===================================
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		weight_vector = (WeightVector)in.readObject();
+		label_map     = (LabelMap)in.readObject();
+		bias          = in.readFloat();
+	}
+	
+	private void writeObject(ObjectOutputStream out) throws IOException
+	{
+		out.writeObject(weight_vector);
+		out.writeObject(label_map);
+		out.writeFloat(bias);
+	}
+	
+//	=================================== GETTERS & SETTERS ===================================
+	
 	public WeightVector getWeightVector()
 	{
 		return weight_vector;
@@ -58,6 +100,26 @@ public abstract class OnlineOptimizer
 	public void setWeightVector(WeightVector vector)
 	{
 		weight_vector = vector;
+	}
+	
+	public float getLearningRate()
+	{
+		return learning_rate;
+	}
+	
+	public void setLearningRate(float rate)
+	{
+		learning_rate = rate;
+	}
+	
+	public float getBias()
+	{
+		return bias;
+	}
+	
+	public void setBias(float bias)
+	{
+		this.bias = bias;
 	}
 	
 	public Regularizer getL1Regularizer()
@@ -75,88 +137,156 @@ public abstract class OnlineOptimizer
 		return l1_regularizer != null;
 	}
 	
+//	=================================== LABEL & FEATURE ===================================
+
+	public LabelMap getLabelMap()
+	{
+		return label_map;
+	}
+	
+	public String getLabel(int index)
+	{
+		return label_map.getLabel(index);
+	}
+	
+	public int getLabelIndex(String label)
+	{
+		return label_map.index(label);
+	}
+	
+	public int[] getLabelIndexArray(Collection<String> labels)
+	{
+		return labels.stream().mapToInt(s -> getLabelIndex(s)).toArray();
+	}
+	
+	public int getLabelSize()
+	{
+		return label_map.size();
+	}
+	
+	public int addLabel(String label)
+	{
+		return label_map.add(label);
+	}
+	
+	public void addLabels(Collection<String> labels)
+	{
+		for (String label : labels) addLabel(label);
+	}
+	
 //	=================================== TRAIN ===================================
 
-	/** Trains the weight vector given the training instance. */
-	public void train(SparseInstance instance)
+	/** @param instance consists of string label and features. */
+	public void train(Instance instance)
 	{
-		if (!instance.hasScores()) instance.setScores(weight_vector.scores(instance.getVector()));
-		int yhat = instance.hasPredictedLabel() ? instance.getPredictedLabel() : setPredictedLabel(instance); 
-		if (!instance.isZeroCostLabel(yhat)) trainAux(instance);
+		augment(instance);
+		expand(instance.getFeatureVector());
+		instance.setScores(scores(instance.getFeatureVector()));
+		int yhat = getPredictedLabel(instance);
+		instance.setPredictedLabel(yhat);
+		if (!instance.isGoldLabel(yhat)) trainAux(instance);
 		steps++;
 	}
 	
 	/**
-	 * Sets the predicted label to the instance with respect to the loss function defined by the optimizer.
-	 * @return the predicted label of the instance with respect to the loss function defined by the optimizer.
-	 * @param instance {@link SparseInstance#getZeroCostLabels()} != null && {@link SparseInstance#getVector()} != null.
+	 * Adds string values to maps, converts them to sparse indices, and expands the weight vector.
+	 * Called by {@link #train(Instance)}.
 	 */
-	public int setPredictedLabel(SparseInstance instance)
+	protected void augment(Instance instance)
 	{
-		int yhat = getPredictedLabel(instance);
-		instance.setPredictedLabel(yhat);
-		return yhat;
+		// add label
+		if (instance.hasStringLabel())
+		{
+			int label = addLabel(instance.getStringLabel());
+			instance.setGoldLabel(label);	
+		}
+		
+		// add features
+		FeatureVector x = instance.getFeatureVector();
+		
+		if (x.hasSparseVector())
+		{
+			x.getSparseVector().addBias(bias);
+			x.getSparseVector().sort();
+		}
+		else
+			x.setSparseVector(new SparseVector(bias));
 	}
 	
-	/** Update batch learning (to be overriden if necessary). */
-	public void update() {}
+	protected void expand(FeatureVector x)
+	{
+		int sparseFeatureSize = x.hasSparseVector() ? x.getSparseVector().maxIndex()+1 : 0;
+		int denseFeatureSize  = x.hasDenseVector()  ? x.getDenseVector().length : 0;
+		int labelSize = getLabelSize();
+		expand(sparseFeatureSize, denseFeatureSize, labelSize);
+	}
 	
-	/** Called by {@link #train(SparseInstance)}. */
-	protected abstract void trainAux(SparseInstance instance);
-
-	/**
-	 * Called by {@link #setPredictedLabel(SparseInstance)}.
-	 * PRE: {@link SparseInstance#getScores()} != null.
-	 */
-	protected abstract int getPredictedLabel(SparseInstance instance);
- 	
+	protected boolean expand(int sparseFeatureSize, int denseFeatureSize, int labelSize)
+	{
+		boolean b = weight_vector.expand(sparseFeatureSize, denseFeatureSize, labelSize);
+		if (b && isL1Regularization()) l1_regularizer.expand(sparseFeatureSize, denseFeatureSize, labelSize);
+		return b;
+	}
+	
+	protected abstract void trainAux(Instance instance);
+	
+	/** Update batch learning (override if necessary). */
+	public abstract void updateMiniBatch();
+	
 //	=================================== HELPERS ===================================
 	
-	protected int getPredictedLabelHinge(SparseInstance instance)
+	protected abstract int getPredictedLabel(Instance instance);
+	
+	protected int getPredictedLabelHingeLoss(Instance instance)
 	{
 		float[] scores = instance.getScores();
-		for (int y : instance.getZeroCostLabels()) scores[y] -= 1;
+		int y = instance.getGoldLabel();
+		
+		scores[y] -= 1;
 		int yhat = argmax(scores);
-		for (int y : instance.getZeroCostLabels()) scores[y] += 1;
+		scores[y] += 1;
 		return yhat;
 	}
 	
-	protected int getPredictedLabelRegression(SparseInstance instance)
+	protected int getPredictedLabelRegression(Instance instance)
  	{
  		float[] scores = instance.getScores();
-		
-		for (int y : instance.getZeroCostLabels())
-			if (1 <= scores[y]) return y;
-
-		return -1;
+ 		int y = instance.getGoldLabel();
+ 		return (1 <= scores[y]) ? y : argmax(scores);
  	}
  	
- 	protected int argmax(float[] scores)
+ 	protected float[] getGradientsRegression(Instance instance)
  	{
- 		int yhat = MLUtils.argmax(scores);
- 		return (scores[yhat] == 0 && yhat > 0) ? MLUtils.argmax(scores, yhat) : yhat;
- 	}
-
- 	protected float[] getGradientsRegression(SparseInstance instance)
- 	{
-		float[] gradients = Arrays.copyOf(instance.getScores(), weight_vector.getLabelSize());
+		float[] gradients = Arrays.copyOf(instance.getScores(), getLabelSize());
 		MathUtils.multiply(gradients, -1);
 		gradients[instance.getGoldLabel()] += 1;
 		return gradients;
  	}
  	
- 	public void expand(int labelSize, int featureSize)
-	{
-		weight_vector.expand(labelSize, featureSize);
-		if (isL1Regularization()) l1_regularizer.expand();
-	}
+//	=================================== UTILITIES ===================================
+	
+ 	protected abstract float getLearningRate(int index, boolean sparse);
+ 	
+	protected int argmax(float[] scores)
+ 	{
+ 		int yhat = MLUtils.argmax(scores);
+ 		return (scores[yhat] == 0 && yhat > 0) ? MLUtils.argmax(scores, yhat) : yhat;
+ 	}
  	
 	public String toString(String type, String... args)
 	{
 		StringJoiner join = new StringJoiner(", ");
 		join.add("learning rate = "+learning_rate);
+		join.add("bias = "+bias);
 		if (isL1Regularization()) join.add("l1 = "+l1_regularizer.getRate());
 		for (String arg : args) if (arg != null) join.add(arg);
 		return type+": "+join.toString();
 	}
+	
+//	=================================== PREDICT ===================================
+	
+	public float[] scores(FeatureVector x)
+	{
+		return weight_vector.scores(x);
+	}	
 }

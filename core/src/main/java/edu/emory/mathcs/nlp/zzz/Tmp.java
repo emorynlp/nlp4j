@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
+import java.util.Arrays;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -22,17 +24,8 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		System.out.println(args[0]);
-//		BufferedReader reader = IOUtils.createBufferedReader("/Users/jdchoi/Documents/EmoryNLP/models/src/main/resources/edu/emory/mathcs/nlp/lexica/stop-words_english_6_en.txt");
-//		Set<String> s = new HashSet<>();
-//		String line;
-//		
-//		while ((line = reader.readLine()) != null) s.add(line.trim());
-//		reader.close();
-//		
-//		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream("/Users/jdchoi/Documents/EmoryNLP/models/src/main/resources/edu/emory/mathcs/nlp/lexica/en-stop-words.xz");
-//		out.writeObject(s);
-//		out.close();
+		boolean[] b = new boolean[2];
+		System.out.println(Arrays.toString(b));
 	}
 	
 	static public void main(String[] args) throws Exception

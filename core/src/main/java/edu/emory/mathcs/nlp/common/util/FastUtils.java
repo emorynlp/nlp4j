@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.common.util;
 
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**
@@ -30,5 +31,10 @@ public class FastUtils
 	static public <K>int increment(Object2IntMap<K> map, K key, int count)
 	{
 		return map.merge(key, count, (oldCount, newCount) -> oldCount + newCount);
+	}
+	
+	static public void add(FloatArrayList list, int index, float inc)
+	{
+		list.set(index, list.get(index)+inc);
 	}
 }

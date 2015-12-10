@@ -17,6 +17,8 @@ package edu.emory.mathcs.nlp.learning.activation;
 
 import org.apache.commons.math3.util.FastMath;
 
+import edu.emory.mathcs.nlp.common.util.DSUtils;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -27,15 +29,24 @@ public class SoftmaxFunction implements ActivationFunction
 	@Override
 	public void apply(float[] scores)
 	{
-		float sum = 0;
+		float sum = 0, max = DSUtils.max(scores);
+		max = 0;
 		
 		for (int i=0; i<scores.length; i++)
 		{
-			scores[i] = (float)FastMath.exp(scores[i]);
+			scores[i] = (float)FastMath.exp(scores[i] - max);
 			sum += scores[i];
 		}
 		
+		sum = 1f / (1 + sum);
+		
 		for (int i=0; i<scores.length; i++)
-			scores[i] /= sum;
+			scores[i] *= sum;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Softmax";
 	}
 }

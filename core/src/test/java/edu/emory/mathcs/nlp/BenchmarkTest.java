@@ -15,39 +15,55 @@
  */
 package edu.emory.mathcs.nlp;
 
-import java.util.Random;
-
+import org.apache.commons.math3.util.FastMath;
 import org.junit.Test;
+import org.magicwerk.brownies.collections.primitive.FloatGapList;
+
+import com.google.common.util.concurrent.AtomicDouble;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class BenchmarkTest
 {
-
+	AtomicDouble t = new AtomicDouble(0);
+	
 	@Test
 	public void test() throws Exception
 	{
-		float[] f = new float[100000000];
-		Random rand = new Random(1);
-		
-		for (int i=0; i<f.length; i++)
-			f[i] = rand.nextFloat();
-		
-		float[] g = new float[100];
-		int r, k = f.length - g.length;
-		long st, et;
-		
-		st = System.currentTimeMillis();
-		for (int j=0; j<1000000; j++)
-		{
-			r = rand.nextInt(k);
-			
-			for (int i=0; i<g.length; i++)
-				g[i] += f[r+i];
-		}
-		et = System.currentTimeMillis();
-		System.out.println(et-st);
+		System.out.println(FastMath.exp(174.80113f));
 	}
+	
+	boolean hello()
+	{
+		System.out.println("hello");
+		return true;
+	}
+	
+	boolean world()
+	{
+		System.out.println("world");
+		return false;
+	}
+	
+	class Task implements Runnable
+	{
+		FloatGapList weights;
+		int begin_index;
+		float[] x;
+		
+		public Task(FloatGapList weights, float[] x, int beginIndex)
+		{
+			this.weights = weights;
+			this.x       = x;
+			begin_index  = beginIndex;
+		}
 
+		@Override
+		public void run()
+		{
+			for (int i=0; i<x.length; i++)
+				t.addAndGet(x[i] * weights.get(begin_index++));
+		}
+	}
 }

@@ -17,24 +17,25 @@ package edu.emory.mathcs.nlp.learning.optimization.method;
 
 import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.RegularizedDualAveraging;
-import edu.emory.mathcs.nlp.learning.vector.WeightVector;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class AdaDeltaMiniBatch extends AdaGradMiniBatch
 {
+	private static final long serialVersionUID = 5279829195668367962L;
 	private float decaying_rate; 
 	private float growth_rate; 
 	
-	public AdaDeltaMiniBatch(WeightVector vector, float learningRate, float decayingRate)
+	public AdaDeltaMiniBatch(WeightVector vector, float learningRate, float decayingRate, float bias)
 	{
-		this(vector, learningRate, decayingRate, null);
+		this(vector, learningRate, decayingRate, bias, null);
 	}
 	
-	public AdaDeltaMiniBatch(WeightVector vector, float learningRate, float decayingRate, RegularizedDualAveraging rda)
+	public AdaDeltaMiniBatch(WeightVector vector, float learningRate, float decayingRate, float bias, RegularizedDualAveraging rda)
 	{
-		super(vector, learningRate, rda);
+		super(vector, learningRate, bias, rda);
 		decaying_rate = decayingRate;
 		growth_rate   = 1 - decayingRate;
 	}

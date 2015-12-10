@@ -21,20 +21,21 @@ import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.learning.model.StringModel;
-import edu.emory.mathcs.nlp.learning.prediction.StringPrediction;
+import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class L2RState extends NLPState
 {
-	protected String[] oracle;
+	protected float[][] scores;
+	protected String[]  oracle;
 	protected int input = 1;
 	
 	public L2RState(NLPNode[] nodes)
 	{
 		super(nodes);
+		scores = new float[nodes.length][];
 	}
 	
 //	============================== ORACLE ==============================
@@ -46,11 +47,9 @@ public abstract class L2RState extends NLPState
 	}
 	
 	@Override
-	public int[] getZeroCostLabels(StringModel model)
+	public String getOracle()
 	{
-		String label = oracle[input];
-		model.addLabel(label);
-		return new int[]{model.getLabelIndex(label)};
+		return oracle[input];
 	}
 	
 	protected abstract String setLabel(NLPNode node, String label);
@@ -59,9 +58,10 @@ public abstract class L2RState extends NLPState
 //	============================== TRANSITION ==============================
 
 	@Override
-	public void next(StringPrediction prediction)
+	public void next(LabelMap map, int yhat, float[] scores)
 	{
-		setLabel(nodes[input++], prediction.getLabel());
+		setScores(input, scores);
+		setLabel(nodes[input++], map.getLabel(yhat));
 	}
 	
 	@Override
@@ -77,6 +77,23 @@ public abstract class L2RState extends NLPState
 		return getRelativeNode(item, node);
 	}
 	
+	public int getInputIndex()
+	{
+		return input;
+	}
+	
+//	============================== SCORES ==============================
+	
+	public float[] getScores(int index)
+	{
+		return (0 < index && index < nodes.length) ? scores[index] : null;
+	}
+	
+	public void setScores(int index, float[] scores)
+	{
+		this.scores[index] = scores;
+	}
+	
 //	============================== EVALUATION ==============================
 	
 	@Override
@@ -85,8 +102,10 @@ public abstract class L2RState extends NLPState
 		int correct = 0;
 		
 		for (int i=1; i<nodes.length; i++)
+		{
 			if (oracle[i].equals(getLabel(nodes[i])))
 				correct++;
+		}
 		
 		((AccuracyEval)eval).add(correct, nodes.length-1);
 	}

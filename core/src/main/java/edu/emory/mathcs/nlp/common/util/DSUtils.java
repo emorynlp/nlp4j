@@ -292,6 +292,17 @@ public class DSUtils
 		return m;
 	}
 	
+	static public float max(float[] array)
+	{
+		int i, size = array.length;
+		float m = array[0];
+		
+		for (i=1; i<size; i++)
+			m = Math.max(m, array[i]);
+		
+		return m;
+	}
+	
 	static public double max(double[] array)
 	{
 		int i, size = array.length;
