@@ -166,8 +166,8 @@ public class DEPFeatureTemplate0 extends DEPFeatureTemplate
 		add(new FeatureItem<>(Source.i, 0, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd, Field.part_of_speech_tag), new FeatureItem<>(Source.i, Relation.lmd2, Field.part_of_speech_tag));
 		
 		// boolean features
-		addSet(new FeatureItem<>(Source.i, 0, Field.binary));
-		addSet(new FeatureItem<>(Source.j, 0, Field.binary));
+		addSet(new FeatureItem<>(Source.i, 0, Field.position));
+		addSet(new FeatureItem<>(Source.j, 0, Field.position));
 		
 		// word cluster features
 		addSet(new FeatureItem<>(Source.i, 0, Field.word_clusters));

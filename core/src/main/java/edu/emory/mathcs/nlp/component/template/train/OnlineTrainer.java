@@ -52,7 +52,7 @@ public abstract class OnlineTrainer<S extends NLPState>
 
 	protected abstract void collect(OnlineComponent<S> component, List<String> inputFiles);
 	protected abstract OnlineComponent<S> createComponent(InputStream config);
-	protected abstract FeatureTemplate<S> createFeatureTemplate(int id);
+	protected abstract FeatureTemplate<S> createFeatureTemplate(int id, int dynamicFeatureSize);
 	
 //	=================================== COMPONENT ===================================
 	
@@ -82,7 +82,7 @@ public abstract class OnlineTrainer<S extends NLPState>
 		{
 			component = createComponent(configStream);
 			configuration = component.getConfiguration();
-			component.setFeatureTemplate(createFeatureTemplate(featureID));
+			component.setFeatureTemplate(createFeatureTemplate(featureID, configuration.getDynamicFeatureSize()));
 		}
 	
 		component.setTrainInfos(info = configuration.getTrainInfos());
@@ -119,7 +119,7 @@ public abstract class OnlineTrainer<S extends NLPState>
 		OnlineOptimizer[] optimizers = component.getOptimizers();
 		TrainInfo[] info = component.getTrainInfos();
 		
-		int bestEpoch = -1, bestNZW = -1, maxEpochs = config.getMaxEpochs(), nzw;
+		int bestEpoch = -1, bestNZW = -1, maxEpochs = config.getMaxEpochs(), nzw, labels, features;
 		Random rand = new XORShiftRandom(9);
 		double bestScore = 0, score;
 		
@@ -128,7 +128,7 @@ public abstract class OnlineTrainer<S extends NLPState>
 		for (int i=0; i<optimizers.length; i++)
 			BinUtils.LOG.info(optimizers[i].toString()+", batch = "+info[i].getBatchSize()+", rollIn = "+info[i].getRollInProbability()+"\n");
 		
-		for (int epoch=1; epoch<=maxEpochs; epoch++)
+		for (int epoch=0; epoch<=maxEpochs; epoch++)
 		{
 			component.setFlag(NLPFlag.TRAIN);
 			Collections.shuffle(trainFiles, rand);
@@ -136,7 +136,9 @@ public abstract class OnlineTrainer<S extends NLPState>
 			score = evaluate(developFiles, component, reader);
 			for (TrainInfo in : info) in.updateRollInProbability();
 			nzw = Arrays.stream(optimizers).mapToInt(o -> o.getWeightVector().countNonZeroWeights()).sum();
-			BinUtils.LOG.info(String.format("%5d: %s, nzw = %8d, labels = %d\n", epoch, component.getEval().toString(), nzw, Arrays.stream(optimizers).mapToInt(OnlineOptimizer::getLabelSize).sum()));
+			labels = Arrays.stream(optimizers).mapToInt(OnlineOptimizer::getLabelSize).sum();
+			features = component.getFeatureTemplate().getSparseFeatureSize();
+			BinUtils.LOG.info(String.format("%5d: %s, labels = %3d, features = %7d, nzw = %8d\n", epoch, component.getEval().toString(), labels, features, nzw));
 			
 			if (bestScore < score || (bestScore == score && nzw < bestNZW))
 			{

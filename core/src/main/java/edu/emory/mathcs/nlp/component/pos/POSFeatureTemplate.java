@@ -24,6 +24,11 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
  */
 public abstract class POSFeatureTemplate extends FeatureTemplate<POSState>
 {
+	public POSFeatureTemplate(int dynamicFeatureSize)
+	{
+		super(dynamicFeatureSize);
+	}
+
 	private static final long serialVersionUID = -243334323533999837L;
 	
 	@Override

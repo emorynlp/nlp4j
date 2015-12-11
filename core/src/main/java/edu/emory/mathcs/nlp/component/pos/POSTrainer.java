@@ -61,12 +61,12 @@ public class POSTrainer extends OnlineTrainer<POSState>
 	}
 	
 	@Override
-	protected FeatureTemplate<POSState> createFeatureTemplate(int id)
+	protected FeatureTemplate<POSState> createFeatureTemplate(int id, int dynamicFeatureSize)
 	{
 		switch (id)
 		{
-		case 0: return new POSFeatureTemplate0();
-		case 1: return new POSFeatureTemplate1();
+		case 0: return new POSFeatureTemplate0(dynamicFeatureSize);
+		case 1: return new POSFeatureTemplate1(dynamicFeatureSize);
 		default: throw new IllegalArgumentException("Unknown feature template: "+id);
 		}
 	}

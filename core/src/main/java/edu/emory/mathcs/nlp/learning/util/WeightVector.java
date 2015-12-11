@@ -215,7 +215,7 @@ public class WeightVector implements Serializable
 		{
 			if (b2) list.add(FeatureTemplate.getFeatureCombination(fst.getIndex(), snd.getIndex()));
 			if (b3) list.add(FeatureTemplate.getFeatureCombination(fst.getIndex(), trd.getIndex()));
-//			if (b2 && b3) list.add(FeatureTemplate.getFeatureCombination(fst.getIndex(), snd.getIndex(), trd.getIndex()));
+//			if (b2 && b3) list.add(FeatureTemplate.getFeatureCombination(snd.getIndex(), trd.getIndex()));
 		}
 		
 		return list;

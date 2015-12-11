@@ -15,8 +15,6 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
-import java.util.Arrays;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -24,8 +22,8 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		boolean[] b = new boolean[2];
-		System.out.println(Arrays.toString(b));
+		float f = Float.parseFloat("0.00000000000000000000000000000000000000000001");
+		System.out.println(f);
 	}
 	
 	static public void main(String[] args) throws Exception

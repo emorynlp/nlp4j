@@ -28,6 +28,11 @@ public class POSFeatureTemplate1 extends POSFeatureTemplate
 {
 	private static final long serialVersionUID = 7072878555553683666L;
 
+	public POSFeatureTemplate1(int dynamicFeatureSize)
+	{
+		super(dynamicFeatureSize);
+	}
+	
 	@Override
 	protected void init()
 	{
@@ -80,7 +85,7 @@ public class POSFeatureTemplate1 extends POSFeatureTemplate
 		addSet(new FeatureItem<>(0, Field.orthographic_uncapitalized));
 		
 		// boolean features
-		addSet(new FeatureItem<>(0, Field.binary));
+		addSet(new FeatureItem<>(0, Field.position));
 		
 		// word cluster features
 		addSet(new FeatureItem<>(-1, Field.word_clusters));

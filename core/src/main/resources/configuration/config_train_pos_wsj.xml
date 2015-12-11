@@ -9,6 +9,7 @@
     </lexicax>
     
     <max_epochs>20</max_epochs>
+    <dynamic_feature_induction>3</dynamic_feature_induction>
 
     <optimizer>
         <algorithm>adagrad-mini-batch</algorithm>

@@ -56,5 +56,5 @@ public enum Field
 	bag_of_words_count,
 	
 	// more
-	binary;
+	position;
 }

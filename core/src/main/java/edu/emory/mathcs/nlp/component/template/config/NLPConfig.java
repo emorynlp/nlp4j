@@ -115,6 +115,11 @@ public abstract class NLPConfig implements ConfigXML
 	{
 		return XMLUtils.getIntegerTextContentFromFirstElementByTagName(xml, MAX_EPOCHS);
 	}
+	
+	public int getDynamicFeatureSize()
+	{
+		return XMLUtils.getIntegerTextContentFromFirstElementByTagName(xml, DYNAMIC_FEATURE_SIZE);
+	}
 
 	public TrainInfo[] getTrainInfos()
 	{

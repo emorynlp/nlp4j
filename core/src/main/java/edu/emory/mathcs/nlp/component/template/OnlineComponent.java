@@ -183,9 +183,9 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 		int modelID, gold, yhat;
 		Instance instance;
 		FeatureVector x;
+		List<String> p;
 		String label;
 		float[] scores;
-		List<String> p;
 
 		while (!state.isTerminate())
 		{
@@ -202,10 +202,10 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 				gold = instance.getGoldLabel();
 				yhat = instance.getPredictedLabel();
 				
-				if (gold != yhat)
+				if (feature_template.useDynamicFeatureInduction() && gold != yhat)
 				{
 					p = optimizer.getWeightVector().getTopFeatureCombinations(x, gold, yhat);
-					feature_template.addFeatureCombinations(p);
+					feature_template.addDynamicFeatures(p);
 				}
 				
 				if (train_info[modelID].chooseGold()) yhat = gold;

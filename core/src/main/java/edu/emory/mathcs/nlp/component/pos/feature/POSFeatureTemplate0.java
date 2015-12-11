@@ -26,50 +26,59 @@ import edu.emory.mathcs.nlp.component.template.feature.Field;
  */
 public class POSFeatureTemplate0 extends POSFeatureTemplate
 {
+	public POSFeatureTemplate0(int dynamicFeatureSize)
+	{
+		super(dynamicFeatureSize);
+	}
+
 	private static final long serialVersionUID = 7072878555553683666L;
 
 	@Override
 	protected void init()
 	{
-		// 1-gram features 
+		// word forms
 		add(new FeatureItem<>(-2, Field.simplified_word_form));
 		add(new FeatureItem<>(-1, Field.simplified_word_form));
 		add(new FeatureItem<>( 0, Field.simplified_word_form));
 		add(new FeatureItem<>( 1, Field.simplified_word_form));
 		add(new FeatureItem<>( 2, Field.simplified_word_form));
 		
+		// uncapitalized word forms
 		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
 
+		// word shapes
 		add(new FeatureItem<>(-1, Field.word_shape, 2));
 		add(new FeatureItem<>( 0, Field.word_shape, 2));
 		add(new FeatureItem<>( 1, Field.word_shape, 2));
 
+		// part-of-speech tags
 		add(new FeatureItem<>(-3, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-2, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
 		
+		// ambiguity classes
 		add(new FeatureItem<>( 0, Field.ambiguity_class));
 		add(new FeatureItem<>( 1, Field.ambiguity_class));
 		add(new FeatureItem<>( 2, Field.ambiguity_class));
 		add(new FeatureItem<>( 3, Field.ambiguity_class));
 
 		// affix features
-		add(new FeatureItem<>(0, Field.prefix, 2));
-		add(new FeatureItem<>(0, Field.prefix, 3));
-		add(new FeatureItem<>(0, Field.suffix, 1));
-		add(new FeatureItem<>(0, Field.suffix, 2));
-		add(new FeatureItem<>(0, Field.suffix, 3));
-		add(new FeatureItem<>(0, Field.suffix, 4));
+		add(new FeatureItem<>( 0, Field.prefix, 2));
+		add(new FeatureItem<>( 0, Field.prefix, 3));
+		add(new FeatureItem<>( 0, Field.suffix, 1));
+		add(new FeatureItem<>( 0, Field.suffix, 2));
+		add(new FeatureItem<>( 0, Field.suffix, 3));
+		add(new FeatureItem<>( 0, Field.suffix, 4));
 		
 		// orthographic features
 		addSet(new FeatureItem<>(0, Field.orthographic));
 		
-		// boolean features
-		addSet(new FeatureItem<>(0, Field.binary));
+		// positional features
+		addSet(new FeatureItem<>(0, Field.position));
 		
 		// word cluster features
 		addSet(new FeatureItem<>(-1, Field.word_clusters));
@@ -80,21 +89,6 @@ public class POSFeatureTemplate0 extends POSFeatureTemplate
 	@Override
 	public float[] createDenseVector(POSState state)
 	{
-//		int max = 2, len = 45;
-//		max = Math.min(state.getInputIndex() - 1, max);
-//		if (max <= 0) return null;
-//		
-//		float[] d = new float[len*max], e;
-//		
-//		for (int i=1; i<=max; i++)
-//		{
-//			e = state.getScores(state.getInputIndex()-i);
-//			System.arraycopy(e, 0, d, (i-1)*len, e.length);
-//		}
-//		
-//		return d;
-
 		return null;
-//		return state.getScores(state.getInputIndex()-1);
 	}
 }

@@ -28,6 +28,11 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 {
 	private static final long serialVersionUID = 7072878555553683666L;
 
+	public POSFeatureTemplate2()
+	{
+		super(0);
+	}
+	
 	@Override
 	protected void init()
 	{
@@ -38,13 +43,13 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 		add(new FeatureItem<>( 1, Field.simplified_word_form));
 		add(new FeatureItem<>( 2, Field.simplified_word_form));
 
-//		add(new FeatureItem<>(-1, Field.word_shape, 2)); // 0.01
+		add(new FeatureItem<>(-1, Field.word_shape, 2));
 		add(new FeatureItem<>( 0, Field.word_shape, 2));
 		add(new FeatureItem<>( 1, Field.word_shape, 2));
 
-//		add(new FeatureItem<>(-3, Field.part_of_speech_tag));
-//		add(new FeatureItem<>(-2, Field.part_of_speech_tag));
-//		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(-3, Field.part_of_speech_tag));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
 		
 		add(new FeatureItem<>( 0, Field.ambiguity_class));
 		add(new FeatureItem<>( 1, Field.ambiguity_class));
@@ -52,19 +57,19 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 		add(new FeatureItem<>( 3, Field.ambiguity_class));
 
 		// 2-gram features
-//		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form), new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form)); // 0.02
+		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form), new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
 
-//		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
-//		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
 		add(new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
 
 		// 3-gram features
-//		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class));
-//		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class)); // 0.02
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class)   , new FeatureItem<>( 1, Field.ambiguity_class));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
 
@@ -80,7 +85,7 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 		addSet(new FeatureItem<>(0, Field.orthographic));
 		
 		// boolean features
-		addSet(new FeatureItem<>(0, Field.binary));
+		addSet(new FeatureItem<>(0, Field.position));
 		
 		// word cluster features
 		addSet(new FeatureItem<>(-1, Field.word_clusters));
@@ -91,22 +96,6 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 	@Override
 	public float[] createDenseVector(POSState state)
 	{
-//		float[] d1 = state.getScores(state.getInput()-1);
-//		float[] d2 = state.getScores(state.getInput()-2);
-//		float[] d3 = state.getScores(state.getInput()-3);
-//		int len = 45;
-//		float[] d = new float[len*3];
-//		
-//		if (d1 != null)
-//			System.arraycopy(d1, 0, d, 0, d1.length);
-//		
-//		if (d2 != null)
-//			System.arraycopy(d2, 0, d, len, d2.length);
-//		
-//		if (d3 != null)
-//			System.arraycopy(d2, 0, d, len*2, d3.length);
-//
-//		return d;
 		return state.getScores(state.getInputIndex()-1);
 	}
 }

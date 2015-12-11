@@ -58,6 +58,7 @@ public interface ConfigXML
 	String SOFTMAX		= "softmax";
 	String SIGMOID		= "sigmoid";
 	String RANDOM_BOUND	= "random_bound";
+	String DYNAMIC_FEATURE_SIZE = "dynamic_feature_size";
 	
 	String L1_REGULARIZATION	= "l1_regularization";
 	String LEARNING_RATE		= "learning_rate";

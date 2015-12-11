@@ -17,19 +17,21 @@ package edu.emory.mathcs.nlp.component.template.feature;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.StringJoiner;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
 import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.node.Orthographic;
@@ -43,6 +45,7 @@ import edu.emory.mathcs.nlp.learning.util.StringPrediction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.openhft.hashing.LongHashFunction;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -54,21 +57,36 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	protected List<FeatureItem<?>[]> feature_list;
 	protected List<FeatureItem<?>>   feature_set;
 	protected List<FeatureItem<?>>   feature_set_weighted;
-	protected Set<String>            feature_combo;
 	
-	public FeatureTemplate()
+	// dynamic feature induction
+	protected LongHashFunction dynamic_feature_hash;
+	protected final int        dynamic_feature_size;
+	protected boolean[]        dynamic_feature_switch;
+	protected Random           dynamic_feature_gap;
+	
+	public FeatureTemplate(int dynamicFeatureSize)
 	{
-		feature_map   = new FeatureMap();
-		feature_list  = new ArrayList<>();
-		feature_set   = new ArrayList<>();
+		feature_map          = new FeatureMap();
+		feature_list         = new ArrayList<>();
+		feature_set          = new ArrayList<>();
 		feature_set_weighted = new ArrayList<>();
-		feature_combo = new HashSet<>();
+		dynamic_feature_size = dynamicFeatureSize;
+		
+		// dynamic feature induction
+		if (useDynamicFeatureInduction())
+		{
+			dynamic_feature_hash   = LongHashFunction.xx_r39(serialVersionUID);
+			dynamic_feature_switch = new boolean[dynamic_feature_size];
+			dynamic_feature_gap    = new XORShiftRandom(9);	
+		}
+
+		// feature templates
 		init();
 	}
-	
-	protected abstract void init();
 
 //	============================== INITIALIZATION ==============================
+	
+	protected abstract void init();
 
 	public void add(FeatureItem<?>... items)
 	{
@@ -85,25 +103,104 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		feature_set_weighted.add(items);
 	}
 	
-	public void addFeatureCombination(String combo)
-	{
-		feature_combo.add(combo);
-	}
-	
-	public void addFeatureCombinations(List<String> combos)
-	{
-		for (String combo : combos)	addFeatureCombination(combo);
-	}
-	
-	public int getFeatureSize()
+	public int getSparseFeatureSize()
 	{
 		return feature_map.size();
 	}
 	
-	public int size()
+	public int getTemplateSize()
 	{
 		return feature_list.size() + feature_set.size() + feature_set_weighted.size();
 	}
+	
+//	============================== DYNAMIC FEATURE INDUCTION ==============================
+	
+	public void addDynamicFeature(String feature)
+	{
+		dynamic_feature_switch[getDynamicFeatureIndex(feature)] = true;
+	}
+	
+	public void addDynamicFeatures(Collection<String> features)
+	{
+		for (String feature : features)	addDynamicFeature(feature);
+	}	
+	
+	public boolean useDynamicFeatureInduction()
+	{
+		return dynamic_feature_size > 0; 
+	}
+	
+	private int getRandomGap()
+	{
+		return dynamic_feature_gap.nextInt(2) + 1;
+	}
+	
+	static public String getFeatureCombination(int i, int j)
+	{
+		return (i < j) ? i+"_"+j : j+"_"+i;
+	}
+	
+//	static public String getFeatureCombination(int... indices)
+//	{
+//		Arrays.sort(indices);
+//		StringJoiner join = new StringJoiner("_");
+//		for (int index : indices) join.add(Integer.toString(index));
+//		return join.toString();
+//	}
+
+	protected int getDynamicFeatureIndex(String feature)
+	{
+		return MathUtils.modulus(dynamic_feature_hash.hashChars(feature), dynamic_feature_size);
+	}
+	
+	private void appendDynamicFeatures(SparseVector x, int type, boolean add)
+	{
+		List<SparseItem> ov = new ArrayList<>(x.getVector());
+		SparseItem oi, oj;
+		String f;
+		int i, j;
+		
+		for (i=0; i<ov.size(); i+=getRandomGap())
+		{
+			oi = ov.get(i);
+			
+			for (j=i+1; j<ov.size(); j+=getRandomGap())
+			{
+				oj = ov.get(j);
+				f  = getFeatureCombination(oi.getIndex(), oj.getIndex());
+				if (dynamic_feature_switch[getDynamicFeatureIndex(f)]) add(x, type, f, 1, add);
+			}
+		}
+	}
+	
+//	private class InductionTask implements Callable<List<String>>
+//	{
+//		private List<SparseItem> ov;
+//		private int i;
+//		
+//		public InductionTask(List<SparseItem> ov, int i)
+//		{
+//			this.ov = ov;
+//			this.i  = i;
+//		}
+//
+//		@Override
+//		public List<String> call()
+//		{
+//			List<String> list = new ArrayList<>();
+//			SparseItem oj, oi = ov.get(i);
+//			String f;
+//			
+//			for (int j=i+1; j<ov.size(); j+=getRandomGap())
+//			{
+//				oj = ov.get(j);
+//				f  = getFeatureCombination(oi.getIndex(), oj.getIndex());
+//				if (dynamic_feature_switch[getDynamicFeatureIndex(f)]) list.add(f);
+//			}
+//			
+//			return list;
+//		}
+//	}
 	
 //	============================== EXTRACTOR ==============================
 	
@@ -138,79 +235,10 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 			if (w != null) for (StringPrediction s : w) add(x, type, s.getLabel(), s.getScore(), add);
 		}
 		
-		if (!feature_combo.isEmpty())
-		{
-			List<SparseItem> ov = new ArrayList<>(x.getVector());
-			String combo;
-			int oi, oj;
-			
-			for (i=0; i<ov.size(); i++)
-			{
-				oi = ov.get(i).getIndex();
-				
-				for (int j=i+1; j<ov.size(); j++)
-				{
-					oj = ov.get(j).getIndex();
-					combo = getFeatureCombination(oi, oj);
-					if (feature_combo.contains(combo)) add(x, type, combo, 1, add);
-				}
-			}
-			
-//			ExecutorService pool = Executors.newFixedThreadPool(4);
-//			List<SparseItem> ov = new ArrayList<>(x.getVector());
-//			List<Future<List<String>>> list = new ArrayList<>();
-//			
-//			for (i=0; i<ov.size(); i++)
-//				list.add(pool.submit(new ComboTask(ov, i)));
-//			
-//			for (Future<List<String>> future : list)
-//			{
-//				try
-//				{
-//					for (String s : future.get())
-//						add(x, type, s, 1, add);
-//				}
-//				catch (Exception e) {e.printStackTrace();}
-//			}
-//			
-//			pool.shutdown();
-		}
+		if (useDynamicFeatureInduction())
+			appendDynamicFeatures(x, type, add);
 		
 		return x;
-	}
-	
-//	class ComboTask implements Callable<List<String>>
-//	{
-//		private List<SparseItem> ov;
-//		private int i;
-//		
-//		public ComboTask(List<SparseItem> ov, int i)
-//		{
-//			this.ov = ov;
-//			this.i  = i;
-//		}
-//		
-//		@Override
-//		public List<String> call()
-//		{
-//			List<String> list = new ArrayList<>();
-//			
-//			for (int j=i+1; j<ov.size(); j++)
-//			{
-//				String key = getCombo(ov.get(i).getIndex(), ov.get(j).getIndex());
-//				if (feature_combo.contains(key)) list.add(key);
-//			}
-//
-//			return list;
-//		}
-//	}
-	
-	static public String getFeatureCombination(int... indices)
-	{
-		Arrays.sort(indices);
-		StringJoiner join = new StringJoiner("_");
-		for (int index : indices) join.add(Integer.toString(index));
-		return join.toString();
 	}
 	
 	private void add(SparseVector x, int type, String value, float weight, boolean add)
@@ -304,7 +332,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	{
 		switch (item.field)
 		{
-		case binary: return getBinaryFeatures(state, node);
+		case position: return getPositionFeatures(state, node);
 		case orthographic: return getOrthographicFeatures(state, node, true);
 		case orthographic_uncapitalized: return getOrthographicFeatures(state, node, false);
 		case word_clusters: return node.getWordClusters();
@@ -314,7 +342,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		}
 	}
 	
-	protected List<String> getBinaryFeatures(S state, NLPNode node)
+	protected List<String> getPositionFeatures(S state, NLPNode node)
 	{
 		List<String> values = new ArrayList<>();
 		
