@@ -38,6 +38,22 @@ public class SparseVector implements Serializable, Iterable<SparseItem>
 		this(0);
 	}
 	
+	public SparseVector(SparseVector v)
+	{
+		this(v, 0, v.size());
+	}
+	
+	public SparseVector(SparseVector v, int beginIndex)
+	{
+		this(v, beginIndex, v.size());
+	}
+	
+	public SparseVector(SparseVector v, int beginIndex, int endIndex)
+	{
+		this(0);
+		for (int i=beginIndex; i<endIndex; i++) add(v.get(i));
+	}
+	
 	public SparseVector(float bias)
 	{
 		vector = new ArrayList<>();
@@ -57,7 +73,12 @@ public class SparseVector implements Serializable, Iterable<SparseItem>
 	
 	public void add(int index, float value)
 	{
-		add(new SparseItem(index, value));
+		add(new SparseItem(index, value, true));
+	}
+	
+	public void add(int index, float value, boolean core)
+	{
+		add(new SparseItem(index, value, core));
 	}
 	
 	public void add(SparseItem item)

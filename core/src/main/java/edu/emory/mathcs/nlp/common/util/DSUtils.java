@@ -546,4 +546,12 @@ public class DSUtils
 		
 		return f;
 	}
+	
+	@SuppressWarnings("unchecked")
+	static public <T>Set<T> createSet(T... array)
+	{
+		Set<T> set = new HashSet<>();
+		for (T item : array) set.add(item);
+		return set;
+	}
 }

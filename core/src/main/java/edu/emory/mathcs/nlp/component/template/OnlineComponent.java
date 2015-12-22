@@ -37,13 +37,13 @@ import edu.emory.mathcs.nlp.learning.util.MLUtils;
 public abstract class OnlineComponent<S extends NLPState> implements NLPComponent, Serializable
 {
 	private static final long serialVersionUID = 59819173578703335L;
-	protected FeatureTemplate<S> feature_template;
-	protected OnlineOptimizer[]  optimizers;
+	protected FeatureTemplate<S>  feature_template;
+	protected OnlineOptimizer     optimizer;
 	
-	protected transient TrainInfo[] train_info;
-	protected transient NLPConfig   config;
-	protected transient NLPFlag     flag;
-	protected transient Eval        eval;
+	protected transient TrainInfo train_info;
+	protected transient NLPConfig config;
+	protected transient NLPFlag   flag;
+	protected transient Eval      eval;
 
 //	============================== CONSTRUCTORS ==============================
 	
@@ -58,40 +58,20 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	
 	public OnlineOptimizer getOptimizer()
 	{
-		return optimizers[0];
+		return optimizer;
 	}
 	
 	public void setOptimizer(OnlineOptimizer optimizer)
 	{
-		this.optimizers = new OnlineOptimizer[]{optimizer};
-	}
-	
-	public OnlineOptimizer[] getOptimizers()
-	{
-		return optimizers;
-	}
-	
-	public void setOptimizers(OnlineOptimizer[] optimizers)
-	{
-		this.optimizers = optimizers;
+		this.optimizer = optimizer;
 	}
 	
 	public TrainInfo getTrainInfo()
 	{
-		return train_info[0];
-	}
-
-	public void setTrainInfo(TrainInfo info)
-	{
-		train_info = new TrainInfo[]{info};
-	}
-	
-	public TrainInfo[] getTrainInfos()
-	{
 		return train_info;
 	}
 
-	public void setTrainInfos(TrainInfo[] info)
+	public void setTrainInfo(TrainInfo info)
 	{
 		train_info = info;
 	}
@@ -179,19 +159,62 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	public void process(NLPNode[] nodes, S state)
 	{
 		if (!isDecode()) state.saveOracle();
-		OnlineOptimizer optimizer;
-		int modelID, gold, yhat;
+		int gold = 0, yhat;
 		Instance instance;
 		FeatureVector x;
-		List<String> p;
-		String label;
 		float[] scores;
+		List<int[]> p;
+		String label;
+//		int[] top2;
+//		
+//		while (!state.isTerminate())
+//		{
+//			x = feature_template.createFeatureVector(state, isTrain());
+//			
+//			if (isTrain())
+//			{
+//				if (feature_template.useDynamicFeatureInduction())
+//					feature_template.appendDynamicFeatures(x.getSparseVector(), isTrain());
+//				
+//				label = state.getOracle();
+//				instance = new Instance(label, x);
+//				optimizer.train(instance);
+//				scores = instance.getScores();
+//				gold = instance.getGoldLabel();
+//				yhat = instance.getPredictedLabel();
+//
+//				if (feature_template.useDynamicFeatureInduction() && gold != yhat)
+//				{
+//					p = optimizer.getWeightVector().getTopFeatureCombinations(x, gold, yhat);
+//					feature_template.addDynamicFeatures(p);
+//				}
+//
+//				if (train_info.getRollIn().chooseGold()) yhat = gold;
+//			}
+//			else
+//			{
+//				scores = optimizer.scores(x);
+//				top2 = MLUtils.argmax2(scores, optimizer.getLabelSize());
+//				yhat = top2[0];
+//				
+//				if (feature_template.useDynamicFeatureInduction() && (scores[top2[0]] - scores[top2[1]] < 1))
+//				{
+//					x.set(feature_template.createDynamicSparseVector(x.getSparseVector(), isTrain()), null);
+//					x.getSparseVector().sort();
+//					optimizer.scores(x, scores);
+//					yhat = (scores[top2[0]] < scores[top2[1]]) ? top2[1] : top2[0];
+//				}
+//			}
+//
+//			state.next(optimizer.getLabelMap(), yhat, scores);
+//		}
 
 		while (!state.isTerminate())
 		{
-			modelID = getModelID(state);
-			optimizer = optimizers[modelID];
 			x = feature_template.createFeatureVector(state, isTrain());
+		
+			if (feature_template.useDynamicFeatureInduction())
+				feature_template.appendDynamicFeatures(x.getSparseVector(), isTrain());
 			
 			if (isTrain())
 			{
@@ -208,7 +231,7 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 					feature_template.addDynamicFeatures(p);
 				}
 				
-				if (train_info[modelID].chooseGold()) yhat = gold;
+				if (train_info.getRollIn().chooseGold()) yhat = gold;
 			}
 			else
 			{
@@ -228,9 +251,6 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	
 //	============================== HELPERS ==============================
 	
-	/** @return the index of the current statistical model to be used. */
-	protected int getModelID(S state) { return 0; }
-	
 	/** Post-processes if necessary. */
-	protected void postProcess(S state) {}
+	protected abstract void postProcess(S state);
 }

@@ -22,8 +22,7 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		float f = Float.parseFloat("0.00000000000000000000000000000000000000000001");
-		System.out.println(f);
+		System.out.println(Boolean.parseBoolean("true"));
 	}
 	
 	static public void main(String[] args) throws Exception

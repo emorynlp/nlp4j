@@ -146,6 +146,11 @@ public class Instance implements Serializable
 		this.scores = scores;
 	}
 	
+	public boolean hasScores()
+	{
+		return scores != null;
+	}
+	
 //	=================================== STRING VECTOR ===================================
 
 //	public Instance(String label, StringVector stringVector, float[] denseVector)

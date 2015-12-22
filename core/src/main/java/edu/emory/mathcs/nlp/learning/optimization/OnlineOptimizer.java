@@ -179,9 +179,15 @@ public abstract class OnlineOptimizer implements Serializable
 	/** @param instance consists of string label and features. */
 	public void train(Instance instance)
 	{
-		augment(instance);
+		train(instance, true);
+	}
+	
+	public void train(Instance instance, boolean augment)
+	{
+		if (augment) augment(instance);
 		expand(instance.getFeatureVector());
-		instance.setScores(scores(instance.getFeatureVector()));
+		if (instance.hasScores()) scores(instance.getFeatureVector(), instance.getScores());
+		else instance.setScores(scores(instance.getFeatureVector()));
 		int yhat = getPredictedLabel(instance);
 		instance.setPredictedLabel(yhat);
 		if (!instance.isGoldLabel(yhat)) trainAux(instance);
@@ -192,7 +198,7 @@ public abstract class OnlineOptimizer implements Serializable
 	 * Adds string values to maps, converts them to sparse indices, and expands the weight vector.
 	 * Called by {@link #train(Instance)}.
 	 */
-	protected void augment(Instance instance)
+	public void augment(Instance instance)
 	{
 		// add label
 		if (instance.hasStringLabel())
@@ -202,8 +208,11 @@ public abstract class OnlineOptimizer implements Serializable
 		}
 		
 		// add features
-		FeatureVector x = instance.getFeatureVector();
-		
+		augment(instance.getFeatureVector());
+	}
+	
+	public void augment(FeatureVector x)
+	{
 		if (x.hasSparseVector())
 		{
 			x.getSparseVector().addBias(bias);
@@ -287,6 +296,17 @@ public abstract class OnlineOptimizer implements Serializable
 	
 	public float[] scores(FeatureVector x)
 	{
+		return scores(x, true);
+	}
+	
+	public float[] scores(FeatureVector x, boolean augment)
+	{
+		if (augment) augment(x);
 		return weight_vector.scores(x);
-	}	
+	}
+	
+	public void scores(FeatureVector x, float[] scores)
+	{
+		weight_vector.scores(x, scores);
+	}
 }

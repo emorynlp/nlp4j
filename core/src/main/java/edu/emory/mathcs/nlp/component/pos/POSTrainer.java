@@ -17,10 +17,10 @@ package edu.emory.mathcs.nlp.component.pos;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
-import edu.emory.mathcs.nlp.common.util.BinUtils;
-import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate0;
-import edu.emory.mathcs.nlp.component.pos.feature.POSFeatureTemplate1;
+import org.w3c.dom.Element;
+
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
@@ -30,6 +30,8 @@ import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
  */
 public class POSTrainer extends OnlineTrainer<POSState>
 {
+	public static Set<String> train_words = null;
+	
 	@Override
 	protected OnlineComponent<POSState> createComponent(InputStream config)
 	{
@@ -37,37 +39,34 @@ public class POSTrainer extends OnlineTrainer<POSState>
 	}
 
 	@Override
-	protected void collect(OnlineComponent<POSState> component, List<String> inputFiles)
-	{
-		POSTagger tagger = (POSTagger)component;
-		AmbiguityClassMap map = tagger.getAmbiguityClassMap();
-		POSConfig config = (POSConfig)component.getConfiguration();
-		
-		if (map == null)
-		{
-			map = new AmbiguityClassMap();
-			tagger.setAmbiguityClassMap(map);
-		}
-		
-		collectAmbiguityClasses(config, inputFiles, map);
-	}
-	
-	protected void collectAmbiguityClasses(POSConfig config, List<String> inputFiles, AmbiguityClassMap map)
-	{
-		BinUtils.LOG.info("Collecting ambiguity classes: ");
-		iterate(config.getTSVReader(), inputFiles, nodes -> map.add(nodes));
-		map.expand(config.getAmbiguityClassThreshold());
-		BinUtils.LOG.info(map.size()+"\n");
-	}
+	protected void collect(OnlineComponent<POSState> component, List<String> inputFiles) {}
+//	{
+//		POSTagger tagger = (POSTagger)component;
+//		AmbiguityClassMap map = tagger.getAmbiguityClassMap();
+//		POSConfig config = (POSConfig)component.getConfiguration();
+//		
+//		if (map == null)
+//		{
+//			map = new AmbiguityClassMap();
+//			tagger.setAmbiguityClassMap(map);
+//		}
+//		
+//		collectAmbiguityClasses(config, inputFiles, map);
+//		train_words = new HashSet<>();
+//		iterate(config.getTSVReader(), inputFiles, nodes -> IntStream.range(1, nodes.length).forEach(i -> train_words.add(nodes[i].getWordForm())));
+//	}
+//	
+//	protected void collectAmbiguityClasses(POSConfig config, List<String> inputFiles, AmbiguityClassMap map)
+//	{
+//		BinUtils.LOG.info("Collecting ambiguity classes: ");
+//		iterate(config.getTSVReader(), inputFiles, nodes -> map.add(nodes));
+//		map.expand(config.getAmbiguityClassThreshold());
+//		BinUtils.LOG.info(map.size()+"\n");
+//	}
 	
 	@Override
-	protected FeatureTemplate<POSState> createFeatureTemplate(int id, int dynamicFeatureSize)
+	protected FeatureTemplate<POSState> createFeatureTemplate(Element eFeatures)
 	{
-		switch (id)
-		{
-		case 0: return new POSFeatureTemplate0(dynamicFeatureSize);
-		case 1: return new POSFeatureTemplate1(dynamicFeatureSize);
-		default: throw new IllegalArgumentException("Unknown feature template: "+id);
-		}
+		return new POSFeatureTemplate(eFeatures);
 	}
 }

@@ -17,6 +17,7 @@ package edu.emory.mathcs.nlp.component.template.feature;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -24,15 +25,21 @@ import java.util.Random;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
+import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
+import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.node.Orthographic;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
@@ -53,40 +60,93 @@ import net.openhft.hashing.LongHashFunction;
 public abstract class FeatureTemplate<S extends NLPState> implements Serializable
 {
 	private static final long serialVersionUID = -6755594173767815098L;
+	private static final Set<Field> SET_FEATURES = DSUtils.createSet(Field.positional, Field.orthographic, Field.orthographic_uncapitalized, Field.word_clusters, Field.named_entity_gazetteers, Field.ambiguity_classes);
 	protected FeatureMap             feature_map;
 	protected List<FeatureItem<?>[]> feature_list;
 	protected List<FeatureItem<?>>   feature_set;
-	protected List<FeatureItem<?>>   feature_set_weighted;
 	
 	// dynamic feature induction
 	protected LongHashFunction dynamic_feature_hash;
 	protected final int        dynamic_feature_size;
 	protected boolean[]        dynamic_feature_switch;
 	protected Random           dynamic_feature_gap;
+
+	// dense features
+	protected FeatureItem<?>[] word_embeddings;
 	
-	public FeatureTemplate(int dynamicFeatureSize)
+	public FeatureTemplate(Element eFeatures)
 	{
-		feature_map          = new FeatureMap();
-		feature_list         = new ArrayList<>();
-		feature_set          = new ArrayList<>();
-		feature_set_weighted = new ArrayList<>();
-		dynamic_feature_size = dynamicFeatureSize;
+		feature_map  = new FeatureMap();
+		feature_list = new ArrayList<>();
+		feature_set  = new ArrayList<>();
+
+		Element eDFI = XMLUtils.getFirstElementByTagName(eFeatures, "dynamic_feature_size");
+		
+		if (eDFI != null)
+		{
+			dynamic_feature_size = XMLUtils.getIntegerTextContent(eDFI);
+			eFeatures.removeChild(eDFI);
+		}
+		else
+			dynamic_feature_size = 0;
 		
 		// dynamic feature induction
 		if (useDynamicFeatureInduction())
 		{
 			dynamic_feature_hash   = LongHashFunction.xx_r39(serialVersionUID);
 			dynamic_feature_switch = new boolean[dynamic_feature_size];
-			dynamic_feature_gap    = new XORShiftRandom(9);	
+			dynamic_feature_gap    = new XORShiftRandom(9);
 		}
 
 		// feature templates
-		init();
+		init(eFeatures);
+	}
+	
+	protected void init(Element eFeatures)
+	{
+		NodeList nodes = eFeatures.getChildNodes();
+		int[]    windows;
+		Field    field;
+		Source   source;
+		Element  element;
+		String[] t;
+		
+		for (int i=0; i<nodes.getLength(); i++)
+		{
+			if (!(nodes.item(i) instanceof Element)) continue;
+			element = (Element)nodes.item(i);
+			field = Field.valueOf(element.getNodeName());
+			source = Source.valueOf(XMLUtils.getTrimmedAttribute(element, "source"));
+			t = Splitter.splitCommas(XMLUtils.getTrimmedTextContent(element));
+			windows = Arrays.stream(t).mapToInt(index -> Integer.parseInt(index)).toArray();
+			
+			if (SET_FEATURES.contains(field))
+			{
+				for (int window : windows) addSet(new FeatureItem<>(source, window, field));
+			}
+			else if (field == Field.word_shape)
+			{
+				for (int window : windows) add(new FeatureItem<>(source, window, field, XMLUtils.getIntegerAttribute(element, "repeat")));
+			}
+			else if (field == Field.prefix || field == Field.suffix)
+			{
+				for (int window : windows) add(new FeatureItem<>(source, window, field, XMLUtils.getIntegerAttribute(element, "window")));
+			}
+			else if (field == Field.word_embedding)
+			{
+				word_embeddings = new FeatureItem[windows.length];
+
+				for (int j=0; j<word_embeddings.length; j++)
+					word_embeddings[j] = new FeatureItem<>(source, windows[j], field);
+			}
+			else
+			{
+				for (int window : windows) add(new FeatureItem<>(source, window, field));
+			}
+		}
 	}
 
 //	============================== INITIALIZATION ==============================
-	
-	protected abstract void init();
 
 	public void add(FeatureItem<?>... items)
 	{
@@ -97,10 +157,9 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	{
 		feature_set.add(items);
 	}
-	
-	public void addSetWeighted(FeatureItem<?> items)
+	public int getDynamicFeatureSize()
 	{
-		feature_set_weighted.add(items);
+		return dynamic_feature_size;
 	}
 	
 	public int getSparseFeatureSize()
@@ -110,19 +169,19 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	
 	public int getTemplateSize()
 	{
-		return feature_list.size() + feature_set.size() + feature_set_weighted.size();
+		return feature_list.size() + feature_set.size();
 	}
 	
 //	============================== DYNAMIC FEATURE INDUCTION ==============================
 	
-	public void addDynamicFeature(String feature)
+	public void addDynamicFeature(int[] feature)
 	{
 		dynamic_feature_switch[getDynamicFeatureIndex(feature)] = true;
 	}
 	
-	public void addDynamicFeatures(Collection<String> features)
+	public void addDynamicFeatures(Collection<int[]> features)
 	{
-		for (String feature : features)	addDynamicFeature(feature);
+		for (int[] feature : features)	addDynamicFeature(feature);
 	}	
 	
 	public boolean useDynamicFeatureInduction()
@@ -139,26 +198,18 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	{
 		return (i < j) ? i+"_"+j : j+"_"+i;
 	}
-	
-//	static public String getFeatureCombination(int... indices)
-//	{
-//		Arrays.sort(indices);
-//		StringJoiner join = new StringJoiner("_");
-//		for (int index : indices) join.add(Integer.toString(index));
-//		return join.toString();
-//	}
 
-	protected int getDynamicFeatureIndex(String feature)
+	protected int getDynamicFeatureIndex(int... p)
 	{
-		return MathUtils.modulus(dynamic_feature_hash.hashChars(feature), dynamic_feature_size);
+		if (p[0] > p[1]) DSUtils.swap(p, 0, 1);
+		return MathUtils.modulus(dynamic_feature_hash.hashLong(p[0]*10000000+p[1]), dynamic_feature_size);
 	}
 	
-	private void appendDynamicFeatures(SparseVector x, int type, boolean add)
+	public void appendDynamicFeatures(SparseVector x, boolean train)
 	{
 		List<SparseItem> ov = new ArrayList<>(x.getVector());
+		int i, j, k, type = getTemplateSize();
 		SparseItem oi, oj;
-		String f;
-		int i, j;
 		
 		for (i=0; i<ov.size(); i+=getRandomGap())
 		{
@@ -167,52 +218,29 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 			for (j=i+1; j<ov.size(); j+=getRandomGap())
 			{
 				oj = ov.get(j);
-				f  = getFeatureCombination(oi.getIndex(), oj.getIndex());
-				if (dynamic_feature_switch[getDynamicFeatureIndex(f)]) add(x, type, f, 1, add);
+				k  = getDynamicFeatureIndex(oi.getIndex(), oj.getIndex());
+				if (dynamic_feature_switch[k]) add(x, type, Integer.toString(k), 1, train, false);
 			}
 		}
 	}
 	
-//	private class InductionTask implements Callable<List<String>>
-//	{
-//		private List<SparseItem> ov;
-//		private int i;
-//		
-//		public InductionTask(List<SparseItem> ov, int i)
-//		{
-//			this.ov = ov;
-//			this.i  = i;
-//		}
-//
-//		@Override
-//		public List<String> call()
-//		{
-//			List<String> list = new ArrayList<>();
-//			SparseItem oj, oi = ov.get(i);
-//			String f;
-//			
-//			for (int j=i+1; j<ov.size(); j+=getRandomGap())
-//			{
-//				oj = ov.get(j);
-//				f  = getFeatureCombination(oi.getIndex(), oj.getIndex());
-//				if (dynamic_feature_switch[getDynamicFeatureIndex(f)]) list.add(f);
-//			}
-//			
-//			return list;
-//		}
-//	}
+	public SparseVector createDynamicSparseVector(SparseVector x, boolean train)
+	{
+		int size = x.size();
+		appendDynamicFeatures(x, train);
+		return new SparseVector(x, size);
+	}
 	
 //	============================== EXTRACTOR ==============================
 	
-	public FeatureVector createFeatureVector(S state, boolean add)
+	public FeatureVector createFeatureVector(S state, boolean train)
 	{
-		return new FeatureVector(createSparseVector(state,add), createDenseVector(state));
+		return new FeatureVector(createSparseVector(state,train), createDenseVector(state));
 	}
 	
-	public SparseVector createSparseVector(S state, boolean add)
+	public SparseVector createSparseVector(S state, boolean train)
 	{
 		SparseVector x = new SparseVector();
-		Collection<StringPrediction> w;
 		Collection<String> t;
 		int i, type = 0;
 		String f;
@@ -220,37 +248,26 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		for (i=0; i<feature_list.size(); i++,type++)
 		{
 			f = getFeature(state, feature_list.get(i));
-			add(x, type, f, 1, add);
+			add(x, type, f, 1, train, true);
 		}
 		
 		for (i=0; i<feature_set.size(); i++,type++)
 		{
 			t = getFeatures(state, feature_set.get(i));
-			if (t != null) for (String s : t) add(x, type, s, 1, add);
+			if (t != null) for (String s : t) add(x, type, s, 1, train, true);
 		}
-		
-		for (i=0; i<feature_set_weighted.size(); i++,type++)
-		{
-			w = getFeaturesWeighted(state, feature_set_weighted.get(i));
-			if (w != null) for (StringPrediction s : w) add(x, type, s.getLabel(), s.getScore(), add);
-		}
-		
-		if (useDynamicFeatureInduction())
-			appendDynamicFeatures(x, type, add);
 		
 		return x;
 	}
 	
-	private void add(SparseVector x, int type, String value, float weight, boolean add)
+	private void add(SparseVector x, int type, String value, float weight, boolean train, boolean core)	// TODO: remove core if can
 	{
 		if (value != null)
 		{
-			int index = add ? feature_map.add(type, value) : feature_map.index(type, value);
-			if (index > 0) x.add(index, weight);
+			int index = train ? feature_map.add(type, value) : feature_map.index(type, value);
+			if (index > 0) x.add(index, weight, core);
 		}
 	}
-	
-	public abstract float[] createDenseVector(S state);
 	
 //	============================== SINGLE FEATURES ==============================
 	
@@ -279,10 +296,10 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	protected String getFeature(S state, FeatureItem<?> item)
 	{
 		NLPNode node = state.getNode(item);
-		return (node == null) ? null : getFeature(item, node);
+		return (node == null) ? null : getFeature(state, item, node);
 	}
 	
-	protected String getFeature(FeatureItem<?> item, NLPNode node)
+	protected String getFeature(S state, FeatureItem<?> item, NLPNode node)
 	{
 		String f = node.getValue(item.field);
 		if (f != null) return f;
@@ -332,10 +349,11 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	{
 		switch (item.field)
 		{
-		case position: return getPositionFeatures(state, node);
+		case positional: return getPositionFeatures(state, node);
 		case orthographic: return getOrthographicFeatures(state, node, true);
 		case orthographic_uncapitalized: return getOrthographicFeatures(state, node, false);
 		case word_clusters: return node.getWordClusters();
+		case ambiguity_classes: return node.getAmbiguityClasses();
 		case named_entity_gazetteers: return node.getNamedEntityGazetteers();
 		case bag_of_words: return getBagOfWords(state, item);
 		default: return null;
@@ -513,5 +531,35 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 			set.add(new StringPrediction(e.getKey(), e.getValue()));
 		
 		return set;
+	}
+	
+//	============================== DENSE FEATURES ==============================
+
+	public float[] createDenseVector(S state)
+	{
+		return getEmbeddingFeatures(state);
+	}
+	
+	public float[] getEmbeddingFeatures(S state)
+	{
+		if (GlobalLexica.word_embeddings == null || word_embeddings == null || word_embeddings.length == 0) return null;
+		float[] w, v = null;
+		NLPNode node;
+		int i = -1;
+		
+		for (FeatureItem<?> item : word_embeddings)
+		{
+			node = state.getNode(item);
+			i++;
+			
+			if (node != null && node.hasWordEmbedding())
+			{
+				w = node.getWordEmbedding();
+				if (v == null) v = new float[w.length * word_embeddings.length];
+				System.arraycopy(w, 0, v, w.length*i, w.length);
+			}
+		}
+		
+		return v;
 	}
 }

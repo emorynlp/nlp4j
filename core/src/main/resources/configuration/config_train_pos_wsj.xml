@@ -11,7 +11,7 @@
     <max_epochs>20</max_epochs>
     <dynamic_feature_induction>3</dynamic_feature_induction>
 
-    <optimizer>
+    <optimizer save_last="true">
         <algorithm>adagrad-mini-batch</algorithm>
         <l1_regularization>0.00001</l1_regularization>
         <learning_rate>0.02</learning_rate>

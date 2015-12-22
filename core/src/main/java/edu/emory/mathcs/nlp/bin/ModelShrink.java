@@ -31,6 +31,7 @@ import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
+import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.zzz.StringModel;
 import edu.emory.mathcs.nlp.learning.zzz.StringModelMap;
 
@@ -55,8 +56,6 @@ public class ModelShrink
 	public float increment = 0.01f;
 	@Option(name="-lower", usage="lower bound (required)", required=true, metaVar="<float>")
 	public float lower_bound;
-	@Option(name="-id", usage="model id (default: 0)", required=false, metaVar="<integer>")
-	public int model_id = 0;
 	
 	public <N,S>ModelShrink() {}
 	
@@ -69,7 +68,7 @@ public class ModelShrink
 		OnlineComponent<S> component = (OnlineComponent<S>)in.readObject(); in.close();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
-		StringModelMap model = (StringModelMap)component.getModels()[model_id];
+		OnlineOptimizer optimizer = component.getOptimizer();
 		
 		byte[] prevModel = model.toByteArray();
 		double currScore;

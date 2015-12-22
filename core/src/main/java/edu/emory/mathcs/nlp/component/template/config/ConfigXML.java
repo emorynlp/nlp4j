@@ -21,6 +21,7 @@ package edu.emory.mathcs.nlp.component.template.config;
 public interface ConfigXML
 {
 	String LANGUAGE		= "language";
+	String FEATURES		= "features";
 	String MODEL		= "model";
 	
 //	========================== TSV READER ==========================
@@ -41,12 +42,13 @@ public interface ConfigXML
 	String FIELD_NAMENT	= "nament";
 	String FIELD_COREF	= "coref";
 	String FIELD_XHEADS	= "xheads";
-
+	
 //	========================== TRAINER ==========================
 
 	String OPTIMIZER	= "optimizer";
 	String ALGORITHM	= "algorithm";
 	String MAX_EPOCHS	= "max_epochs";
+	String SAVE_LAST	= "save_last";
 	String BATCH_SIZE	= "batch_size";
 	String ROLL_IN		= "roll_in";
 	String LABEL_SIZE	= "label_size";
@@ -58,7 +60,6 @@ public interface ConfigXML
 	String SOFTMAX		= "softmax";
 	String SIGMOID		= "sigmoid";
 	String RANDOM_BOUND	= "random_bound";
-	String DYNAMIC_FEATURE_SIZE = "dynamic_feature_size";
 	
 	String L1_REGULARIZATION	= "l1_regularization";
 	String LEARNING_RATE		= "learning_rate";

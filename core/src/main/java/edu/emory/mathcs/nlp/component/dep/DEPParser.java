@@ -94,7 +94,7 @@ public class DEPParser extends OnlineComponent<DEPState>
 				if (max.isNull())
 					node.setDependencyHead(nodes[0], DEPTagEn.DEP_ROOT);
 				else
-					node.setDependencyHead(nodes[max.headId], new DEPLabel(optimizers[0].getLabel(max.yhat)).getDeprel());
+					node.setDependencyHead(nodes[max.headId], new DEPLabel(optimizer[0].getLabel(max.yhat)).getDeprel());
 			}
 		}
 	}
@@ -103,7 +103,7 @@ public class DEPParser extends OnlineComponent<DEPState>
 	{
 		int[] labels = (dir > 0) ? label_indices.getLeftArcs() : label_indices.getRightArcs();
 		NLPNode head, node = nodes[currID];
-		OnlineOptimizer optimizer = optimizers[0];
+		OnlineOptimizer optimizer = optimizer[0];
 		float[] scores;
 		FeatureVector x;
 		int yhat;

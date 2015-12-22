@@ -69,15 +69,16 @@ public class POSTagger extends OnlineComponent<POSState>
 	@Override
 	protected POSState initState(NLPNode[] nodes)
 	{
-		String[] ambi = getAmbiguityClasses(nodes);
-		return new POSState(nodes, ambi);
+		return new POSState(nodes);
 	}
 	
-	public String[] getAmbiguityClasses(NLPNode[] nodes)
-	{
-		String[] ambi = new String[nodes.length];
-		for (int i=1; i<nodes.length; i++)
-			ambi[i] = ambiguity_class_map.get(nodes[i]);
-		return ambi;
-	}
+	@Override
+	protected void postProcess(POSState state) {}
+	
+//	public String[] getAmbiguityClasses(NLPNode[] nodes)
+//	{
+//		String[] ambi = new String[nodes.length];
+//		for (int i=1; i<nodes.length; i++) ambi[i] = ambiguity_class_map.get(nodes[i]);
+//		return ambi;
+//	}
 }

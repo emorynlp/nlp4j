@@ -15,32 +15,19 @@
  */
 package edu.emory.mathcs.nlp.component.pos;
 
-import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
+import org.w3c.dom.Element;
+
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class POSFeatureTemplate extends FeatureTemplate<POSState>
+public class POSFeatureTemplate extends FeatureTemplate<POSState>
 {
-	public POSFeatureTemplate(int dynamicFeatureSize)
-	{
-		super(dynamicFeatureSize);
-	}
-
 	private static final long serialVersionUID = -243334323533999837L;
 	
-	@Override
-	protected String getFeature(POSState state, FeatureItem<?> item)
+	public POSFeatureTemplate(Element eFeatures)
 	{
-		NLPNode node = state.getNode(item);
-		if (node == null) return null;
-		
-		switch (item.field)
-		{
-		case ambiguity_class: return state.getAmbiguityClass(node);
-		default: return getFeature(item, node);
-		}
+		super(eFeatures);
 	}
 }

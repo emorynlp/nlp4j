@@ -23,12 +23,9 @@ import edu.emory.mathcs.nlp.component.template.state.L2RState;
  */
 public class POSState extends L2RState
 {
-	private String[] ambiguity_classes;
-	
-	public POSState(NLPNode[] nodes, String[] ambiguityClasses)
+	public POSState(NLPNode[] nodes)
 	{
 		super(nodes);
-		setAmbiguityClasses(ambiguityClasses);
 	}
 	
 	@Override
@@ -45,18 +42,8 @@ public class POSState extends L2RState
 		return s;
 	}
 	
-	public String getAmbiguityClass(NLPNode node)
-	{
-		return ambiguity_classes[node.getID()];
-	}
-	
-	public String[] getAmbiguityClasses()
-	{
-		return ambiguity_classes;
-	}
-	
-	public void setAmbiguityClasses(String[] classes)
-	{
-		ambiguity_classes = classes;
-	}
+//	public Collection<String> getAmbiguityClasses(NLPNode node)
+//	{
+//		return ambiguity_classes.get(node.getID());
+//	}
 }

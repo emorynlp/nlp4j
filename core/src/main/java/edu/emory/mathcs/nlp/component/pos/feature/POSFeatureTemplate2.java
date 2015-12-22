@@ -16,7 +16,6 @@
 package edu.emory.mathcs.nlp.component.pos.feature;
 
 import edu.emory.mathcs.nlp.component.pos.POSFeatureTemplate;
-import edu.emory.mathcs.nlp.component.pos.POSState;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 
@@ -28,9 +27,9 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 {
 	private static final long serialVersionUID = 7072878555553683666L;
 
-	public POSFeatureTemplate2()
+	public POSFeatureTemplate2(int dynamicFeatureSize, int embeddingWindowLeft, int embeddingWindowRight)
 	{
-		super(0);
+		super(dynamicFeatureSize, embeddingWindowLeft, embeddingWindowRight);
 	}
 	
 	@Override
@@ -51,10 +50,10 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 		add(new FeatureItem<>(-2, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
 		
-		add(new FeatureItem<>( 0, Field.ambiguity_class));
-		add(new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>( 2, Field.ambiguity_class));
-		add(new FeatureItem<>( 3, Field.ambiguity_class));
+		add(new FeatureItem<>( 0, Field.ambiguity_classes));
+		add(new FeatureItem<>( 1, Field.ambiguity_classes));
+		add(new FeatureItem<>( 2, Field.ambiguity_classes));
+		add(new FeatureItem<>( 3, Field.ambiguity_classes));
 
 		// 2-gram features
 		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form), new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
@@ -64,14 +63,14 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
 
 		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_classes));
+		add(new FeatureItem<>( 1, Field.ambiguity_classes)   , new FeatureItem<>( 2, Field.ambiguity_classes));
 
 		// 3-gram features
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class));
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class)   , new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_classes));
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_classes));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_classes)   , new FeatureItem<>( 1, Field.ambiguity_classes));
+		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_classes)   , new FeatureItem<>( 2, Field.ambiguity_classes));
 
 		// affix features
 		add(new FeatureItem<>(0, Field.prefix, 2));
@@ -85,17 +84,11 @@ public class POSFeatureTemplate2 extends POSFeatureTemplate
 		addSet(new FeatureItem<>(0, Field.orthographic));
 		
 		// boolean features
-		addSet(new FeatureItem<>(0, Field.position));
+		addSet(new FeatureItem<>(0, Field.positional));
 		
 		// word cluster features
 		addSet(new FeatureItem<>(-1, Field.word_clusters));
 		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>( 1, Field.word_clusters));
-	}
-
-	@Override
-	public float[] createDenseVector(POSState state)
-	{
-		return state.getScores(state.getInputIndex()-1);
 	}
 }

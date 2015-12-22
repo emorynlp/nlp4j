@@ -16,7 +16,6 @@
 package edu.emory.mathcs.nlp.component.ner.feature;
 
 import edu.emory.mathcs.nlp.component.ner.NERFeatureTemplate;
-import edu.emory.mathcs.nlp.component.ner.NERState;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 
@@ -27,57 +26,55 @@ import edu.emory.mathcs.nlp.component.template.feature.Field;
 public class NERFeatureTemplate1 extends NERFeatureTemplate
 {
 	private static final long serialVersionUID = -3867869616627234917L;
+	
+	public NERFeatureTemplate1(int dynamicFeatureSize, int embeddingWindowLeft, int embeddingWindowRight)
+	{
+		super(dynamicFeatureSize, embeddingWindowLeft, embeddingWindowRight);
+	}
 
 	@Override
 	protected void init()
 	{
-		// 1-gram features
+		// uncapitalized word forms
 		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
-
+		
+		// word shapes
 		add(new FeatureItem<>(-1, Field.uncapitalized_word_shape, 2));
 		add(new FeatureItem<>( 0, Field.uncapitalized_word_shape, 2));
 		add(new FeatureItem<>( 1, Field.uncapitalized_word_shape, 2));
-		
+
+		// lemmas
+		add(new FeatureItem<>(-1, Field.lemma));
+		add(new FeatureItem<>( 0, Field.lemma));
+		add(new FeatureItem<>( 1, Field.lemma));
+		add(new FeatureItem<>( 2, Field.lemma));
+
+		// part-of-speech tags
+		add(new FeatureItem<>(-2, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
 		add(new FeatureItem<>( 0, Field.part_of_speech_tag));
 		add(new FeatureItem<>( 1, Field.part_of_speech_tag));
-		
+		add(new FeatureItem<>( 2, Field.part_of_speech_tag));
+
+		// named entity tags
+		add(new FeatureItem<>(-3, Field.named_entity_tag));
 		add(new FeatureItem<>(-2, Field.named_entity_tag));
 		add(new FeatureItem<>(-1, Field.named_entity_tag));
 
+		// named entity gazetteers
 		addSet(new FeatureItem<>(-1, Field.named_entity_gazetteers));
 		addSet(new FeatureItem<>( 0, Field.named_entity_gazetteers));
 		addSet(new FeatureItem<>( 1, Field.named_entity_gazetteers));
-		
-		// 2-gram features
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
-		add(new FeatureItem<>( 1, Field.part_of_speech_tag), new FeatureItem<>( 2, Field.part_of_speech_tag));
-		
-		add(new FeatureItem<>(-1, Field.lemma), new FeatureItem<>( 0, Field.lemma));
-		add(new FeatureItem<>( 0, Field.lemma), new FeatureItem<>( 1, Field.lemma));
-		add(new FeatureItem<>( 1, Field.lemma), new FeatureItem<>( 2, Field.lemma));
-		
-		add(new FeatureItem<>( 0, Field.lemma), new FeatureItem<>( 0, Field.part_of_speech_tag));
-		add(new FeatureItem<>( 1, Field.lemma), new FeatureItem<>( 0, Field.part_of_speech_tag));
-		
-		add(new FeatureItem<>( 1, Field.named_entity_gazetteers), new FeatureItem<>( 2, Field.named_entity_gazetteers));
-		
-		// 3-gram features
-		add(new FeatureItem<>(-3, Field.named_entity_tag), new FeatureItem<>(-2, Field.named_entity_tag), new FeatureItem<>(1, Field.named_entity_gazetteers));
-		
-		add(new FeatureItem<>(-1, Field.lemma), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.named_entity_tag));
-		add(new FeatureItem<>( 0, Field.lemma), new FeatureItem<>( 0, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.named_entity_tag));
+		addSet(new FeatureItem<>( 2, Field.named_entity_gazetteers));
 
 		// affix features
+		add(new FeatureItem<>(-1, Field.suffix, 3));
 		add(new FeatureItem<>( 0, Field.suffix, 3));
 		add(new FeatureItem<>( 1, Field.prefix, 3));
-
-		add(new FeatureItem<>( 0, Field.suffix, 3), new FeatureItem<>(0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.suffix, 3), new FeatureItem<>(0, Field.uncapitalized_simplified_word_form));
 
 		// word cluster features
 		addSet(new FeatureItem<>(-2, Field.word_clusters));
@@ -85,11 +82,5 @@ public class NERFeatureTemplate1 extends NERFeatureTemplate
 		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>( 1, Field.word_clusters));
 		addSet(new FeatureItem<>( 2, Field.word_clusters));
-	}
-	
-	@Override
-	public float[] createDenseVector(NERState state)
-	{
-		return null;
 	}
 }

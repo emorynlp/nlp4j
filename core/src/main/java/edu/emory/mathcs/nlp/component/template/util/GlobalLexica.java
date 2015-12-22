@@ -39,10 +39,14 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 public class GlobalLexica
 {
 	static public PrefixTree<String,Set<String>> named_entity_gazetteers;
-	static public Map<String,Set<String>> word_clusters;
-	static public Set<String> stop_words;
+	static public Map<String,List<String>> ambiguity_classes;
+	static public Map<String,Set<String>>  word_clusters;
+	static public Map<String,float[]>      word_embeddings;
+	static public Set<String>              stop_words;
 	
 	static private Field named_entity_gazetteers_field;
+	static private Field ambiguity_classes_field;
+	static private Field word_embeddings_field;
 	static private Field word_clusters_field;
 	static private Field stop_words_field; 
 	
@@ -56,7 +60,9 @@ public class GlobalLexica
 		if (initialized || eLexica == null) return;
 		initialized = true;
 		
+		initLexica(eLexica, "ambiguity_classes", GlobalLexica::initAmbiguityClasses);
 		initLexica(eLexica, "word_clusters", GlobalLexica::initWordClusters);
+		initLexica(eLexica, "word_embeddings", GlobalLexica::initWordEmbeddings);
 		initLexica(eLexica, "named_entity_gazetteers", GlobalLexica::initNamedEntityGazetteers);
 		initLexica(eLexica, "stop_words", GlobalLexica::initStopWords);
 	}
@@ -70,6 +76,23 @@ public class GlobalLexica
 		XZInputStream in = IOUtils.createXZBufferedInputStream(IOUtils.getInputStream(path));
 		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, "field"));
 		f.accept(in, field);
+	}
+	
+	@SuppressWarnings("unchecked")
+	static public void initAmbiguityClasses(XZInputStream in, Field field)
+	{
+		BinUtils.LOG.info("Loading ambiguity classes: ");
+		
+		try
+		{
+			ObjectInputStream oin = new ObjectInputStream(in);
+			ambiguity_classes = (Map<String,List<String>>)oin.readObject();
+			ambiguity_classes_field = field;
+			oin.close();
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		BinUtils.LOG.info(ambiguity_classes.size()+"\n");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -87,6 +110,23 @@ public class GlobalLexica
 		catch (Exception e) {e.printStackTrace();}
 		
 		BinUtils.LOG.info(word_clusters.size()+"\n");
+	}
+	
+	@SuppressWarnings("unchecked")
+	static public void initWordEmbeddings(XZInputStream in, Field field)
+	{
+		BinUtils.LOG.info("Loading word embeddings: ");
+		
+		try
+		{
+			ObjectInputStream oin = new ObjectInputStream(in);
+			word_embeddings = (Map<String,float[]>)oin.readObject();
+			word_embeddings_field = field;
+			oin.close();
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		BinUtils.LOG.info(word_embeddings.size()+"\n");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -128,8 +168,24 @@ public class GlobalLexica
 		if (nodes[0].hasWordClusters()) return;
 		nodes[0].setWordClusters(new HashSet<>());
 		
+		assignAmbiguityClasses(nodes);
 		assignWordClusters(nodes);
+		assignWordEmbeddings(nodes);
 		assignNamedEntityGazetteers(nodes);
+	}
+	
+	static public void assignAmbiguityClasses(NLPNode[] nodes)
+	{
+		if (ambiguity_classes == null) return;
+		List<String> list;
+		NLPNode node;
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			node = nodes[i];
+			list = ambiguity_classes.get(getKey(node, ambiguity_classes_field));
+			node.setAmbiguityClasses(list);
+		}
 	}
 	
 	static public void assignWordClusters(NLPNode[] nodes)
@@ -143,6 +199,20 @@ public class GlobalLexica
 			node = nodes[i];
 			set  = word_clusters.get(getKey(node, word_clusters_field));
 			node.setWordClusters(set);
+		}
+	}
+	
+	static public void assignWordEmbeddings(NLPNode[] nodes)
+	{
+		if (word_embeddings == null) return;
+		float[] embedding;
+		NLPNode node;
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			node = nodes[i];
+			embedding = word_embeddings.get(getKey(node, word_embeddings_field));
+			node.setWordEmbedding(embedding);
 		}
 	}
 	

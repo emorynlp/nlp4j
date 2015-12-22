@@ -15,60 +15,45 @@
  */
 package edu.emory.mathcs.nlp.component.template.train;
 
+import java.util.Random;
+
+import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
+
+
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class TrainInfo
+public class RollIn
 {
-	private RollIn  rollin;
-	private int     batch_size;
-	private int     max_epochs;
-	private boolean save_last;
+	private int    fixed_stage;
+	private double decaying_rate;
+	private double rollin_probability;
+	private Random random;
 	
-	public TrainInfo(int maxEpochs, int batchSize, RollIn rollin, boolean saveLast)
+	public RollIn(int fixedStage, double decayingRate)
 	{
-		setMaxEpochs(maxEpochs);
-		setBatchSize(batchSize);
-		setRollIn(rollin);
+		fixed_stage = fixedStage;
+		decaying_rate = decayingRate;
+		rollin_probability = 1d;
+		random = new XORShiftRandom(9);
 	}
 	
-	public int getMaxEpochs()
+	public void updateProbability()
 	{
-		return max_epochs;
+		if (fixed_stage <= 0)
+			rollin_probability *= decaying_rate;
+		else
+			fixed_stage--;
 	}
 	
-	public void setMaxEpochs(int epochs)
+	public double getProbability()
 	{
-		max_epochs = epochs;
+		return rollin_probability;
 	}
 	
-	public int getBatchSize()
+	public boolean chooseGold()
 	{
-		return batch_size;
-	}
-
-	public void setBatchSize(int size)
-	{
-		batch_size = size;
-	}
-	
-	public RollIn getRollIn()
-	{
-		return rollin;
-	}
-	
-	public void setRollIn(RollIn rollin)
-	{
-		this.rollin = rollin;
-	}
-	
-	public boolean isSaveLast()
-	{
-		return save_last;
-	}
-	
-	public void setTrainLast(boolean last)
-	{
-		save_last = last;
+		return (rollin_probability > 0) && (rollin_probability >= 1 || rollin_probability > random.nextDouble());
 	}
 }

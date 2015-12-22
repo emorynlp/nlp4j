@@ -16,13 +16,16 @@
 package edu.emory.mathcs.nlp.bin;
 
 import java.io.ObjectInputStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.kohsuke.args4j.Option;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.component.pos.POSTrainer;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
@@ -41,6 +44,8 @@ public class NLPEval
 	public String model_file;
 	@Option(name="-i", usage="input path (required)", required=true, metaVar="<filepath>")
 	public String input_path;
+	@Option(name="-t", usage="train path (optional)", required=false, metaVar="<filepath>")
+	public String train_path;
 	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<string>")
 	public String input_ext = "*";
 	
@@ -50,11 +55,35 @@ public class NLPEval
 	public <S extends NLPState>NLPEval(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
-		
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
 		OnlineComponent<S> component = (OnlineComponent<S>)in.readObject(); in.close();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
+		
+		initTrainWords(train_path, component);
 		evaluate(FileUtils.getFileList(input_path, input_ext), component);
+	}
+	
+	public void initTrainWords(String trainPath, OnlineComponent<?> component) throws Exception
+	{
+		if (trainPath == null) return;
+		Set<String> set = new HashSet<>();
+		TSVReader reader = component.getConfiguration().getTSVReader();
+		NLPNode[] nodes;
+		
+		for (String inputFile : FileUtils.getFileList(trainPath, "*"))
+		{
+			reader.open(IOUtils.createFileInputStream(inputFile));
+			
+			while ((nodes = reader.next()) != null)
+			{
+				for (int i=1; i<nodes.length; i++)
+					set.add(nodes[i].getWordForm());
+			}
+			
+			reader.close();
+		}
+		
+		POSTrainer.train_words = set;
 	}
 	
 	public <S extends NLPState>void evaluate(List<String> inputFiles, OnlineComponent<S> component) throws Exception
@@ -62,7 +91,8 @@ public class NLPEval
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		long st, et, time = 0, tokens = 0, sentences = 0;
 		NLPNode[] nodes;
-		
+	
+		System.out.println("Features: "+component.getFeatureTemplate().getSparseFeatureSize());
 		component.setFlag(NLPFlag.EVALUATE);
 		
 		for (String inputFile : inputFiles)

@@ -16,7 +16,6 @@
 package edu.emory.mathcs.nlp.component.pos.feature;
 
 import edu.emory.mathcs.nlp.component.pos.POSFeatureTemplate;
-import edu.emory.mathcs.nlp.component.pos.POSState;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 
@@ -28,50 +27,36 @@ public class POSFeatureTemplate1 extends POSFeatureTemplate
 {
 	private static final long serialVersionUID = 7072878555553683666L;
 
-	public POSFeatureTemplate1(int dynamicFeatureSize)
+	public POSFeatureTemplate1(int dynamicFeatureSize, int embeddingWindowLeft, int embeddingWindowRight)
 	{
-		super(dynamicFeatureSize);
+		super(dynamicFeatureSize, embeddingWindowLeft, embeddingWindowRight);
 	}
 	
 	@Override
 	protected void init()
 	{
-		// 1-gram features 
+		// word forms 
 		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
 		add(new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
 
+		// word shapes
 		add(new FeatureItem<>(-1, Field.uncapitalized_word_shape, 2));
 		add(new FeatureItem<>( 0, Field.uncapitalized_word_shape, 2));
 		add(new FeatureItem<>( 1, Field.uncapitalized_word_shape, 2));
 
+		// part-of-speech tags
 		add(new FeatureItem<>(-3, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-2, Field.part_of_speech_tag));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
 		
-		add(new FeatureItem<>( 0, Field.ambiguity_class));
-		add(new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>( 2, Field.ambiguity_class));
-		add(new FeatureItem<>( 3, Field.ambiguity_class));
-
-		// 2-gram features
-		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form), new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
-
-		// 3-gram features
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class));
-		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 0, Field.ambiguity_class)   , new FeatureItem<>( 1, Field.ambiguity_class));
-		add(new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>( 1, Field.ambiguity_class)   , new FeatureItem<>( 2, Field.ambiguity_class));
+		// ambiguity classes
+		add(new FeatureItem<>( 0, Field.ambiguity_classes));
+		add(new FeatureItem<>( 1, Field.ambiguity_classes));
+		add(new FeatureItem<>( 2, Field.ambiguity_classes));
+		add(new FeatureItem<>( 3, Field.ambiguity_classes));
 
 		// affix features
 		add(new FeatureItem<>(0, Field.prefix, 2));
@@ -84,18 +69,12 @@ public class POSFeatureTemplate1 extends POSFeatureTemplate
 		// orthographic features
 		addSet(new FeatureItem<>(0, Field.orthographic_uncapitalized));
 		
-		// boolean features
-		addSet(new FeatureItem<>(0, Field.position));
+		// positional features
+		addSet(new FeatureItem<>(0, Field.positional));
 		
 		// word cluster features
 		addSet(new FeatureItem<>(-1, Field.word_clusters));
 		addSet(new FeatureItem<>( 0, Field.word_clusters));
 		addSet(new FeatureItem<>( 1, Field.word_clusters));
-	}
-	
-	@Override
-	public float[] createDenseVector(POSState state)
-	{
-		return null;
 	}
 }

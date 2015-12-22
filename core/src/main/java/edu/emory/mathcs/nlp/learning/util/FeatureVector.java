@@ -32,14 +32,12 @@ public class FeatureVector implements Serializable
 
 	public FeatureVector(SparseVector sparseVector, float[] denseVector)
 	{
-		setSparseVector(sparseVector);
-		setDenseVector (denseVector);
+		set(sparseVector, denseVector);
 	}
 	
 	public FeatureVector(float[] denseVector, float bias)
 	{
-		setDenseVector(denseVector);
-		setSparseVector(new SparseVector(bias));
+		set(new SparseVector(bias), denseVector);
 	}
 	
 	public FeatureVector(SparseVector vector)
@@ -72,6 +70,12 @@ public class FeatureVector implements Serializable
 	public void setDenseVector(float[] vector)
 	{
 		dense_vector = vector;
+	}
+	
+	public void set(SparseVector sparseVector, float[] denseVector)
+	{
+		setSparseVector(sparseVector);
+		setDenseVector (denseVector);
 	}
 	
 	public boolean hasSparseVector()

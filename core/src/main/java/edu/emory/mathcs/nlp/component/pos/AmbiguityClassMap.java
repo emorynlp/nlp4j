@@ -86,6 +86,11 @@ public class AmbiguityClassMap implements Serializable
 		return (ambi != null) ? Joiner.join(ambi, StringConst.UNDERSCORE) : null;
 	}
 	
+	public List<String> getList(NLPNode node)
+	{
+		return ambiguity_class.get(toKey(node));
+	}
+	
 	public int size()
 	{
 		return ambiguity_class.size();

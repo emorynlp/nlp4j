@@ -23,17 +23,23 @@ import java.io.Serializable;
 public class SparseItem implements Serializable, Comparable<SparseItem>
 {
 	private static final long serialVersionUID = -8933673050278448784L;
-	private int   index;
-	private float value;
+	private int     index;
+	private float   value;
+	private boolean core;
 	
 	public SparseItem(int index)
 	{
-		this(index, 1f);
+		this(index, 1f, true);
 	}
 	
 	public SparseItem(int index, float value)
 	{
-		set(index, value);
+		set(index, value, true);
+	}
+	
+	public SparseItem(int index, float value, boolean core)
+	{
+		set(index, value, core);
 	}
 	
 	public int getIndex()
@@ -56,15 +62,26 @@ public class SparseItem implements Serializable, Comparable<SparseItem>
 		this.value = value;
 	}
 	
-	public void set(int index, float value)
+	public boolean isCore()
+	{
+		return core;
+	}
+	
+	public void setCore(boolean core)
+	{
+		this.core = core;
+	}
+	
+	public void set(int index, float value, boolean core)
 	{
 		setIndex(index);
 		setValue(value);
+		setCore (core);
 	}
 	
 	public void set(SparseItem item)
 	{
-		set(item.index, item.value);
+		set(item.index, item.value, item.core);
 	}
 	
 	@Override

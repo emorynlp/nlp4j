@@ -20,11 +20,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
+
+import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
@@ -52,17 +53,16 @@ public abstract class OnlineTrainer<S extends NLPState>
 
 	protected abstract void collect(OnlineComponent<S> component, List<String> inputFiles);
 	protected abstract OnlineComponent<S> createComponent(InputStream config);
-	protected abstract FeatureTemplate<S> createFeatureTemplate(int id, int dynamicFeatureSize);
+	protected abstract FeatureTemplate<S> createFeatureTemplate(Element eFeatures);
 	
 //	=================================== COMPONENT ===================================
 	
 	@SuppressWarnings("unchecked")
-	public OnlineComponent<S> initComponent(InputStream configStream, InputStream previousModelStream, int featureID)
+	public OnlineComponent<S> initComponent(InputStream configStream, InputStream previousModelStream)
 	{
 		OnlineComponent<S> component = null;
-		OnlineOptimizer[] optimizers = null;
+		OnlineOptimizer optimizer = null;
 		NLPConfig configuration = null;
-		TrainInfo[] info;
 		
 		if (previousModelStream != null)
 		{
@@ -73,7 +73,7 @@ public abstract class OnlineTrainer<S extends NLPState>
 			{
 				component = (OnlineComponent<S>)oin.readObject();
 				configuration = component.setConfiguration(configStream);
-				optimizers = component.getOptimizers();
+				optimizer = component.getOptimizer();
 				oin.close();
 			}
 			catch (Exception e) {e.printStackTrace();}
@@ -82,76 +82,101 @@ public abstract class OnlineTrainer<S extends NLPState>
 		{
 			component = createComponent(configStream);
 			configuration = component.getConfiguration();
-			component.setFeatureTemplate(createFeatureTemplate(featureID, configuration.getDynamicFeatureSize()));
+			component.setFeatureTemplate(createFeatureTemplate(configuration.getFeatureElement()));
 		}
 	
-		component.setTrainInfos(info = configuration.getTrainInfos());
-		component.setOptimizers(configuration.getOptimizers(info));
-		
-		if (optimizers != null)
-		{
-			for (int i=0; i<optimizers.length; i++)
-				component.getOptimizers()[i].adapt(optimizers[i]);
-		}
+		component.setTrainInfo(configuration.getTrainInfo());
+		component.setOptimizer(configuration.getOnlineOptimizer());
+		if (optimizer != null) component.getOptimizer().adapt(optimizer);
 		
 		return component;
 	}
 	
 //	=================================== TRAIN ===================================
 	
-	public void train(List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile, int featureType)
+	public void train(List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile)
 	{
 		InputStream configStream = IOUtils.createFileInputStream(configurationFile);
 		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
-		OnlineComponent<S> component = initComponent(configStream, previousModelStream, featureType);
+		OnlineComponent<S> component = initComponent(configStream, previousModelStream);
 		
 		try
 		{
 			train(trainFiles, developFiles, modelFile, component);
+			if (modelFile != null) saveModel(component, IOUtils.createFileOutputStream(modelFile));
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void train(List<String> trainFiles, List<String> developFiles, String modelFile, OnlineComponent<S> component) throws Exception
 	{
+		FeatureTemplate<S> feature = component.getFeatureTemplate();
+		OnlineOptimizer optimizer = component.getOptimizer();
 		NLPConfig config = component.getConfiguration();
 		TSVReader reader = config.getTSVReader();
-		OnlineOptimizer[] optimizers = component.getOptimizers();
-		TrainInfo[] info = component.getTrainInfos();
+		TrainInfo info = component.getTrainInfo();
 		
-		int bestEpoch = -1, bestNZW = -1, maxEpochs = config.getMaxEpochs(), nzw, labels, features;
+		int bestEpoch = -1, bestNZW = -1, nzw, labels, features;
+		byte[] template = null, bestTemplate = null;
 		Random rand = new XORShiftRandom(9);
+		byte[] bestOptimizer = null;
 		double bestScore = 0, score;
+		double rollin;
+		String eval;
 		
 		collect(component, trainFiles);
 		
-		for (int i=0; i<optimizers.length; i++)
-			BinUtils.LOG.info(optimizers[i].toString()+", batch = "+info[i].getBatchSize()+", rollIn = "+info[i].getRollInProbability()+"\n");
+		BinUtils.LOG.info(optimizer.toString()+", batch = "+info.getBatchSize()+", dynamic = "+feature.getDynamicFeatureSize()+"\n");
 		
-		for (int epoch=0; epoch<=maxEpochs; epoch++)
+		for (int epoch=1; epoch<=info.getMaxEpochs(); epoch++)
 		{
+			// train
 			component.setFlag(NLPFlag.TRAIN);
 			Collections.shuffle(trainFiles, rand);
-			iterate(reader, trainFiles, component::process, optimizers, info);
-			score = evaluate(developFiles, component, reader);
-			for (TrainInfo in : info) in.updateRollInProbability();
-			nzw = Arrays.stream(optimizers).mapToInt(o -> o.getWeightVector().countNonZeroWeights()).sum();
-			labels = Arrays.stream(optimizers).mapToInt(OnlineOptimizer::getLabelSize).sum();
+			info.getRollIn().updateProbability();
+			iterate(reader, trainFiles, component::process, optimizer, info);
+
+			// info
+			labels = optimizer.getLabelSize();
 			features = component.getFeatureTemplate().getSparseFeatureSize();
-			BinUtils.LOG.info(String.format("%5d: %s, labels = %3d, features = %7d, nzw = %8d\n", epoch, component.getEval().toString(), labels, features, nzw));
+			nzw = optimizer.getWeightVector().countNonZeroWeights();
+			rollin = info.getRollIn().getProbability();
 			
-			if (bestScore < score || (bestScore == score && nzw < bestNZW))
+			if (info.isSaveLast())
+				BinUtils.LOG.info(String.format("%5d: labels = %3d, features = %7d, nzw = %8d, rollin = %4.2f\n", epoch, labels, features, nzw, rollin));
+			else
 			{
-				bestNZW   = nzw;
-				bestEpoch = epoch;
-				bestScore = score;
+				if (modelFile != null) template = IOUtils.toByteArray(component.getFeatureTemplate());
+				score = evaluate(developFiles, component, reader);
+				eval = component.getEval().toString();
+				BinUtils.LOG.info(String.format("%5d: %s, labels = %3d, features = %7d, nzw = %8d, rollin = %4.2f\n", epoch, eval, labels, features, nzw, rollin));
 				
-				if (modelFile != null)
-					saveModel(component, IOUtils.createFileOutputStream(modelFile));
+				if (bestScore < score || (bestScore == score && nzw < bestNZW))
+				{
+					bestNZW   = nzw;
+					bestEpoch = epoch;
+					bestScore = score;
+					 
+					if (modelFile != null)
+					{
+						bestOptimizer = IOUtils.toByteArray(optimizer);
+						bestTemplate  = template;
+					}
+				}				
 			}
 		}
-
-		BinUtils.LOG.info(String.format(" Best: %5.2f, epoch: %d, nzw: %d\n\n", bestScore, bestEpoch, bestNZW));
+		
+		if (!info.isSaveLast())
+		{
+			if (modelFile != null)
+			{
+				component.setOptimizer((OnlineOptimizer)IOUtils.fromByteArray(bestOptimizer));
+				component.setFeatureTemplate((FeatureTemplate<S>)IOUtils.fromByteArray(bestTemplate));
+			}
+			
+			BinUtils.LOG.info(String.format(" Best: %5.2f, epoch: %d, nzw: %d\n\n", bestScore, bestEpoch, bestNZW));			
+		}
 	}
 	
 	protected double evaluate(List<String> developFiles, OnlineComponent<?> component, TSVReader reader)
@@ -170,10 +195,10 @@ public abstract class OnlineTrainer<S extends NLPState>
 		iterate(reader, inputFiles, f, null, null);
 	}
 	
-	protected void iterate(TSVReader reader, List<String> inputFiles, Consumer<NLPNode[]> f, OnlineOptimizer[] optimizers, TrainInfo[] info)
+	protected void iterate(TSVReader reader, List<String> inputFiles, Consumer<NLPNode[]> f, OnlineOptimizer optimizer, TrainInfo info)
 	{
-		int[] counts = (optimizers != null) ? new int[optimizers.length] : null;
 		NLPNode[] nodes;
+		int count = 0;
 		
 		for (String inputFile : inputFiles)
 		{
@@ -185,28 +210,27 @@ public abstract class OnlineTrainer<S extends NLPState>
 				{
 					GlobalLexica.assignGlobalLexica(nodes);
 					f.accept(nodes);
-					update(optimizers, info, counts, false);
+					count = update(optimizer, info, count, false);
 				}
 			}
 			catch (IOException e) {e.printStackTrace();}
 			reader.close();
 		}
 		
-		update(optimizers, info, counts, true);
+		update(optimizer, info, count, true);
 	}
 	
-	protected void update(OnlineOptimizer[] optimizers, TrainInfo[] info, int[] counts, boolean last)
+	protected int update(OnlineOptimizer optimizer, TrainInfo info, int count, boolean last)
 	{
-		if (optimizers == null) return;
+		if (optimizer == null) return count;
 		
-		for (int i=0; i<counts.length; i++)
+		if ((last && count > 0) || ++count == info.getBatchSize())
 		{
-			if ((last && counts[i] > 0) || ++counts[i] == info[i].getBatchSize())
-			{
-				optimizers[i].updateMiniBatch();
-				counts[i] = 0;
-			}		
+			optimizer.updateMiniBatch();
+			count = 0;
 		}
+		
+		return count;
 	}
 	
 	public void saveModel(OnlineComponent<S> component, OutputStream stream)

@@ -37,7 +37,7 @@ public enum Field
 	lemma,
 	feats,
 	part_of_speech_tag,
-	ambiguity_class,
+	ambiguity_classes,
 	
 	// named entity recognition
 	named_entity_tag,
@@ -49,6 +49,7 @@ public enum Field
 	
 	// lexica
 	word_clusters,
+	word_embedding,
 	named_entity_gazetteers,
 	
 	// document
@@ -56,5 +57,5 @@ public enum Field
 	bag_of_words_count,
 	
 	// more
-	position;
+	positional;
 }

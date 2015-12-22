@@ -17,7 +17,6 @@ package edu.emory.mathcs.nlp.component.pos;
 
 import java.io.InputStream;
 
-import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 
 /**
@@ -25,22 +24,22 @@ import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
  */
 public class POSConfig extends NLPConfig
 {
-	private double ambiguity_class_threshold;
+//	private double ambiguity_class_threshold;
 	public POSConfig() {}
 	
 	public POSConfig(InputStream in)
 	{
 		super(in);
-		setAmbiguityClassThreshold(XMLUtils.getDoubleTextContentFromFirstElementByTagName(xml, "ambiguity_class_threshold"));
+//		setAmbiguityClassThreshold(XMLUtils.getDoubleTextContentFromFirstElementByTagName(xml, "ambiguity_class_threshold"));
 	}
 	
-	public double getAmbiguityClassThreshold()
-	{
-		return ambiguity_class_threshold;
-	}
-	
-	public void setAmbiguityClassThreshold(double threshold)
-	{
-		ambiguity_class_threshold = threshold;
-	}
+//	public double getAmbiguityClassThreshold()
+//	{
+//		return ambiguity_class_threshold;
+//	}
+//	
+//	public void setAmbiguityClassThreshold(double threshold)
+//	{
+//		ambiguity_class_threshold = threshold;
+//	}
 }

@@ -49,6 +49,38 @@ public class IOUtils
 {
 	private IOUtils() {}
 	
+	public static Object fromByteArray(byte[] array)
+	{
+		ByteArrayInputStream bin = new ByteArrayInputStream(array);
+		Object obj = null;
+		
+		try
+		{
+			ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(bin));
+			obj = in.readObject();
+			in.close();
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		return obj;
+	}
+	
+	
+	public static byte[] toByteArray(Object obj)
+	{
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		
+		try
+		{
+			ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(bos));
+			out.writeObject(obj);
+			out.close();
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return bos.toByteArray();
+	}
+	
 	public static Map<String,byte[]> toByteMap(ZipInputStream stream) throws IOException
 	{
 		Map<String,byte[]> map = new HashMap<>();

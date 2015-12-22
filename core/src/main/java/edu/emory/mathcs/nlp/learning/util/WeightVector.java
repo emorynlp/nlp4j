@@ -17,9 +17,9 @@ package edu.emory.mathcs.nlp.learning.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
 import edu.emory.mathcs.nlp.learning.initialization.WeightGenerator;
 
@@ -127,95 +127,30 @@ public class WeightVector implements Serializable
 		return sparse_weight_vector.countNonZeroWeights() + dense_weight_vector.countNonZeroWeights();
 	}
 	
-	public String getTopFeatureCombination(FeatureVector x, int gold, int yhat)
+	public List<int[]> getTopFeatureCombinations(FeatureVector x, int gold, int yhat)
 	{
-		SparseItem fst = new SparseItem(-1, 0);
-		SparseItem snd = new SparseItem(-1, 0);
+		List<SparsePrediction> pos = new ArrayList<>();
+		List<int[]> list = new ArrayList<>();
 		SparseVector v = x.getSparseVector();
+		SparsePrediction p;
 		float f;
 		
-		for (SparseItem p : v)
+		for (SparseItem t : v)
 		{
-			f = sparse_weight_vector.get(gold, p.getIndex()) - sparse_weight_vector.get(yhat, p.getIndex());
-			
-			if (f > fst.getValue())
-			{
-				snd.set(fst);
-				fst.set(p.getIndex(), f);
-			}
-			else if (f > snd.getValue())
-				snd.set(p.getIndex(), f);
+			if (!t.isCore()) continue;
+			f = sparse_weight_vector.get(gold, t.getIndex()) - sparse_weight_vector.get(yhat, t.getIndex());
+			p = new SparsePrediction(t.getIndex(), f);
+			if (f > 0)	pos.add(p);
 		}
 		
-		return (fst.getIndex() < 0 || snd.getIndex() < 0) ? null : FeatureTemplate.getFeatureCombination(fst.getIndex(), snd.getIndex());
-	}
-	
-//	public List<String> getTopFeatureCombinations(FeatureVector x, int gold, int yhat)
-//	{
-//		SparseItem max = new SparseItem(-1, 0);
-//		SparseVector v = x.getSparseVector();
-//		IntSet set = new IntOpenHashSet();
-//		float f;
-//		
-//		for (SparseItem p : v)
-//		{
-//			f = sparse_weight_vector.get(gold, p.getIndex()) - sparse_weight_vector.get(yhat, p.getIndex());
-//			
-//			if (f > 0)
-//			{
-//				if (f > max.getValue()) max.set(p.getIndex(), f);
-//				set.add(p.getIndex());
-//			}
-//		}
-//		
-//		List<String> list = new ArrayList<>();
-//		
-//		if (max.getIndex() > 0 && set.size() > 1)
-//		{
-//			set.remove(max.getIndex());
-//			for (int j : set) list.add(FeatureTemplate.getCombo(max.getIndex(), j));
-//		}
-//		
-//		return list;
-//	}
-	
-	public List<String> getTopFeatureCombinations(FeatureVector x, int gold, int yhat)
-	{
-		SparseItem fst = new SparseItem(-1, 0);
-		SparseItem snd = new SparseItem(-1, 0);
-		SparseItem trd = new SparseItem(-1, 0);
-		SparseVector v = x.getSparseVector();
-		float f;
+		Collections.sort(pos, Collections.reverseOrder());
 		
-		for (SparseItem p : v)
+		if (!pos.isEmpty())
 		{
-			f = sparse_weight_vector.get(gold, p.getIndex()) - sparse_weight_vector.get(yhat, p.getIndex());
+			p = pos.get(0);
 			
-			if (f > fst.getValue())
-			{
-				trd.set(snd);
-				snd.set(fst);
-				fst.set(p.getIndex(), f);
-			}
-			else if (f > snd.getValue())
-			{
-				trd.set(snd);
-				snd.set(p.getIndex(), f);
-			}
-			else if (f > trd.getValue())
-				trd.set(p.getIndex(), f);
-		}
-		
-		List<String> list = new ArrayList<>();
-		boolean b1 = fst.getIndex() >= 0;
-		boolean b2 = snd.getIndex() >= 0;
-		boolean b3 = trd.getIndex() >= 0;
-		
-		if (b1)
-		{
-			if (b2) list.add(FeatureTemplate.getFeatureCombination(fst.getIndex(), snd.getIndex()));
-			if (b3) list.add(FeatureTemplate.getFeatureCombination(fst.getIndex(), trd.getIndex()));
-//			if (b2 && b3) list.add(FeatureTemplate.getFeatureCombination(snd.getIndex(), trd.getIndex()));
+			for (int i=1; i<3 && i<pos.size(); i++)
+				list.add(new int[]{p.getLabel(), pos.get(i).getLabel()});
 		}
 		
 		return list;
@@ -227,9 +162,14 @@ public class WeightVector implements Serializable
 	public float[] scores(FeatureVector x)
 	{
 		float[] scores = new float[getLabelSize()];
+		scores(x, scores);
+		return scores;
+	}
+	
+	public void scores(FeatureVector x, float[] scores)
+	{
 		if (x.hasSparseVector())     sparse_weight_vector.addScores(x.getSparseVector(), scores);
 		if (x.hasDenseVector())      dense_weight_vector .addScores(x.getDenseVector() , scores);
-		if (hasActivationFunction()) activation_function.apply(scores);
-		return scores;
+		if (hasActivationFunction()) activation_function .apply(scores);
 	}
 }

@@ -63,6 +63,11 @@ public class Unigram<T> implements Serializable
 		return count_map.get(key);
 	}
 	
+	public int getTotalCount()
+	{
+		return total_count;
+	}
+	
 	public ObjectDoublePair<T> getBest()
 	{
 		 return (best != null) ? new ObjectDoublePair<T>(best, MathUtils.divide(get(best), total_count)) : null;

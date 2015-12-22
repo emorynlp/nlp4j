@@ -25,6 +25,7 @@ import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
+import edu.emory.mathcs.nlp.component.template.train.RollIn;
 import edu.emory.mathcs.nlp.component.template.train.TrainInfo;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
@@ -109,51 +110,33 @@ public abstract class NLPConfig implements ConfigXML
 		return map;
 	}
 	
-//	=================================== TRAIN INFO ===================================
+//	=================================== FEATURE ===================================
 	
-	public int getMaxEpochs()
+	public Element getFeatureElement()
 	{
-		return XMLUtils.getIntegerTextContentFromFirstElementByTagName(xml, MAX_EPOCHS);
+		return XMLUtils.getFirstElementByTagName(xml, FEATURES);
 	}
 	
-	public int getDynamicFeatureSize()
+//	=================================== OPTIMIZER ===================================
+	
+	public TrainInfo getTrainInfo()
 	{
-		return XMLUtils.getIntegerTextContentFromFirstElementByTagName(xml, DYNAMIC_FEATURE_SIZE);
-	}
+		Element eOptimizer = XMLUtils.getFirstElementByTagName(xml, OPTIMIZER);
+		Element eRollIn = XMLUtils.getFirstElementByTagName(eOptimizer, ROLL_IN);
 
-	public TrainInfo[] getTrainInfos()
-	{
-		NodeList list = xml.getElementsByTagName(OPTIMIZER);
-		TrainInfo[] info = new TrainInfo[list.getLength()];
+		int maxEpochs = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCHS);
+		int batchSize = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
+		int fixed = XMLUtils.getIntegerAttribute(eRollIn, "fixed");
+		double decaying = XMLUtils.getDoubleAttribute(eRollIn, "decaying");
+		RollIn rollin = new RollIn(fixed, decaying);
+		boolean saveLast = XMLUtils.getBooleanAttribute(eOptimizer, SAVE_LAST);
 		
-		for (int i=0; i<info.length; i++)
-			info[i] = getTrainInfo((Element)list.item(i));
-		
-		return info;
+		return new TrainInfo(maxEpochs, batchSize, rollin, saveLast);
 	}
 	
-	public TrainInfo getTrainInfo(Element eOptimizer)
+	public OnlineOptimizer getOnlineOptimizer()
 	{
-		int     batchSize = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
-		float   rollIn    = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, ROLL_IN);
-		return new TrainInfo(batchSize, rollIn);
-	}
-	
-//	=================================== OPTIMIZERS ===================================
-	
-	public OnlineOptimizer[] getOptimizers(TrainInfo[] infos)
-	{
-		OnlineOptimizer[] trainers = new OnlineOptimizer[infos.length];
-		
-		for (int i=0; i<trainers.length; i++)
-			trainers[i] = getOnlineOptimizer(i);
-		
-		return trainers;
-	}
-	
-	private OnlineOptimizer getOnlineOptimizer(int index)
-	{
-		Element eOptimizer = XMLUtils.getElementByTagName(xml, OPTIMIZER, index);
+		Element eOptimizer = XMLUtils.getFirstElementByTagName(xml, OPTIMIZER);
 		String  algorithm  = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, ALGORITHM);
 		OnlineOptimizer optimizer = null;
 		

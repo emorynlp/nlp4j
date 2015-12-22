@@ -69,8 +69,10 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	protected SortedArrayList<NLPNode> dependent_list;
 	
 	// lexica
-	protected Set<String> word_clusters;
-	protected Set<String> named_entity_gazetteers;
+	protected Set<String>  named_entity_gazetteers;
+	protected List<String> ambiguity_classes;
+	protected Set<String>  word_clusters;
+	protected float[]      word_embedding;
 	
 	public NLPNode() {}
 	
@@ -199,6 +201,16 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		return word_clusters;
 	}
 	
+	public List<String> getAmbiguityClasses()
+	{
+		return ambiguity_classes;
+	}
+	
+	public float[] getWordEmbedding()
+	{
+		return word_embedding;
+	}
+	
 	public Set<String> getNamedEntityGazetteers()
 	{
 		return named_entity_gazetteers;
@@ -249,17 +261,19 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		nament_tag = tag;
 	}
 	
+	public void setAmbiguityClasses(List<String> classes)
+	{
+		ambiguity_classes = classes;
+	}
+	
 	public void setWordClusters(Set<String> clusters)
 	{
 		word_clusters = clusters;
 	}
 	
-	public void addWordCluster(String cluster)
+	public void setWordEmbedding(float[] embedding)
 	{
-		if (word_clusters == null)
-			word_clusters = new HashSet<>();
-		
-		word_clusters.add(cluster);
+		word_embedding = embedding;
 	}
 	
 	public void setNamedEntityGazetteers(Set<String> gazetteers)
@@ -315,6 +329,11 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	public boolean hasWordClusters()
 	{
 		return word_clusters != null;
+	}
+	
+	public boolean hasWordEmbedding()
+	{
+		return word_embedding != null;
 	}
 	
 //	============================== DEPENDENCY GETTERS ==============================

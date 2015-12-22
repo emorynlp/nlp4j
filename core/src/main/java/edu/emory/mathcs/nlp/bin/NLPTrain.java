@@ -43,8 +43,6 @@ public class NLPTrain
 	protected String develop_path;
 	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
 	protected String develop_ext = "*";
-	@Option(name="-f", usage="feature template ID (default: 0)", required=false, metaVar="<integer>")
-	protected int feature_id = 0;
 	@Option(name="-m", usage="output model file (optional)", required=false, metaVar="<filename>")
 	protected String model_file = null;
 	@Option(name="-p", usage="previously trained model file (optional)", required=false, metaVar="<filename>")
@@ -71,7 +69,7 @@ public class NLPTrain
 		default   : throw new IllegalArgumentException("Unsupported mode: "+mode);
 		}
 		
-		trainer.train(trainFiles, developFiles, configuration_file, model_file, previous_model_file, feature_id);
+		trainer.train(trainFiles, developFiles, configuration_file, model_file, previous_model_file);
 	}
 	
 	static public void main(String[] args)
