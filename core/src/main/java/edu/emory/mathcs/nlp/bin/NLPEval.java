@@ -58,7 +58,6 @@ public class NLPEval
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
 		OnlineComponent<S> component = (OnlineComponent<S>)in.readObject(); in.close();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
-		
 		initTrainWords(train_path, component);
 		evaluate(FileUtils.getFileList(input_path, input_ext), component);
 	}

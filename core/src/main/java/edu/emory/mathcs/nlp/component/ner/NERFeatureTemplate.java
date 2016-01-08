@@ -15,40 +15,19 @@
  */
 package edu.emory.mathcs.nlp.component.ner;
 
+import org.w3c.dom.Element;
+
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class NERFeatureTemplate extends FeatureTemplate<NERState>
+public class NERFeatureTemplate extends FeatureTemplate<NERState>
 {
 	private static final long serialVersionUID = 2750773840515707758L;
 	
-	public NERFeatureTemplate(int dynamicFeatureSize, int embeddingWindowLeft, int embeddingWindowRight)
+	public NERFeatureTemplate(Element eFeatures)
 	{
-		super(dynamicFeatureSize, embeddingWindowLeft, embeddingWindowRight);
-	}
-	
-	@Override
-	public float[] createDenseVector(NERState state)
-	{
-		final int beginIndex = -4, endIndex = 4;
-		float[] w, v = null;
-		NLPNode node;
-		
-		for (int i=beginIndex,j=0; i<=endIndex; i++,j++)
-		{
-			node = state.getNode(state.getInputIndex(), i);
-			
-			if (node != null && node.hasWordEmbedding())
-			{
-				w = node.getWordEmbedding();
-				if (v == null) v = new float[w.length * (endIndex-beginIndex+1)];
-				System.arraycopy(w, 0, v, w.length*j, w.length);
-			}
-		}
-		
-		return v;
+		super(eFeatures);
 	}
 }

@@ -126,7 +126,6 @@ public abstract class OnlineTrainer<S extends NLPState>
 		String eval;
 		
 		collect(component, trainFiles);
-		
 		BinUtils.LOG.info(optimizer.toString()+", batch = "+info.getBatchSize()+", dynamic = "+feature.getDynamicFeatureSize()+"\n");
 		
 		for (int epoch=1; epoch<=info.getMaxEpochs(); epoch++)

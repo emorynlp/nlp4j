@@ -18,10 +18,8 @@ package edu.emory.mathcs.nlp.component.ner;
 import java.io.InputStream;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate0;
-import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate1;
-import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplate2;
-import edu.emory.mathcs.nlp.component.ner.feature.NERFeatureTemplateCoNLL03;
+import org.w3c.dom.Element;
+
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
@@ -41,15 +39,8 @@ public class NERTrainer extends OnlineTrainer<NERState>
 	protected void collect(OnlineComponent<NERState> component, List<String> inputFiles) {}
 	
 	@Override
-	protected FeatureTemplate<NERState> createFeatureTemplate(int id, int dynamicFeatureSize, int embeddingWindowLeft, int embeddingWindowRight)
+	protected FeatureTemplate<NERState> createFeatureTemplate(Element eFeatures)
 	{
-		switch (id)
-		{
-		case  0: return new NERFeatureTemplate0(dynamicFeatureSize, embeddingWindowLeft, embeddingWindowRight);
-		case  1: return new NERFeatureTemplate1(dynamicFeatureSize, embeddingWindowLeft, embeddingWindowRight);
-		case  2: return new NERFeatureTemplate2(dynamicFeatureSize, embeddingWindowLeft, embeddingWindowRight);
-		case  3: return new NERFeatureTemplateCoNLL03(dynamicFeatureSize, embeddingWindowLeft, embeddingWindowRight);
-		default: throw new IllegalArgumentException("Unknown feature template: "+id);
-		}
+		return new NERFeatureTemplate(eFeatures);
 	}
 }

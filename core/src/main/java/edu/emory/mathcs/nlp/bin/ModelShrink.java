@@ -16,7 +16,6 @@
 package edu.emory.mathcs.nlp.bin;
 
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.kohsuke.args4j.Option;
@@ -32,8 +31,6 @@ import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
-import edu.emory.mathcs.nlp.learning.zzz.StringModel;
-import edu.emory.mathcs.nlp.learning.zzz.StringModelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -69,30 +66,26 @@ public class ModelShrink
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
 		OnlineOptimizer optimizer = component.getOptimizer();
-		
-		byte[] prevModel = model.toByteArray();
 		double currScore;
 		
-		evaluate(inputFiles, component, model, 0f);
+		evaluate(inputFiles, component, 0f);
 		
 		for (float f=start; ; f+=increment)
 		{
-			model.shrink(f);
-			currScore = evaluate(inputFiles, component, model, f);
+			component.getFeatureTemplate().reduce(optimizer.getWeightVector(), f);
+			currScore = evaluate(inputFiles, component, f);
 			
-			if (lower_bound < currScore)
-				prevModel = model.toByteArray();
-			else
+			if (lower_bound >= currScore)
 				break;
 		}
 		
-		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
-		model.fromByteArray(prevModel);
-		fout.writeObject(component);
-		fout.close();
+//		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
+//		model.fromByteArray(prevModel);
+//		fout.writeObject(component);
+//		fout.close();
 	}
 	
-	public <S extends NLPState>double evaluate(List<String> inputFiles, OnlineComponent<S> component, StringModel model, float rate) throws Exception
+	public <S extends NLPState>double evaluate(List<String> inputFiles, OnlineComponent<S> component, float rate) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		NLPNode[] nodes;
@@ -114,7 +107,7 @@ public class ModelShrink
 			reader.close();
 		}
 		
-		System.out.println(String.format("%5.4f: %s -> %d", rate, eval.toString(), model.getFeatureSize()));
+		System.out.println(String.format("%5.4f: %s -> %d", rate, eval.toString(), component.getFeatureTemplate().getSparseFeatureSize()));
 		return eval.score();
 	}
 	

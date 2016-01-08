@@ -204,7 +204,7 @@ public abstract class OnlineOptimizer implements Serializable
 		if (instance.hasStringLabel())
 		{
 			int label = addLabel(instance.getStringLabel());
-			instance.setGoldLabel(label);	
+			instance.setGoldLabel(label);
 		}
 		
 		// add features
@@ -216,7 +216,7 @@ public abstract class OnlineOptimizer implements Serializable
 		if (x.hasSparseVector())
 		{
 			x.getSparseVector().addBias(bias);
-			x.getSparseVector().sort();
+//			x.getSparseVector().sort();
 		}
 		else
 			x.setSparseVector(new SparseVector(bias));

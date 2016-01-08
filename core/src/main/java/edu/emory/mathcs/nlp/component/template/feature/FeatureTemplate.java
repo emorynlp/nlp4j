@@ -44,14 +44,18 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.node.Orthographic;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
+import edu.emory.mathcs.nlp.learning.util.ColumnMajorVector;
 import edu.emory.mathcs.nlp.learning.util.FeatureMap;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
+import edu.emory.mathcs.nlp.learning.util.MajorVector;
 import edu.emory.mathcs.nlp.learning.util.SparseItem;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 import edu.emory.mathcs.nlp.learning.util.StringPrediction;
+import edu.emory.mathcs.nlp.learning.util.WeightVector;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.openhft.hashing.LongHashFunction;
 
 /**
@@ -68,7 +72,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	// dynamic feature induction
 	protected LongHashFunction dynamic_feature_hash;
 	protected final int        dynamic_feature_size;
-	protected boolean[]        dynamic_feature_switch;
+	public boolean[]        dynamic_feature_switch;
 	protected Random           dynamic_feature_gap;
 
 	// dense features
@@ -561,5 +565,96 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		}
 		
 		return v;
+	}
+	
+//	============================== REDUCTION ==============================
+	
+	public int reduce(WeightVector weights, float threshold)
+	{
+		final int L = weights.getLabelSize();
+		final int F = getSparseFeatureSize();
+		
+		MajorVector oldSparse = weights.getSparseWeightVector();
+		int[] indexMap = new int[F];
+		int i, j, k, l, count = 1;	// bias
+		float max, min;
+		
+		for (i=1; i<F; i++)
+		{
+			k = i * L;
+			max = oldSparse.get(k);
+			min = oldSparse.get(k);
+			
+			for (j=1; j<L; j++)
+			{
+				max = Math.max(max, oldSparse.get(k+j));
+				min = Math.min(min, oldSparse.get(k+j));
+			}
+			
+			if (Math.abs(max - min) >= threshold)
+				indexMap[i] = count++;
+		}
+		
+		MajorVector newSparse = new ColumnMajorVector();
+		ObjectIterator<Entry<String>> it;
+		int oldIndex, newIndex;
+		Entry<String> e;
+		
+		newSparse.expand(L, count);
+		
+		// bias weights
+		for (j=0; j<L; j++)
+			newSparse.set(j, oldSparse.get(j));
+		
+		for (Object2IntMap<String> map : feature_map.getIndexMaps())
+		{
+			it = map.object2IntEntrySet().iterator();
+			
+			while (it.hasNext())
+			{
+				e = it.next();
+				oldIndex = e.getValue();
+				newIndex = indexMap[oldIndex];
+				
+				if (newIndex > 0)
+				{
+					e.setValue(newIndex);
+					k = oldIndex * L;
+					l = newIndex * L;
+					
+					for (j=0; j<L; j++)
+						newSparse.set(l+j, oldSparse.get(k+j));
+				}
+				else
+					it.remove();
+			}
+		}
+		
+		weights.setSparseWeightVector(newSparse);
+		feature_map.setSize(count);
+		
+		if (useDynamicFeatureInduction())
+		{
+			boolean[] b = new boolean[dynamic_feature_size];
+			int im;
+			
+			for (i=0; i<F; i++)
+			{
+				if (i%10000 == 0) System.out.println(i);
+				im = indexMap[i];
+				if (im <= 0) continue;
+				
+				for (j=i+1; j<F; j++)
+				{
+					if (indexMap[j] > 0 && dynamic_feature_switch[getDynamicFeatureIndex(i,j)])
+						b[getDynamicFeatureIndex(indexMap[i],indexMap[j])] = true;
+				}
+			}	
+			
+			dynamic_feature_switch = b;
+		}
+
+		System.out.println("\n"+count);
+		return count;
 	}
 }

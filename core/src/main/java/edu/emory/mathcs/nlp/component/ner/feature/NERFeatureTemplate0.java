@@ -77,9 +77,9 @@ public class NERFeatureTemplate0 extends NERFeatureTemplate
 		// affix features
 		add(new FeatureItem<>(-1, Field.suffix, 3));
 		add(new FeatureItem<>( 0, Field.prefix, 1));
+		add(new FeatureItem<>( 1, Field.prefix, 3));
 		add(new FeatureItem<>( 0, Field.suffix, 1));
 		add(new FeatureItem<>( 0, Field.suffix, 3));
-		add(new FeatureItem<>( 1, Field.prefix, 3));
 		
 		// orthographic features
 		addSet(new FeatureItem<>(0, Field.orthographic));

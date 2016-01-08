@@ -137,7 +137,7 @@ public class WeightVector implements Serializable
 		
 		for (SparseItem t : v)
 		{
-			if (!t.isCore()) continue;
+			if (!t.isLowDimension()) continue;
 			f = sparse_weight_vector.get(gold, t.getIndex()) - sparse_weight_vector.get(yhat, t.getIndex());
 			p = new SparsePrediction(t.getIndex(), f);
 			if (f > 0)	pos.add(p);

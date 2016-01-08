@@ -30,6 +30,7 @@ public class TrainInfo
 		setMaxEpochs(maxEpochs);
 		setBatchSize(batchSize);
 		setRollIn(rollin);
+		setSaveLast(saveLast);
 	}
 	
 	public int getMaxEpochs()
@@ -67,7 +68,7 @@ public class TrainInfo
 		return save_last;
 	}
 	
-	public void setTrainLast(boolean last)
+	public void setSaveLast(boolean last)
 	{
 		save_last = last;
 	}

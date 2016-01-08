@@ -25,7 +25,7 @@ public class SparseItem implements Serializable, Comparable<SparseItem>
 	private static final long serialVersionUID = -8933673050278448784L;
 	private int     index;
 	private float   value;
-	private boolean core;
+	private boolean low;
 	
 	public SparseItem(int index)
 	{
@@ -37,9 +37,9 @@ public class SparseItem implements Serializable, Comparable<SparseItem>
 		set(index, value, true);
 	}
 	
-	public SparseItem(int index, float value, boolean core)
+	public SparseItem(int index, float value, boolean low)
 	{
-		set(index, value, core);
+		set(index, value, low);
 	}
 	
 	public int getIndex()
@@ -62,26 +62,26 @@ public class SparseItem implements Serializable, Comparable<SparseItem>
 		this.value = value;
 	}
 	
-	public boolean isCore()
+	public boolean isLowDimension()
 	{
-		return core;
+		return low;
 	}
 	
-	public void setCore(boolean core)
+	public void setLowDemension(boolean low)
 	{
-		this.core = core;
+		this.low = low;
 	}
 	
 	public void set(int index, float value, boolean core)
 	{
 		setIndex(index);
 		setValue(value);
-		setCore (core);
+		setLowDemension (core);
 	}
 	
 	public void set(SparseItem item)
 	{
-		set(item.index, item.value, item.core);
+		set(item.index, item.value, item.low);
 	}
 	
 	@Override
