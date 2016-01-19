@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.template.reader;
+package edu.emory.mathcs.nlp.component.template.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,6 +43,7 @@ public class TSVReader
 	public int feats  = -1;
 	public int dhead  = -1;
 	public int deprel = -1;
+	public int sheads = -1;
 	
 	public void open(InputStream in)
 	{
@@ -93,7 +94,13 @@ public class TSVReader
 		if (dhead >= 0)
 		{
 			for (i=1; i<=size; i++)
-				initHead(i, nodes, values.get(i-1));
+				initDependencyHead(i, nodes, values.get(i-1));
+			
+			if (sheads >= 0)
+			{
+				for (i=1; i<=size; i++)
+					initSemanticHeads(i, nodes, values.get(i-1)[sheads]);
+			}
 		}
 		
 		return nodes;
@@ -109,9 +116,23 @@ public class TSVReader
 		return new NLPNode(id, f, l, p, n, t, null, null);
 	}
 	
-	private void initHead(int id, NLPNode[] nodes, String[] values)
+	private void initDependencyHead(int id, NLPNode[] nodes, String[] values)
 	{
 		int headID = Integer.parseInt(values[dhead]);
 		nodes[id].setDependencyHead(nodes[headID], values[deprel]);
+	}
+	
+	private void initSemanticHeads(int id, NLPNode[] nodes, String value)
+	{
+		NLPNode node = nodes[id];
+		int headID;
+		String[] t;
+		
+		for (String arg : Splitter.splitSemiColons(value))
+		{
+			t = Splitter.splitColons(arg);
+			headID = Integer.parseInt(t[0]);
+			node.addSemanticHead(nodes[headID], t[1]);
+		}
 	}
 }

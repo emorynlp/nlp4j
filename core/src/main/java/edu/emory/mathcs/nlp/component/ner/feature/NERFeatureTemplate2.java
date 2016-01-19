@@ -36,15 +36,15 @@ public class NERFeatureTemplate2 extends NERFeatureTemplate
 	protected void init()
 	{
 		// 1-gram features
-		add(new FeatureItem<>(-1, Field.simplified_word_form));
-		add(new FeatureItem<>( 0, Field.simplified_word_form));
-		add(new FeatureItem<>( 1, Field.simplified_word_form));
+		add(new FeatureItem<>(-1, Field.word_form_simplified));
+		add(new FeatureItem<>( 0, Field.word_form_simplified));
+		add(new FeatureItem<>( 1, Field.word_form_simplified));
 		
-		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>(-2, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>(-1, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 0, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 1, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 2, Field.word_form_simplified_lowercase));
 
 		add(new FeatureItem<>(-1, Field.word_shape, 2));
 		add(new FeatureItem<>( 0, Field.word_shape, 2));
@@ -84,8 +84,8 @@ public class NERFeatureTemplate2 extends NERFeatureTemplate
 		add(new FeatureItem<>( 0, Field.suffix, 3));
 		add(new FeatureItem<>( 1, Field.prefix, 3));
 
-		add(new FeatureItem<>( 0, Field.suffix, 3), new FeatureItem<>(0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.suffix, 3), new FeatureItem<>(0, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>( 0, Field.suffix, 3), new FeatureItem<>(0, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>(-1, Field.suffix, 3), new FeatureItem<>(0, Field.word_form_simplified_lowercase));
 
 		// word cluster features
 		addSet(new FeatureItem<>(-2, Field.word_clusters));

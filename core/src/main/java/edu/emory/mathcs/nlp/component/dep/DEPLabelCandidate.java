@@ -18,74 +18,85 @@ package edu.emory.mathcs.nlp.component.dep;
 import java.io.Serializable;
 
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.util.LabelCandidate;
+import edu.emory.mathcs.nlp.learning.util.MLUtils;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPLabelCandidate implements Serializable, DEPTransition
+public class DEPLabelCandidate implements Serializable
 {
 	private static final long serialVersionUID = 5579863219050051216L;
-	private LabelCandidate X_SHIFT;
-	private LabelCandidate NO_X;
-	private LabelCandidate NO_SHIFT_OR_PASS;
-	private LabelCandidate NOT_NO_REDUCE;
-	private LabelCandidate LEFT_ARC;
-	private LabelCandidate RIGHT_ARC;
+	
+	private IntSet X_SHIFT;
+	private IntSet NO_X;
+	private IntSet NO_SHIFT_OR_PASS;
+	private IntSet NOT_NO_REDUCE;
+	private IntSet LEFT_ARC;
+	private IntSet RIGHT_ARC;
 	
 	public DEPLabelCandidate()
 	{
-		X_SHIFT          = new LabelCandidate();
-		NO_X             = new LabelCandidate();
-		NO_SHIFT_OR_PASS = new LabelCandidate();
-		NOT_NO_REDUCE    = new LabelCandidate();
-		LEFT_ARC         = new LabelCandidate();
-		RIGHT_ARC        = new LabelCandidate();
+		X_SHIFT          = new IntOpenHashSet();
+		NO_X             = new IntOpenHashSet();
+		NO_SHIFT_OR_PASS = new IntOpenHashSet();
+		NOT_NO_REDUCE    = new IntOpenHashSet();
+		LEFT_ARC         = new IntOpenHashSet();
+		RIGHT_ARC        = new IntOpenHashSet();
 	}
 
-	public void add(DEPLabel label, int index)
+	public void add(String label, int index)
 	{
-		if (label.isList(LIST_SHIFT))
+		DEPLabel lb = new DEPLabel(label);
+		
+		if (lb.isList(DEPState.LIST_SHIFT))
 			X_SHIFT.add(index);
 		
-		if (label.isArc(ARC_NO))
+		if (lb.isArc(DEPState.ARC_LEFT))
+			LEFT_ARC.add(index);
+		else if (lb.isArc(DEPState.ARC_RIGHT))
+			RIGHT_ARC.add(index);
+		else
 		{
 			NO_X.add(index);
-			if (!label.isList(LIST_REDUCE)) NO_SHIFT_OR_PASS.add(index);
+			if (!lb.isList(DEPState.LIST_REDUCE)) NO_SHIFT_OR_PASS.add(index);
 		}
-		else if (label.isArc(ARC_LEFT))
-			LEFT_ARC.add(index);
-		else if (label.isArc(ARC_RIGHT))
-			RIGHT_ARC.add(index);
 		
-		if (!(label.isArc(ARC_NO) && label.isList(LIST_REDUCE)))
+		if (!(lb.isArc(DEPState.ARC_NO) && lb.isList(DEPState.LIST_REDUCE)))
 			NOT_NO_REDUCE.add(index);
 	}
 	
-	public int[] get(NLPNode stack, NLPNode input)
+	public IntSet get(NLPNode stack, NLPNode input)
 	{
 		if (stack.getID() == 0)
-			return X_SHIFT.get();
+			return X_SHIFT;
 		
 		if (stack.isDescendantOf(input))
-			return NO_X.get();
+			return NO_X;
 		
 		if (input.isDescendantOf(stack))
-			return stack.hasDependencyHead() ? NO_X.get() : NO_SHIFT_OR_PASS.get();
+			return stack.hasDependencyHead() ? NO_X : NO_SHIFT_OR_PASS;
 		
 		if (!stack.hasDependencyHead())
-			return NOT_NO_REDUCE.get();
+			return NOT_NO_REDUCE;
 
 		return null;
 	}
 	
-	public int[] getLeftArcs()
+	public int getLabelIndex(NLPNode stack, NLPNode input, float[] scores)
 	{
-		return LEFT_ARC.get();
+		IntSet candidates = get(stack, input);
+		return MLUtils.argmax(scores, candidates);
 	}
 	
-	public int[] getRightArcs()
+	public IntSet getLeftArcs()
 	{
-		return RIGHT_ARC.get();
+		return LEFT_ARC;
+	}
+	
+	public IntSet getRightArcs()
+	{
+		return RIGHT_ARC;
 	}
 }

@@ -36,20 +36,20 @@ public class NERFeatureTemplateCoNLL03 extends NERFeatureTemplate
 	protected void init()
 	{
 		// 1-gram features
-		add(new FeatureItem<>( 0, Field.simplified_word_form));
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>( 0, Field.word_form_simplified));
+		add(new FeatureItem<>( 0, Field.word_form_simplified_lowercase));
 		add(new FeatureItem<>( 0, Field.word_shape, 2));
 		add(new FeatureItem<>( 0, Field.lemma));
 		add(new FeatureItem<>( 0, Field.part_of_speech_tag));
 		add(new FeatureItem<>( 0, Field.named_entity_gazetteers));
 		
-		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>(-2, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>(-1, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 1, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 2, Field.word_form_simplified_lowercase));
 		
-		add(new FeatureItem<>(-1, Field.simplified_word_form));
-		add(new FeatureItem<>( 1, Field.simplified_word_form));
+		add(new FeatureItem<>(-1, Field.word_form_simplified));
+		add(new FeatureItem<>( 1, Field.word_form_simplified));
 		add(new FeatureItem<>(-1, Field.word_shape, 2));
 		add(new FeatureItem<>( 1, Field.word_shape, 2));
 		add(new FeatureItem<>(-1, Field.part_of_speech_tag));
@@ -60,12 +60,12 @@ public class NERFeatureTemplateCoNLL03 extends NERFeatureTemplate
 		add(new FeatureItem<>(-2, Field.named_entity_tag));
 
 		// 2-gram features
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>(-1, Field.word_form_simplified_lowercase), new FeatureItem<>( 0, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 0, Field.word_form_simplified_lowercase), new FeatureItem<>( 1, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 1, Field.word_form_simplified_lowercase), new FeatureItem<>( 2, Field.word_form_simplified_lowercase));
 		
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.part_of_speech_tag));
-		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>( 0, Field.word_form_simplified_lowercase), new FeatureItem<>( 0, Field.part_of_speech_tag));
+		add(new FeatureItem<>( 1, Field.word_form_simplified_lowercase), new FeatureItem<>( 0, Field.part_of_speech_tag));
 		
 		add(new FeatureItem<>(-2, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.part_of_speech_tag));
 		add(new FeatureItem<>( 1, Field.part_of_speech_tag), new FeatureItem<>( 2, Field.part_of_speech_tag));
@@ -74,16 +74,16 @@ public class NERFeatureTemplateCoNLL03 extends NERFeatureTemplate
 		add(new FeatureItem<>(-3, Field.named_entity_tag), new FeatureItem<>(-2, Field.named_entity_tag), new FeatureItem<>(1, Field.named_entity_gazetteers));
 		add(new FeatureItem<>( 1, Field.named_entity_gazetteers), new FeatureItem<>( 2, Field.named_entity_gazetteers), new FeatureItem<>( 3, Field.named_entity_gazetteers));
 		
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.named_entity_tag));
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form), new FeatureItem<>( 0, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.named_entity_tag));
+		add(new FeatureItem<>(-1, Field.word_form_simplified_lowercase), new FeatureItem<>(-1, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.named_entity_tag));
+		add(new FeatureItem<>( 0, Field.word_form_simplified_lowercase), new FeatureItem<>( 0, Field.part_of_speech_tag), new FeatureItem<>(-1, Field.named_entity_tag));
 
 		// affix features
 		add(new FeatureItem<>( 0, Field.suffix, 1));
 		add(new FeatureItem<>( 0, Field.suffix, 3));
 		add(new FeatureItem<>( 1, Field.prefix, 3));
 
-		add(new FeatureItem<>( 0, Field.suffix, 3), new FeatureItem<>(0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.suffix, 3), new FeatureItem<>(0, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>( 0, Field.suffix, 3), new FeatureItem<>(0, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>(-1, Field.suffix, 3), new FeatureItem<>(0, Field.word_form_simplified_lowercase));
 
 		addSet(new FeatureItem<>(0, Field.orthographic));
 		addSet(new FeatureItem<>(1, Field.orthographic));

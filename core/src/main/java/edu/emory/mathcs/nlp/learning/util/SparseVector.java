@@ -73,12 +73,7 @@ public class SparseVector implements Serializable, Iterable<SparseItem>
 	
 	public void add(int index, float value)
 	{
-		add(new SparseItem(index, value, true));
-	}
-	
-	public void add(int index, float value, boolean core)
-	{
-		add(new SparseItem(index, value, core));
+		add(new SparseItem(index, value));
 	}
 	
 	public void add(SparseItem item)

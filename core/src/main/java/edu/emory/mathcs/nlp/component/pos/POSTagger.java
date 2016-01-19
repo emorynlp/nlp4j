@@ -18,10 +18,10 @@ package edu.emory.mathcs.nlp.component.pos;
 import java.io.InputStream;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.learning.util.MLUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -29,7 +29,6 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 public class POSTagger extends OnlineComponent<POSState>
 {
 	private static final long serialVersionUID = -7926217238116337203L;
-	private AmbiguityClassMap ambiguity_class_map;
 	
 	public POSTagger() {}
 	
@@ -38,27 +37,7 @@ public class POSTagger extends OnlineComponent<POSState>
 		super(configuration);
 	}
 	
-//	============================== LEXICONS ==============================
-	
-	public AmbiguityClassMap getAmbiguityClassMap()
-	{
-		return ambiguity_class_map;
-	}
-	
-	public void setAmbiguityClassMap(AmbiguityClassMap map)
-	{
-		ambiguity_class_map = map;
-	}
-	
 //	============================== ABSTRACT ==============================
-	
-	@Override
-	public NLPConfig setConfiguration(InputStream in)
-	{
-		NLPConfig config = (NLPConfig)new POSConfig(in);
-		setConfiguration(config);
-		return config;
-	}
 	
 	@Override
 	public Eval createEvaluator()
@@ -73,12 +52,14 @@ public class POSTagger extends OnlineComponent<POSState>
 	}
 	
 	@Override
-	protected void postProcess(POSState state) {}
+	protected int getLabelIndex(POSState state, float[] scores)
+	{
+		return MLUtils.argmax(scores);
+	}
 	
-//	public String[] getAmbiguityClasses(NLPNode[] nodes)
-//	{
-//		String[] ambi = new String[nodes.length];
-//		for (int i=1; i<nodes.length; i++) ambi[i] = ambiguity_class_map.get(nodes[i]);
-//		return ambi;
-//	}
+	@Override
+	protected void putLabel(String label, int index) {}
+	
+	@Override
+	protected void postProcess(POSState state) {}
 }

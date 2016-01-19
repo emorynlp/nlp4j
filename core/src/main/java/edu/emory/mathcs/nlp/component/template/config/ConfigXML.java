@@ -21,58 +21,76 @@ package edu.emory.mathcs.nlp.component.template.config;
 public interface ConfigXML
 {
 	String LANGUAGE		= "language";
-	String FEATURES		= "features";
-	String MODEL		= "model";
+	String MODELS		= "models";
 	
 //	========================== TSV READER ==========================
 
-	String TSV		= "tsv";
-	String COLUMN	= "column";
-	String FIELD	= "field";
-	String INDEX	= "index";
+	String TSV			= "tsv";
+	String COLUMN		= "column";
+	String FIELD		= "field";
+	String INDEX		= "index";
 
 	String FIELD_ID		= "id";
 	String FIELD_FORM	= "form";
 	String FIELD_LEMMA	= "lemma";
 	String FIELD_POS 	= "pos";
+	String FIELD_NAMENT	= "nament";
 	String FIELD_FEATS 	= "feats";
 	String FIELD_DHEAD	= "dhead";
 	String FIELD_DEPREL	= "deprel";
 	String FIELD_SHEADS	= "sheads";
-	String FIELD_NAMENT	= "nament";
 	String FIELD_COREF	= "coref";
-	String FIELD_XHEADS	= "xheads";
 	
-//	========================== TRAINER ==========================
+//	========================== LEXICA ==========================
+	
+	String LEXICA					= "lexica";
+	String AMBIGUITY_CLASSES		= "ambiguity_classes";
+	String WORD_CLUSTERS			= "word_clusters";
+	String WORD_EMBEDDINGS			= "word_embeddings";
+	String NAMED_ENTITY_GAZETTEERS	= "named_entity_gazetteers";
+	String STOP_WORDS 				= "stop_words";
+	
+//	========================== OPTIMIZER ==========================
 
-	String OPTIMIZER	= "optimizer";
-	String ALGORITHM	= "algorithm";
-	String MAX_EPOCHS	= "max_epochs";
-	String SAVE_LAST	= "save_last";
-	String BATCH_SIZE	= "batch_size";
-	String ROLL_IN		= "roll_in";
-	String LABEL_SIZE	= "label_size";
-	String FEATURE_SIZE	= "feature_size";
-	String FEATURE_HASH	= "feature_hash";
-	String BIAS			= "bias";
-	String HIDDEN		= "hidden";
-	String ACTIVATION	= "activation";
-	String SOFTMAX		= "softmax";
-	String SIGMOID		= "sigmoid";
-	String RANDOM_BOUND	= "random_bound";
-	
-	String L1_REGULARIZATION	= "l1_regularization";
+	String OPTIMIZER			= "optimizer";
+	String MAX_EPOCH			= "max_epoch";
+	String BATCH_SIZE			= "batch_size";
+	String FEATURE_CUTOFF		= "feature_cutoff";
+	String SAVE_LAST			= "save_last";
 	String LEARNING_RATE		= "learning_rate";
+	String BIAS					= "bias";
+	String L1_REGULARIZATION	= "l1_regularization";
+	
 	String DECAYING_RATE		= "decaying_rate";
 	String THREAD_SIZE			= "thread_size";
 	
-//	========================== ALGORITHMS ==========================
+//	========================== LOCALLY OPTIMAL LEARNING to SEARCH ==========================
 	
+	String LOLS		= "lols";
+	String FIXED	= "fixed";
+	String DECAYING	= "decaying";
+	
+//	========================== ALGORITHMS ==========================
+
+	String ALGORITHM			= "algorithm";
 	String PERCEPTRON			= "perceptron";
 	String SOFTMAX_REGRESSION	= "softmax-regression";
 	String ADAGRAD				= "adagrad";
 	String ADAGRAD_MINI_BATCH	= "adagrad-mini-batch";
 	String ADAGRAD_REGRESSION	= "adagrad-regression";
 	String ADADELTA_MINI_BATCH	= "adadelta-mini-batch";
-	String FFNN_SOFTMAX			= "ffnn-softmax";
+
+//	========================== NEURAL NETWORKS ==========================
+	
+	String FFNN_SOFTMAX	= "ffnn-softmax";
+
+	String HIDDEN		= "hidden";
+	String ACTIVATION	= "activation";
+	String SOFTMAX		= "softmax";
+	String SIGMOID		= "sigmoid";
+	String RANDOM_BOUND	= "random_bound";
+
+//	========================== FEATURE TEMPLATE ==========================
+	
+	String FEATURE_TEMPLATE = "feature_template";	
 }

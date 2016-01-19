@@ -23,13 +23,13 @@ public enum Field
 {
 	// form features
 	word_form,
-	simplified_word_form,
-	uncapitalized_simplified_word_form,
-	undigitalized_word_form,
+	word_form_undigitalized,
+	word_form_simplified,
+	word_form_simplified_lowercase,
 	word_shape,
-	uncapitalized_word_shape,
-	orthographic,	// set
-	orthographic_uncapitalized,	// set
+	word_shape_lowercase,
+	orthographic,
+	orthographic_lowercase,
 	prefix,
 	suffix,
 

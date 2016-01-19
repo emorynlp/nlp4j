@@ -56,6 +56,6 @@ public class Perceptron extends StochasticGradientDescent
 	@Override
 	public String toString()
 	{
-		return toString("Perceptron");
+		return "Perceptron";
 	}
 }

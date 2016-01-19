@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.StringJoiner;
 
 import edu.emory.mathcs.nlp.common.util.MathUtils;
+import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.Instance;
@@ -58,7 +59,7 @@ public abstract class OnlineOptimizer implements Serializable
 	
 	public OnlineOptimizer(WeightVector vector, float learningRate, float bias, Regularizer l1)
 	{
-		label_map   = new LabelMap();
+		label_map = new LabelMap();
 		setWeightVector(vector);
 		setBias(bias);
 
@@ -67,11 +68,10 @@ public abstract class OnlineOptimizer implements Serializable
 		steps = 1;
 	}
 	
-	public void adapt(OnlineOptimizer optimizer)
+	public void adapt(HyperParameter hp)
 	{
-		weight_vector = optimizer.weight_vector;
-		label_map     = optimizer.label_map;
-		bias          = optimizer.bias;
+		setL1Regularizer(hp.getL1Regularizer());
+		setLearningRate(hp.getLearningRate());
 	}
 	
 //	=================================== SERIALIZATION ===================================
@@ -130,6 +130,7 @@ public abstract class OnlineOptimizer implements Serializable
 	public void setL1Regularizer(Regularizer l1)
 	{
 		l1_regularizer = l1;
+		if (isL1Regularization()) l1_regularizer.setWeightVector(weight_vector);
 	}
 	
 	public boolean isL1Regularization()
@@ -186,7 +187,7 @@ public abstract class OnlineOptimizer implements Serializable
 	{
 		if (augment) augment(instance);
 		expand(instance.getFeatureVector());
-		if (instance.hasScores()) scores(instance.getFeatureVector(), instance.getScores());
+		if (instance.hasScores()) addScores(instance.getFeatureVector(), instance.getScores());
 		else instance.setScores(scores(instance.getFeatureVector()));
 		int yhat = getPredictedLabel(instance);
 		instance.setPredictedLabel(yhat);
@@ -253,7 +254,6 @@ public abstract class OnlineOptimizer implements Serializable
 		
 		scores[y] -= 1;
 		int yhat = argmax(scores);
-		scores[y] += 1;
 		return yhat;
 	}
 	
@@ -278,7 +278,7 @@ public abstract class OnlineOptimizer implements Serializable
  	
 	protected int argmax(float[] scores)
  	{
- 		int yhat = MLUtils.argmax(scores);
+ 		int yhat = MLUtils.argmax(scores, getLabelSize());
  		return (scores[yhat] == 0 && yhat > 0) ? MLUtils.argmax(scores, yhat) : yhat;
  	}
  	
@@ -305,8 +305,8 @@ public abstract class OnlineOptimizer implements Serializable
 		return weight_vector.scores(x);
 	}
 	
-	public void scores(FeatureVector x, float[] scores)
+	public void addScores(FeatureVector x, float[] scores)
 	{
-		weight_vector.scores(x, scores);
+		weight_vector.addScores(x, scores);
 	}
 }

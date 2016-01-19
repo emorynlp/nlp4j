@@ -17,19 +17,17 @@ package edu.emory.mathcs.nlp.component.template;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
-import edu.emory.mathcs.nlp.component.template.train.TrainInfo;
+import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.Instance;
-import edu.emory.mathcs.nlp.learning.util.MLUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -40,10 +38,10 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	protected FeatureTemplate<S>  feature_template;
 	protected OnlineOptimizer     optimizer;
 	
-	protected transient TrainInfo train_info;
-	protected transient NLPConfig config;
-	protected transient NLPFlag   flag;
-	protected transient Eval      eval;
+	protected transient HyperParameter hyper_parameter;
+	protected transient NLPConfig      config;
+	protected transient NLPFlag        flag;
+	protected transient Eval           eval;
 
 //	============================== CONSTRUCTORS ==============================
 	
@@ -66,14 +64,14 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 		this.optimizer = optimizer;
 	}
 	
-	public TrainInfo getTrainInfo()
+	public HyperParameter getHyperParameter()
 	{
-		return train_info;
+		return hyper_parameter;
 	}
 
-	public void setTrainInfo(TrainInfo info)
+	public void setHyperParameter(HyperParameter hyperparameter)
 	{
-		train_info = info;
+		hyper_parameter = hyperparameter;
 	}
 	
 	public FeatureTemplate<S> getFeatureTemplate()
@@ -84,6 +82,12 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	public void setFeatureTemplate(FeatureTemplate<S> template)
 	{
 		feature_template = template;
+	}
+	
+	/** {@link #config} and {@link #hyper_parameter} must not be null. */
+	public void initFeatureTemplate()
+	{
+		feature_template = new FeatureTemplate<>(config.getFeatureTemplateElement(), getHyperParameter());
 	}
 	
 	public Eval getEval()
@@ -119,8 +123,14 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 		this.config = config;
 	}
 	
+	public NLPConfig setConfiguration(InputStream in)
+	{
+		NLPConfig config = new NLPConfig(in);
+		setConfiguration(config);
+		return config;
+	}
+	
 	public abstract Eval createEvaluator();
-	public abstract NLPConfig setConfiguration(InputStream in);
 	
 //	============================== FLAGS ==============================
 	
@@ -159,62 +169,15 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	public void process(NLPNode[] nodes, S state)
 	{
 		if (!isDecode()) state.saveOracle();
-		int gold = 0, yhat;
 		Instance instance;
 		FeatureVector x;
 		float[] scores;
-		List<int[]> p;
 		String label;
-//		int[] top2;
-//		
-//		while (!state.isTerminate())
-//		{
-//			x = feature_template.createFeatureVector(state, isTrain());
-//			
-//			if (isTrain())
-//			{
-//				if (feature_template.useDynamicFeatureInduction())
-//					feature_template.appendDynamicFeatures(x.getSparseVector(), isTrain());
-//				
-//				label = state.getOracle();
-//				instance = new Instance(label, x);
-//				optimizer.train(instance);
-//				scores = instance.getScores();
-//				gold = instance.getGoldLabel();
-//				yhat = instance.getPredictedLabel();
-//
-//				if (feature_template.useDynamicFeatureInduction() && gold != yhat)
-//				{
-//					p = optimizer.getWeightVector().getTopFeatureCombinations(x, gold, yhat);
-//					feature_template.addDynamicFeatures(p);
-//				}
-//
-//				if (train_info.getRollIn().chooseGold()) yhat = gold;
-//			}
-//			else
-//			{
-//				scores = optimizer.scores(x);
-//				top2 = MLUtils.argmax2(scores, optimizer.getLabelSize());
-//				yhat = top2[0];
-//				
-//				if (feature_template.useDynamicFeatureInduction() && (scores[top2[0]] - scores[top2[1]] < 1))
-//				{
-//					x.set(feature_template.createDynamicSparseVector(x.getSparseVector(), isTrain()), null);
-//					x.getSparseVector().sort();
-//					optimizer.scores(x, scores);
-//					yhat = (scores[top2[0]] < scores[top2[1]]) ? top2[1] : top2[0];
-//				}
-//			}
-//
-//			state.next(optimizer.getLabelMap(), yhat, scores);
-//		}
+		int yhat;
 
 		while (!state.isTerminate())
 		{
 			x = feature_template.createFeatureVector(state, isTrain());
-		
-			if (feature_template.useDynamicFeatureInduction())
-				feature_template.appendDynamicFeatures(x.getSparseVector(), isTrain());
 			
 			if (isTrain())
 			{
@@ -222,21 +185,17 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 				instance = new Instance(label, x);
 				optimizer.train(instance);
 				scores = instance.getScores();
-				gold = instance.getGoldLabel();
-				yhat = instance.getPredictedLabel();
-				
-				if (feature_template.useDynamicFeatureInduction() && gold != yhat)
-				{
-					p = optimizer.getWeightVector().getTopFeatureCombinations(x, gold, yhat);
-					feature_template.addDynamicFeatures(p);
-				}
-				
-				if (train_info.getRollIn().chooseGold()) yhat = gold;
+				putLabel(instance.getStringLabel(), instance.getGoldLabel());
+				yhat = hyper_parameter.getLOLS().chooseGold() ? instance.getGoldLabel() : getLabelIndex(state, scores);
+
+//				gold = instance.getGoldLabel();
+//				yhat = instance.getPredictedLabel();
+//				if (hyper_parameter.getLOLS().chooseGold()) yhat = gold;
 			}
 			else
 			{
 				scores = optimizer.scores(x);
-				yhat = MLUtils.argmax(scores, optimizer.getLabelSize());
+				yhat = getLabelIndex(state, scores);
 			}
 			
 			state.next(optimizer.getLabelMap(), yhat, scores);
@@ -250,6 +209,10 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	}
 	
 //	============================== HELPERS ==============================
+	
+	protected abstract void putLabel(String label, int index);
+	
+	protected abstract int getLabelIndex(S state, float[] scores);
 	
 	/** Post-processes if necessary. */
 	protected abstract void postProcess(S state);

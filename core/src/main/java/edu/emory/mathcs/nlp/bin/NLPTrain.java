@@ -22,11 +22,8 @@ import org.kohsuke.args4j.Option;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
-import edu.emory.mathcs.nlp.component.dep.DEPTrainer;
-import edu.emory.mathcs.nlp.component.doc.DOCTrainer;
-import edu.emory.mathcs.nlp.component.ner.NERTrainer;
-import edu.emory.mathcs.nlp.component.pos.POSTrainer;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
+import edu.emory.mathcs.nlp.component.template.util.NLPMode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -55,21 +52,12 @@ public class NLPTrain
 		BinUtils.initArgs(args, this);
 		List<String> trainFiles   = FileUtils.getFileList(train_path  , train_ext);
 		List<String> developFiles = FileUtils.getFileList(develop_path, develop_ext);
-		OnlineTrainer<?> trainer;
+		OnlineTrainer<?> trainer = new OnlineTrainer<>();
 		
 		Collections.sort(trainFiles);
 		Collections.sort(developFiles);
 		
-		switch (mode)
-		{
-		case "pos": trainer = new POSTrainer(); break;
-		case "ner": trainer = new NERTrainer(); break;
-		case "dep": trainer = new DEPTrainer(); break;
-		case "doc": trainer = new DOCTrainer(); break;
-		default   : throw new IllegalArgumentException("Unsupported mode: "+mode);
-		}
-		
-		trainer.train(trainFiles, developFiles, configuration_file, model_file, previous_model_file);
+		trainer.train(NLPMode.valueOf(mode), trainFiles, developFiles, configuration_file, model_file, previous_model_file);
 	}
 	
 	static public void main(String[] args)

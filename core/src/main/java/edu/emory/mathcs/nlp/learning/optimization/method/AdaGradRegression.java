@@ -73,6 +73,6 @@ public class AdaGradRegression extends AdaptiveGradientDescent
 	@Override
 	public String toString()
 	{
-		return toString("AdaGrad Regression");
+		return "AdaGrad Regression";
 	}
 }

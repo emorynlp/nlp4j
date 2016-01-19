@@ -31,6 +31,7 @@ public class Splitter implements PatternConst
 	static public CharTokenizer T_HYPHEN      = new CharTokenizer('-');
 	static public CharTokenizer T_SPACE       = new CharTokenizer(' ');
 	static public CharTokenizer T_COMMA       = new CharTokenizer(',');
+	static public CharTokenizer T_SEMICOLON   = new CharTokenizer(';');
 	static public CharTokenizer T_COLON       = new CharTokenizer(':');
 	static public CharTokenizer T_PIPE        = new CharTokenizer('|');
 	static public CharTokenizer T_TAB         = new CharTokenizer('\t');
@@ -73,6 +74,11 @@ public class Splitter implements PatternConst
 	static public String[] splitCommas(String s, boolean includeEmpty)
 	{
 		return T_COMMA.tokenize(s, includeEmpty);
+	}
+	
+	static public String[] splitSemiColons(String s)
+	{
+		return T_SEMICOLON.tokenize(s);
 	}
 	
 	static public String[] splitColons(String s)

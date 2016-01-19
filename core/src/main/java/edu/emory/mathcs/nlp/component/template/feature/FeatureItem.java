@@ -20,51 +20,76 @@ import java.io.Serializable;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class FeatureItem<T> implements Serializable
+public class FeatureItem implements Serializable
 {
 	private static final long serialVersionUID = 7297765746466162241L;
 	public Source    source;
 	public Relation  relation;
 	public int       window;
 	public Field     field;
-	public T         value;
+	public Object    attribute;
 	
-	public FeatureItem(int window, Field field)
+	public FeatureItem(Source source, Relation relation, int window, Field field, Object attribute)
 	{
-		this(null, null, window, field, null);
+		this.source    = source;
+		this.relation  = relation;
+		this.window    = window;
+		this.field     = field;
+		this.attribute = attribute;
 	}
 	
-	public FeatureItem(int window, Field field, T value)
+	public Source getSource()
 	{
-		this(null, null, window, field, value);
+		return source;
 	}
-	
-	public FeatureItem(Source source, int window, Field field)
+
+	public void setSource(Source source)
 	{
-		this(source, null, window, field, null);
+		this.source = source;
 	}
-	
-	public FeatureItem(Source source, int window, Field field, T value)
+
+	public Relation getRelation()
 	{
-		this(source, null, window, field, value);
+		return relation;
 	}
-	
-	public FeatureItem(Source source, Relation relation, int window, Field field)
+
+	public void setRelation(Relation relation)
 	{
-		this(source, relation, window, field, null);
-	}
-	
-	public FeatureItem(Source source, Relation relation, Field field)
-	{
-		this(source, relation, 0, field, null);
-	}
-	
-	public FeatureItem(Source source, Relation relation, int window, Field field, T value)
-	{
-		this.source   = source;
 		this.relation = relation;
-		this.window   = window;
-		this.field    = field;
-		this.value    = value;
+	}
+
+	public int getWindow()
+	{
+		return window;
+	}
+
+	public void setWindow(int window)
+	{
+		this.window = window;
+	}
+
+	public Field getField()
+	{
+		return field;
+	}
+
+	public void setField(Field field)
+	{
+		this.field = field;
+	}
+
+	public Object getAttribute()
+	{
+		return attribute;
+	}
+
+	public void setAttribute(Object attribute)
+	{
+		this.attribute = attribute;
+	}
+	
+	public String toString()
+	{
+		return String.format("%s: source=%s, relation=%s, attribute=%s, window=%d", field, source, relation, attribute, window);
 	}
 }

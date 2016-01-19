@@ -46,6 +46,13 @@ public class Unigram<T> implements Serializable
 		best = null;
 	}
 	
+	public void clear()
+	{
+		count_map.clear();
+		total_count = 0;
+		best = null;
+	}
+	
 	public void add(T key)
 	{
 		add(key, 1);

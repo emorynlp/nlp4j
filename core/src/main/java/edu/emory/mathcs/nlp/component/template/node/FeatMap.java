@@ -18,7 +18,7 @@ package edu.emory.mathcs.nlp.component.template.node;
 import java.util.HashMap;
 
 import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
+import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 
 
 /**

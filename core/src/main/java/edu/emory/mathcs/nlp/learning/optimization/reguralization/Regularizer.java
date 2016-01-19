@@ -22,12 +22,10 @@ import edu.emory.mathcs.nlp.learning.util.WeightVector;
  */
 public abstract class Regularizer
 {
-	protected WeightVector weight_vector;
 	protected float rate;
 
-	public Regularizer(WeightVector vector, float rate)
+	public Regularizer(float rate)
 	{
-		weight_vector = vector;
 		setRate(rate);
 	}
 	
@@ -40,6 +38,8 @@ public abstract class Regularizer
 	{
 		this.rate = rate;
 	}
+	
+	public abstract void setWeightVector(WeightVector vector);
 	
 	/** Expands the dimension of necessary vectors with respect to the weight vector. */
 	public abstract void expand(int sparseFeatureSize, int denseFeatureSize, int labelSize);

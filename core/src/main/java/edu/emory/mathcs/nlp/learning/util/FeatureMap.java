@@ -90,6 +90,19 @@ public class FeatureMap implements Serializable
 		feature_size = size;
 	}
 	
+	public int getMaxIndex()
+	{
+		int max = -1;
+		
+		for (Object2IntMap<String> map : index_map)
+		{
+			for (int index : map.values())
+				max = Math.max(max, index);
+		}
+		
+		return max;
+	}
+	
 	@Override
 	public String toString()
 	{

@@ -39,7 +39,7 @@ import edu.emory.mathcs.nlp.component.dep.DEPArc;
 import edu.emory.mathcs.nlp.component.srl.SRLArc;
 import edu.emory.mathcs.nlp.component.template.feature.Direction;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
-import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
+import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -63,9 +63,9 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 
 	// inferred fields
 	protected int id;
-	protected String simplified_word_form;
-	protected String undigitalized_word_form;
-	protected String uncapitalized_simplified_word_form;
+	protected String word_form_simplified;
+	protected String word_form_undigitalized;
+	protected String word_form_simplified_lowercase;
 	protected SortedArrayList<NLPNode> dependent_list;
 	
 	// lexica
@@ -139,19 +139,29 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	}
 	
 	/** @see StringUtils#toSimplifiedForm(String). */
-	public String getSimplifiedWordForm()
+	public String getWordFormSimplified()
 	{
-		return simplified_word_form;
+		return word_form_simplified;
 	}
 	
-	public String getUncapitalizedSimplifiedWordForm()
+	public String getWordFormSimplifiedLowercase()
 	{
-		return uncapitalized_simplified_word_form;
+		return word_form_simplified_lowercase;
 	}
 	
-	public String getUndigitalizedWordForm()
+	public String getWordFormUndigitalized()
 	{
-		return undigitalized_word_form;
+		return word_form_undigitalized;
+	}
+	
+	public String getWordShape()
+	{
+		return StringUtils.getShape(word_form_simplified, 2);
+	}
+	
+	public String getWordShapeLowercase()
+	{
+		return StringUtils.getShape(word_form_simplified_lowercase, 2);
 	}
 	
 	public String getLemma()
@@ -185,9 +195,11 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		switch (field)
 		{
 		case word_form: return getWordForm();
-		case simplified_word_form: return getSimplifiedWordForm();
-		case undigitalized_word_form: return getUndigitalizedWordForm();
-		case uncapitalized_simplified_word_form: return getUncapitalizedSimplifiedWordForm();
+		case word_form_simplified: return getWordFormSimplified();
+		case word_form_undigitalized: return getWordFormUndigitalized();
+		case word_form_simplified_lowercase: return getWordFormSimplifiedLowercase();
+		case word_shape: return getWordShape();
+		case word_shape_lowercase: return getWordShapeLowercase();
 		case lemma: return getLemma();
 		case part_of_speech_tag: return getPartOfSpeechTag();
 		case named_entity_tag: return getNamedEntityTag();
@@ -201,21 +213,41 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		return word_clusters;
 	}
 	
-	public List<String> getAmbiguityClasses()
-	{
-		return ambiguity_classes;
-	}
-	
 	public float[] getWordEmbedding()
 	{
 		return word_embedding;
 	}
 	
-	public Set<String> getNamedEntityGazetteers()
+	public String getAmbiguityClass(int index)
+	{
+		return ambiguity_classes != null && DSUtils.isRange(ambiguity_classes, index) ? ambiguity_classes.get(index) : null;
+	}
+	
+	public String getAmbiguityClasses()
+	{
+		return getCollectionValue(ambiguity_classes);
+	}
+	
+	public List<String> getAmbiguityClasseList()
+	{
+		return ambiguity_classes;
+	}
+	
+	public String getNamedEntityGazetteers(NLPNode node)
+	{
+		return getCollectionValue(named_entity_gazetteers);
+	}
+	
+	public Set<String> getNamedEntityGazetteerSet()
 	{
 		return named_entity_gazetteers;
 	}
-
+	
+	protected String getCollectionValue(Collection<String> col)
+	{
+		return col == null || col.isEmpty() ? null : Joiner.join(col, StringConst.UNDERSCORE);
+	}
+	
 //	============================== SETTERS ==============================
 	
 	public void setID(int id)
@@ -225,10 +257,10 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	
 	public void setWordForm(String form)
 	{
-		word_form = form;
-		simplified_word_form = StringUtils.toSimplifiedForm(form);
-		undigitalized_word_form = StringUtils.toUndigitalizedForm(form);
-		uncapitalized_simplified_word_form = StringUtils.toLowerCase(simplified_word_form);
+		word_form                      = form;
+		word_form_simplified           = StringUtils.toSimplifiedForm(form);
+		word_form_undigitalized        = StringUtils.toUndigitalizedForm(form);
+		word_form_simplified_lowercase = StringUtils.toLowerCase(word_form_simplified);
 	}
 	
 	public void setLemma(String lemma)
@@ -303,7 +335,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	
 	public boolean isSimplifiedWordForm(String form)
 	{
-		return form.equals(simplified_word_form);
+		return form.equals(word_form_simplified);
 	}
 	
 	public boolean isLemma(String lemma)

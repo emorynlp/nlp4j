@@ -17,7 +17,6 @@ package edu.emory.mathcs.nlp.component.template.state;
 
 import java.util.Arrays;
 
-import edu.emory.mathcs.nlp.component.pos.POSTrainer;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
@@ -29,14 +28,12 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
  */
 public abstract class L2RState extends NLPState
 {
-//	protected float[][] scores;
 	protected String[] oracle;
 	protected int input = 1;
 	
 	public L2RState(NLPNode[] nodes)
 	{
 		super(nodes);
-//		scores = new float[nodes.length][];
 	}
 	
 //	============================== ORACLE ==============================
@@ -61,7 +58,6 @@ public abstract class L2RState extends NLPState
 	@Override
 	public void next(LabelMap map, int yhat, float[] scores)
 	{
-//		setScores(input, scores);
 		setLabel(nodes[input++], map.getLabel(yhat));
 	}
 	
@@ -72,7 +68,7 @@ public abstract class L2RState extends NLPState
 	}
 	
 	@Override
-	public NLPNode getNode(FeatureItem<?> item)
+	public NLPNode getNode(FeatureItem item)
 	{
 		NLPNode node = getNode(input, item.window);
 		return getRelativeNode(item, node);
@@ -83,18 +79,6 @@ public abstract class L2RState extends NLPState
 		return input;
 	}
 	
-//	============================== SCORES ==============================
-	
-//	public float[] getScores(int index)
-//	{
-//		return (0 < index && index < nodes.length) ? scores[index] : null;
-//	}
-//	
-//	public void setScores(int index, float[] scores)
-//	{
-//		this.scores[index] = scores;
-//	}
-	
 //	============================== EVALUATION ==============================
 	
 	@Override
@@ -104,7 +88,7 @@ public abstract class L2RState extends NLPState
 		
 		for (int i=1; i<nodes.length; i++)
 		{
-			if (POSTrainer.train_words != null && POSTrainer.train_words.contains(nodes[i].getWordForm())) continue;
+//			if (POSTrainer.train_words != null && POSTrainer.train_words.contains(nodes[i].getWordForm())) continue;
 			if (oracle[i].equals(getLabel(nodes[i]))) correct++;
 			total++;
 		}

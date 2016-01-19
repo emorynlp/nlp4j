@@ -50,7 +50,7 @@ public abstract class NLPState
 	public abstract boolean isTerminate();
 	
 	/** @return the node with respect to the feature item if exists; otherwise, null. */
-	public abstract NLPNode getNode(FeatureItem<?> item);
+	public abstract NLPNode getNode(FeatureItem item);
 	
 	/** Evaluates all predictions given the current input and the evaluator. */
 	public abstract void evaluate(Eval eval);
@@ -83,7 +83,7 @@ public abstract class NLPState
 		return nodes[nodes.length-1] == node;
 	}
 	
-	protected NLPNode getRelativeNode(FeatureItem<?> item, NLPNode node)
+	protected NLPNode getRelativeNode(FeatureItem item, NLPNode node)
 	{
 		if (node == null || item.relation == null)
 			return node;

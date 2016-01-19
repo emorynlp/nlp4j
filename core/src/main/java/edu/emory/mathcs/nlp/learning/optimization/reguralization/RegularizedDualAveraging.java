@@ -23,11 +23,18 @@ import edu.emory.mathcs.nlp.learning.util.WeightVector;
  */
 public class RegularizedDualAveraging extends Regularizer
 {
+	private WeightVector weight_vector;
 	private WeightVector cumulative_penalty;
 	
-	public RegularizedDualAveraging(WeightVector vector, float rate)
+	public RegularizedDualAveraging(float rate)
 	{
-		super(vector, rate);
+		super(rate);
+	}
+	
+	@Override
+	public void setWeightVector(WeightVector vector)
+	{
+		weight_vector = vector;
 		cumulative_penalty = vector.createZeroVector();
 	}
 	
@@ -54,4 +61,10 @@ public class RegularizedDualAveraging extends Regularizer
 		
 		weight_vector.getMajorVector(sparse).set(index, value);
  	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format("RDA: %s", rate);
+	}
 }

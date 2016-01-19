@@ -78,6 +78,6 @@ public class AdaGrad extends AdaptiveGradientDescent
 	@Override
 	public String toString()
 	{
-		return toString("AdaGrad");
+		return "AdaGrad";
 	}
 }

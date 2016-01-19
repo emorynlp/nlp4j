@@ -36,16 +36,16 @@ public class NERFeatureTemplate1 extends NERFeatureTemplate
 	protected void init()
 	{
 		// uncapitalized word forms
-		add(new FeatureItem<>(-2, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>(-1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 0, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 1, Field.uncapitalized_simplified_word_form));
-		add(new FeatureItem<>( 2, Field.uncapitalized_simplified_word_form));
+		add(new FeatureItem<>(-2, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>(-1, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 0, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 1, Field.word_form_simplified_lowercase));
+		add(new FeatureItem<>( 2, Field.word_form_simplified_lowercase));
 		
 		// word shapes
-		add(new FeatureItem<>(-1, Field.uncapitalized_word_shape, 2));
-		add(new FeatureItem<>( 0, Field.uncapitalized_word_shape, 2));
-		add(new FeatureItem<>( 1, Field.uncapitalized_word_shape, 2));
+		add(new FeatureItem<>(-1, Field.word_shape_lowercase, 2));
+		add(new FeatureItem<>( 0, Field.word_shape_lowercase, 2));
+		add(new FeatureItem<>( 1, Field.word_shape_lowercase, 2));
 
 		// lemmas
 		add(new FeatureItem<>(-1, Field.lemma));

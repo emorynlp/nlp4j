@@ -137,10 +137,9 @@ public class WeightVector implements Serializable
 		
 		for (SparseItem t : v)
 		{
-			if (!t.isLowDimension()) continue;
 			f = sparse_weight_vector.get(gold, t.getIndex()) - sparse_weight_vector.get(yhat, t.getIndex());
 			p = new SparsePrediction(t.getIndex(), f);
-			if (f > 0)	pos.add(p);
+			if (f > 0) pos.add(p);
 		}
 		
 		Collections.sort(pos, Collections.reverseOrder());
@@ -162,11 +161,11 @@ public class WeightVector implements Serializable
 	public float[] scores(FeatureVector x)
 	{
 		float[] scores = new float[getLabelSize()];
-		scores(x, scores);
+		addScores(x, scores);
 		return scores;
 	}
 	
-	public void scores(FeatureVector x, float[] scores)
+	public void addScores(FeatureVector x, float[] scores)
 	{
 		if (x.hasSparseVector())     sparse_weight_vector.addScores(x.getSparseVector(), scores);
 		if (x.hasDenseVector())      dense_weight_vector .addScores(x.getDenseVector() , scores);

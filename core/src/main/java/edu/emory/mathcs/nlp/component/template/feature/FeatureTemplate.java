@@ -17,11 +17,9 @@ package edu.emory.mathcs.nlp.component.template.feature;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -31,24 +29,21 @@ import org.w3c.dom.NodeList;
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
-import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.node.Orthographic;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
+import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.learning.util.ColumnMajorVector;
 import edu.emory.mathcs.nlp.learning.util.FeatureMap;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.MajorVector;
-import edu.emory.mathcs.nlp.learning.util.SparseItem;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 import edu.emory.mathcs.nlp.learning.util.StringPrediction;
 import edu.emory.mathcs.nlp.learning.util.WeightVector;
@@ -56,114 +51,135 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import net.openhft.hashing.LongHashFunction;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class FeatureTemplate<S extends NLPState> implements Serializable
+public class FeatureTemplate<S extends NLPState> implements Serializable
 {
 	private static final long serialVersionUID = -6755594173767815098L;
-	private static final Set<Field> SET_FEATURES = DSUtils.createSet(Field.positional, Field.orthographic, Field.orthographic_uncapitalized, Field.word_clusters, Field.named_entity_gazetteers, Field.ambiguity_classes);
-	protected FeatureMap             feature_map;
-	protected List<FeatureItem<?>[]> feature_list;
-	protected List<FeatureItem<?>>   feature_set;
-	
-	// dynamic feature induction
-	protected LongHashFunction dynamic_feature_hash;
-	protected final int        dynamic_feature_size;
-	public boolean[]        dynamic_feature_switch;
-	protected Random           dynamic_feature_gap;
 
-	// dense features
-	protected FeatureItem<?>[] word_embeddings;
+	protected List<FeatureItem[]>   feature_list;
+	protected List<FeatureItem>     feature_set;
+	protected List<FeatureItem>     word_embeddings;
 	
-	public FeatureTemplate(Element eFeatures)
+	protected Object2IntMap<String> feature_count;
+	protected FeatureMap            feature_map;
+	protected int                   cutoff;
+	
+	public FeatureTemplate(Element eFeatures, HyperParameter hp)
 	{
-		feature_map  = new FeatureMap();
-		feature_list = new ArrayList<>();
-		feature_set  = new ArrayList<>();
+		feature_list    = new ArrayList<>();
+		feature_set     = new ArrayList<>();
+		word_embeddings = new ArrayList<>();
 
-		Element eDFI = XMLUtils.getFirstElementByTagName(eFeatures, "dynamic_feature_size");
+		feature_count = new Object2IntOpenHashMap<String>();
+		feature_map   = new FeatureMap();
 		
-		if (eDFI != null)
-		{
-			dynamic_feature_size = XMLUtils.getIntegerTextContent(eDFI);
-			eFeatures.removeChild(eDFI);
-		}
-		else
-			dynamic_feature_size = 0;
-		
-		// dynamic feature induction
-		if (useDynamicFeatureInduction())
-		{
-			dynamic_feature_hash   = LongHashFunction.xx_r39(serialVersionUID);
-			dynamic_feature_switch = new boolean[dynamic_feature_size];
-			dynamic_feature_gap    = new XORShiftRandom(9);
-		}
-
-		// feature templates
+		setCutoff(hp.getFeature_cutoff());
 		init(eFeatures);
 	}
 	
+//	============================== IINTIALIZATION ==============================
+	
 	protected void init(Element eFeatures)
 	{
-		NodeList nodes = eFeatures.getChildNodes();
-		int[]    windows;
-		Field    field;
-		Source   source;
-		Element  element;
-		String[] t;
+		NodeList nodes = eFeatures.getElementsByTagName("feature");
+		FeatureItem[] items;
+		Element element;
 		
 		for (int i=0; i<nodes.getLength(); i++)
 		{
-			if (!(nodes.item(i) instanceof Element)) continue;
 			element = (Element)nodes.item(i);
-			field = Field.valueOf(element.getNodeName());
-			source = Source.valueOf(XMLUtils.getTrimmedAttribute(element, "source"));
-			t = Splitter.splitCommas(XMLUtils.getTrimmedTextContent(element));
-			windows = Arrays.stream(t).mapToInt(index -> Integer.parseInt(index)).toArray();
+			items = createFeatureItems(element);
 			
-			if (SET_FEATURES.contains(field))
-			{
-				for (int window : windows) addSet(new FeatureItem<>(source, window, field));
-			}
-			else if (field == Field.word_shape)
-			{
-				for (int window : windows) add(new FeatureItem<>(source, window, field, XMLUtils.getIntegerAttribute(element, "repeat")));
-			}
-			else if (field == Field.prefix || field == Field.suffix)
-			{
-				for (int window : windows) add(new FeatureItem<>(source, window, field, XMLUtils.getIntegerAttribute(element, "window")));
-			}
-			else if (field == Field.word_embedding)
-			{
-				word_embeddings = new FeatureItem[windows.length];
-
-				for (int j=0; j<word_embeddings.length; j++)
-					word_embeddings[j] = new FeatureItem<>(source, windows[j], field);
-			}
+			if (XMLUtils.getBooleanAttribute(element, "set"))
+				addSet(items[0]);
+			else if (items[0].field == Field.word_embedding)
+				addWordEmbedding(items[0]);
 			else
-			{
-				for (int window : windows) add(new FeatureItem<>(source, window, field));
-			}
+				add(items);
 		}
 	}
+	
+	private FeatureItem[] createFeatureItems(Element element)
+	{
+		List<String> list = new ArrayList<>();
+		String s;
+		
+		for (int i=0; ;i++)
+		{
+			s = element.getAttribute("f"+i);
+			if (s.isEmpty()) break;
+			list.add(s);
+		}
+		
+		FeatureItem[] items = new FeatureItem[list.size()];
+		
+		for (int i=0; i<items.length; i++)
+			items[i] = createFeatureItem(list.get(i));
 
-//	============================== INITIALIZATION ==============================
+		return items;
+	}
+	
+	private FeatureItem createFeatureItem(String s)
+	{
+		String[] t = Splitter.splitColons(s);
+		Source   source;
+		Relation relation;
+		int      window;
+		Field    field;
+		Object   attribute;
+		
+		// source
+		s = t[0];
+		source = Source.valueOf(s.substring(0, 1));
+		
+		// window
+		int endIdx = s.indexOf('_');
+		if (endIdx < 0) endIdx = s.length();
+		window = endIdx == 1 ? 0 : Integer.parseInt(s.substring(1, endIdx));
+		
+		// relation
+		relation = endIdx != s.length() ? Relation.valueOf(s.substring(endIdx+1)) : null;
 
-	public void add(FeatureItem<?>... items)
+		// field
+		field = Field.valueOf(t[1]);
+		
+		// attribute
+		attribute = t.length > 2 ? createAttribute(field, t[2]) : null;
+		return new FeatureItem(source, relation, window, field, attribute);
+	}
+	
+	@SuppressWarnings({ "incomplete-switch" })
+	protected Object createAttribute(Field field, String attribute)
+	{
+		switch (field)
+		{
+		case prefix : return new Integer(Integer.parseInt(attribute));
+		case suffix : return new Integer(Integer.parseInt(attribute));
+		case feats  : return attribute;
+		case valency: return Direction.valueOf(attribute);
+		}
+		
+		return null;
+	}
+
+//	============================== GETTERS / SETTERS ==============================
+
+	public void add(FeatureItem... items)
 	{
 		feature_list.add(items);
 	}
 	
-	public void addSet(FeatureItem<?> items)
+	public void addSet(FeatureItem items)
 	{
 		feature_set.add(items);
 	}
-	public int getDynamicFeatureSize()
+	
+	public void addWordEmbedding(FeatureItem item)
 	{
-		return dynamic_feature_size;
+		word_embeddings.add(item);
 	}
 	
 	public int getSparseFeatureSize()
@@ -173,110 +189,78 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	
 	public int getTemplateSize()
 	{
-		return feature_list.size() + feature_set.size();
+		return feature_list.size() + feature_set.size() + word_embeddings.size();
 	}
 	
-//	============================== DYNAMIC FEATURE INDUCTION ==============================
-	
-	public void addDynamicFeature(int[] feature)
+	public int getCutoff()
 	{
-		dynamic_feature_switch[getDynamicFeatureIndex(feature)] = true;
+		return cutoff;
 	}
 	
-	public void addDynamicFeatures(Collection<int[]> features)
+	public void setCutoff(int cutoff) 
 	{
-		for (int[] feature : features)	addDynamicFeature(feature);
-	}	
-	
-	public boolean useDynamicFeatureInduction()
-	{
-		return dynamic_feature_size > 0; 
+		this.cutoff = cutoff;
 	}
 	
-	private int getRandomGap()
+	public void clearFeatureCount()
 	{
-		return dynamic_feature_gap.nextInt(2) + 1;
+		feature_count.clear();
 	}
 	
-	static public String getFeatureCombination(int i, int j)
+	public void initFeatureCount()
 	{
-		return (i < j) ? i+"_"+j : j+"_"+i;
-	}
-
-	protected int getDynamicFeatureIndex(int... p)
-	{
-		if (p[0] > p[1]) DSUtils.swap(p, 0, 1);
-		return MathUtils.modulus(dynamic_feature_hash.hashLong(p[0]*10000000+p[1]), dynamic_feature_size);
-	}
-	
-	public void appendDynamicFeatures(SparseVector x, boolean train)
-	{
-		List<SparseItem> ov = new ArrayList<>(x.getVector());
-		int i, j, k, type = getTemplateSize();
-		SparseItem oi, oj;
-		
-		for (i=0; i<ov.size(); i+=getRandomGap())
-		{
-			oi = ov.get(i);
-			
-			for (j=i+1; j<ov.size(); j+=getRandomGap())
-			{
-				oj = ov.get(j);
-				k  = getDynamicFeatureIndex(oi.getIndex(), oj.getIndex());
-				if (dynamic_feature_switch[k]) add(x, type, Integer.toString(k), 1, train, false);
-			}
-		}
-	}
-	
-	public SparseVector createDynamicSparseVector(SparseVector x, boolean train)
-	{
-		int size = x.size();
-		appendDynamicFeatures(x, train);
-		return new SparseVector(x, size);
+		feature_count = new Object2IntOpenHashMap<String>();
 	}
 	
 //	============================== EXTRACTOR ==============================
 	
-	public FeatureVector createFeatureVector(S state, boolean train)
+	public FeatureVector createFeatureVector(S state, boolean isTrain)
 	{
-		return new FeatureVector(createSparseVector(state,train), createDenseVector(state));
+		return new FeatureVector(createSparseVector(state, isTrain), createDenseVector(state));
 	}
 	
-	public SparseVector createSparseVector(S state, boolean train)
+	public SparseVector createSparseVector(S state, boolean isTrain)
 	{
 		SparseVector x = new SparseVector();
 		Collection<String> t;
 		int i, type = 0;
 		String f;
 		
-		for (i=0; i<feature_list.size(); i++,type++)
-		{
-			f = getFeature(state, feature_list.get(i));
-			add(x, type, f, 1, train, true);
-		}
-		
 		for (i=0; i<feature_set.size(); i++,type++)
 		{
 			t = getFeatures(state, feature_set.get(i));
-			if (t != null) for (String s : t) add(x, type, s, 1, train, true);
+			if (t != null) for (String s : t) add(x, type, s, 1, isTrain);
+		}
+		
+		for (i=0; i<feature_list.size(); i++,type++)
+		{
+			f = getFeature(state, feature_list.get(i));
+			add(x, type, f, 1, isTrain);
 		}
 		
 		return x;
 	}
 	
-	private void add(SparseVector x, int type, String value, float weight, boolean train, boolean core)	// TODO: remove core if can
+	private void add(SparseVector x, int type, String value, float weight, boolean isTrain)
 	{
 		if (value != null)
 		{
-			int index = train ? feature_map.add(type, value) : feature_map.index(type, value);
-			if (index > 0) x.add(index, weight, core);
+			int index;
+			
+			if (isTrain)
+				index = FastUtils.increment(feature_count, type+value) > cutoff ? feature_map.add(type, value) : -1;
+			else
+				index = feature_map.index(type, value);
+			
+//			int index = isTrain ? feature_map.add(type, value) : feature_map.index(type, value);
+			if (index > 0) x.add(index, weight);
 		}
 	}
 	
 //	============================== SINGLE FEATURES ==============================
 	
 	/** Called by {@link #extractFeatures()}. */
-	protected String getFeature(S state, FeatureItem<?>... items)
+	protected String getFeature(S state, FeatureItem... items)
 	{
 		String f;
 		
@@ -286,7 +270,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		{
 			StringJoiner join = new StringJoiner("_");
 			
-			for (FeatureItem<?> item : items)
+			for (FeatureItem item : items)
 			{
 				f = getFeature(state, item);
 				if (f == null) return null;
@@ -297,68 +281,65 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		}
 	}
 	
-	protected String getFeature(S state, FeatureItem<?> item)
+	protected String getFeature(S state, FeatureItem item)
 	{
 		NLPNode node = state.getNode(item);
 		return (node == null) ? null : getFeature(state, item, node);
 	}
 	
-	protected String getFeature(S state, FeatureItem<?> item, NLPNode node)
+	protected String getFeature(S state, FeatureItem item, NLPNode node)
 	{
 		String f = node.getValue(item.field);
 		if (f != null) return f;
 		
 		switch (item.field)
 		{
-		case word_shape: return StringUtils.getShape(node.getSimplifiedWordForm(), (Integer)item.value);
-		case uncapitalized_word_shape: return StringUtils.getShape(StringUtils.toLowerCase(node.getSimplifiedWordForm()), (Integer)item.value);
-		case prefix: return getPrefix(node, (Integer)item.value);
-		case suffix: return getSuffix(node, (Integer)item.value);
-		case feats: return node.getFeat((String)item.value);
-		case valency: return node.getValency((Direction)item.value);
-		case named_entity_gazetteers: return getNamedEntityGazetteers(node);
+		case prefix : return getPrefix(node, (Integer)item.attribute);
+		case suffix : return getSuffix(node, (Integer)item.attribute);
+		case feats  : return node.getFeat((String)item.attribute);
+		case valency: return node.getValency((Direction)item.attribute);
 		default: return null;
 		}
 	}
 	
 	protected String getNamedEntityGazetteers(NLPNode node)
 	{
-		Set<String> set = node.getNamedEntityGazetteers();
+		Set<String> set = node.getNamedEntityGazetteerSet();
 		return set == null || set.isEmpty() || set.size() > 1 ? null : Joiner.join(set, StringConst.UNDERSCORE);
 	}
 	
 	/** The prefix cannot be the entire word (e.g., getPrefix("abc", 3) -> null). */
 	protected String getPrefix(NLPNode node, int n)
 	{
-		String s = node.getSimplifiedWordForm();
-		return (n < s.length()) ? StringUtils.toLowerCase(s.substring(0, n)) : null;
+		String s = node.getWordFormSimplifiedLowercase();
+		return (n < s.length()) ? s.substring(0, n) : null;
 	}
 	
 	/** The suffix cannot be the entire word (e.g., getSuffix("abc", 3) -> null). */
 	protected String getSuffix(NLPNode node, int n)
 	{
-		String s = node.getSimplifiedWordForm();
-		return (n < s.length()) ? StringUtils.toLowerCase(s.substring(s.length()-n)) : null;
+		String s = node.getWordFormSimplifiedLowercase();
+		return (n < s.length()) ? s.substring(s.length()-n) : null;
 	}
 	
 //	============================== SET FEATURES ==============================
 	
-	protected Collection<String> getFeatures(S state, FeatureItem<?> item)
+	protected Collection<String> getFeatures(S state, FeatureItem item)
 	{
 		NLPNode node = state.getNode(item);
 		return (node == null) ? null : getFeatures(state, item, node);
 	}
 	
-	protected Collection<String> getFeatures(S state, FeatureItem<?> item, NLPNode node)
+	protected Collection<String> getFeatures(S state, FeatureItem item, NLPNode node)
 	{
 		switch (item.field)
 		{
 		case positional: return getPositionFeatures(state, node);
 		case orthographic: return getOrthographicFeatures(state, node, true);
-		case orthographic_uncapitalized: return getOrthographicFeatures(state, node, false);
+		case orthographic_lowercase: return getOrthographicFeatures(state, node, false);
+		case ambiguity_classes: return node.getAmbiguityClasseList();
+		case named_entity_gazetteers: return node.getNamedEntityGazetteerSet();
 		case word_clusters: return node.getWordClusters();
-		case ambiguity_classes: return node.getAmbiguityClasses();
-		case named_entity_gazetteers: return node.getNamedEntityGazetteers();
 		case bag_of_words: return getBagOfWords(state, item);
 		default: return null;
 		}
@@ -378,11 +359,11 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	{
 		List<String> list = new ArrayList<>();
 		
-		if (MetaConst.HYPERLINK.equals(node.getSimplifiedWordForm()))
+		if (MetaConst.HYPERLINK.equals(node.getWordFormSimplified()))
 			list.add(Orthographic.HYPERLINK);
 		else
 		{
-			char[] cs = node.getSimplifiedWordForm().toCharArray();
+			char[] cs = node.getWordFormSimplified().toCharArray();
 			getOrthographicFeauturesAux(list, cs, state.isFirst(node), caseSensitive);
 		}
 		
@@ -478,9 +459,9 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 			list.add(Orthographic.HAS_OTHER_PUNCT);
 	}
 	
-	protected Set<String> getBagOfWords(S state, FeatureItem<?> item)
+	protected Set<String> getBagOfWords(S state, FeatureItem item)
 	{
-		Boolean includePunct = (Boolean)item.value;
+		Boolean includePunct = (Boolean)item.attribute;
 		NLPNode[] nodes = state.getNodes();
 		Set<String> set = new HashSet<>();
 		String key;
@@ -496,13 +477,13 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	
 //	============================== SET FEATURES WEIGHTED ==============================
 	
-	protected Collection<StringPrediction> getFeaturesWeighted(S state, FeatureItem<?> item)
+	protected Collection<StringPrediction> getFeaturesWeighted(S state, FeatureItem item)
 	{
 		NLPNode node = state.getNode(item);
 		return (node == null) ? null : getFeaturesWeighted(state, item, node);
 	}
 	
-	protected Collection<StringPrediction> getFeaturesWeighted(S state, FeatureItem<?> item, NLPNode node)
+	protected Collection<StringPrediction> getFeaturesWeighted(S state, FeatureItem item, NLPNode node)
 	{
 		switch (item.field)
 		{
@@ -511,10 +492,10 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		}
 	}
 	
-	protected Set<StringPrediction> getBagOfWordsCount(S state, FeatureItem<?> item)
+	protected Set<StringPrediction> getBagOfWordsCount(S state, FeatureItem item)
 	{
 		Object2IntMap<String> map = new Object2IntOpenHashMap<>();
-		Boolean includePunct = (Boolean)item.value;
+		Boolean includePunct = (Boolean)item.attribute;
 		NLPNode[] nodes = state.getNodes();
 		String key;
 		
@@ -546,12 +527,12 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 	
 	public float[] getEmbeddingFeatures(S state)
 	{
-		if (GlobalLexica.word_embeddings == null || word_embeddings == null || word_embeddings.length == 0) return null;
+		if (GlobalLexica.word_embeddings == null || word_embeddings == null || word_embeddings.isEmpty()) return null;
 		float[] w, v = null;
 		NLPNode node;
 		int i = -1;
 		
-		for (FeatureItem<?> item : word_embeddings)
+		for (FeatureItem item : word_embeddings)
 		{
 			node = state.getNode(item);
 			i++;
@@ -559,7 +540,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 			if (node != null && node.hasWordEmbedding())
 			{
 				w = node.getWordEmbedding();
-				if (v == null) v = new float[w.length * word_embeddings.length];
+				if (v == null) v = new float[w.length * word_embeddings.size()];
 				System.arraycopy(w, 0, v, w.length*i, w.length);
 			}
 		}
@@ -567,12 +548,28 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		return v;
 	}
 	
+	public String toString()
+	{
+		StringBuilder build = new StringBuilder();
+		
+		for (FeatureItem[] t : feature_list)
+			build.append("["+Joiner.join(t, "],[")+"]\n");
+		
+		for (FeatureItem t : feature_set)
+			build.append(t+"\n");
+
+		if (word_embeddings != null)
+			build.append(Joiner.join(word_embeddings, ",")+"\n");
+		
+		return build.toString();
+	}
+	
 //	============================== REDUCTION ==============================
 	
 	public int reduce(WeightVector weights, float threshold)
 	{
 		final int L = weights.getLabelSize();
-		final int F = getSparseFeatureSize();
+		final int F = weights.getSparseWeightVector().getFeatureSize();
 		
 		MajorVector oldSparse = weights.getSparseWeightVector();
 		int[] indexMap = new int[F];
@@ -614,7 +611,7 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 			{
 				e = it.next();
 				oldIndex = e.getValue();
-				newIndex = indexMap[oldIndex];
+				newIndex = (oldIndex < indexMap.length) ? indexMap[oldIndex] : -1;
 				
 				if (newIndex > 0)
 				{
@@ -632,29 +629,6 @@ public abstract class FeatureTemplate<S extends NLPState> implements Serializabl
 		
 		weights.setSparseWeightVector(newSparse);
 		feature_map.setSize(count);
-		
-		if (useDynamicFeatureInduction())
-		{
-			boolean[] b = new boolean[dynamic_feature_size];
-			int im;
-			
-			for (i=0; i<F; i++)
-			{
-				if (i%10000 == 0) System.out.println(i);
-				im = indexMap[i];
-				if (im <= 0) continue;
-				
-				for (j=i+1; j<F; j++)
-				{
-					if (indexMap[j] > 0 && dynamic_feature_switch[getDynamicFeatureIndex(i,j)])
-						b[getDynamicFeatureIndex(indexMap[i],indexMap[j])] = true;
-				}
-			}	
-			
-			dynamic_feature_switch = b;
-		}
-
-		System.out.println("\n"+count);
 		return count;
 	}
 }

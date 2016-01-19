@@ -41,9 +41,4 @@ public class POSState extends L2RState
 		node.setPartOfSpeechTag(label);
 		return s;
 	}
-	
-//	public Collection<String> getAmbiguityClasses(NLPNode node)
-//	{
-//		return ambiguity_classes.get(node.getID());
-//	}
 }

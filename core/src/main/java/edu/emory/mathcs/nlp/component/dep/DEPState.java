@@ -22,24 +22,29 @@ import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
-import edu.emory.mathcs.nlp.learning.util.StringPrediction;
+import edu.emory.mathcs.nlp.learning.util.LabelMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPState extends NLPState implements DEPTransition
+public class DEPState extends NLPState
 {
-//	private DEPLabelCandidate label_indices;
-	private DEPArc[]          oracle;
-	public IntArrayList      stack;
-	private IntArrayList      inter;
-	private int               input;
+	public static final String ARC_LEFT    = "L";
+	public static final String ARC_RIGHT   = "R";
+	public static final String ARC_NO      = "N";
+	public static final String LIST_SHIFT  = "S";
+	public static final String LIST_REDUCE = "R";
+	public static final String LIST_PASS   = "P";
 	
-	public DEPState(NLPNode[] nodes, DEPLabelCandidate indices)
+	private DEPArc[]     oracle;
+	private IntArrayList stack;
+	private IntArrayList inter;
+	private int          input;
+	
+	public DEPState(NLPNode[] nodes)
 	{
 		super(nodes);
-//		label_indices = indices;
 		stack = new IntArrayList();
 		inter = new IntArrayList();
 		input = 0;
@@ -61,27 +66,6 @@ public class DEPState extends NLPState implements DEPTransition
 		return label.toString();
 	}
 	
-//	private int addZeroCost(StringModel model, DEPLabel label)
-//	{
-//		String s = label.toString();
-//		model.addLabel(s);
-//		int index = model.getLabelIndex(s);
-//		label_indices.add(label, index);
-//		return index;
-//	}
-//	
-//	private DEPLabel getZeroCost(StringModel model, DEPLabel oracle)
-//	{
-//		NLPNode stack = getStack();
-//		NLPNode input = getInput();
-//		
-//		if ((oracle.isArc(ARC_LEFT ) && (stack.hasDependencyHead() || input.isDescendantOf(stack))) ||
-//			 oracle.isArc(ARC_RIGHT) && (input.hasDependencyHead() || stack.isDescendantOf(input)))
-//			return getOracleNoX();
-//		
-//		return oracle;
-//	}
-	
 	public DEPLabel getOracleLabel()
 	{
 		NLPNode stack = getStack();
@@ -89,29 +73,25 @@ public class DEPState extends NLPState implements DEPTransition
 		DEPArc gold;
 		String list;
 		
+		// left arc
 		gold = oracle[stack.getID()];
 		
-		if (gold.isNode(input))
+		if (gold.isNode(input) && !input.isDescendantOf(stack))
 		{
 			list = isOracleReduce(true) ? LIST_REDUCE : LIST_PASS;
 			return new DEPLabel(ARC_LEFT, list, gold.getLabel());
 		}
-					
+				
+		// right arc
 		gold = oracle[input.getID()];
 		
-		if (gold.isNode(stack))
+		if (gold.isNode(stack) && !stack.isDescendantOf(input))
 		{
 			list = isOracleShift() ? LIST_SHIFT : LIST_PASS;
 			return new DEPLabel(ARC_RIGHT, list, gold.getLabel());
 		}
 		
-		return getOracleNoX();
-	}
-	
-	private DEPLabel getOracleNoX()
-	{
-		String list;
-		
+		// no arc
 		if      (isOracleShift())		list = LIST_SHIFT;
 		else if (isOracleReduce(false))	list = LIST_REDUCE;
 		else							list = LIST_PASS;
@@ -119,7 +99,7 @@ public class DEPState extends NLPState implements DEPTransition
 		return new DEPLabel(ARC_NO, list, StringConst.EMPTY);
 	}
 	
-	/** Called by {@link #getGoldLabel()}. */
+	/** Called by {@link #getOracleLabel()}. */
 	private boolean isOracleShift()
 	{
 		// if head(input) < stack
@@ -141,7 +121,7 @@ public class DEPState extends NLPState implements DEPTransition
 		return true;
 	}
 	
-	/** Called by {@link #getGoldLabel()}. */
+	/** Called by {@link #getOracleLabel()}. */
 	private boolean isOracleReduce(boolean hasHead)
 	{
 		// if stack has no head
@@ -163,9 +143,9 @@ public class DEPState extends NLPState implements DEPTransition
 //	====================================== TRANSITION ======================================
 	
 	@Override
-	public void next(StringPrediction prediction)
+	public void next(LabelMap map, int yhat, float[] scores)
 	{
-		DEPLabel label = new DEPLabel(prediction);
+		DEPLabel label = new DEPLabel(map.getLabel(yhat));
 		NLPNode  stack = getStack();
 		NLPNode  input = getInput();
 		
@@ -251,7 +231,7 @@ public class DEPState extends NLPState implements DEPTransition
 	}
 	
 	@Override
-	public NLPNode getNode(FeatureItem<?> item)
+	public NLPNode getNode(FeatureItem item)
 	{
 		NLPNode node = null;
 		
@@ -271,13 +251,13 @@ public class DEPState extends NLPState implements DEPTransition
 	public void evaluate(Eval eval)
 	{
 		int las = 0, uas = 0;
-		DEPArc gold;
+		DEPArc  gold;
 		NLPNode node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
-			node = nodes [i];
 			gold = oracle[i];
+			node = nodes [i];
 			
 			if (gold.isNode(node.getDependencyHead()))
 			{
@@ -295,15 +275,5 @@ public class DEPState extends NLPState implements DEPTransition
 		inter.clear();
 		stack.push(stackID);
 		input = inputID;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#setScores(float[])
-	 */
-	@Override
-	public void setScores(float[] scores)
-	{
-		// TODO Auto-generated method stub
-		
 	}
 }

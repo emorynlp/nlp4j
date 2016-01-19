@@ -59,6 +59,6 @@ public class AdaGradMiniBatch extends AdaptiveGradientDescentMiniBatch
 	@Override
 	public String toString()
 	{
-		return toString("AdaGrad-MiniBatch");
+		return "AdaGrad Mini-batch";
 	}
 }

@@ -20,40 +20,50 @@ import java.util.Random;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 
 
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class RollIn
+public class LOLS
 {
 	private int    fixed_stage;
 	private double decaying_rate;
-	private double rollin_probability;
+	private double gold_probability;
 	private Random random;
 	
-	public RollIn(int fixedStage, double decayingRate)
+	public LOLS(int fixedStage, double decayingRate)
 	{
-		fixed_stage = fixedStage;
-		decaying_rate = decayingRate;
-		rollin_probability = 1d;
-		random = new XORShiftRandom(9);
+		init(fixedStage, decayingRate);
 	}
 	
-	public void updateProbability()
+	private void init(int fixedStage, double decayingRate)
+	{
+		fixed_stage      = fixedStage;
+		decaying_rate    = decayingRate;
+		gold_probability = 1d;
+		random           = new XORShiftRandom(9);
+	}
+	
+	public void updateGoldProbability()
 	{
 		if (fixed_stage <= 0)
-			rollin_probability *= decaying_rate;
+			gold_probability *= decaying_rate;
 		else
 			fixed_stage--;
 	}
 	
-	public double getProbability()
+	public double getGoldProbability()
 	{
-		return rollin_probability;
+		return gold_probability;
 	}
 	
 	public boolean chooseGold()
 	{
-		return (rollin_probability > 0) && (rollin_probability >= 1 || rollin_probability > random.nextDouble());
+		return (gold_probability > 0) && (gold_probability >= 1 || gold_probability > random.nextDouble());
+	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format("LOLS: fixed = %d, decaying rate = %s", fixed_stage, decaying_rate);
 	}
 }

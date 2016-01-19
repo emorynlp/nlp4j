@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pos;
+package edu.emory.mathcs.nlp.component.template.util;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -98,6 +98,6 @@ public class AmbiguityClassMap implements Serializable
 	
 	private String toKey(NLPNode node)
 	{
-		return node.getSimplifiedWordForm();
+		return node.getWordFormSimplified();
 	}
 }

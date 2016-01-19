@@ -19,12 +19,11 @@ import java.io.InputStream;
 
 import edu.emory.mathcs.nlp.common.treebank.DEPTagEn;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -32,28 +31,20 @@ import edu.emory.mathcs.nlp.learning.util.MLUtils;
 public class DEPParser extends OnlineComponent<DEPState>
 {
 	private static final long serialVersionUID = 7031031976396726276L;
-	private DEPLabelCandidate label_indices;
+	private DEPLabelCandidate label_candidates;
 
 	public DEPParser()
 	{
-		label_indices = new DEPLabelCandidate();
+		label_candidates = new DEPLabelCandidate(); 
 	}
 	
 	public DEPParser(InputStream configuration)
 	{
 		super(configuration);
-		label_indices = new DEPLabelCandidate();
+		label_candidates = new DEPLabelCandidate();
 	}
 	
 //	============================== ABSTRACT ==============================
-
-	@Override
-	public NLPConfig setConfiguration(InputStream in)
-	{
-		NLPConfig config = (NLPConfig)new DEPConfig(in);
-		setConfiguration(config);
-		return config;
-	}
 	
 	@Override
 	public Eval createEvaluator()
@@ -64,18 +55,27 @@ public class DEPParser extends OnlineComponent<DEPState>
 	@Override
 	protected DEPState initState(NLPNode[] nodes)
 	{
-		return new DEPState(nodes, label_indices);
+		return new DEPState(nodes);
+	}
+	
+//	============================== LABELS ==============================
+	
+	@Override
+	protected void putLabel(String label, int index)
+	{
+		label_candidates.add(label, index);
+	}
+	
+	@Override
+	protected int getLabelIndex(DEPState state, float[] scores)
+	{
+		return label_candidates.getLabelIndex(state.getStack(), state.getInput(), scores);
 	}
 	
 //	============================== POST-PROCESS ==============================
 
 	@Override
 	protected void postProcess(DEPState state)
-	{
-		postProcessHeadless(state);
-	}
-	
-	void postProcessHeadless(DEPState state)
 	{
 		NLPNode[] nodes = state.getNodes();
 		DEPTriple max;
@@ -94,22 +94,22 @@ public class DEPParser extends OnlineComponent<DEPState>
 				if (max.isNull())
 					node.setDependencyHead(nodes[0], DEPTagEn.DEP_ROOT);
 				else
-					node.setDependencyHead(nodes[max.headId], new DEPLabel(optimizer[0].getLabel(max.yhat)).getDeprel());
+					node.setDependencyHead(nodes[max.headId], new DEPLabel(optimizer.getLabel(max.yhat)).getDeprel());
 			}
 		}
 	}
 
 	void processHeadless(DEPState state, DEPTriple max, NLPNode[] nodes, int currID, int dir)
 	{
-		int[] labels = (dir > 0) ? label_indices.getLeftArcs() : label_indices.getRightArcs();
+		IntSet labels = (dir > 0) ? label_candidates.getLeftArcs() : label_candidates.getRightArcs();
 		NLPNode head, node = nodes[currID];
-		OnlineOptimizer optimizer = optimizer[0];
+		int yhat, window = 0;
 		float[] scores;
 		FeatureVector x;
-		int yhat;
 		
 		for (int headID=currID+dir; 0 <= headID&&headID < nodes.length; headID+=dir)
 		{
+			if (++window > 5) break;
 			head = nodes[headID];
 
 			if (!head.isDescendantOf(node))
@@ -117,7 +117,7 @@ public class DEPParser extends OnlineComponent<DEPState>
 				if (dir > 0)	state.reset(currID, headID);
 				else			state.reset(headID, currID);
 				
-				x = feature_template.createFeatureVector(state);
+				x = feature_template.createFeatureVector(state, isTrain());
 				scores = optimizer.scores(x);
 				yhat = MLUtils.argmax(scores, labels);
 				if (max.score < scores[yhat]) max.set(headID, yhat, scores[yhat]);	
@@ -133,7 +133,7 @@ public class DEPParser extends OnlineComponent<DEPState>
 		
 		public DEPTriple()
 		{
-			set(-1, -1, Double.NEGATIVE_INFINITY);
+			set(-1, -1, -Double.MAX_VALUE);
 		}
 		
 		public void set(int headID, int yhat, double score)

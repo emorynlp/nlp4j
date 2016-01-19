@@ -16,7 +16,8 @@
 package edu.emory.mathcs.nlp.learning.optimization.method;
 
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.learning.optimization.reguralization.RegularizedDualAveraging;
+import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
+import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
 import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
@@ -33,11 +34,28 @@ public class AdaDeltaMiniBatch extends AdaGradMiniBatch
 		this(vector, learningRate, decayingRate, bias, null);
 	}
 	
-	public AdaDeltaMiniBatch(WeightVector vector, float learningRate, float decayingRate, float bias, RegularizedDualAveraging rda)
+	public AdaDeltaMiniBatch(WeightVector vector, float learningRate, float decayingRate, float bias, Regularizer rda)
 	{
 		super(vector, learningRate, bias, rda);
+		setDecayingRate(decayingRate);
+	}
+	
+	public float getDecayingRate()
+	{
+		return decaying_rate;
+	}
+	
+	public void setDecayingRate(float decayingRate)
+	{
 		decaying_rate = decayingRate;
 		growth_rate   = 1 - decayingRate;
+	}
+	
+	@Override
+	public void adapt(HyperParameter hp)
+	{
+		super.adapt(hp);
+		setDecayingRate(hp.getDecayingRate());
 	}
 	
 	@Override
@@ -49,6 +67,6 @@ public class AdaDeltaMiniBatch extends AdaGradMiniBatch
 	@Override
 	public String toString()
 	{
-		return toString("AdaDelta-MiniBatch", "decaying rate = "+decaying_rate);
+		return "AdaDelta Mini-batch";
 	}
 }

@@ -58,6 +58,6 @@ public class SoftmaxRegression extends StochasticGradientDescent
 	@Override
 	public String toString()
 	{
-		return toString("Logistic Regression");
+		return "Softmax Regression";
 	}
 }

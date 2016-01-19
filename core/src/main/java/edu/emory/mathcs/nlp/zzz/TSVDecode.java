@@ -27,9 +27,9 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
+import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

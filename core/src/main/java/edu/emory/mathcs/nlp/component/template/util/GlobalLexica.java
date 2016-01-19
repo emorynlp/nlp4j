@@ -30,24 +30,25 @@ import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
+import edu.emory.mathcs.nlp.component.template.config.ConfigXML;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class GlobalLexica
+public class GlobalLexica implements ConfigXML
 {
 	static public PrefixTree<String,Set<String>> named_entity_gazetteers;
-	static public Map<String,List<String>> ambiguity_classes;
-	static public Map<String,Set<String>>  word_clusters;
-	static public Map<String,float[]>      word_embeddings;
-	static public Set<String>              stop_words;
+	static public Map<String,List<String>>       ambiguity_classes;
+	static public Map<String,Set<String>>        word_clusters;
+	static public Map<String,float[]>            word_embeddings;
+	static public Set<String>                    stop_words;
 	
 	static private Field named_entity_gazetteers_field;
 	static private Field ambiguity_classes_field;
-	static private Field word_embeddings_field;
 	static private Field word_clusters_field;
+	static private Field word_embeddings_field;
 	static private Field stop_words_field; 
 	
 	static private boolean initialized = false;
@@ -56,15 +57,15 @@ public class GlobalLexica
 	
 	static public void init(Element doc)
 	{
-		Element eLexica = XMLUtils.getFirstElementByTagName(doc, "lexica");
+		Element eLexica = XMLUtils.getFirstElementByTagName(doc, LEXICA);
 		if (initialized || eLexica == null) return;
 		initialized = true;
 		
-		initLexica(eLexica, "ambiguity_classes", GlobalLexica::initAmbiguityClasses);
-		initLexica(eLexica, "word_clusters", GlobalLexica::initWordClusters);
-		initLexica(eLexica, "word_embeddings", GlobalLexica::initWordEmbeddings);
-		initLexica(eLexica, "named_entity_gazetteers", GlobalLexica::initNamedEntityGazetteers);
-		initLexica(eLexica, "stop_words", GlobalLexica::initStopWords);
+		initLexica(eLexica, AMBIGUITY_CLASSES      , GlobalLexica::initAmbiguityClasses);
+		initLexica(eLexica, WORD_CLUSTERS          , GlobalLexica::initWordClusters);
+		initLexica(eLexica, WORD_EMBEDDINGS        , GlobalLexica::initWordEmbeddings);
+		initLexica(eLexica, NAMED_ENTITY_GAZETTEERS, GlobalLexica::initNamedEntityGazetteers);
+		initLexica(eLexica, STOP_WORDS             , GlobalLexica::initStopWords);
 	}
 	
 	static private void initLexica(Element eLexica, String tag, BiConsumer<XZInputStream,Field> f)
@@ -74,7 +75,7 @@ public class GlobalLexica
 		
 		String path = XMLUtils.getTrimmedTextContent(element);
 		XZInputStream in = IOUtils.createXZBufferedInputStream(IOUtils.getInputStream(path));
-		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, "field"));
+		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, FIELD));
 		f.accept(in, field);
 	}
 	

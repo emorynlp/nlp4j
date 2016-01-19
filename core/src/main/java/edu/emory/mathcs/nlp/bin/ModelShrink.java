@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.bin;
 
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.kohsuke.args4j.Option;
@@ -26,10 +27,10 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 
 /**
@@ -66,28 +67,29 @@ public class ModelShrink
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
 		OnlineOptimizer optimizer = component.getOptimizer();
+		byte[] prevComponent;
 		double currScore;
 		
 		evaluate(inputFiles, component, 0f);
 		
 		for (float f=start; ; f+=increment)
 		{
+			prevComponent = IOUtils.toByteArray(component);
 			component.getFeatureTemplate().reduce(optimizer.getWeightVector(), f);
 			currScore = evaluate(inputFiles, component, f);
-			
-			if (lower_bound >= currScore)
-				break;
+			if (lower_bound >= currScore) break;
 		}
 		
-//		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
-//		model.fromByteArray(prevModel);
-//		fout.writeObject(component);
-//		fout.close();
+		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
+		component = (OnlineComponent<S>)IOUtils.fromByteArray(prevComponent);
+		fout.writeObject(component);
+		fout.close();
 	}
 	
 	public <S extends NLPState>double evaluate(List<String> inputFiles, OnlineComponent<S> component, float rate) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
+		long st, et, ttime = 0, tnode = 0;
 		NLPNode[] nodes;
 		
 		component.setFlag(NLPFlag.EVALUATE);
@@ -101,13 +103,17 @@ public class ModelShrink
 			while ((nodes = reader.next()) != null)
 			{
 				GlobalLexica.assignGlobalLexica(nodes);
+				st = System.currentTimeMillis();
 				component.process(nodes);
+				et = System.currentTimeMillis();
+				ttime += et - st;
+				tnode += nodes.length - 1;
 			}
 			
 			reader.close();
 		}
 		
-		System.out.println(String.format("%5.4f: %s -> %d", rate, eval.toString(), component.getFeatureTemplate().getSparseFeatureSize()));
+		System.out.println(String.format("%5.4f: %s -> %7d, N/S = %d", rate, eval.toString(), component.getFeatureTemplate().getSparseFeatureSize(), (int)Math.round(1000d * tnode / ttime)));
 		return eval.score();
 	}
 	

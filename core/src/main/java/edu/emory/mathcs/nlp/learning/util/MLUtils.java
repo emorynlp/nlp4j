@@ -17,6 +17,8 @@ package edu.emory.mathcs.nlp.learning.util;
 
 import org.apache.commons.math3.util.FastMath;
 
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -59,15 +61,14 @@ public class MLUtils
 		return maxIndex;
 	}
 	
-	static public int argmax(float[] scores, int[] labels)
+	static public int argmax(float[] scores, IntCollection labels)
 	{
-		int i, j, size = labels.length, maxIndex = labels[0];
-		float maxValue = scores[maxIndex];
+		if (labels == null || labels.isEmpty()) return argmax(scores);
+		float maxValue = -Float.MAX_VALUE;
+		int   maxIndex = -1;
 		
-		for (j=1; j<size; j++)
+		for (int i : labels)
 		{
-			i = labels[j];
-			
 			if (maxValue < scores[i])
 			{
 				maxIndex = i;

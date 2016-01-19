@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.dep;
 
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
@@ -33,7 +34,7 @@ public class DEPLabel implements Serializable, Comparable<DEPLabel>
 	private String s_arc;
 	private String s_list;
 	private String s_deprel;
-	private double d_score;
+	private float  d_score;
 	
 	public DEPLabel() {}
 	
@@ -54,7 +55,7 @@ public class DEPLabel implements Serializable, Comparable<DEPLabel>
 		set(p.getLabel(), p.getScore());
 	}
 	
-	public void set(String label, double score)
+	public void set(String label, float score)
 	{
 		int idx1 = label.indexOf(DELIM);
 		int idx2 = label.lastIndexOf(DELIM);
@@ -80,7 +81,7 @@ public class DEPLabel implements Serializable, Comparable<DEPLabel>
 		return s_deprel;
 	}
 	
-	public double getScore()
+	public float getScore()
 	{
 		return d_score;
 	}
@@ -100,7 +101,7 @@ public class DEPLabel implements Serializable, Comparable<DEPLabel>
 		s_deprel = deprel;
 	}
 	
-	public void setScore(double score)
+	public void setScore(float score)
 	{
 		d_score = score;
 	}
@@ -138,13 +139,13 @@ public class DEPLabel implements Serializable, Comparable<DEPLabel>
 	@Override
 	public String toString()
 	{
-		StringBuilder build = new StringBuilder();
+		StringJoiner join = new StringJoiner(DELIM);
 		
-		build.append(s_arc);		build.append(DELIM);
-		build.append(s_list);		build.append(DELIM);
-		build.append(s_deprel);
+		join.add(s_arc);
+		join.add(s_list);
+		join.add(s_deprel);
 		
-		return build.toString();
+		return join.toString();
 	}
 
 	@Override
