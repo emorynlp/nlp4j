@@ -67,7 +67,7 @@ public class DEPParser extends OnlineComponent<DEPState>
 	}
 	
 	@Override
-	protected int getLabelIndex(DEPState state, float[] scores)
+	protected int getPrediction(DEPState state, float[] scores)
 	{
 		return label_candidates.getLabelIndex(state.getStack(), state.getInput(), scores);
 	}

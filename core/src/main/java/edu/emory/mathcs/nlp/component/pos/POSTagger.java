@@ -52,13 +52,10 @@ public class POSTagger extends OnlineComponent<POSState>
 	}
 	
 	@Override
-	protected int getLabelIndex(POSState state, float[] scores)
+	protected int getPrediction(POSState state, float[] scores)
 	{
 		return MLUtils.argmax(scores);
 	}
-	
-	@Override
-	protected void putLabel(String label, int index) {}
 	
 	@Override
 	protected void postProcess(POSState state) {}

@@ -18,10 +18,10 @@ package edu.emory.mathcs.nlp.component.ner;
 import java.io.InputStream;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.learning.util.MLUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -40,14 +40,6 @@ public class NERTagger extends OnlineComponent<NERState>
 //	============================== ABSTRACT ==============================
 	
 	@Override
-	public NLPConfig setConfiguration(InputStream in)
-	{
-		NLPConfig config = (NLPConfig)new NERConfig(in);
-		setConfiguration(config);
-		return config;
-	}
-	
-	@Override
 	public Eval createEvaluator()
 	{
 		return new F1Eval();
@@ -59,8 +51,12 @@ public class NERTagger extends OnlineComponent<NERState>
 		return new NERState(nodes);
 	}
 	
-//	====================================== POST-PROCESS ======================================
-	
+	@Override
+	protected int getPrediction(NERState state, float[] scores)
+	{
+		return MLUtils.argmax(scores);
+	}
+
 	@Override
 	protected void postProcess(NERState state)
 	{

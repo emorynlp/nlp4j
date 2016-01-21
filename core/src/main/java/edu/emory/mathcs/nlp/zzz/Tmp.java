@@ -22,8 +22,7 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		float f = -Float.MAX_VALUE;
-		System.out.println(f);
+		
 	}
 		
 	static public void main(String[] args) throws Exception

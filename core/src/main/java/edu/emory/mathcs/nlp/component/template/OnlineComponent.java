@@ -130,8 +130,6 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 		return config;
 	}
 	
-	public abstract Eval createEvaluator();
-	
 //	============================== FLAGS ==============================
 	
 	public boolean isCollect()
@@ -156,9 +154,6 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	
 //	============================== PROCESS ==============================
 	
-	/** @return the processing state for the input nodes. */
-	protected abstract S initState(NLPNode[] nodes);
-
 	@Override
 	public void process(NLPNode[] nodes)
 	{
@@ -186,16 +181,12 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 				optimizer.train(instance);
 				scores = instance.getScores();
 				putLabel(instance.getStringLabel(), instance.getGoldLabel());
-				yhat = hyper_parameter.getLOLS().chooseGold() ? instance.getGoldLabel() : getLabelIndex(state, scores);
-
-//				gold = instance.getGoldLabel();
-//				yhat = instance.getPredictedLabel();
-//				if (hyper_parameter.getLOLS().chooseGold()) yhat = gold;
+				yhat = hyper_parameter.getLOLS().chooseGold() ? instance.getGoldLabel() : getPrediction(state, scores);
 			}
 			else
 			{
 				scores = optimizer.scores(x);
-				yhat = getLabelIndex(state, scores);
+				yhat = getPrediction(state, scores);
 			}
 			
 			state.next(optimizer.getLabelMap(), yhat, scores);
@@ -210,10 +201,15 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	
 //	============================== HELPERS ==============================
 	
-	protected abstract void putLabel(String label, int index);
+	public abstract Eval createEvaluator();
 	
-	protected abstract int getLabelIndex(S state, float[] scores);
+	/** @return the processing state for the input nodes. */
+	protected abstract S initState(NLPNode[] nodes);
+	
+	protected abstract int getPrediction(S state, float[] scores);
 	
 	/** Post-processes if necessary. */
 	protected abstract void postProcess(S state);
+	
+	protected void putLabel(String label, int index) {}
 }
