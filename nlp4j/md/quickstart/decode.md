@@ -5,14 +5,14 @@
 The following shows the command to run the NLP pipeline for tokenization, part-of-speech tagging, morphological analysis, named entity recognition, dependency parsing, and semantic role labeling:
 
 ```bash
-java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string> -oe <string>]
+java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string> -oe <string> -format <string> -threads <integer>]
 
--c       <string>  : configuration filename (required)
--i       <string>  : input path (required)
--ie      <string>  : input file extension (default: *)
--oe      <string>  : output file extension (default: nlp)
--format  <string>  : format of the input data (raw|sen|tsv; default: raw)
--threads <integer> : number of threads (default: 2)
+-c       <filename> : configuration filename (required)
+-i       <filepath> : input path (required)
+-ie      <string>   : input file extension (default: *)
+-oe      <string>   : output file extension (default: nlp)
+-format  <string>   : format of the input data (raw|sen|tsv; default: raw)
+-threads <integer>  : number of threads (default: 2)
 ```
 
 * `-c` specifies the configuration file (see [configuration](#configuration)).
@@ -22,10 +22,10 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 * `-format` specifies the format of the input file (see [data format](data-format.md)).
 * `-threads` specifies the number of threads to be used. When multi-threads are used, each file is assigned to an individual thread.
 
-The following command takes [emorynlp.txt](../../src/main/resources/dat/emorynlp.txt) and [config-decode-general.xml](../../src/main/resources/configuration/config-decode-general.xml), processes the NLP pipeline, and generates [emorynlp.txt.nlp](../../src/main/resources/dat/emorynlp.txt.nlp).
+The following command takes [config-decode-general.xml](../../src/main/resources/configuration/config-decode-general.xml) and [emorynlp.txt](../../src/main/resources/dat/emorynlp.txt), and generates [emorynlp.txt.nlp](../../src/main/resources/dat/emorynlp.txt.nlp) in the [`tsv`](data-format.md#tab-separated-values-format) format.
 
 ```bash
-$ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config_decode.xml -i emorynlp.txt
+$ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config-decode-general.xml -i emorynlp.txt
 Loading ambiguity classes: 408397
 Loading word clusters: 594491
 Loading word embeddings: 
@@ -40,10 +40,7 @@ emorynlp.txt
 ```
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* Add [log4j.properties](../../src/main/resources/configuration/log4j.properties) to your classpath (see the [log4j](http://logging.apache.org/log4j/) project).
-* Use our [visualization tool](http://nlp.mathcs.emory.edu/clearnlp/demo/demo.html) to view the output.
-
-
+* Add [log4j.properties](../../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
 
 ## Configuration
 
@@ -71,17 +68,18 @@ The following shows the content in [config-decode-general.xml](../../src/main/re
 </configuration>
 ```
 
-
-
-| Element | Description |
-| :-----: | :---------- |
-| `<language>` | Specifies the language of the models.<ul><li>See [TLanguage](https://github.com/clir/clearnlp/blob/master/src/main/java/edu/emory/clir/clearnlp/util/lang/TLanguage.java) for all supported languages.</li></ul> |
-| `<global>` | Specifies the lexicons used globally across different components.<ul><li>`distributional_semantics`: distributional semantics (e.g., brown clusters, word embeddings).</li><li>`named_entity_dictionary `: named entity dictionary.</li></ul> |
-| `<model>` | Specifies the model file of each component.<ul><li>See [NLPMode](https://github.com/clir/clearnlp/blob/master/src/main/java/edu/emory/clir/clearnlp/component/utils/NLPMode.java) for all supported components.</li><li>See [How to add models](../quick_start/models.md) for more details about the model files.</li></ul> |
-| `<reader>` | Specifies the data format of the input files.<ul><li>`type` specifies the type of the [data format](../formats/data_format.md):<br>&#9702; `raw`: accepts texts in any format.<br>&#9702; `line`: requires each sentence to be in one line.<br>&#9702; `tsv `: requires each field to be in one column delimited by tabs.</li><li>When `tsv ` is used, `<column>` must be specified.<br>&#9702; `index` specifies the index of the field, starting at 1.<br>&#9702; `field` specifies the name of the field.<br>&nbsp;&nbsp;&nbsp;&#8226; `form`: word form.</li></ul> |
-| `<dep>` | Specifies the configuration of dependency parsing.<ul><li>`root_label`: label of the root node.</li><li>`beam_size`: beam size for selectional branching.</li></ul> |
-
-
+* `<tsv>`:
+ * When the `tsv` format is used, only the `form` column must be specified in the configuration file.
+* `<lexica>`:
+ * `<ambiguity_classes>`: 
+ * `<word_clusters>`: 
+ * `<word_embeddings>`: 
+ * `<named_entity_gazetteers>`: 
+* `<models>`:
+ * `<pos>`: 
+ * `<ner>`: 
+ * `<dep>`: 
+ * `<srl>`: 
 
 
 ## Run a Java class using Maven

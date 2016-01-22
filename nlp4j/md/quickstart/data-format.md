@@ -8,9 +8,9 @@ The `raw` format accepts texts in any format.
 I'd like to meet Dr. Choi. He's the founder of EmoryNLP.
 ```
 
-## Line Format
+## Sentence Format
 
-The `line` format expects a sentence per line.
+The `sen` format expects a sentence per line.
 
 ```
 I'd like to meet Dr. Choi.
@@ -19,7 +19,7 @@ He's the founder of EmoryNLP.
 
 ## Tab Separated Values Format
 
-The `tsv` format expects columns delimited by a tab and sentences separated by an empty line.
+The `tsv` format expects columns delimited by `\t` and sentences separated by `\n`.
 
 ```tsv
 1    I           i           PRP    _             3    nsubj    3:A0;5:A0    O
@@ -64,3 +64,4 @@ The column fields are specified in the [configuration files](../../src/main/reso
 * `dhead`: dependency head token ID.
 * `deprel`: dependency label.
 * `sheads`: semantic heads; head IDs and labels are delimited by `:`.
+* `nament`: named entity tags in the BILOU notaiton.
