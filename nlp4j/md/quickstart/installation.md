@@ -4,13 +4,13 @@
 * Create a maven project: [maven in 5 minutes](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html).
 * Move into the maven directory:
 
-	```
+	```bash
 	cd your_maven_project
 	```
 
 * Add the following dependency to `pom.xml`:
 
-	```maven
+	```xml
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
       <artifactId>emorynlp</artifactId>
@@ -32,7 +32,7 @@
 
 	If you see something like the following, it is properly installed.
 
-	```bash
+	```
 	Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
 	[INFO] Scanning for projects...
 	[INFO]                                                                         

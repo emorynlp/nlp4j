@@ -19,32 +19,28 @@ He's the founder of EmoryNLP.
 
 ## Tab Separated Values Format
 
-In the `tsv` format, each column represents a different field and sentences are separated by an empty line.
+The `tsv` format expects columns delimited by a tab and sentences separated by an empty line.
 
 ```tsv
-1    I           i           PRP    _             3    nsubj     3:A0;5:A0
-2    'd          would       MD     _             3    aux       3:AM-MOD
-3    like        like        VB     pb=like.02    0    root      _
-4    to          to          TO     _             5    aux       _
-5    meet        meet        VB     pb=meet.01    3    xcomp     3:A1
-6    Dr.         dr.         NNP    _             7    nn        _
-7    Choi        choi        NNP    _             5    dobj      5:A1
-8    .           .           .      _             3    punct     _
+1    I           i           PRP    _             3    nsubj    3:A0;5:A0    O
+2    'd          would       MD     _             3    aux      3:AM-MOD     O
+3    like        like        VB     pb=like.02    0    root     _            O
+4    to          to          TO     _             5    aux      _            O
+5    meet        meet        VB     pb=meet.01    3    xcomp    3:A1         O
+6    Dr.         dr.         NNP    _             7    nn       _            B-PERSON
+7    Choi        choi        NNP    _             5    dobj     5:A1         L-PERSON
+8    .           .           .      _             3    punct    _            O
  
-1    He          he          PRP    _             2    nsubj    2:A1
-2    's          be          VBZ    pb=be.01      0    root     _
-3    the         the         DT     _             4    nn       _
-4    founder     owner       NN     _             2    attr     2:A2
-5    of          of          IN     _             4    prep     _
-6    EmoryNLP    emory       NNP    _             5    pobj     _
-7    .           .           .      _             .    punct    _
+1    He          he          PRP    _             2    nsubj    2:A1         O
+2    's          be          VBZ    pb=be.01      0    root     _            O
+3    the         the         DT     _             4    nn       _            O
+4    founder     owner       NN     _             2    attr     2:A2         O
+5    of          of          IN     _             4    prep     _            O
+6    EmoryNLP    emory       NNP    _             5    pobj     _            U-ORG
+7    .           .           .      _             .    punct    _            O
 ```
 
-```
-1	2	3
-```
-
-These columns are specified in the [configuration files](../../src/main/resources/configuration/) as follows:
+The column fields are specified in the [configuration files](../../src/main/resources/configuration/) as follows:
 
 ```xml
 <configuration>
@@ -55,15 +51,16 @@ These columns are specified in the [configuration files](../../src/main/resource
         <column index="4" field="feats"/>
         <column index="5" field="dhead"/>
         <column index="6" field="deprel"/>
+        <column index="7" field="sheads"/>
+        <column index="8" field="nament"/>
     </tsv>
 </configuration>
 ```
 
-* `id`: current token ID (starting at `0`).
 * `form`: word form.
 * `lemma`: lemma.
 * `pos`: part-of-speech tag.
-* `feats`: extra features; different features are delimited by `|`, keys and values are delimited by `=` (`_` indicates no feature).
-* `headId`: head token ID.
+* `feats`: extra features; features are delimited by `|`, and keys and values are delimited by `=` (e.g., `k1=v1|k2=v2`).
+* `dhead`: dependency head token ID.
 * `deprel`: dependency label.
-* `sheads`: semantic heads (`_` indicates no semantic head).
+* `sheads`: semantic heads; head IDs and labels are delimited by `:`.
