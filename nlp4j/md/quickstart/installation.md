@@ -1,4 +1,4 @@
-# How To Install
+# Installation
 
 * Make sure [Java 8](http://www.oracle.com/technetwork/java/javase/) and [Maven 3](https://maven.apache.org) are installed on your machine.
 * Create a maven project: [maven in 5 minutes](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html).
@@ -8,7 +8,7 @@
 	cd your_maven_project
 	```
 
-* Add the following dependency to `pom.xml`.
+* Add the following dependency to `pom.xml`:
 
 	```maven
     <dependency>

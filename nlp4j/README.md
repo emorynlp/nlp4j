@@ -2,13 +2,13 @@
 
 The Emory NLP project provides software and resources for natural language processing. This project is under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0) license and developed by the [NLP Research Group](http://nlp.mathcs.emory.edu) at [Emory University](http://emory.edu).
 
-* Latest release: 1.0.0 (expected by 12/2015).
+* Latest release: 1.0.0 (expected by 02/2016).
 
 ## Core NLP
 
 Quick start:
 
-* [How to install](md/quickstart/install.md).
+* [How to install](md/quickstart/installation.md).
 * [How to train](https://github.com/emorynlp/corenlp/blob/master/md/train.md).
 * [How to decode](md/quickstart/decode.md).
 

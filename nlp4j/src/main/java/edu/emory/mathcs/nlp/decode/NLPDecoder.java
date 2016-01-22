@@ -32,11 +32,11 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.morph.english.EnglishMorphAnalyzer;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
-import edu.emory.mathcs.nlp.component.template.NLPOnlineComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
@@ -70,15 +70,34 @@ public class NLPDecoder
 		
 		BinUtils.LOG.info("Loading tokenizer\n");
 		setTokenizer(new EnglishTokenizer());
+		int index = 0;
 		
-		BinUtils.LOG.info("Loading part-of-speech tagger\n");
-		components[0] = getComponent(IOUtils.getInputStream(config.getPartOfSpeechTagging()));
-		
-		BinUtils.LOG.info("Loading morphological analyzer\n");
-		components[1] = new EnglishMorphAnalyzer();
-		
-		BinUtils.LOG.info("Loading named entity recognizer\n");
-		components[1] = getComponent(IOUtils.getInputStream(config.getNamedEntityRecognition()));
+		if (config.getPartOfSpeechTagging() != null)
+		{
+			BinUtils.LOG.info("Loading part-of-speech tagger\n");
+			components[index++] = getComponent(IOUtils.getInputStream(config.getPartOfSpeechTagging()));
+			
+			BinUtils.LOG.info("Loading morphological analyzer\n");
+			components[index++] = new EnglishMorphAnalyzer();
+			
+			if (config.getNamedEntityRecognition() != null)
+			{
+				BinUtils.LOG.info("Loading named entity recognizer\n");
+				components[index++] = getComponent(IOUtils.getInputStream(config.getNamedEntityRecognition()));		
+			}
+			
+			if (config.getDependencyParsing() != null)
+			{
+				BinUtils.LOG.info("Loading dependency parser\n");
+				components[index++] = getComponent(IOUtils.getInputStream(config.getDependencyParsing()));
+				
+				if (config.getSemanticRoleLabeling() != null)
+				{
+					BinUtils.LOG.info("Loading semantic role labeler\n");
+					components[index++] = getComponent(IOUtils.getInputStream(config.getSemanticRoleLabeling()));		
+				}	
+			}
+		}
 		
 		BinUtils.LOG.info("Finished loading\n");
 	}
@@ -220,11 +239,11 @@ public class NLPDecoder
 	public NLPComponent getComponent(InputStream in)
 	{
 		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(in);
-		NLPOnlineComponent<?> component = null;
+		OnlineComponent<?> component = null;
 		
 		try
 		{
-			component = (NLPOnlineComponent<?>)oin.readObject();
+			component = (OnlineComponent<?>)oin.readObject();
 			component.setFlag(NLPFlag.DECODE);
 			oin.close();
 		}
