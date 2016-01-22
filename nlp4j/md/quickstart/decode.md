@@ -19,13 +19,13 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 * `-i` specifies the input path pointing to either a file or a directory. When the path points to a file, only the specific file is processed. When the path points to a directory, all files with the file extension `-ie` under the specific directory are processed.
 * `-ie` specifies the input file extension. The default value `*` implies files with any extension. This option is used only when the input path `-i` points to a directory.
 * `-oe` specifies the output file extension appended to each input filename. The corresponding output file, consisting of the NLP output, will be generated.
-* `-format` specifies the format of the input file (see [input file format](#input-file-format)).
+* `-format` specifies the format of the input file (see [data format](data-format.md)).
 * `-threads` specifies the number of threads to be used. When multi-threads are used, each file is assigned to an individual thread.
 
-The following command takes [emory.txt](../../src/main/resources/dat/emory.txt) and [config_decode.xml](../../src/main/resources/configuration/config_decode.xml), processes the NLP pipeline, and generates [emory.txt.nlp](../../src/main/resources/dat/emory.txt.nlp).
+The following command takes [emorynlp.txt](../../src/main/resources/dat/emorynlp.txt) and [config-decode-general.xml](../../src/main/resources/configuration/config-decode-general.xml), processes the NLP pipeline, and generates [emorynlp.txt.nlp](../../src/main/resources/dat/emorynlp.txt.nlp).
 
 ```bash
-$ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config_decode.xml -i emory.txt
+$ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config_decode.xml -i emorynlp.txt
 Loading ambiguity classes: 408397
 Loading word clusters: 594491
 Loading word embeddings: 
@@ -36,16 +36,42 @@ Loading named entity recognizer
 Loading dependency parser
 Loading semantic role labeler
 
-emory.txt
+emorynlp.txt
 ```
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* Add [log4j.properties](../../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
+* Add [log4j.properties](../../src/main/resources/configuration/log4j.properties) to your classpath (see the [log4j](http://logging.apache.org/log4j/) project).
 * Use our [visualization tool](http://nlp.mathcs.emory.edu/clearnlp/demo/demo.html) to view the output.
+
+
 
 ## Configuration
 
-Sample configuration files can be found [here](../../src/main/resources/configuration/).
+The following shows the content in [config-decode-general.xml](../../src/main/resources/configuration/config-decode-general.xml).  More configuration files can be found [here](../../src/main/resources/configuration/).
+
+```xml
+<configuration>
+	<tsv>
+        <column index="0" field="form"/>
+    </tsv>
+
+    <lexica>
+        <ambiguity_classes field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
+        <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
+        <word_embeddings field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-word2vec-embeddings-simplified.xz</word_embeddings>
+        <named_entity_gazetteers field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
+    </lexica>
+
+    <models>
+    	<pos>edu/emory/mathcs/nlp/english/models/en-general-pos.xz</pos>
+    	<ner>edu/emory/mathcs/nlp/english/models/en-general-ner.xz</ner>
+    	<dep>edu/emory/mathcs/nlp/english/models/en-general-dep.xz</dep>
+    	<srl>edu/emory/mathcs/nlp/english/models/en-general-srl.xz</srl>
+    </models>
+</configuration>
+```
+
+
 
 | Element | Description |
 | :-----: | :---------- |
@@ -55,7 +81,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 | `<reader>` | Specifies the data format of the input files.<ul><li>`type` specifies the type of the [data format](../formats/data_format.md):<br>&#9702; `raw`: accepts texts in any format.<br>&#9702; `line`: requires each sentence to be in one line.<br>&#9702; `tsv `: requires each field to be in one column delimited by tabs.</li><li>When `tsv ` is used, `<column>` must be specified.<br>&#9702; `index` specifies the index of the field, starting at 1.<br>&#9702; `field` specifies the name of the field.<br>&nbsp;&nbsp;&nbsp;&#8226; `form`: word form.</li></ul> |
 | `<dep>` | Specifies the configuration of dependency parsing.<ul><li>`root_label`: label of the root node.</li><li>`beam_size`: beam size for selectional branching.</li></ul> |
 
-## Input File Format
+
 
 
 ## Run a Java class using Maven

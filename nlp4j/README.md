@@ -4,21 +4,20 @@ The Emory NLP project provides software and resources for natural language proce
 
 * Latest release: 1.0.0 (expected by 02/2016).
 
-## Core NLP
+## Quick Start
 
-Quick start:
+* [How to install](md/quickstart/installation.md)
+* [How to train](https://github.com/emorynlp/corenlp/blob/master/md/train.md)
+* [How to decode](md/quickstart/decode.md)
+* [Data format](md/quickstart/data-format.md)
 
-* [How to install](md/quickstart/installation.md).
-* [How to train](https://github.com/emorynlp/corenlp/blob/master/md/train.md).
-* [How to decode](md/quickstart/decode.md).
+## Components
 
-Components:
-
-* [Tokenization](https://github.com/emorynlp/tokenization).
-* [Morphological analysis](https://github.com/emorynlp/morphological_analysis).
-* [Part-of-speech tagging](md/component/part_of_speech_tagging.md).
-* [Named entity recognition](md/component/named_entity_recognition.md).
-* [Dependency parsing](md/component/dependency_parsing.md).
-* [Semantic role labeling](md/component/semantic_role_labeling.md).
-* [Coreference resolution](md/component/coreference_resolution.md).
-* [Sentiment analysis](md/component/sentiment_analysis.md).
+* [Tokenization](https://github.com/emorynlp/tokenization)
+* [Morphological analysis](https://github.com/emorynlp/morphological_analysis)
+* [Part-of-speech tagging](md/component/part_of_speech_tagging.md)
+* [Named entity recognition](md/component/named_entity_recognition.md)
+* [Dependency parsing](md/component/dependency_parsing.md)
+* [Semantic role labeling](md/component/semantic_role_labeling.md)
+* [Coreference resolution](md/component/coreference_resolution.md)
+* [Sentiment analysis](md/component/sentiment_analysis.md)
