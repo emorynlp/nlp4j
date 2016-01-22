@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,42 +65,42 @@ public class NLPDecoder
 	
 	public void init(InputStream configuration)
 	{
-		NLPComponent[] components = new NLPComponent[2];
+		List<NLPComponent> components = new ArrayList<>();
 		config = new DecodeConfig(configuration);
-		setComponents(components);
 		
 		BinUtils.LOG.info("Loading tokenizer\n");
 		setTokenizer(new EnglishTokenizer());
-		int index = 0;
 		
 		if (config.getPartOfSpeechTagging() != null)
 		{
 			BinUtils.LOG.info("Loading part-of-speech tagger\n");
-			components[index++] = getComponent(IOUtils.getInputStream(config.getPartOfSpeechTagging()));
+			components.add(getComponent(IOUtils.getInputStream(config.getPartOfSpeechTagging())));
 			
 			BinUtils.LOG.info("Loading morphological analyzer\n");
-			components[index++] = new EnglishMorphAnalyzer();
+			components.add(new EnglishMorphAnalyzer());
 			
 			if (config.getNamedEntityRecognition() != null)
 			{
 				BinUtils.LOG.info("Loading named entity recognizer\n");
-				components[index++] = getComponent(IOUtils.getInputStream(config.getNamedEntityRecognition()));		
+				components.add(getComponent(IOUtils.getInputStream(config.getNamedEntityRecognition())));		
 			}
 			
 			if (config.getDependencyParsing() != null)
 			{
 				BinUtils.LOG.info("Loading dependency parser\n");
-				components[index++] = getComponent(IOUtils.getInputStream(config.getDependencyParsing()));
+				components.add(getComponent(IOUtils.getInputStream(config.getDependencyParsing())));
 				
 				if (config.getSemanticRoleLabeling() != null)
 				{
 					BinUtils.LOG.info("Loading semantic role labeler\n");
-					components[index++] = getComponent(IOUtils.getInputStream(config.getSemanticRoleLabeling()));		
+					components.add(getComponent(IOUtils.getInputStream(config.getSemanticRoleLabeling())));		
 				}	
 			}
 		}
-		
-		BinUtils.LOG.info("Finished loading\n");
+
+		this.components = new NLPComponent[components.size()];
+		components.toArray(this.components);
+		BinUtils.LOG.info("\n");
 	}
 	
 //	======================================== GETTERS/SETTERS ========================================
