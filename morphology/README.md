@@ -1,6 +1,6 @@
 # Morphological Analysis
 
-Our morphological analyzer generates root forms (lemmas) of word tokens. It is a rule-based analyzer inspired by the [WordNet morphy](http://wordnet.princeton.edu/man/morphy.7WN.html) although it uses a larger dictionary gathered from various sources and more advanced heuristics. It also normalizes numbers, redundant punctuation, hyperlinks, etc (see the examples below), which is found to be useful for several NLP tasks (see [`toSimplifiedForm`](https://github.com/emorynlp/common/blob/master/src/main/java/edu/emory/mathcs/nlp/common/util/StringUtils.java#L142)).
+Our morphological analyzer generates root forms (lemmas) of word tokens. It is a rule-based analyzer inspired by the [WordNet morphy](http://wordnet.princeton.edu/man/morphy.7WN.html) although it uses a larger dictionary gathered from various sources and more advanced heuristics. It also normalizes numbers, redundant punctuation, hyperlinks, etc (see the examples below), which is found to be useful for several NLP tasks (see [`toSimplifiedForm`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/common/util/StringUtils.java#L142)).
 
 ## Normalization
 
