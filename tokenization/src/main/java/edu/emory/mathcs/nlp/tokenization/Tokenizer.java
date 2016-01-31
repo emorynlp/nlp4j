@@ -19,7 +19,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,15 +52,33 @@ abstract public class Tokenizer
 	private final Pattern P_ABBREVIATION = PatternUtils.createClosedPattern("\\p{Alnum}([\\.|-]\\p{Alnum})*");
 	private final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['\u2019]?[sS]?");
 
-	private Emoticon d_emoticon;
-	private Currency d_currency;
-	private Unit     d_unit;
+	private Emoticon    d_emoticon;
+	private Currency    d_currency;
+	private Unit        d_unit;
+	private Set<String> d_preserve;
 	
 	public Tokenizer()
 	{
 		d_emoticon = new Emoticon();
 		d_currency = new Currency();
 		d_unit     = new Unit();
+		d_preserve = initPreserve();
+	}
+	
+	private Set<String> initPreserve()
+	{
+		BufferedReader reader = IOUtils.createBufferedReader(IOUtils.getInputStreamsFromResource(Dictionary.ROOT+"preserve.txt"));
+		Set<String> set = new HashSet<>();
+		String line;
+		
+		try
+		{
+			while ((line = reader.readLine()) != null)
+				set.add(line.trim());
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return set;
 	}
 	
 	public static Tokenizer create(Language language)
@@ -165,7 +185,7 @@ abstract public class Tokenizer
 	/** Called by {@link #tokenizeMetaInfo(List, String)}. */
 	private int[] getMetaRange(String s)
 	{
-		if (MetaUtils.startsWithNetworkProtocol(s))
+		if (MetaUtils.startsWithNetworkProtocol(s) || d_preserve.contains(s))
 			return new int[]{0, s.length()};
 		
 		int[] ps;

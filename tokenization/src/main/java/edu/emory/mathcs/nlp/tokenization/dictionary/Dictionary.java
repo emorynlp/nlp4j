@@ -22,7 +22,7 @@ import edu.emory.mathcs.nlp.common.util.CharUtils;
  */
 public abstract class Dictionary
 {
-	static String ROOT = "edu/emory/mathcs/nlp/tokenization/dictionary/";
+	static public String ROOT = "edu/emory/mathcs/nlp/tokenization/dictionary/";
 	
 	public String[] tokenize(String s)
 	{
