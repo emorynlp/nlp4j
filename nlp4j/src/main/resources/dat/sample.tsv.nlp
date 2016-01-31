@@ -1,0 +1,33 @@
+1	Pierre	_	NNP	_	B-PERSON	_	_	_
+2	Vinken	_	NNP	_	L-PERSON	_	_	_
+3	,	_	,	_	O	_	_	_
+4	61	_	CD	_	B-DATE	_	_	_
+5	years	_	NNS	_	I-DATE	_	_	_
+6	old	_	JJ	_	L-DATE	_	_	_
+7	,	_	,	_	O	_	_	_
+8	will	_	MD	_	O	_	_	_
+9	join	_	VB	_	O	_	_	_
+10	the	_	DT	_	O	_	_	_
+11	board	_	NN	_	O	_	_	_
+12	as	_	IN	_	O	_	_	_
+13	a	_	DT	_	O	_	_	_
+14	nonexecutive	_	JJ	_	O	_	_	_
+15	director	_	NN	_	O	_	_	_
+16	Nov.	_	NNP	_	B-DATE	_	_	_
+17	29	_	CD	_	L-DATE	_	_	_
+18	.	_	.	_	O	_	_	_
+
+1	Mr.	_	NNP	_	O	_	_	_
+2	Vinken	_	NNP	_	U-PERSON	_	_	_
+3	is	_	VBZ	_	O	_	_	_
+4	chairman	_	NN	_	O	_	_	_
+5	of	_	IN	_	O	_	_	_
+6	Elsevier	_	NNP	_	B-ORG	_	_	_
+7	N.V.	_	NNP	_	L-ORG	_	_	_
+8	,	_	,	_	O	_	_	_
+9	the	_	DT	_	O	_	_	_
+10	Dutch	_	JJ	_	U-NORP	_	_	_
+11	publishing	_	NN	_	O	_	_	_
+12	group	_	NN	_	O	_	_	_
+13	.	_	.	_	O	_	_	_
+
