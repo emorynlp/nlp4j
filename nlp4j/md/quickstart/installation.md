@@ -1,13 +1,8 @@
 # Installation
 
+## With Maven
+
 * Make sure [Java 8](http://www.oracle.com/technetwork/java/javase/) and [Maven 3](https://maven.apache.org) are installed on your machine.
-* Create a maven project: [maven in 5 minutes](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html).
-* Move into the maven directory:
-
-	```bash
-	cd your_maven_project
-	```
-
 * Add the following dependency to `pom.xml`:
 
 	```xml
@@ -30,19 +25,18 @@
 	mvn exec:java -Dexec.mainClass="edu.emory.mathcs.nlp.bin.Version"
 	```
 
-	If you see something like the following, it is properly installed.
+	If you see the following message, it is properly installed.
 
 	```
-	Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0
 	[INFO] Scanning for projects...
 	[INFO]                                                                         
 	[INFO] ------------------------------------------------------------------------
-	[INFO] Building emorynlp 1.0.0
+	[INFO] Building emorynlp x.x.x
 	[INFO] ------------------------------------------------------------------------
 	[INFO] 
 	[INFO] --- exec-maven-plugin:1.4.0:java (default-cli) @ emorynlp ---
 	====================================
-	Emory NLP Version 1.0.0
+	Emory NLP Version x.x.x
 	Webpage: http://nlp.mathcs.emory.edu
 	Contact: jinho.choi@emory.edu
 	====================================
@@ -53,4 +47,30 @@
 	[INFO] Finished at: Tue Nov 24 20:08:59 EST 2015
 	[INFO] Final Memory: 11M/247M
 	[INFO] ------------------------------------------------------------------------
+	```
+
+## Without Maven
+
+* Make sure [Java 8](http://www.oracle.com/technetwork/java/javase/) is installed on your machine.
+* Download [`emorynlp.jar`]() and add it to your classpath. If you are using the [bash](https://www.gnu.org/software/bash/) shel, export `CLASSPATH`:
+
+	```bash
+	export CLASSPATH=emorynlp.jar:.
+	```
+
+
+* Run the following command:
+
+	```bash
+	java edu.emory.mathcs.nlp.bin.Version
+	```
+
+	If you see the following message, it is properly installed.
+
+	```
+	====================================
+	Emory NLP Version x.x.x
+	Webpage: http://nlp.mathcs.emory.edu
+	Contact: jinho.choi@emory.edu
+	====================================
 	```

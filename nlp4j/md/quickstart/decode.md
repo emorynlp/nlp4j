@@ -41,11 +41,11 @@ emorynlp.txt
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
 * The output file is generated in the `tsv` format (see [data format](data-format.md#tab-separated-values-format)).
-* Add [log4j.properties](../../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
+* Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
 
 ## Configuration
 
-The following shows the content in [config-decode-general.xml](../../src/main/resources/configuration/config-decode-general.xml).  More configuration files can be found [here](../../src/main/resources/configuration/).
+The following shows the content in [`config-decode-general.xml`](../../src/main/resources/configuration/config-decode-general.xml).  More configuration files can be found [here](../../src/main/resources/configuration/).
 
 ```xml
 <configuration>

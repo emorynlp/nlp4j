@@ -7,8 +7,9 @@ The Emory NLP project provides software and resources for natural language proce
 ## Quick Start
 
 * [How to install](md/quickstart/installation.md)
-* [How to train](https://github.com/emorynlp/corenlp/blob/master/md/train.md)
+* [How to add models]()
 * [How to decode](md/quickstart/decode.md)
+* [How to train](https://github.com/emorynlp/corenlp/blob/master/md/train.md)
 * [Data format](md/quickstart/data-format.md)
 
 ## Components
