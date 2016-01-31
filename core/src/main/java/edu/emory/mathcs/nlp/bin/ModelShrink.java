@@ -54,6 +54,8 @@ public class ModelShrink
 	public float increment = 0.01f;
 	@Option(name="-lower", usage="lower bound (required)", required=true, metaVar="<float>")
 	public float lower_bound;
+	@Option(name="-save", usage="save right away (default: false)", required=false, metaVar="<boolean>")
+	public boolean save = false;
 	
 	public <N,S>ModelShrink() {}
 	
@@ -67,23 +69,27 @@ public class ModelShrink
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
 		OnlineOptimizer optimizer = component.getOptimizer();
-		byte[] prevComponent;
 		double currScore;
 		
-		evaluate(inputFiles, component, 0f);
-		
-		for (float f=start; ; f+=increment)
+		if (save)
 		{
-			prevComponent = IOUtils.toByteArray(component);
-			component.getFeatureTemplate().reduce(optimizer.getWeightVector(), f);
-			currScore = evaluate(inputFiles, component, f);
-			if (lower_bound >= currScore) break;
+			component.getFeatureTemplate().reduce(optimizer.getWeightVector(), start);
+			evaluate(inputFiles, component, start);
+			ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
+			fout.writeObject(component);
+			fout.close();
 		}
-		
-		ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
-		component = (OnlineComponent<S>)IOUtils.fromByteArray(prevComponent);
-		fout.writeObject(component);
-		fout.close();
+		else
+		{
+			evaluate(inputFiles, component, 0f);
+			
+			for (float f=start; ; f+=increment)
+			{
+				component.getFeatureTemplate().reduce(optimizer.getWeightVector(), f);
+				currScore = evaluate(inputFiles, component, f);
+				if (lower_bound >= currScore) break;
+			}			
+		}
 	}
 	
 	public <S extends NLPState>double evaluate(List<String> inputFiles, OnlineComponent<S> component, float rate) throws Exception

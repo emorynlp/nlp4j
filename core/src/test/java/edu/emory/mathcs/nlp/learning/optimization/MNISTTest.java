@@ -20,8 +20,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
@@ -37,7 +35,7 @@ import edu.emory.mathcs.nlp.learning.util.WeightVector;
  */
 public class MNISTTest
 {
-	@Test
+//	@Test
 	public void test() throws Exception
 	{
 		InputStream ftrn = IOUtils.createFileInputStream("/Users/jdchoi/Documents/Data/mnist/mnist_trn.txt");

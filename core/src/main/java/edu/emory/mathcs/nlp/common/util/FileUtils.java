@@ -73,6 +73,12 @@ public class FileUtils
 		}
 	}
 	
+	static public String getPath(String filename)
+	{
+		int idx = filename.lastIndexOf('/');
+		return filename.substring(0, idx);
+	}
+	
 	static public String getBaseName(String filename)
 	{
 		int idx = filename.lastIndexOf('/');

@@ -61,7 +61,7 @@ public class OnlineTrainer<S extends NLPState>
 		
 		if (previousModelStream != null)
 		{
-			BinUtils.LOG.info("Loading the previous model:\n");
+			BinUtils.LOG.info("Loading the previous model\n");
 			ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(previousModelStream);
 			
 			try

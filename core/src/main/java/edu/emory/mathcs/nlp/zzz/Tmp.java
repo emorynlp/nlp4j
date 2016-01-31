@@ -22,7 +22,6 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		
 	}
 		
 	static public void main(String[] args) throws Exception
