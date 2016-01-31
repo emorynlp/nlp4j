@@ -32,7 +32,7 @@ public abstract class MorphAnalyzer implements NLPComponent
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			node.setLemma(lemmatize(node.getSimplifiedWordForm(), node.getPartOfSpeechTag()));
+			node.setLemma(lemmatize(node.getWordFormSimplified(), node.getPartOfSpeechTag()));
 		}
 	}
 	
