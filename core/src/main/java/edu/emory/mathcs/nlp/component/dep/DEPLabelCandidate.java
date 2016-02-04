@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -98,5 +99,28 @@ public class DEPLabelCandidate implements Serializable
 	public IntSet getRightArcs()
 	{
 		return RIGHT_ARC;
+	}
+	
+	public void remap(Int2IntMap map)
+	{
+		X_SHIFT          = remap(map, X_SHIFT);
+		NO_X             = remap(map, NO_X);
+		NO_SHIFT_OR_PASS = remap(map, NO_SHIFT_OR_PASS);
+		NOT_NO_REDUCE    = remap(map, NOT_NO_REDUCE);
+		LEFT_ARC         = remap(map, LEFT_ARC);
+		RIGHT_ARC        = remap(map, RIGHT_ARC);
+	}
+	
+	private IntSet remap(Int2IntMap map, IntSet set)
+	{
+		IntSet nset = new IntOpenHashSet();
+		
+		for (int i : set)
+		{
+			if (map.containsKey(i))
+				nset.add(map.get(i));
+		}
+		
+		return nset;
 	}
 }

@@ -56,7 +56,6 @@ public interface ConfigXML
 	String MAX_EPOCH			= "max_epoch";
 	String BATCH_SIZE			= "batch_size";
 	String FEATURE_CUTOFF		= "feature_cutoff";
-	String SAVE_LAST			= "save_last";
 	String LEARNING_RATE		= "learning_rate";
 	String BIAS					= "bias";
 	String L1_REGULARIZATION	= "l1_regularization";

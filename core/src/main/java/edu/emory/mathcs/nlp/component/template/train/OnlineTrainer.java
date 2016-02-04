@@ -152,7 +152,7 @@ public class OnlineTrainer<S extends NLPState>
 			NZW = optimizer.getWeightVector().countNonZeroWeights();
 			component.getFeatureTemplate().initFeatureCount();
 			
-			if (info.isSaveLast())
+			if (developFiles == null)
 				BinUtils.LOG.info(String.format("%5d: L = %3d, SF = %7d, NZW = %9d\n", epoch, L, SF, NZW));
 			else
 			{
@@ -166,22 +166,14 @@ public class OnlineTrainer<S extends NLPState>
 					bestNZW   = NZW;
 					bestEpoch = epoch;
 					bestScore = score;
-					 
-					if (modelFile != null)
-						saveModel(component, IOUtils.createFileOutputStream(modelFile));
 				}
 			}
 		}
 		
-		if (info.isSaveLast())
-		{
-			if (modelFile != null)
-				saveModel(component, IOUtils.createFileOutputStream(modelFile));
-		}
-		else
-		{
-			BinUtils.LOG.info(String.format(" Best: %5.2f, epoch = %d\n\n", bestScore, bestEpoch, bestNZW));
-		}
+		if (developFiles != null)
+			BinUtils.LOG.info(String.format(" Best: %5.2f, epoch = %d\n\n", bestScore, bestEpoch));
+		else if (modelFile != null)
+			saveModel(component, IOUtils.createFileOutputStream(modelFile));
 	}
 	
 	protected DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<?> component, TSVReader reader)

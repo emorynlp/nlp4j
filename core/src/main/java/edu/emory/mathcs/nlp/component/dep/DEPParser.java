@@ -72,6 +72,11 @@ public class DEPParser extends OnlineComponent<DEPState>
 		return label_candidates.getLabelIndex(state.getStack(), state.getInput(), scores);
 	}
 	
+	public DEPLabelCandidate getLabelCandidates()
+	{
+		return label_candidates;
+	}
+	
 //	============================== POST-PROCESS ==============================
 
 	@Override

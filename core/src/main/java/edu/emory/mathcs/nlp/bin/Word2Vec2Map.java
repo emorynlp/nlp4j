@@ -45,6 +45,7 @@ public class Word2Vec2Map
 		for (int i=0; i<V; i++)
 		{
 			t = Splitter.splitSpace(reader.readLine());
+			if (skip(t[0])) continue;
 			v = new float[D];
 			
 			for (int j=0; j<D; j++)
@@ -54,6 +55,20 @@ public class Word2Vec2Map
 		}
 		
 		return map;
+	}
+	
+	static boolean skip(String form)
+	{
+		char[] cs = form.toCharArray();
+		if (cs.length < 3 || cs.length > 20) return true;
+		
+		for (int i=0; i<cs.length; i++)
+		{
+			if (cs[i] == '_' || cs[i] >= 128)
+				return true;
+		}
+		
+		return false;
 	}
 	
 	static public void main(String[] args)

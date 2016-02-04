@@ -119,7 +119,7 @@ public class ModelShrink
 			reader.close();
 		}
 		
-		System.out.println(String.format("%5.4f: %s -> %7d, N/S = %d", rate, eval.toString(), component.getFeatureTemplate().getSparseFeatureSize(), (int)Math.round(1000d * tnode / ttime)));
+		System.out.println(String.format("%5.4f: %s -> %7d, %3d, N/S = %d", rate, eval.toString(), component.getFeatureTemplate().getSparseFeatureSize(), component.getOptimizer().getLabelSize(), (int)Math.round(1000d * tnode / ttime)));
 		return eval.score();
 	}
 	

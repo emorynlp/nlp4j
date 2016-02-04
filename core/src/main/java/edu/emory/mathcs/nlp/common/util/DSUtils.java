@@ -314,6 +314,17 @@ public class DSUtils
 		return m;
 	}
 	
+	static public float min(float[] array)
+	{
+		int i, size = array.length;
+		float m = array[0];
+		
+		for (i=1; i<size; i++)
+			m = Math.min(m, array[i]);
+		
+		return m;
+	}
+	
 	static public double min(double[] array)
 	{
 		int i, size = array.length;
@@ -553,5 +564,14 @@ public class DSUtils
 		Set<T> set = new HashSet<>();
 		for (T item : array) set.add(item);
 		return set;
+	}
+	
+	static public void normalize01(float[] array)
+	{
+		float min = min(array);
+		float div = max(array) - min;
+		
+		for (int i=0; i<array.length; i++)
+			array[i] = (array[i] - min) / div;
 	}
 }

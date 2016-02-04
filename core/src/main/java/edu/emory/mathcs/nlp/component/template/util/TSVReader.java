@@ -128,11 +128,14 @@ public class TSVReader
 		int headID;
 		String[] t;
 		
-		for (String arg : Splitter.splitSemiColons(value))
+		if (!value.equals(StringConst.UNDERSCORE))
 		{
-			t = Splitter.splitColons(arg);
-			headID = Integer.parseInt(t[0]);
-			node.addSemanticHead(nodes[headID], t[1]);
+			for (String arg : Splitter.splitSemiColons(value))
+			{
+				t = Splitter.splitColons(arg);
+				headID = Integer.parseInt(t[0]);
+				node.addSemanticHead(nodes[headID], t[1]);
+			}			
 		}
 	}
 }

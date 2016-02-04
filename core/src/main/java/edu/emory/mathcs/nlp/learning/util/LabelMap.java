@@ -18,7 +18,9 @@ package edu.emory.mathcs.nlp.learning.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -80,5 +82,28 @@ public class LabelMap implements Serializable
 	public String toString()
 	{
 		return labels.toString();
+	}
+	
+	public void remap(Int2IntMap map)
+	{
+		index_map = new Object2IntOpenHashMap<>();
+		List<String> list = new ArrayList<>();
+		int oIdx, nIdx;
+		String lb;
+		
+		for (int i=0; i<map.size(); i++)
+			list.add(null);
+		
+		for (Entry<Integer,Integer> e : map.entrySet())
+		{
+			oIdx = e.getKey();
+			nIdx = e.getValue();
+			lb   = labels.get(oIdx);
+			
+			index_map.put(lb, nIdx);
+			list.set(nIdx, lb);
+		}
+		
+		labels = list;
 	}
 }

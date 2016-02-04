@@ -19,8 +19,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.emory.mathcs.nlp.common.collection.tree.PrefixNode;
 import edu.emory.mathcs.nlp.common.collection.tree.PrefixTree;
@@ -79,7 +79,7 @@ public class NERPrefixTreeExtract
 			
 			if (set == null)
 			{
-				set = new HashSet<>();
+				set = new TreeSet<>();
 				node.setValue(set);
 			}
 			
@@ -89,9 +89,9 @@ public class NERPrefixTreeExtract
 	
 	static private String toKey(String s)
 	{
-//		return StringUtils.toSimplifiedForm(s);
+		return StringUtils.toSimplifiedForm(s);
 //		return StringUtils.toUndigitalizedForm(s);
-		return StringUtils.toUndigitalizedForm(s, true);
+//		return StringUtils.toUndigitalizedForm(s, true);
 //		return StringUtils.toLowerCase(StringUtils.toSimplifiedForm(s));
 	}
 	

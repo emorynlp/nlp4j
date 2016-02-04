@@ -123,7 +123,6 @@ public class NLPConfig implements ConfigXML
 		float   learningRate   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, LEARNING_RATE);
 		float   bias           = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, BIAS);
 		float   l1             = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, L1_REGULARIZATION);
-		boolean saveLast       = XMLUtils.getBooleanTextContentFromFirstElementByTagName(eOptimizer, SAVE_LAST);
 		
 		// l1 regularization
 		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(l1) : null;
@@ -141,7 +140,6 @@ public class NLPConfig implements ConfigXML
 		hp.setLearningRate(learningRate);
 		hp.setBias(bias);
 		hp.setL1Regularizer(rda);
-		hp.setSaveLast(saveLast);
 		hp.setLOLS(lols);
 
 		return hp;

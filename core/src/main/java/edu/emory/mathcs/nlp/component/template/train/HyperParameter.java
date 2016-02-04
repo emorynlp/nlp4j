@@ -27,7 +27,6 @@ public class HyperParameter
 	private float   learning_rate;
 	private float   decaying_rate;
 	private float   bias;
-	private boolean save_last;
 	private int     feature_cutoff;
 	private Regularizer l1_regularizer;
 	private LOLS        lols;
@@ -120,18 +119,6 @@ public class HyperParameter
 	{
 		return lols;
 	}
-	
-//	========================== SAVE LAST ==========================
-	
-	public boolean isSaveLast()
-	{
-		return save_last;
-	}
-	
-	public void setSaveLast(boolean saveLast)
-	{
-		save_last = saveLast;
-	}
 
 //	========================== DECAYING RATE: ADA-DELTA ==========================
 
@@ -157,7 +144,6 @@ public class HyperParameter
 		build.append(String.format("%s%s: %s\n", prefix, "Learning rate", learning_rate));
 		if (decaying_rate > 0) build.append(String.format("%s%s: %s\n", prefix, "Decaying rate", decaying_rate));
 		if (bias > 0) build.append(String.format("%s%s: %s\n", prefix, "Bias", bias));
-		if (save_last) build.append(String.format("%s%s: %b\n", prefix, "Save last", save_last));
 		if (lols != null) build.append(String.format("%s%s\n", prefix, lols.toString()));
 		if (l1_regularizer != null) build.append(String.format("%s%s", prefix, l1_regularizer.toString()));
 		

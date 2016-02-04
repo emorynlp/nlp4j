@@ -204,6 +204,8 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		case part_of_speech_tag: return getPartOfSpeechTag();
 		case named_entity_tag: return getNamedEntityTag();
 		case dependency_label: return getDependencyLabel();
+		case ambiguity_classes: return getAmbiguityClasses();
+		case named_entity_gazetteers: return getNamedEntityGazetteers();
 		default: return null;
 		}
 	}
@@ -233,7 +235,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		return ambiguity_classes;
 	}
 	
-	public String getNamedEntityGazetteers(NLPNode node)
+	public String getNamedEntityGazetteers()
 	{
 		return getCollectionValue(named_entity_gazetteers);
 	}

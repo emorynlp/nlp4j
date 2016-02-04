@@ -15,13 +15,57 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Tmp
 {
+	@SuppressWarnings("unchecked")
 	public Tmp(String[] args) throws Exception
 	{
+		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(args[0]);
+		Map<String,float[]> emb = (Map<String,float[]>)oin.readObject();
+		oin.close();
+		
+		System.out.println(emb.size());
+		Iterator<Entry<String, float[]>> it = emb.entrySet().iterator();
+		Entry<String, float[]> e;
+		
+		while (it.hasNext())
+		{
+			e = it.next();
+			
+			if (skip(e.getKey()))
+				it.remove();
+		}
+		
+		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(args[1]);
+		out.writeObject(emb);
+		out.close();
+		
+		System.out.println(emb.size());
+	}
+	
+	boolean skip(String form)
+	{
+		char[] cs = form.toCharArray();
+		if (cs.length < 3 || cs.length > 20) return true;
+		
+		for (int i=0; i<cs.length; i++)
+		{
+			if (cs[i] == '_' || cs[i] >= 128)
+				return true;
+		}
+		
+		return false;
 	}
 		
 	static public void main(String[] args) throws Exception

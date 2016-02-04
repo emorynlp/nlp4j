@@ -28,7 +28,6 @@ import org.w3c.dom.NodeList;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
-import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
 import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
@@ -300,12 +299,6 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 		case valency: return node.getValency((Direction)item.attribute);
 		default: return null;
 		}
-	}
-	
-	protected String getNamedEntityGazetteers(NLPNode node)
-	{
-		Set<String> set = node.getNamedEntityGazetteerSet();
-		return set == null || set.isEmpty() || set.size() > 1 ? null : Joiner.join(set, StringConst.UNDERSCORE);
 	}
 	
 	/** The prefix cannot be the entire word (e.g., getPrefix("abc", 3) -> null). */

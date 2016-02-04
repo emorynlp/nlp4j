@@ -36,7 +36,7 @@ public class NLPTrain
 	protected String train_path;
 	@Option(name="-te", usage="training file extension (default: *)", required=false, metaVar="<string>")
 	protected String train_ext = "*";
-	@Option(name="-d", usage="development path (required)", required=true, metaVar="<filepath>")
+	@Option(name="-d", usage="development path (optional)", required=false, metaVar="<filepath>")
 	protected String develop_path;
 	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
 	protected String develop_ext = "*";
@@ -44,19 +44,18 @@ public class NLPTrain
 	protected String model_file = null;
 	@Option(name="-p", usage="previously trained model file (optional)", required=false, metaVar="<filename>")
 	protected String previous_model_file = null;
-	@Option(name="-mode", usage="mode (required: pos|ner|dep|srl|doc)", required=true, metaVar="<string>")
+	@Option(name="-mode", usage="mode (required: pos|ner|dep|srl)", required=true, metaVar="<string>")
 	protected String mode = null;
 	
 	public NLPTrain(String[] args)
 	{
 		BinUtils.initArgs(args, this);
 		List<String> trainFiles   = FileUtils.getFileList(train_path  , train_ext);
-		List<String> developFiles = FileUtils.getFileList(develop_path, develop_ext);
+		List<String> developFiles = (develop_path != null) ? FileUtils.getFileList(develop_path, develop_ext) : null;
 		OnlineTrainer<?> trainer = new OnlineTrainer<>();
 		
 		Collections.sort(trainFiles);
-		Collections.sort(developFiles);
-		
+		if (developFiles != null) Collections.sort(developFiles);
 		trainer.train(NLPMode.valueOf(mode), trainFiles, developFiles, configuration_file, model_file, previous_model_file);
 	}
 	
