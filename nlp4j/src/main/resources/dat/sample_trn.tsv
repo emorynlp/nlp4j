@@ -16,7 +16,7 @@
 16	blacklisted	blacklist	VBN	_	17	amod	_	_	_
 17	state	state	NN	_	13	pobj	_	_	_
 18	,	,	,	_	20	punct	_	_	_
-19	"	"	``	_	20	punct	_	_	_
+19	``	``	``	_	20	punct	_	_	_
 20	needs	need	VBZ	_	7	ccomp	_	_	_
 21	to	to	TO	_	22	aux	_	_	_
 22	provide	provide	VB	_	20	xcomp	_	_	_
@@ -36,7 +36,7 @@
 36	engage	engage	VB	_	28	acl	_	_	_
 37	in	in	IN	syn=CLR	36	prep	_	_	_
 38	terrorism	terrorism	NN	_	37	pobj	_	_	_
-39	"	"	''	_	20	punct	_	_	_
+39	''	''	''	_	20	punct	_	_	_
 40	.	.	.	_	7	punct	_	_	_
 
 1	After	after	IN	sem=TMP	15	prep	_	_	_
@@ -55,7 +55,7 @@
 14	he	he	PRP	_	15	nsubj	_	_	_
 15	said	say	VBD	_	0	root	_	_	_
 16	,	,	,	_	15	punct	_	_	_
-17	"	"	``	_	15	punct	_	_	_
+17	``	``	``	_	15	punct	_	_	_
 18	Currently	currently	RB	sem=TMP	25	advmod	_	_	_
 19	,	,	,	_	25	punct	_	_	_
 20	North	north	NNP	_	21	compound	_	_	_
@@ -67,7 +67,7 @@
 26	that	that	DT	_	27	det	_	_	_
 27	guarantee	guarantee	NN	_	25	dobj	_	_	_
 28	.	.	.	_	15	punct	_	_	_
-29	"	"	''	_	15	punct	_	_	_
+29	''	''	''	_	15	punct	_	_	_
 
 1	The	the	DT	_	2	det	_	_	_
 2	report	report	NN	_	3	nsubj	_	_	_

@@ -31,7 +31,7 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 The following command takes [`sample_trn.tsv`](../../src/main/resources/dat/sample_trn.tsv) and [`sample_dev.tsv`](../../src/main/resources/dat/sample_dev.tsv), and trains a dependency parsing model with respect to [`config_train_sample.xml`](../../src/main/resources/configuration/config_train_sample.xml).
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* Add [`log4j.properties`](../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
+* Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
 
 ```
 $ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config_train_sample.xml -t sample_trn.tsv -d sample_dev.tsv
