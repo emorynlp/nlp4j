@@ -19,10 +19,10 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 * `-i` specifies the input path pointing to either a file or a directory. When the path points to a file, only the specific file is processed. When the path points to a directory, all files with the file extension `-ie` under the specific directory are processed.
 * `-ie` specifies the input file extension. The default value `*` implies files with any extension. This option is used only when the input path `-i` points to a directory.
 * `-oe` specifies the output file extension appended to each input filename. The corresponding output file, consisting of the NLP output, will be generated.
-* `-format` specifies the format of the input file: `raw`, `sen`, or `tsv` (see [data format](data-format.md)).
+* `-format` specifies the format of the input file: `raw`, `sen`, or `tsv` (see [data format](../supplements/data-format.md)).
 * `-threads` specifies the number of threads to be used. When multi-threads are used, each file is assigned to an individual thread.
 
-The following command takes [`config-decode-general.xml`](../../src/main/resources/configuration/config-decode-general.xml) and [emorynlp.txt](../../src/main/resources/dat/emorynlp.txt), and generates [emorynlp.txt.nlp](../../src/main/resources/dat/emorynlp.txt.nlp).
+The following command takes [`emorynlp.txt`](../../src/main/resources/dat/emorynlp.txt) and generates [`emorynlp.txt.nlp`](../../src/main/resources/dat/emorynlp.txt.nlp) using [`config-decode-general.xml`](../../src/main/resources/configuration/config-decode-general.xml).
 
 ```bash
 $ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config-decode-general.xml -i emorynlp.txt

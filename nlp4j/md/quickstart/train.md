@@ -30,10 +30,10 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 
 ## Example
 
-The following command takes [`sample_trn.tsv`](../../src/main/resources/dat/sample_trn.tsv) and [`sample_dev.tsv`](../../src/main/resources/dat/sample_dev.tsv), and trains a dependency parsing model with respect to [`config_train_sample.xml`](../../src/main/resources/configuration/config_train_sample.xml).
+The following command takes [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../src/main/resources/dat/sample-dev.tsv), and trains a dependency parsing model with respect to [`config-train-sample.xml`](../../src/main/resources/configuration/config-train-sample.xml).
 
 ```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config_train_sample.xml -t sample_trn.tsv -d sample_dev.tsv
+$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample.xml -t sample-trn.tsv -d sample-dev.tsv
 
 AdaGrad Mini-batch
 - Max epoch: 5
@@ -58,10 +58,10 @@ Training:
  * `NZW`: number of non-zero weights.
  * `N/S`: number of nodes processed per second. 
 
-Once you figure out the optimized set of hyper-parameters, modify the values in the configuration file. In this case, we would modify the max epoch to `3` (see [`config_train_sample_optimized.xml`](../../src/main/resources/configuration/config_train_sample_optimized.xml#L18)). The following command takes [`sample_trn.tsv`](../../src/main/resources/dat/sample_trn.tsv), trains a dependency parsing model, and saves the final model to `dep.xz`.
+Once you figure out the optimized set of hyper-parameters, modify the values in the configuration file. In this case, we would modify the max epoch to `3` (see [`config-train-sample-optimized.xml`](../../src/main/resources/configuration/config-train-sample-optimized.xml#L18)). The following command takes [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv), trains a dependency parsing model, and saves the final model to `dep.xz`.
 
 ```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config_train_sample_optimized.xml -t sample_trn.tsv -m dep.xz
+$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample-optimized.xml -t sample-trn.tsv -m dep.xz
 
 AdaGrad Mini-batch
 - Max epoch: 3
@@ -120,7 +120,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 </configuration>
 ```
 
-* `<tsv>` specifies the configuration for our [`TSVReader`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample_trn.tsv`](../../src/main/resources/dat/sample_trn.tsv)):
+* `<tsv>` specifies the configuration for our [`TSVReader`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv)):
  * `form`&nbsp;&nbsp;&nbsp;&nbsp;: word form.
  * `lemma`&nbsp;&nbsp;: lemma.
  * `pos`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: part-of-speech tag.
@@ -147,7 +147,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 
 * `feature_template` specifies the features used during training.
 
-    ```
+    ```xml
     <feature( f#="source(±window)?(_relation)?:field(:value)?")+/>
     ```
 

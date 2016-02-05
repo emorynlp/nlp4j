@@ -1,6 +1,6 @@
 # Part-of-Speech Tagging
 
-Our part-of-speech tagger processes about 81K tokens per second on an Intel Xeon 2.30GHz machine and shows the state-of-the-art accuracy (97.64% on the WSJ corpus).
+Our part-of-speech tagger processes over 80K tokens per second on an Intel Xeon 2.30GHz machine and shows the state-of-the-art accuracy (97.64% on the WSJ corpus).
 
 * [Intrinsic and Extrinsic Evaluations of Word Embeddings](), Michael Zhai, Johnny Tan, Jinho D. Choi, Proceedings of the AAAI 2015 Student Program, Phoenix, AZ, 2015.
 
