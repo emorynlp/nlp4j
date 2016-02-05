@@ -1,5 +1,5 @@
 <configuration>
-	<tsv>
+    <tsv>
         <column index="1" field="form"/>
         <column index="3" field="pos"/>
     </tsv>

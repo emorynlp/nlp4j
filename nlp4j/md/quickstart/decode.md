@@ -22,6 +22,8 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 * `-format` specifies the format of the input file: `raw`, `sen`, or `tsv` (see [data format](../supplements/data-format.md)).
 * `-threads` specifies the number of threads to be used. When multi-threads are used, each file is assigned to an individual thread.
 
+## Example
+
 The following command takes [`emorynlp.txt`](../../src/main/resources/dat/emorynlp.txt) and generates [`emorynlp.txt.nlp`](../../src/main/resources/dat/emorynlp.txt.nlp) using [`config-decode-general.xml`](../../src/main/resources/configuration/config-decode-general.xml).
 
 ```bash
@@ -40,7 +42,7 @@ emorynlp.txt
 ```
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* The output file is generated in the `tsv` format (see [data format](data-format.md#tab-separated-values-format)).
+* The output file is generated in the `tsv` format (see [data format](../supplements/data-format.md#tab-separated-values-format)).
 * Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
 
 ## Configuration
@@ -49,58 +51,31 @@ The following shows the content in [`config-decode-general.xml`](../../src/main/
 
 ```xml
 <configuration>
-	<tsv>
-        <column index="0" field="form"/>
+    <tsv>
+        <column index="1" field="form"/>
     </tsv>
 
     <lexica>
-        <ambiguity_classes field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
-        <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
-        <word_embeddings field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-word2vec-embeddings-simplified.xz</word_embeddings>
-        <named_entity_gazetteers field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
+        <ambiguity_classes field="word_form_simplified">en-ambiguity-classes-simplified.xz</ambiguity_classes>
+        <word_clusters field="word_form_simplified_lowercase">en-brown-clusters-simplified-lowercase.xz</word_clusters>
+        <named_entity_gazetteers field="word_form_simplified">en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
+        <word_embeddings field="word_form_undigitalized">en-word-embeddings-undigitalized.xz</word_embeddings>
     </lexica>
 
     <models>
-    	<pos>edu/emory/mathcs/nlp/english/models/en-general-pos.xz</pos>
-    	<ner>edu/emory/mathcs/nlp/english/models/en-general-ner.xz</ner>
-    	<dep>edu/emory/mathcs/nlp/english/models/en-general-dep.xz</dep>
-    	<srl>edu/emory/mathcs/nlp/english/models/en-general-srl.xz</srl>
+    	<pos>en-general-pos.xz</pos>
+    	<ner>en-general-ner.xz</ner>
+    	<dep>en-general-dep.xz</dep>
     </models>
 </configuration>
 ```
 
-* `<tsv>`:
- * When the `tsv` format is used, only the `form` column must be specified in the configuration file.
-* `<lexica>`:
- * `<ambiguity_classes>`: 
- * `<word_clusters>`: 
- * `<word_embeddings>`: 
- * `<named_entity_gazetteers>`: 
-* `<models>`:
- * `<pos>`: 
- * `<ner>`: 
- * `<dep>`: 
- * `<srl>`: 
+* `<tsv>`: see [`configuration#tsv`](train.md#configuration). When the `tsv` format is used, only the `form` column must be specified in the configuration file.
 
+* `<lexica>`: see [`configuration#lexica`](train.md#configuration).
 
-## Run a Java class using Maven
-
-* Specify the [JVM options](http://www.oracle.com/technetwork/articles/java/vmoptions-jsp-140102.html) in Maven.  If you are using [Bash](https://www.gnu.org/software/bash/), export `MAVEN_OPTS`:
-
-   ```
-   export MAVEN_OPTS='-Xmx8g -XX:+UseConcMarkSweepGC -XX:MaxPermSize=128m'
-   ```
-
-* Compile the Java project using Maven by running the following command from the top directory, where the [`pom.xml`](../../pom.xml) is located. The `target/classes` directory should be created after running this command if it does not already exist.
-
-   ```
-   mvn compile
-   ```
-
-* Copy [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to `target/classes` if it is not already specified in your path.
-
-* Run an executable Java class using `mvn exec:java`.  For instance, the following command executes [`POSTrain`](../../src/main/java/edu/emory/mathcs/nlp/bin/POSTrain.java) (see [part-of-speech tagging](../component/part_of_speech_tagging.md#training) for more details about the command). Note that the base filenames are used in this example, but use the filenames with their absolute paths if they are not getting recognized.
-
-   ```
-   mvn exec:java -Dexec.mainClass="edu.emory.mathcs.nlp.bin.POSTrain" -Dexec.args="-c config_train_pos.xml -t wsj_0001.dep -d wsj_0001.dep"
-   ```
+* `<models>` specifies the statistical models (e.g., [english-models](../supplements/english-models.md)).
+ * `<pos>`: part-of-speech tagging.
+ * `<ner>`: named entity recognition.
+ * `<dep>`: dependency parsing.
+ * `<srl>`: semantic role labeling.

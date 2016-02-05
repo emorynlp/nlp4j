@@ -94,6 +94,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
     </tsv>
 
     <lexica>
+        <ambiguity_classes field="word_form_simplified">en-ambiguity-classes-simplified.xz</ambiguity_classes>
         <word_clusters field="word_form_simplified_lowercase">en-brown-clusters-simplified-lowercase.xz</word_clusters>
         <named_entity_gazetteers field="word_form_simplified">en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
         <word_embeddings field="word_form_undigitalized">en-word-embeddings-undigitalized.xz</word_embeddings>
@@ -120,7 +121,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 </configuration>
 ```
 
-* `<tsv>` specifies the configuration for our [`TSVReader`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv)):
+* `<tsv>` specifies the configuration for [`TSVReader`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv)):
  * `form`&nbsp;&nbsp;&nbsp;&nbsp;: word form.
  * `lemma`&nbsp;&nbsp;: lemma.
  * `pos`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: part-of-speech tag.
@@ -131,11 +132,12 @@ Sample configuration files can be found [here](../../src/main/resources/configur
  * `nament`: named entity tag.
 
 * `<lexica>` specifies the lexica used globally across multiple components (e.g., [english-models](../supplements/english-models.md)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L193)).
+ * `ambiguity_classes`: ambiguity classes for part-of-speech tagging.
  * `word_clusters`: word clusters (e.g., brown clusters).
- * `named_entity_gazetteers`: gazetteers used for named entity recognition.
+ * `named_entity_gazetteers`: gazetteers for named entity recognition.
  * `word_embeddings`: word embeddings (e.g., [word2vec](http://word2vec.googlecode.com)).
 
-* `optimizer`specifies the optimizer to train a statistical model.
+* `<optimizer>`specifies the optimizer to train a statistical model.
  * `algorithm`: perceptron, softmax, adagrad, agagrad-mini-batch, agadelta-mini-batch, agagrad-regression.
  * `l1_regularization`: the [RDA](http://www.jmlr.org/papers/volume11/xiao10a/xiao10a.pdf) regularization parameter used for `adagrad-*`.
  * `learning_rate`: the learning rate.
@@ -145,7 +147,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
  * `batch_size`: the number of sentences used to train `*-mini-batch`.
  * `bias`: the bias value.
 
-* `feature_template` specifies the features used during training.
+* `<feature_template>` specifies the features used during training.
 
     ```xml
     <feature( f#="source(±window)?(_relation)?:field(:value)?")+/>

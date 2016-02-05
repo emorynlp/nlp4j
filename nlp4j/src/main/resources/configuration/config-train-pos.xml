@@ -1,11 +1,11 @@
 <configuration>
-	<tsv>
+    <tsv>
         <column index="1" field="form"/>
         <column index="3" field="pos"/>
     </tsv>
 
     <lexica>
-        <ambiguity_classes field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
+        <ambiguity_classes field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-ambiguity-classes-simplified.xz</ambiguity_classes>
         <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
     </lexica>
 
