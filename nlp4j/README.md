@@ -7,8 +7,8 @@ The Emory NLP project provides software and resources for natural language proce
 ## Quick Start
 
 * [How to install](md/quickstart/install.md).
-* [How to train](md/quickstart/train.md).
 * [How to decode](md/quickstart/decode.md).
+* [How to train](md/quickstart/train.md).
 
 ## Components
 

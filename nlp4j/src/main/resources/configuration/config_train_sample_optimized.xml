@@ -20,7 +20,6 @@
     </optimizer>
 
     <feature_template>
-        <!-- 1-gram features -->
         <feature f0="i:lemma"/>
         <feature f0="j:lemma"/>
         <feature f0="i:part_of_speech_tag"/>

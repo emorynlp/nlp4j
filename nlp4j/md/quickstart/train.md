@@ -2,7 +2,7 @@
 
 ## Command
 
-The followings show the command to train an NLP component:
+The following shows the command for training an NLP component:
 
 ```
 java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath> -d <filepath> [-f <integer> -m <filename> -p <filename> -te <string> -de <string>]
@@ -78,9 +78,9 @@ Training:
 
 ## Configuration
 
-Sample configuration files can be found [here](../../src/main/resources/configuration/).
+Sample configuration files can be found [here](../../src/main/resources/configuration/):
 
-```
+```xml
 <configuration>
     <tsv>
         <column index="1" field="form"/>
@@ -94,23 +94,33 @@ Sample configuration files can be found [here](../../src/main/resources/configur
     </tsv>
 
     <lexica>
-        <word_clusters field="uncapitalized_simplified_word_form">en-brown-clusters-simplified-uncapitalized.xz</word_clusters>
-        <named_entity_gazetteers field="uncapitalized_simplified_word_form">en-ner-gazetteers-simplified-uncapitalized.xz</named_entity_gazetteers>
+        <word_clusters field="word_form_simplified_lowercase">en-brown-clusters-simplified-lowercase.xz</word_clusters>
+        <named_entity_gazetteers field="word_form_simplified">en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
+        <word_embeddings field="word_form_undigitalized">en-word-embeddings-undigitalized.xz</word_embeddings>
     </lexica>
 
     <optimizer>
         <algorithm>adagrad-mini-batch</algorithm>
         <l1_regularization>0.00001</l1_regularization>
         <learning_rate>0.02</learning_rate>
+        <feature_cutoff>2</feature_cutoff>
+        <lols fixed="0" decaying="0.95"/>
         <max_epochs>40</max_epochs>
         <batch_size>5</batch_size>
-        <roll_in>0.95</roll_in>
         <bias>0</bias>
     </optimizer>
+
+    <feature_template>
+        <feature f0="i:word_form"/>
+        <feature f0="i+1:lemma"/>
+        <feature f0="i-1:part_of_speech_tag"/>
+        <feature f0="i_lmd:part_of_speech_tag"/>
+        <feature f0="i-1:lemma" f1="i:lemma" f2="i+1:lemma"/>
+    </feature_template>
 </configuration>
 ```
 
-* `<tsv>` specifies the configuration for our [`TSVReader`](../../src/main/java/edu/emory/mathcs/nlp/component/template/reader/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample_trn.tsv`](../src/main/resources/dat/sample_trn.tsv)):
+* `<tsv>` specifies the configuration for our [`TSVReader`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample_trn.tsv`](../src/main/resources/dat/sample_trn.tsv)):
  * `form`&nbsp;&nbsp;&nbsp;&nbsp;: word form.
  * `lemma`&nbsp;&nbsp;: lemma.
  * `pos`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: part-of-speech tag.
@@ -120,29 +130,27 @@ Sample configuration files can be found [here](../../src/main/resources/configur
  * `sheads`: semantic heads.
  * `nament`: named entity tag.
 
-* `<lexica>` specifies the lexica used globally across multiple components (see [english-models](https://github.com/emorynlp/english-models)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](../src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L174)).
+* `<lexica>` specifies the lexica used globally across multiple components (e.g., [english-models](../supplements/english-models.md)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L193)).
  * `word_clusters`: word clusters (e.g., brown clusters).
  * `named_entity_gazetteers`: gazetteers used for named entity recognition.
+ * `word_embeddings`: word embeddings (e.g., [word2vec](http://word2vec.googlecode.com)).
 
 * `optimizer`specifies the optimizer to train a statistical model.
  * `algorithm`: perceptron, softmax, adagrad, agagrad-mini-batch, agadelta-mini-batch, agagrad-regression.
  * `l1_regularization`: the [RDA](http://www.jmlr.org/papers/volume11/xiao10a/xiao10a.pdf) regularization parameter used for `adagrad-*`.
  * `learning_rate`: the learning rate.
+ * `feature_cutoff`: features appearing less than or equal to this cutoff are discarded from training.
+ * `lols`: [locally optimal learning to search](http://jmlr.org/proceedings/papers/v37/changb15.pdf). `fixed` - use only gold labels for this number of epochs, `decaying` - decay the use of gold labels by this rate for every epoch.
  * `max_epochs`: the maximum number of epochs to be used for training.
  * `batch_size`: the number of sentences used to train `*-mini-batch`.
- * `roll_in`: the rate of using zero-cost labels (see [this paper](http://jmlr.org/proceedings/papers/v37/changb15.pdf) for more details).
  * `bias`: the bias value.
 
-### Part-of-Speech Tagging
+* `feature_template` specifies the features used during training.
 
-* `<ambiguity_class_threshold>` ambiguity classes whose likelihoods are less than or equal to this threshold will be discarded during training.
+    ```
+    <feature( f#="source(&plusmn;window)?(_relation)?:field(:value)?")+/>
+    ```
 
-## Feature Template
+ * `f#`: `#` must start with `0`. When multiple features are joined, they must be in a consecutive order.
+ * `source`: 
 
-Each component comes with the default feature template indicated by the `-f 0` option. The followings show the steps to create and apply your own feature template.
-
-1. Clone this repository: `git clone https://github.com/emorynlp/component.git`.
-1. Go to the package for the component you want to create a feature template. Each component has its own package under [`component`](../src/main/java/edu/emory/mathcs/nlp/component). For instance, the part-of-speech tagger is implemented in [`component/pos`](../src/main/java/edu/emory/mathcs/nlp/component/pos/). Go to the feature package under the component (e.g., [`component/pos/feature`](../src/main/java/edu/emory/mathcs/nlp/component/pos/feature/)).
-1. Create a feature template by copying one of the default templates (e.g., [`POSFeatureTemplate0`](../src/main/java/edu/emory/mathcs/nlp/component/pos/feature/POSFeatureTemplate0.java)). Modify the template to add or remove features.
-1. Add the new feature template to the component's trainer (e.g, [`POSTrainer`](../src/main/java/edu/emory/mathcs/nlp/component/pos/POSTrainer.java)). Add your template to the `createFeatureTemplate(int)` method with a unique ID.
-1. Run [`NLPTrain`](../src/main/java/edu/emory/mathcs/nlp/bin/NLPTrain.java) using the `-f ID` option, where `ID` is specified for the new feature template.
