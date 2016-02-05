@@ -18,6 +18,7 @@ package edu.emory.mathcs.nlp.zzz;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,10 +40,32 @@ public class CSVTokenize
 {
 	final String[] BEFORE = {"Patient Name :", "DOB :", "SEX :", "Ordering Physician :", "Exam :", "HEAD CT", "CLINICAL", "TECHNIQUE :", "COMPARISON :", "FINDINGS :", "IMPRESSION :"};
 	final String[] AFTER  = {"INDICATION :", "TECHNIQUE :", "COMPARISON :", "FINDINGS :", "IMPRESSION :"};
-	final List<Pair<Pattern,String>> P_BEFORE, P_AFTER;
+	List<Pair<Pattern,String>> P_BEFORE, P_AFTER;
 	Pattern NEW_LINE = Pattern.compile("\n");
+
+	public void categorize(String inputFile) throws Exception
+	{
+		CSVParser parser = new CSVParser(IOUtils.createBufferedReader(inputFile), CSVFormat.DEFAULT);
+		List<CSVRecord> records = parser.getRecords();
+		StringJoiner join;
+		CSVRecord record;
+		
+		for (int i=0; i<=500; i++)
+		{
+			if (i == 0) continue;
+			record = records.get(i);
+			join = new StringJoiner(" ");
+			
+			for (int j=2; j<7; j++)
+				join.add(record.get(j));
+			
+			System.out.println(join.toString());
+		}
+		
+		parser.close();
+	}
 	
-	public CSVTokenize(String inputFile) throws Exception
+	public void tokenize(String inputFile) throws Exception
 	{
 		CSVParser parser = new CSVParser(IOUtils.createBufferedReader(inputFile), CSVFormat.DEFAULT);
 		String inputPath = FileUtils.getPath(inputFile)+"/";
@@ -106,11 +129,14 @@ public class CSVTokenize
 	
 	static public void main(String[] args)
 	{
-		String inputFile = "/Users/jdchoi/Emory/radiology/tools/500/500-original.csv";
+//		String inputFile = "/Users/jdchoi/Emory/radiology/tools/500/500-original.csv";
+		String inputFile = "/Users/jdchoi/Emory/radiology/dat/radiology_report_151112_lemmon.csv";
 		
 		try
 		{
-			new CSVTokenize(inputFile);
+			CSVTokenize cvs = new CSVTokenize();
+//			cvs.tokenize(inputFile);
+			cvs.categorize(inputFile);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}

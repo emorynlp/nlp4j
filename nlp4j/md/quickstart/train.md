@@ -11,16 +11,16 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 -m  <filename> : output model file (optional)
 -p  <filename> : previously trained model file (optional)
 -t  <filepath> : training path (required)
--d  <filepath> : development path (required)
+-d  <filepath> : development path (optional)
 -te   <string> : training file extension (default: *)
 -de   <string> : development file extension (default: *)
 -mode <string> : component mode (required: pos|ner|dep|srl)
 ```
 
 * `-c` specifies the configuration file (see [configuration](#configuration)).
-* `-m` specifies the output file containing the best model (saved in the [XZ](http://tukaani.org) format). The model is not be saved unless this option is specified.
-* `-p` specifies the input file containing the previously trained model. A new model is trained using the previous model as the seed (useful for active learning).
-* `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the specific directory are trained.
+* `-m` specifies the output model file (saved in the [xz](http://tukaani.org) format). The model is not saved unless this option is specified.
+* `-p` specifies the previously trained model file. If this option is specified, a new model is trained on top of the previous model.
+* `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the directory are trained. Note that the training can be done without using a development set by not specifying the `-d` option.
 * `-te|de` specifies the training or development file extension. The default value `*` implies files with any extension. This option is used only when the training or development path `-t|d` points to a directory.
 * `-mode` specifies the NLP component to be trained:
  * `pos`: part-of-speech tagging.

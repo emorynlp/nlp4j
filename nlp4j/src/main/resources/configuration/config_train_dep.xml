@@ -1,11 +1,11 @@
 <configuration>
 	<tsv>
         <column index="1" field="form"/>
-        <column index="3" field="lemma"/>
-        <column index="5" field="pos"/>
-        <column index="7" field="feats"/>
-        <column index="8" field="dhead"/>
-        <column index="9" field="deprel"/>
+        <column index="2" field="lemma"/>
+        <column index="3" field="pos"/>
+        <column index="4" field="feats"/>
+        <column index="5" field="dhead"/>
+        <column index="6" field="deprel"/>
     </tsv>
 
     <lexica>
