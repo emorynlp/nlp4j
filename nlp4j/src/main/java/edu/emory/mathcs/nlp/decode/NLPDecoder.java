@@ -212,7 +212,7 @@ public class NLPDecoder
 	
 	public NLPNode[] decode(List<String> tokens)
 	{
-		NLPNode[] nodes = toNodes(tokens);
+		NLPNode[] nodes = toNLPNodes(tokens);
 		return decode(nodes);
 	}
 	
@@ -226,7 +226,7 @@ public class NLPDecoder
 		return nodes;
 	}
 	
-	public NLPNode[] toNodes(List<String> tokens)
+	public NLPNode[] toNLPNodes(List<String> tokens)
 	{
 		NLPNode[] nodes = new NLPNode[tokens.size()+1];
 		nodes[0] = new NLPNode(); nodes[0].setToRoot();

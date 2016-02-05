@@ -43,7 +43,7 @@ emorynlp.txt
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
 * The output file is generated in the `tsv` format (see [data format](../supplements/data-format.md#tab-separated-values-format)).
-* Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
+* Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath or put it under the directory you run (see [log4j](http://logging.apache.org/log4j/)).
 
 ## Configuration
 
@@ -56,7 +56,7 @@ The following shows the content in [`config-decode-general.xml`](../../src/main/
     </tsv>
 
     <lexica>
-        <ambiguity_classes field="word_form_simplified">en-ambiguity-classes-simplified.xz</ambiguity_classes>
+        <ambiguity_classes field="word_form_simplified_lowercase">en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
         <word_clusters field="word_form_simplified_lowercase">en-brown-clusters-simplified-lowercase.xz</word_clusters>
         <named_entity_gazetteers field="word_form_simplified">en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
         <word_embeddings field="word_form_undigitalized">en-word-embeddings-undigitalized.xz</word_embeddings>

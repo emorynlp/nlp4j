@@ -2,7 +2,7 @@
 
 ## Command
 
-The following shows the command for training an NLP component:
+The following command trains an NLP component:
 
 ```
 java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath> -d <filepath> [-f <integer> -m <filename> -p <filename> -te <string> -de <string>]
@@ -18,9 +18,9 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 ```
 
 * `-c` specifies the configuration file (see [configuration](#configuration)).
-* `-m` specifies the output model file (saved in the [xz](http://tukaani.org) format). The model is not saved unless this option is specified.
-* `-p` specifies the previously trained model file. If this option is specified, a new model is trained on top of the previous model.
-* `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the directory are trained. Note that the training can be done without using a development set by not specifying the `-d` option (see the example below).
+* `-m` specifies the output model file (saved in the [xz](http://tukaani.org) format). The model is not saved unless this option is set.
+* `-p` specifies the previously trained model file. If this option is set, a new model is trained on top of the previous model.
+* `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the specific directory are trained. It is possible to train a model without using a development set by not setting the `-d` option (see the example below).
 * `-te|de` specifies the training or development file extension. The default value `*` implies files with any extension. This option is used only when the training or development path `-t|d` points to a directory.
 * `-mode` specifies the NLP component to be trained:
  * `pos`: part-of-speech tagging.
@@ -30,7 +30,7 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 
 ## Example
 
-The following command takes [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../src/main/resources/dat/sample-dev.tsv), and trains a dependency parsing model with respect to [`config-train-sample.xml`](../../src/main/resources/configuration/config-train-sample.xml).
+The following command takes [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../src/main/resources/dat/sample-dev.tsv), and trains a dependency parsing model using [`config-train-sample.xml`](../../src/main/resources/configuration/config-train-sample.xml). Note that no model is saved after training because `-m` is not set.
 
 ```
 $ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample.xml -t sample-trn.tsv -d sample-dev.tsv
@@ -52,13 +52,13 @@ Training:
 ```
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
+* Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath or put it under the directory you run (see [log4j](http://logging.apache.org/log4j/)).
  * `L`: number of labels.
  * `SF`: number of sparse features.
  * `NZW`: number of non-zero weights.
  * `N/S`: number of nodes processed per second. 
 
-Once you figure out the optimized set of hyper-parameters, modify the values in the configuration file. In this case, we would modify the max epoch to `3` (see [`config-train-sample-optimized.xml`](../../src/main/resources/configuration/config-train-sample-optimized.xml#L18)). The following command takes [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv), trains a dependency parsing model, and saves the final model to `dep.xz`.
+Once you figure out the optimized set of hyper-parameters, modify the values in the configuration file. In this case, we would modify the max epoch to `3` (see [`config-train-sample-optimized.xml`](../../src/main/resources/configuration/config-train-sample-optimized.xml#L18)). The following command takes [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv), trains a dependency parsing model, and saves the final model to `dep.xz`. Note that the development set is not used for this training because `-d` is not set.
 
 ```
 $ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample-optimized.xml -t sample-trn.tsv -m dep.xz
@@ -75,6 +75,8 @@ Training:
     2: L = 34, SF = 1423, NZW = 4613
     3: L = 34, SF = 1449, NZW = 6297
 ```
+
+You should see the new file `dep.xz` created, which can be specified in the configuration file for dependency parsing (see [how to decode](decode.md)).
 
 ## Configuration
 
@@ -94,7 +96,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
     </tsv>
 
     <lexica>
-        <ambiguity_classes field="word_form_simplified">en-ambiguity-classes-simplified.xz</ambiguity_classes>
+        <ambiguity_classes field="word_form_simplified_lowercase">en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
         <word_clusters field="word_form_simplified_lowercase">en-brown-clusters-simplified-lowercase.xz</word_clusters>
         <named_entity_gazetteers field="word_form_simplified">en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
         <word_embeddings field="word_form_undigitalized">en-word-embeddings-undigitalized.xz</word_embeddings>
