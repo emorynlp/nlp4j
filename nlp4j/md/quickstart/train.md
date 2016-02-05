@@ -28,14 +28,52 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
  * `dep`: dependency parsing.
  * `srl`: semantic role labeling.
 
-The following command takes [`config_train_pos.xml`](../../src/main/resources/configuration/config_train_pos.xml) and [`sample.tsv`](../../src/main/resources/dat/sample.tsv) for both training and development, and saves the best statistical model to `pos.xz`.
-
-```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode pos -c config_train_pos.xml -t sample.tsv -d sample.tsv -m pos.xz
-```
+The following command takes [`sample_trn.tsv`](../../src/main/resources/dat/sample_trn.tsv) and [`sample_dev.tsv`](../../src/main/resources/dat/sample_dev.tsv), and trains a dependency parsing model with respect to [`config_train_sample.xml`](../../src/main/resources/configuration/config_train_sample.xml).
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
 * Add [`log4j.properties`](../src/main/resources/configuration/log4j.properties) to your classpath (see [log4j](http://logging.apache.org/log4j/)).
+
+```
+$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config_train_sample.xml -t sample_trn.tsv -d sample_dev.tsv
+```
+
+```
+AdaGrad Mini-batch
+- Max epoch: 5
+- Mini-batch: 1
+- Learning rate: 0.02
+- LOLS: fixed = 0, decaying rate = 0.95
+- RDA: 1.0E-5
+
+Training:
+    1: LAS = 26.92, UAS = 35.90, L = 29, SF = 1108, NZW =  835, N/S = 14182
+    2: LAS = 40.38, UAS = 49.36, L = 29, SF = 1162, NZW = 3399, N/S = 39000
+    3: LAS = 47.44, UAS = 54.49, L = 29, SF = 1199, NZW = 4804, N/S = 26000
+    4: LAS = 46.15, UAS = 52.56, L = 29, SF = 1245, NZW = 6062, N/S = 39000
+    5: LAS = 47.44, UAS = 55.13, L = 29, SF = 1301, NZW = 7215, N/S = 78000
+ Best: 47.44, epoch = 3
+
+```
+
+Once you figure out the optimized set of hyper-parameters, modify the values in the configuration file. In this case, we would modify the max epoch to 3 (see [`config_train_sample_optimized.xml`](../../src/main/resources/configuration/config_train_sample_optimized.xml#L18)). The following command takes [`sample_trn.tsv`](../../src/main/resources/dat/sample_trn.tsv), trains a dependency parsing model, and saves the final model to `dep.xz`.
+
+```
+$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config_train_sample_optimized.xml -t sample_trn.tsv -m dep.xz
+```
+
+```
+AdaGrad Mini-batch
+- Max epoch: 3
+- Mini-batch: 1
+- Learning rate: 0.02
+- LOLS: fixed = 0, decaying rate = 0.95
+- RDA: 1.0E-5
+
+Training:
+    1: L = 29, SF = 1108, NZW =  835
+    2: L = 29, SF = 1162, NZW = 3399
+    3: L = 29, SF = 1199, NZW = 4804
+```
 
 ## Configuration
 

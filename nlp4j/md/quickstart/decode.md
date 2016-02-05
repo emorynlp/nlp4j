@@ -22,7 +22,7 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 * `-format` specifies the format of the input file: `raw`, `sen`, or `tsv` (see [data format](data-format.md)).
 * `-threads` specifies the number of threads to be used. When multi-threads are used, each file is assigned to an individual thread.
 
-The following command takes [config-decode-general.xml](../../src/main/resources/configuration/config-decode-general.xml) and [emorynlp.txt](../../src/main/resources/dat/emorynlp.txt), and generates [emorynlp.txt.nlp](../../src/main/resources/dat/emorynlp.txt.nlp).
+The following command takes [`config-decode-general.xml`](../../src/main/resources/configuration/config-decode-general.xml) and [emorynlp.txt](../../src/main/resources/dat/emorynlp.txt), and generates [emorynlp.txt.nlp](../../src/main/resources/dat/emorynlp.txt.nlp).
 
 ```bash
 $ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config-decode-general.xml -i emorynlp.txt
