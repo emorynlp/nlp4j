@@ -28,6 +28,8 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
  * `dep`: dependency parsing.
  * `srl`: semantic role labeling.
 
+## Example
+
 The following command takes [`sample_trn.tsv`](../../src/main/resources/dat/sample_trn.tsv) and [`sample_dev.tsv`](../../src/main/resources/dat/sample_dev.tsv), and trains a dependency parsing model with respect to [`config_train_sample.xml`](../../src/main/resources/configuration/config_train_sample.xml).
 
 ```
@@ -108,7 +110,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 </configuration>
 ```
 
-* `<tsv>` specifies the configuration for our [TSV reader](../src/main/java/edu/emory/mathcs/nlp/component/template/reader/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample.tsv`](../src/main/resources/dat/sample.tsv)):
+* `<tsv>` specifies the configuration for our [`TSVReader`](../../src/main/java/edu/emory/mathcs/nlp/component/template/reader/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample_trn.tsv`](../src/main/resources/dat/sample_trn.tsv)):
  * `form`&nbsp;&nbsp;&nbsp;&nbsp;: word form.
  * `lemma`&nbsp;&nbsp;: lemma.
  * `pos`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: part-of-speech tag.
@@ -118,7 +120,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
  * `sheads`: semantic heads.
  * `nament`: named entity tag.
 
-* `<lexica>` specifies the lexica used globally across multiple components (see [english-lexica](https://github.com/emorynlp/english-models)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](../src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L174)).
+* `<lexica>` specifies the lexica used globally across multiple components (see [english-models](https://github.com/emorynlp/english-models)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](../src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L174)).
  * `word_clusters`: word clusters (e.g., brown clusters).
  * `named_entity_gazetteers`: gazetteers used for named entity recognition.
 

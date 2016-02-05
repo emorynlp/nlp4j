@@ -6,19 +6,22 @@ The Emory NLP project provides software and resources for natural language proce
 
 ## Quick Start
 
-* [How to install](md/quickstart/installation.md).
+* [How to install](md/quickstart/install.md).
 * [How to train](md/quickstart/train.md).
 * [How to decode](md/quickstart/decode.md).
-* [How to add models]().
-* [Data format](md/quickstart/data-format.md).
 
 ## Components
 
 * [Tokenization](https://github.com/emorynlp/tokenization).
 * [Morphological analysis](https://github.com/emorynlp/morphological_analysis).
-* [Part-of-speech tagging](md/component/part_of_speech_tagging.md).
-* [Named entity recognition](md/component/named_entity_recognition.md).
-* [Dependency parsing](md/component/dependency_parsing.md).
-* Semantic role labeling (expected 02/29/2016).
-* Sentiment analysis (expected 02/29/2016).
-* Coreference resolution (expected 03/31/2016).
+* [Part-of-speech tagging](md/components/part_of_speech_tagging.md).
+* [Named entity recognition](md/components/named_entity_recognition.md).
+* [Dependency parsing](md/components/dependency_parsing.md).
+* Semantic role labeling.
+* Sentiment analysis.
+* Coreference resolution.
+
+## Supplements
+
+* [Data format](md/supplements/data-format.md).
+* [English models](md/supplements/english-models.md) (hosted in bitbucket).
