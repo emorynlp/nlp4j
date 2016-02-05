@@ -22,5 +22,19 @@ import java.io.Serializable;
  */
 public enum Source implements Serializable
 {
-	i,j,k;
+	/**
+	 * For dependency parsing: top of the stack.
+	 * For semantic role labeling: predicate.
+	 * For everything else: input.  
+	 */
+	i,
+	/**
+	 * For dependency parsing: front of the input buffer.
+	 * For semantic role labeling: argument.
+	 */
+	j,
+	/**
+	 * For dependency parsing: peek of the stack. 
+	 */
+	k;
 }

@@ -32,18 +32,18 @@ public class NLPTrain
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<filename>")
 	protected String configuration_file;
-	@Option(name="-t", usage="training path (required)", required=true, metaVar="<filepath>")
-	protected String train_path;
-	@Option(name="-te", usage="training file extension (default: *)", required=false, metaVar="<string>")
-	protected String train_ext = "*";
-	@Option(name="-d", usage="development path (optional)", required=false, metaVar="<filepath>")
-	protected String develop_path;
-	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
-	protected String develop_ext = "*";
 	@Option(name="-m", usage="output model file (optional)", required=false, metaVar="<filename>")
 	protected String model_file = null;
 	@Option(name="-p", usage="previously trained model file (optional)", required=false, metaVar="<filename>")
 	protected String previous_model_file = null;
+	@Option(name="-t", usage="training path (required)", required=true, metaVar="<filepath>")
+	protected String train_path;
+	@Option(name="-d", usage="development path (optional)", required=false, metaVar="<filepath>")
+	protected String develop_path;
+	@Option(name="-te", usage="training file extension (default: *)", required=false, metaVar="<string>")
+	protected String train_ext = "*";
+	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
+	protected String develop_ext = "*";
 	@Option(name="-mode", usage="mode (required: pos|ner|dep|srl)", required=true, metaVar="<string>")
 	protected String mode = null;
 	

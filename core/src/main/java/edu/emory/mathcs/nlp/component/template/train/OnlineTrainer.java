@@ -159,7 +159,7 @@ public class OnlineTrainer<S extends NLPState>
 				p = evaluate(developFiles, component, reader);
 				score = p.d;
 				eval = component.getEval().toString();
-				BinUtils.LOG.info(String.format("%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %d\n", epoch, eval, L, SF, NZW, p.i));
+				BinUtils.LOG.info(String.format("%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %6d\n", epoch, eval, L, SF, NZW, p.i));
 				
 				if (bestScore < score || (bestScore == score && NZW < bestNZW))
 				{
@@ -172,7 +172,7 @@ public class OnlineTrainer<S extends NLPState>
 		
 		if (developFiles != null)
 			BinUtils.LOG.info(String.format(" Best: %5.2f, epoch = %d\n\n", bestScore, bestEpoch));
-		else if (modelFile != null)
+		if (modelFile != null)
 			saveModel(component, IOUtils.createFileOutputStream(modelFile));
 	}
 	
