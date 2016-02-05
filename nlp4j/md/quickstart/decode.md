@@ -70,7 +70,7 @@ The following shows the content in [`config-decode-general.xml`](../../src/main/
 </configuration>
 ```
 
-* `<tsv>`: see [`configuration#tsv`](train.md#configuration). When the `tsv` format is used, only the `form` column must be specified in the configuration file.
+* `<tsv>`: see [`configuration#tsv`](train.md#configuration). This does not need to be specified when `raw` or `sen` is used. When `tsv` is used, only the `form` column must be specified in the configuration file.
 
 * `<lexica>`: see [`configuration#lexica`](train.md#configuration).
 
