@@ -20,7 +20,7 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 * `-c` specifies the configuration file (see [configuration](#configuration)).
 * `-m` specifies the output model file (saved in the [xz](http://tukaani.org) format). The model is not saved unless this option is specified.
 * `-p` specifies the previously trained model file. If this option is specified, a new model is trained on top of the previous model.
-* `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the directory are trained. Note that the training can be done without using a development set by not specifying the `-d` option.
+* `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the directory are trained. Note that the training can be done without using a development set by not specifying the `-d` option (see the example below).
 * `-te|de` specifies the training or development file extension. The default value `*` implies files with any extension. This option is used only when the training or development path `-t|d` points to a directory.
 * `-mode` specifies the NLP component to be trained:
  * `pos`: part-of-speech tagging.
@@ -28,7 +28,7 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
  * `dep`: dependency parsing.
  * `srl`: semantic role labeling.
 
-The following command takes [`config_train_pos.xml`](../src/main/resources/configuration/config_train_pos.xml) and [`sample.tsv`](../src/main/resources/dat/sample.tsv) for both training and development, and saves the best statistical model to `pos.xz`.
+The following command takes [`config_train_pos.xml`](../../src/main/resources/configuration/config_train_pos.xml) and [`sample.tsv`](../../src/main/resources/dat/sample.tsv) for both training and development, and saves the best statistical model to `pos.xz`.
 
 ```
 $ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode pos -c config_train_pos.xml -t sample.tsv -d sample.tsv -m pos.xz
