@@ -120,7 +120,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 </configuration>
 ```
 
-* `<tsv>` specifies the configuration for our [`TSVReader`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample_trn.tsv`](../src/main/resources/dat/sample_trn.tsv)):
+* `<tsv>` specifies the configuration for our [`TSVReader`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample_trn.tsv`](../../src/main/resources/dat/sample_trn.tsv)):
  * `form`&nbsp;&nbsp;&nbsp;&nbsp;: word form.
  * `lemma`&nbsp;&nbsp;: lemma.
  * `pos`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: part-of-speech tag.
@@ -148,9 +148,12 @@ Sample configuration files can be found [here](../../src/main/resources/configur
 * `feature_template` specifies the features used during training.
 
     ```
-    <feature( f#="source(&plusmn;window)?(_relation)?:field(:value)?")+/>
+    <feature( f#="source(±window)?(_relation)?:field(:value)?")+/>
     ```
 
  * `f#`: `#` must start with `0`. When multiple features are joined, they must be in a consecutive order.
- * `source`: 
-
+ * `source`: see [`Source.java`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Source.java).
+ * `window`: the context window with respect to the source.
+ * `relation`: see [`Relation.java`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Relation.java).
+ * `field`: see [`Field.java`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Field.java).
+ * `value`: specifies the extra value of the field.
