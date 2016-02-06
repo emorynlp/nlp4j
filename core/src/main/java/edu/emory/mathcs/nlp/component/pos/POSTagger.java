@@ -21,7 +21,6 @@ import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.learning.util.MLUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -49,12 +48,6 @@ public class POSTagger extends OnlineComponent<POSState>
 	protected POSState initState(NLPNode[] nodes)
 	{
 		return new POSState(nodes);
-	}
-	
-	@Override
-	protected int getPrediction(POSState state, float[] scores)
-	{
-		return MLUtils.argmax(scores);
 	}
 	
 	@Override

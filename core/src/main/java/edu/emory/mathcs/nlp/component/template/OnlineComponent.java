@@ -28,6 +28,7 @@ import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.Instance;
+import edu.emory.mathcs.nlp.learning.util.MLUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -200,13 +201,16 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	}
 	
 //	============================== HELPERS ==============================
+
+	protected int getPrediction(S state, float[] scores)
+	{
+		return MLUtils.argmax(scores);
+	}
 	
 	public abstract Eval createEvaluator();
 	
 	/** @return the processing state for the input nodes. */
 	protected abstract S initState(NLPNode[] nodes);
-	
-	protected abstract int getPrediction(S state, float[] scores);
 	
 	/** Post-processes if necessary. */
 	protected abstract void postProcess(S state);

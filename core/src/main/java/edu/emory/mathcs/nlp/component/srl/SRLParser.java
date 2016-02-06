@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.ner;
+package edu.emory.mathcs.nlp.component.srl;
 
 import java.io.InputStream;
 
+import edu.emory.mathcs.nlp.component.pos.SRLState;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -25,34 +27,39 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERTagger extends OnlineComponent<NERState>
+public class SRLParser extends OnlineComponent<SRLState>
 {
-	private static final long serialVersionUID = 87807440372806016L;
+	private static final long serialVersionUID = 6802441378426099565L;
 
-	public NERTagger() {}
+	public SRLParser() {}
 	
-	public NERTagger(InputStream configuration)
+	public SRLParser(InputStream configuration)
 	{
 		super(configuration);
 	}
-	
+
 //	============================== ABSTRACT ==============================
-	
+
 	@Override
 	public Eval createEvaluator()
 	{
 		return new F1Eval();
 	}
-	
+
 	@Override
-	protected NERState initState(NLPNode[] nodes)
+	protected SRLState initState(NLPNode[] nodes)
 	{
-		return new NERState(nodes);
+		return new SRLState(nodes);
 	}
 	
 	@Override
-	protected void postProcess(NERState state)
+	public NLPConfig setConfiguration(InputStream in)
 	{
-		state.postProcess();
+		NLPConfig config = new NLPConfig(in);
+		setConfiguration(config);
+		return config;
 	}
+
+	@Override
+	protected void postProcess(SRLState state) {}
 }
