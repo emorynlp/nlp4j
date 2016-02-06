@@ -24,6 +24,4 @@ The Emory NLP project provides software and resources for natural language proce
 ## Supplements
 
 * [English models](md/supplements/english-models.md) (hosted in [bitbucket](https://bitbucket.org/emorynlp/english)).
-* [English part-of-speech tags](md/supplements/english-part-of-speech-tags.md).
-* [English dependency labels](md/supplements/english-dependency-labels.md).
 * [Data format](md/supplements/data-format.md).
