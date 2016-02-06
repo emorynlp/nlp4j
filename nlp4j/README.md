@@ -17,11 +17,13 @@ The Emory NLP project provides software and resources for natural language proce
 * [Part-of-speech tagging](md/components/part_of_speech_tagging.md).
 * [Named entity recognition](md/components/named_entity_recognition.md).
 * [Dependency parsing](md/components/dependency_parsing.md).
-* Semantic role labeling.
+* [Semantic role labeling](md/components/semantic_role_labeling.md).
 * Sentiment analysis.
 * Coreference resolution.
 
 ## Supplements
 
-* [English models](md/supplements/english-models.md) (hosted in bitbucket).
+* [English models](md/supplements/english-models.md) (hosted in [bitbucket](https://bitbucket.org/emorynlp/english)).
+* [English part-of-speech tags](md/supplements/english-part-of-speech-tags.md).
+* [English dependency labels](md/supplements/english-dependency-labels.md).
 * [Data format](md/supplements/data-format.md).

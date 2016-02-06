@@ -2,7 +2,7 @@
 
 ## Command-Line
 
-The following shows the command to run the NLP pipeline for tokenization, part-of-speech tagging, morphological analysis, named entity recognition, dependency parsing, and semantic role labeling:
+The following command runs the NLP pipeline for tokenization, part-of-speech tagging, morphological analysis, named entity recognition, dependency parsing, and semantic role labeling:
 
 ```bash
 java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string> -oe <string> -format <string> -threads <integer>]
@@ -42,12 +42,12 @@ emorynlp.txt
 ```
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* The output file is generated in the `tsv` format (see [data format](../supplements/data-format.md#tab-separated-values-format)).
 * Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath or put it under the directory you run (see [log4j](http://logging.apache.org/log4j/)).
+* The output file is generated in the `tsv` format (see [data format](../supplements/data-format.md#tab-separated-values-format)).
 
 ## Configuration
 
-The following shows the content in [`config-decode-general.xml`](../../src/main/resources/configuration/config-decode-general.xml).  More configuration files can be found [here](../../src/main/resources/configuration/).
+Sample configuration files for decoding can be found here: [`config-decode-*`](../../src/main/resources/configuration/).
 
 ```xml
 <configuration>
@@ -70,9 +70,9 @@ The following shows the content in [`config-decode-general.xml`](../../src/main/
 </configuration>
 ```
 
-* `<tsv>`: see [`configuration#tsv`](train.md#configuration). This does not need to be specified when `raw` or `sen` is used. When `tsv` is used, only the `form` column must be specified in the configuration file.
+* `<tsv>`: see [`configuration#tsv`](train.md#configuration). This does not need to be specified when `raw` or `sen` is used. When `tsv` is used, only the `form` column needs to be specified (see above).
 * `<lexica>`: see [`configuration#lexica`](train.md#configuration).
-* `<models>` specifies the statistical models (e.g., [english-models](../supplements/english-models.md)).
+* `<models>` specifies the statistical model for each component (e.g., [english models](../supplements/english-models.md)).
  * `<pos>`: part-of-speech tagging.
  * `<ner>`: named entity recognition.
  * `<dep>`: dependency parsing.

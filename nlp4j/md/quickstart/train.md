@@ -80,7 +80,7 @@ You should see the new file `dep.xz` created, which can be specified in the conf
 
 ## Configuration
 
-Sample configuration files can be found [here](../../src/main/resources/configuration/):
+Sample configuration files for training can be found here: [`config-train-*`](../../src/main/resources/configuration/).
 
 ```xml
 <configuration>
@@ -92,14 +92,14 @@ Sample configuration files can be found [here](../../src/main/resources/configur
         <column index="5" field="dhead"/>
         <column index="6" field="deprel"/>
         <column index="7" field="sheads"/>
-        <column index="9" field="nament"/>
+        <column index="8" field="nament"/>
     </tsv>
 
     <lexica>
         <ambiguity_classes field="word_form_simplified_lowercase">en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
         <word_clusters field="word_form_simplified_lowercase">en-brown-clusters-simplified-lowercase.xz</word_clusters>
-        <named_entity_gazetteers field="word_form_simplified">en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
         <word_embeddings field="word_form_undigitalized">en-word-embeddings-undigitalized.xz</word_embeddings>
+        <named_entity_gazetteers field="word_form_simplified">en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
     </lexica>
 
     <optimizer>
@@ -133,18 +133,18 @@ Sample configuration files can be found [here](../../src/main/resources/configur
  * `sheads`: semantic heads.
  * `nament`: named entity tag.
 
-* `<lexica>` specifies the lexica used globally across multiple components (e.g., [english-models](../supplements/english-models.md)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L193)).
+* `<lexica>` specifies the lexica used globally across multiple components (e.g., [english models](../supplements/english-models.md#lexica)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L193)).
  * `ambiguity_classes`: ambiguity classes for part-of-speech tagging.
  * `word_clusters`: word clusters (e.g., brown clusters).
- * `named_entity_gazetteers`: gazetteers for named entity recognition.
  * `word_embeddings`: word embeddings (e.g., [word2vec](http://word2vec.googlecode.com)).
+ * `named_entity_gazetteers`: gazetteers for named entity recognition.
 
 * `<optimizer>`specifies the optimizer to train a statistical model.
  * `algorithm`: perceptron, softmax, adagrad, agagrad-mini-batch, agadelta-mini-batch, agagrad-regression.
  * `l1_regularization`: the [RDA](http://www.jmlr.org/papers/volume11/xiao10a/xiao10a.pdf) regularization parameter used for `adagrad-*`.
  * `learning_rate`: the learning rate.
  * `feature_cutoff`: features appearing less than or equal to this cutoff are discarded from training.
- * `lols`: [locally optimal learning to search](http://jmlr.org/proceedings/papers/v37/changb15.pdf). `fixed` - use only gold labels for this number of epochs, `decaying` - decay the use of gold labels by this rate for every epoch.
+ * `lols`: [locally optimal learning to search](http://jmlr.org/proceedings/papers/v37/changb15.pdf). <br>- `fixed`: use only gold labels for the specific number of epochs. <br>- `decaying`: decay the use of gold labels by the specific rate for every epoch.
  * `max_epochs`: the maximum number of epochs to be used for training.
  * `batch_size`: the number of sentences used to train `*-mini-batch`.
  * `bias`: the bias value.
@@ -155,7 +155,7 @@ Sample configuration files can be found [here](../../src/main/resources/configur
     <feature( f#="source(±window)?(_relation)?:field(:value)?")+/>
     ```
 
- * `f#`: `#` must start with `0`. When multiple features are joined, they must be in a consecutive order.
+ * `f#`: `#` must start with 0. When multiple features are joined, they must be in a consecutive order.
  * `source`: see [`Source.java`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Source.java).
  * `window`: the context window with respect to the source.
  * `relation`: see [`Relation.java`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Relation.java).
