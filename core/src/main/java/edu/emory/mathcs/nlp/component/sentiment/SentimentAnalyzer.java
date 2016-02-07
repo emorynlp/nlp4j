@@ -1,5 +1,5 @@
 /**
- * Copyright 2015, Emory University
+ * Copyright 2016, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,52 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.srl;
+package edu.emory.mathcs.nlp.component.sentiment;
 
 import java.io.InputStream;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.state.DOCState;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SRLParser extends OnlineComponent<SRLState>
+public class SentimentAnalyzer extends OnlineComponent<DOCState>
 {
-	private static final long serialVersionUID = 6802441378426099565L;
+	private static final long serialVersionUID = 2002182385845859658L;
+	public static final String FEAT_KEY = "sent";
 
-	public SRLParser() {}
+	public SentimentAnalyzer() {}
 	
-	public SRLParser(InputStream configuration)
+	public SentimentAnalyzer(InputStream configuration)
 	{
 		super(configuration);
 	}
-
+	
 //	============================== ABSTRACT ==============================
-
+	
 	@Override
 	public Eval createEvaluator()
 	{
-		return new F1Eval();
+		return new AccuracyEval();
 	}
 
 	@Override
-	protected SRLState initState(NLPNode[] nodes)
+	protected DOCState initState(NLPNode[] nodes)
 	{
-		return new SRLState(nodes);
+		return new DOCState(nodes, FEAT_KEY);
 	}
 	
 	@Override
-	public NLPConfig setConfiguration(InputStream in)
+	public void initFeatureTemplate()
 	{
-		NLPConfig config = new NLPConfig(in);
-		setConfiguration(config);
-		return config;
+		feature_template = new SentimentFeatureTemplate(config.getFeatureTemplateElement(), getHyperParameter());
 	}
 
 	@Override
-	protected void postProcess(SRLState state) {}
+	protected void postProcess(DOCState state) {}
 }

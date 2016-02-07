@@ -44,7 +44,7 @@ public class NLPTrain
 	protected String train_ext = "*";
 	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
 	protected String develop_ext = "*";
-	@Option(name="-mode", usage="mode (required: pos|ner|dep|srl)", required=true, metaVar="<string>")
+	@Option(name="-mode", usage="mode (required: pos|ner|dep|srl|sent)", required=true, metaVar="<string>")
 	protected String mode = null;
 	
 	public NLPTrain(String[] args)

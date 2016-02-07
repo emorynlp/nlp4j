@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pos;
+package edu.emory.mathcs.nlp.component.template.state;
 
+import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -24,71 +25,56 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SRLState extends NLPState
+public class DOCState extends NLPState
 {
-	public SRLState(NLPNode[] nodes)
+	private final String feat_key; 
+	private boolean terminate;
+	private NLPNode key_node;
+	private String gold;
+	
+	public DOCState(NLPNode[] nodes, String key)
 	{
 		super(nodes);
+		feat_key  = key;
+		key_node  = nodes[1];
+		terminate = false;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#saveOracle()
-	 */
 	@Override
 	public void saveOracle()
 	{
-		// TODO Auto-generated method stub
-		
+		gold = key_node.removeFeat(feat_key);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#getOracle()
-	 */
 	@Override
 	public String getOracle()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return gold;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#next(edu.emory.mathcs.nlp.learning.util.LabelMap, int, float[])
-	 */
 	@Override
 	public void next(LabelMap map, int yhat, float[] scores)
 	{
-		// TODO Auto-generated method stub
-		
+		key_node.putFeat(feat_key, map.getLabel(yhat));
+		terminate = true;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#isTerminate()
-	 */
 	@Override
 	public boolean isTerminate()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return terminate;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#getNode(edu.emory.mathcs.nlp.component.template.feature.FeatureItem)
-	 */
 	@Override
 	public NLPNode getNode(FeatureItem item)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#evaluate(edu.emory.mathcs.nlp.component.template.eval.Eval)
-	 */
 	@Override
 	public void evaluate(Eval eval)
 	{
-		// TODO Auto-generated method stub
-		
+		int correct = gold.equals(key_node.getFeat(feat_key)) ? 1 : 0;
+		((AccuracyEval)eval).add(correct, 1);
 	}
-
 }
