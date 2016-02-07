@@ -73,8 +73,4 @@ Sample configuration files for decoding can be found here: [`config-decode-*`](.
 
 * `<tsv>`: see [`configuration#tsv`](train.md#configuration). This does not need to be specified when `raw` or `sen` is used.
 * `<lexica>`: see [`configuration#lexica`](train.md#configuration).
-* `<models>` specifies the statistical model for each component (e.g., [english models](../supplements/english-lexica-models.md#models)).
- * `<pos>`: part-of-speech tagging.
- * `<ner>`: named entity recognition.
- * `<dep>`: dependency parsing.
- * `<srl>`: semantic role labeling.
+* `<models>` specifies the statistical model for each component (e.g., [english models](../supplements/english-lexica-models.md#models); see [`NLPMode`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/NLPMode.java)).
