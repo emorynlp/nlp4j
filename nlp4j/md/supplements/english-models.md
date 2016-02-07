@@ -1,21 +1,29 @@
-# English Models
+# English
 
 ## Lexica
 
-All lexica can be found [here](src/main/resources/edu/emory/mathcs/nlp/english/lexica):
+All lexica can be found [here](https://bitbucket.org/emorynlp/english/src/fc6cf377142cb554ab74c7b6377eff6d28e43620/src/main/resources/edu/emory/mathcs/nlp/lexica/?at=master):
 
-* `en-ambiguity-classes-simplified-lowercase.xz`<br>: ambiguity classes using simplified lowercase word forms.
-* `en-brown-clusters-simplified-lowercase.xz`<br>: brown clusters using simplified lowercase word forms. 
-* `en-ner-gazetteers-simplified-uncapitalized.xz`<br>: gazetteers for named entity recognition using uncapitalized simplified word forms.
-* `en-ner-gazetteers-simplified.xz`<br>: gazetteers for named entity recognition using simplified word forms.
-* `en-stop-words-simplified-uncapitalized.xz`<br>: stop words using uncapitalized simplified word forms.
+* `en-ambiguity-classes-simplified.xz`<br>: ambiguity classes for part-of-speech tagging with simplified word forms.
+* `en-ambiguity-classes-simplified-lowercase.xz`<br>: ambiguity classes for part-of-speech tagging with simplified lowercase word forms.
+* `en-brown-clusters-simplified-lowercase.xz`<br>: brown clusters with simplified lowercase word forms. 
+* `en-named-entity-gazetteers-simplified.xz`<br>: gazetteers for named entity recognition with simplified word forms.
+* `en-named-entity-gazetteers-simplified-lowercase.xz`<br>: gazetteers for named entity recognition with simplified lowercase word forms.
+* `en-stop-words-simplified-lowercase.xz`<br>: stop words with simplified lowercase word forms.
+* `en-word-embeddings-undigitalized.xz`<br>: word embeddings with undigitalized word forms.
 
 ## Models
 
-All models can be found [here](src/main/resources/edu/emory/mathcs/nlp/english/models):
+All models can be found [here](https://bitbucket.org/emorynlp/english/src/fc6cf377142cb554ab74c7b6377eff6d28e43620/src/main/resources/edu/emory/mathcs/nlp/models/?at=master):
 
-* `en-general-pos.xz`<br>: part-of-speech tagging model.
-* `en-general-pos-uncapitalized.xz`<br>: part-of-speech tagging model using uncapitalized word forms.
+* `en-pos.xz`<br>: part-of-speech tagging model.
+* `en-pos-lowercase.xz`<br>: part-of-speech tagging model using only lowercase word forms.
+* `en-ner.xz`<br>: named entity recognition model.
+* `en-ner-lowercase.xz`<br>: named entity recognition model using only lowercase word forms.
+* `en-dep.xz`<br>: dependency parsing model.
+* `en-srl.xz`<br>: semantic role labeling model.
+
+Models are trained on the following corpora.
 
 | [OntoNotes 5.0](https://catalog.ldc.upenn.edu/LDC2013T19) | Sentences | Tokens |
 | -------------------------- | -----: | ------: |

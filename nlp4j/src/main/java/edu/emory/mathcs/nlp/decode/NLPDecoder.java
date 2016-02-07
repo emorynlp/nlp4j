@@ -58,18 +58,21 @@ public class NLPDecoder
 	
 	public NLPDecoder() {}
 	
-	public NLPDecoder(InputStream configuration)
+	public NLPDecoder(InputStream configuration, String format)
 	{
-		init(configuration);
+		init(configuration, format);
 	}
 	
-	public void init(InputStream configuration)
+	public void init(InputStream configuration, String format)
 	{
 		List<NLPComponent> components = new ArrayList<>();
 		config = new DecodeConfig(configuration);
 		
-		BinUtils.LOG.info("Loading tokenizer\n");
-		setTokenizer(new EnglishTokenizer());
+		if (!format.equals(FORMAT_TSV))
+		{
+			BinUtils.LOG.info("Loading tokenizer\n");
+			setTokenizer(new EnglishTokenizer());	
+		}
 		
 		if (config.getPartOfSpeechTagging() != null)
 		{
@@ -78,24 +81,24 @@ public class NLPDecoder
 			
 			BinUtils.LOG.info("Loading morphological analyzer\n");
 			components.add(new EnglishMorphAnalyzer());
-			
-			if (config.getNamedEntityRecognition() != null)
-			{
-				BinUtils.LOG.info("Loading named entity recognizer\n");
-				components.add(getComponent(IOUtils.getInputStream(config.getNamedEntityRecognition())));		
-			}
-			
-			if (config.getDependencyParsing() != null)
-			{
-				BinUtils.LOG.info("Loading dependency parser\n");
-				components.add(getComponent(IOUtils.getInputStream(config.getDependencyParsing())));
-				
-				if (config.getSemanticRoleLabeling() != null)
-				{
-					BinUtils.LOG.info("Loading semantic role labeler\n");
-					components.add(getComponent(IOUtils.getInputStream(config.getSemanticRoleLabeling())));		
-				}	
-			}
+		}
+		
+		if (config.getNamedEntityRecognition() != null)
+		{
+			BinUtils.LOG.info("Loading named entity recognizer\n");
+			components.add(getComponent(IOUtils.getInputStream(config.getNamedEntityRecognition())));		
+		}
+		
+		if (config.getDependencyParsing() != null)
+		{
+			BinUtils.LOG.info("Loading dependency parser\n");
+			components.add(getComponent(IOUtils.getInputStream(config.getDependencyParsing())));
+		}
+		
+		if (config.getSemanticRoleLabeling() != null)
+		{
+			BinUtils.LOG.info("Loading semantic role labeler\n");
+			components.add(getComponent(IOUtils.getInputStream(config.getSemanticRoleLabeling())));		
 		}
 
 		this.components = new NLPComponent[components.size()];

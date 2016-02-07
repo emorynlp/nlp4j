@@ -133,7 +133,7 @@ Sample configuration files for training can be found here: [`config-train-*`](..
  * `sheads`: semantic heads.
  * `nament`: named entity tag.
 
-* `<lexica>` specifies the lexica used globally across multiple components (e.g., [english models](../supplements/english-models.md#lexica)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L193)).
+* `<lexica>` specifies the lexica used globally across multiple components (e.g., [english lexica](../supplements/english-lexica-models.md#lexica)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L193)).
  * `ambiguity_classes`: ambiguity classes for part-of-speech tagging.
  * `word_clusters`: word clusters (e.g., brown clusters).
  * `word_embeddings`: word embeddings (e.g., [word2vec](http://word2vec.googlecode.com)).

@@ -15,6 +15,9 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.kohsuke.args4j.Option;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
@@ -46,8 +49,11 @@ public class NLPDecode
 	public NLPDecode(String[] args)
 	{
 		BinUtils.initArgs(args, this);
-		decoder = new NLPDecoder(IOUtils.createFileInputStream(configuration_file));
-		decoder.decode(FileUtils.getFileList(input_path, input_ext, false), output_ext, format, threads);
+		List<String> filelist = FileUtils.getFileList(input_path, input_ext, false);
+		Collections.sort(filelist);
+		
+		decoder = new NLPDecoder(IOUtils.createFileInputStream(configuration_file), format);
+		decoder.decode(filelist, output_ext, format, threads);
 	}
 	
 	static public void main(String[] args)

@@ -5,18 +5,18 @@
     </tsv>
 
     <lexica>
-        <ambiguity_classes field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/english/lexica/en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
-        <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
+        <ambiguity_classes field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
+        <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
     </lexica>
 
     <optimizer>
         <l1_regularization>0.00001</l1_regularization>
         <algorithm>adagrad-mini-batch</algorithm>
         <learning_rate>0.02</learning_rate>
-        <feature_cutoff>1</feature_cutoff>
+        <feature_cutoff>2</feature_cutoff>
         <lols fixed="0" decaying="0.95"/>
         <batch_size>5</batch_size>
-        <max_epoch>30</max_epoch>
+        <max_epoch>36</max_epoch>
         <bias>0</bias>
     </optimizer>
 

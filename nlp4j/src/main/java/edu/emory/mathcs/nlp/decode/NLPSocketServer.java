@@ -39,7 +39,7 @@ public class NLPSocketServer
 	@SuppressWarnings("resource")
 	public NLPSocketServer(InputStream configuration) throws Exception
 	{
-		NLPDecoder decoder = new NLPDecoder(configuration);
+		NLPDecoder decoder = new NLPDecoder(configuration, NLPDecoder.FORMAT_RAW);
 		ServerSocket server = new ServerSocket(PORT);
 		StringBuilder build = new StringBuilder();
 		byte[] buffer = new byte[2048];
