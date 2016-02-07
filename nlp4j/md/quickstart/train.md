@@ -14,7 +14,7 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 -d  <filepath> : development path (optional)
 -te   <string> : training file extension (default: *)
 -de   <string> : development file extension (default: *)
--mode <string> : component mode (required: pos|ner|dep|srl)
+-mode <string> : component mode (required: pos|ner|dep|srl|sent)
 ```
 
 * `-c` specifies the configuration file (see [configuration](#configuration)).
@@ -22,11 +22,7 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 * `-p` specifies the previously trained model file. If this option is set, a new model is trained on top of the previous model.
 * `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the specific directory are trained. It is possible to train a model without using a development set by not setting the `-d` option (see the example below).
 * `-te|de` specifies the training or development file extension. The default value `*` implies files with any extension. This option is used only when the training or development path `-t|d` points to a directory.
-* `-mode` specifies the NLP component to be trained:
- * `pos`: part-of-speech tagging.
- * `ner`: named entity recognition.
- * `dep`: dependency parsing.
- * `srl`: semantic role labeling.
+* `-mode` specifies the NLP component to be trained (see [`NLPMode`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/NLPMode.java)).
 
 ## Example
 
