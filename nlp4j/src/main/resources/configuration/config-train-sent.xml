@@ -1,0 +1,20 @@
+<configuration>
+	<tsv>
+        <column index="1" field="form"/>
+        <column index="2" field="lemma"/>
+        <column index="3" field="pos"/>
+        <column index="4" field="feats"/>
+    </tsv>
+
+    <lexica>
+        <stop_words field="word_form_simplified_lowercase">/Users/jdchoi/Documents/EmoryNLP/english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-stop-words-simplified-lowercase.xz</stop_words>
+    </lexica>
+
+    <optimizer>
+        <algorithm>adagrad</algorithm>
+        <learning_rate>0.01</learning_rate>
+        <feature_cutoff>0</feature_cutoff>
+        <max_epoch>20</max_epoch>
+        <bias>0</bias>
+    </optimizer>
+</configuration>
