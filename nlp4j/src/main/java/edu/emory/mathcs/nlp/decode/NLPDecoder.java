@@ -166,7 +166,7 @@ public class NLPDecoder
 		for (List<String> tokens : tokenizer.segmentize(in))
 		{
 			nodes = decode(tokens);
-			fout.println(Joiner.join(nodes, "\n", 1)+"\n");
+			fout.println(toString(nodes)+"\n");
 		}
 		
 		in.close();
@@ -183,7 +183,7 @@ public class NLPDecoder
 		while ((line = reader.readLine()) != null)
 		{
 			nodes = decode(line);
-			fout.println(Joiner.join(nodes, "\n", 1)+"\n");
+			fout.println(toString(nodes)+"\n");
 		}
 		
 		reader.close();
@@ -200,7 +200,7 @@ public class NLPDecoder
 		while ((nodes = reader.next()) != null)
 		{
 			decode(nodes);
-			fout.println(Joiner.join(nodes, "\n", 1)+"\n");
+			fout.println(toString(nodes)+"\n");
 		}
 		
 		reader.close();
@@ -254,6 +254,11 @@ public class NLPDecoder
 		catch (Exception e) {e.printStackTrace();}
 
 		return component;
+	}
+	
+	public String toString(NLPNode[] nodes)
+	{
+		return Joiner.join(nodes, "\n", 1);
 	}
 	
 	class NLPTask implements Runnable
