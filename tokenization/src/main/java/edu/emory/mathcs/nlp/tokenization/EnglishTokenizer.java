@@ -22,6 +22,7 @@ import java.util.List;
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Compound;
 import edu.emory.mathcs.nlp.tokenization.dictionary.EnglishApostrophe;
@@ -78,17 +79,18 @@ public class EnglishTokenizer extends Tokenizer
 	}
 	
 	@Override
-	protected boolean tokenizeWordsMore(List<String> tokens, String original, String lower, char[] lcs)
+	protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original,
+            String lower, char[] lcs, int bIndex2)
 	{
-		return tokenize(tokens, original, lower, lcs, d_apostrophe) || tokenize(tokens, original, lower, lcs, d_compound); 
+		return tokenize(tokens, original, lower, lcs, d_apostrophe, bIndex2) || tokenize(tokens, original, lower, lcs, d_compound, bIndex2); 
 	}
 	
 //	----------------------------------- Segmentize -----------------------------------
 	
 	@Override
-	public List<List<String>> segmentize(List<String> tokens)
+	public List<List<NLPNode>> segmentize(List<NLPNode> tokens)
 	{
-		List<List<String>> sentences = new ArrayList<>();
+		List<List<NLPNode>> sentences = new ArrayList<>();
 		int[] brackets = new int[R_BRACKETS.length];
 		int bIndex, i, size = tokens.size();
 		boolean isTerminal = false;
@@ -96,12 +98,12 @@ public class EnglishTokenizer extends Tokenizer
 		
 		for (i=0, bIndex=0; i<size; i++)
 		{
-			token = tokens.get(i);
+		    token = tokens.get(i).getWordForm();
 			countBrackets(token, brackets);
 			
 			if (isTerminal || isFinalMarksOnly(token))
 			{
-				if (i+1 < size && isFollowedByBracket(tokens.get(i+1), brackets))
+				if (i+1 < size && isFollowedByBracket(tokens.get(i + 1).getWordForm(), brackets))
 				{
 					isTerminal = true;
 					continue;

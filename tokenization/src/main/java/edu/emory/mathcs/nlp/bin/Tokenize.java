@@ -31,6 +31,7 @@ import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Language;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
 /**
@@ -84,7 +85,7 @@ public class Tokenize
 		String tok_delim = output_format.equals(LINE) ? StringConst.SPACE : StringConst.NEW_LINE;
 		String sen_delim = output_format.equals(LINE) ? StringConst.EMPTY : StringConst.NEW_LINE;
 		
-		for (List<String> tokens : tokenizer.segmentize(in))
+		for (List<NLPNode> tokens : tokenizer.segmentize(in))
 			out.println(Joiner.join(tokens, tok_delim)+sen_delim);
 		
 		in.close();
