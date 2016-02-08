@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -275,6 +276,18 @@ public class DSUtils
 		for (String item : array)
 			list.add(item);
 	}
+	
+	static public void addAll(List<NLPNode> tokens, String[] array,
+            int bIndex2)
+    {
+        for (String item : array)
+        {
+            NLPNode interval = new NLPNode(bIndex2, bIndex2 + item.length(),
+                    item);
+            tokens.add(interval);
+            bIndex2 = bIndex2 + item.length();
+        }
+    }
 	
 	static public <T>void removeLast(List<T> list)
 	{

@@ -60,7 +60,9 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	protected String       dependency_label;
 	protected NLPNode      dependency_head;
 	protected List<SRLArc> semantic_heads;
-
+    // start and end offset
+    protected int                      start;
+    protected int                      end;
 	// inferred fields
 	protected int id;
 	protected String word_form_simplified;
@@ -81,6 +83,23 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		set(id, form, null, null, null, new FeatMap(), null, null);
 	}
 	
+    /**
+     * To set word_form,start and end offset of word_form.
+     * @param id
+     * @param form
+     */
+    public NLPNode(int start, int end, String form)
+    {
+        set(start, end, form);
+    }
+
+    private void set(int start, int end, String form)
+    {
+        setStart(start);
+        setEnd(end);
+        setWordForm(form);
+    }
+
 	public NLPNode(int id, String form, String tag)
 	{
 		set(id, form, null, null, null, new FeatMap(), null, null);
@@ -275,6 +294,38 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		pos_tag = tag;
 	}
 	
+    /**
+     * @return the start
+     */
+    public int getStart()
+    {
+        return start;
+    }
+
+    /**
+     * @param start the start to set
+     */
+    public void setStart(int start)
+    {
+        this.start = start;
+    }
+
+    /**
+     * @return the end
+     */
+    public int getEnd()
+    {
+        return end;
+    }
+
+    /**
+     * @param end the end to set
+     */
+    public void setEnd(int end)
+    {
+        this.end = end;
+    }
+
 	public void setFeatMap(FeatMap map)
 	{
 		feat_map = map;
