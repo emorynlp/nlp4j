@@ -110,6 +110,9 @@ abstract public class Tokenizer
 		catch (IOException e) {e.printStackTrace();}
 		
 		tokens.trimToSize();
+		for(int tIndex = 0; tIndex < tokens.size(); tIndex++){
+			tokens.get(tIndex).setID(tIndex + 1);
+		}
 		return tokens;
 	}
 	
@@ -118,6 +121,9 @@ abstract public class Tokenizer
 	{
         int start = 0;
         List<NLPNode> tokens = tokenizeWhiteSpaces(s, start);
+        for(int tIndex = 0; tIndex < tokens.size(); tIndex++){
+			tokens.get(tIndex).setID(tIndex + 1);
+		}
         return tokens;
     }
 	
@@ -151,12 +157,6 @@ abstract public class Tokenizer
 			{
 				if (bIndex < i) tokenizeMetaInfo(tokens,
                         s.substring(bIndex - start, i - start), bIndex, i);
-				 else
-	                {
-	                    NLPNode nlpNode = new NLPNode(bIndex, bIndex + 1,
-	                            s.substring(i - start, i - start + 1));
-	                    tokens.add(nlpNode);
-	                }
 				bIndex = i + 1;
 			}
 		}

@@ -117,6 +117,11 @@ public class EnglishTokenizer extends Tokenizer
 		if (bIndex < size)
 			sentences.add(tokens.subList(bIndex, size));
 		
+		for(int sIndex = 0; sIndex < sentences.size(); sIndex++){
+			for(int tIndex = 0; tIndex < sentences.get(sIndex).size(); tIndex++){
+				sentences.get(sIndex).get(tIndex).setID(tIndex + 1);
+			}
+		}
 		return sentences;
 	}
 		

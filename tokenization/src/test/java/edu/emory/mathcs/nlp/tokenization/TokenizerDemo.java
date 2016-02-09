@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
@@ -37,7 +38,7 @@ public class TokenizerDemo
 		String inputFile = "src/test/resources/emorynlp-raw.txt";
 		InputStream in = IOUtils.createFileInputStream(inputFile);
 		
-		for (List<String> tokens : tokenizer.segmentize(in))
+		for (List<NLPNode> tokens : tokenizer.segmentize(in))
 			System.out.println(tokens.toString());
 		
 		in.close();
@@ -49,7 +50,7 @@ public class TokenizerDemo
 		Tokenizer tokenizer = new EnglishTokenizer();
 		String inputFile = "src/test/resources/emorynlp-line.txt";
 		BufferedReader in = IOUtils.createBufferedReader(inputFile);
-		List<String> tokens;
+		List<NLPNode> tokens;
 		String line;
 		
 		while ((line = in.readLine()) != null)
