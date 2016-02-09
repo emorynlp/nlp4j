@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.tokenization.dictionary;
+package edu.emory.mathcs.nlp.tokenization;
 
-import edu.emory.mathcs.nlp.common.util.CharUtils;
+import org.junit.Test;
+
+import jdk.nashorn.internal.ir.annotations.Ignore;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class Dictionary
+public class IssuesTest
 {
-	static public String ROOT = "edu/emory/mathcs/nlp/tokenization/dictionary/";
-	
-	public String[] tokenize(String s)
+	@Test
+	@Ignore
+	public void test()
 	{
-		char[] lcs = s.toCharArray();
-		String lower = CharUtils.toLowerCase(lcs) ? new String(lcs) : s;
-		return tokenize(s, lower, lcs);
+		Tokenizer t = new EnglishTokenizer();
+		String s = "!((a)).";
+		System.out.println(t.tokenize(s));
 	}
-	
-	/**
-	 * @param original the original string.
-	 * @param lower the lowercase of the original string.
-	 * @param lcs the lowercase character array of the original string.
-	 */
-	abstract public String[] tokenize(String original, String lower, char[] lcs);
 }
