@@ -90,14 +90,23 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
      */
     public NLPNode(int start, int end, String form)
     {
-        set(start, end, form);
+        set(start, end, form, null, null, null, new FeatMap(), null, null);
     }
 
-    private void set(int start, int end, String form)
+    private void set(int start, int end, String form, String lemma, String posTag, String namentTag, FeatMap feats, NLPNode dhead, String deprel)
     {
         setStart(start);
         setEnd(end);
         setWordForm(form);
+        setLemma(lemma);
+		setPartOfSpeechTag(posTag);
+		setNamedEntityTag(namentTag);
+		setFeatMap(feats);
+		setDependencyHead(dhead);
+		setDependencyLabel(deprel);
+		
+		dependent_list = new SortedArrayList<>();
+		semantic_heads = new ArrayList<>();
     }
 
 	public NLPNode(int id, String form, String tag)
