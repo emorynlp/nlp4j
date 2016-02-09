@@ -36,31 +36,31 @@ import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class ModelShrink
+public class ModelReduce
 {
 	@Option(name="-c", usage="confinguration file (required)", required=true, metaVar="<filename>")
 	public String configuration_file;
 	@Option(name="-m", usage="model file (required)", required=true, metaVar="<filename>")
 	public String model_file;
-	@Option(name="-i", usage="input path (required)", required=true, metaVar="<filepath>")
+	@Option(name="-d", usage="development path (required)", required=true, metaVar="<filepath>")
 	public String input_path;
-	@Option(name="-ie", usage="input file extension (default: *)", required=false, metaVar="<string>")
+	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
 	public String input_ext = "*";
-	@Option(name="-oe", usage="output file extension (default: shrink)", required=false, metaVar="<string>")
+	@Option(name="-oe", usage="output file extension (default: sk)", required=false, metaVar="<string>")
 	public String output_ext = "sk";
-	@Option(name="-start", usage="starting shrink rate (default: 0.05)", required=false, metaVar="<float>")
+	@Option(name="-start", usage="starting reduce rate (default: 0.05)", required=false, metaVar="<float>")
 	public float start = 0.05f;
-	@Option(name="-inc", usage="increment rate (default: 0.01)", required=false, metaVar="<float>")
+	@Option(name="-inc", usage="incremental reduce rate (default: 0.01)", required=false, metaVar="<float>")
 	public float increment = 0.01f;
 	@Option(name="-lower", usage="lower bound (required)", required=true, metaVar="<float>")
 	public float lower_bound;
-	@Option(name="-save", usage="save right away (default: false)", required=false, metaVar="<boolean>")
+	@Option(name="-save", usage="save the model using the starting rate (default: false)", required=false, metaVar="<boolean>")
 	public boolean save = false;
 	
-	public <N,S>ModelShrink() {}
+	public <N,S>ModelReduce() {}
 	
 	@SuppressWarnings("unchecked")
-	public <S extends NLPState>ModelShrink(String[] args) throws Exception
+	public <S extends NLPState>ModelReduce(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
 		
@@ -127,7 +127,7 @@ public class ModelShrink
 	{
 		try
 		{
-			new ModelShrink(args);
+			new ModelReduce(args);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}

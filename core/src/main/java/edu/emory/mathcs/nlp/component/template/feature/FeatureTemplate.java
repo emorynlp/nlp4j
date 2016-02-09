@@ -32,7 +32,6 @@ import edu.emory.mathcs.nlp.common.util.CharUtils;
 import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.node.Orthographic;
@@ -83,6 +82,7 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 	
 	protected void init(Element eFeatures)
 	{
+		if (eFeatures == null) return;
 		NodeList nodes = eFeatures.getElementsByTagName("feature");
 		FeatureItem[] items;
 		Element element;
@@ -240,7 +240,7 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 		return x;
 	}
 	
-	private void add(SparseVector x, int type, String value, float weight, boolean isTrain)
+	protected void add(SparseVector x, int type, String value, float weight, boolean isTrain)
 	{
 		if (value != null)
 		{
@@ -251,7 +251,6 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 			else
 				index = feature_map.index(type, value);
 			
-//			int index = isTrain ? feature_map.add(type, value) : feature_map.index(type, value);
 			if (index > 0) x.add(index, weight);
 		}
 	}
@@ -333,7 +332,6 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 		case ambiguity_classes: return node.getAmbiguityClasseList();
 		case named_entity_gazetteers: return node.getNamedEntityGazetteerSet();
 		case word_clusters: return node.getWordClusters();
-		case bag_of_words: return getBagOfWords(state, item);
 		default: return null;
 		}
 	}
@@ -452,54 +450,7 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 			list.add(Orthographic.HAS_OTHER_PUNCT);
 	}
 	
-	protected Set<String> getBagOfWords(S state, FeatureItem item)
-	{
-		Boolean includePunct = (Boolean)item.attribute;
-		NLPNode[] nodes = state.getNodes();
-		Set<String> set = new HashSet<>();
-		String key;
-		
-		for (int i=1; i<nodes.length; i++)
-		{
-			key = GlobalLexica.getNonStopWord(nodes[i]);
-			if (key != null && (includePunct || StringUtils.containsPunctuationOnly(key))) set.add(key);
-		}
-		
-		return set;
-	}
-	
 //	============================== SET FEATURES WEIGHTED ==============================
-	
-	protected Collection<StringPrediction> getFeaturesWeighted(S state, FeatureItem item)
-	{
-		NLPNode node = state.getNode(item);
-		return (node == null) ? null : getFeaturesWeighted(state, item, node);
-	}
-	
-	protected Collection<StringPrediction> getFeaturesWeighted(S state, FeatureItem item, NLPNode node)
-	{
-		switch (item.field)
-		{
-		case bag_of_words_count: return getBagOfWordsCount(state, item);
-		default: return null;
-		}
-	}
-	
-	protected Set<StringPrediction> getBagOfWordsCount(S state, FeatureItem item)
-	{
-		Object2IntMap<String> map = new Object2IntOpenHashMap<>();
-		Boolean includePunct = (Boolean)item.attribute;
-		NLPNode[] nodes = state.getNodes();
-		String key;
-		
-		for (int i=1; i<nodes.length; i++)
-		{
-			key = GlobalLexica.getNonStopWord(nodes[i]);
-			if (key != null && (includePunct || StringUtils.containsPunctuationOnly(key))) FastUtils.increment(map, key);
-		}
-		
-		return toSet(map);
-	}
 	
 	protected Set<StringPrediction> toSet(Object2IntMap<String> map)
 	{

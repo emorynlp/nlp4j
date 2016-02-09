@@ -36,8 +36,8 @@ import edu.emory.mathcs.nlp.learning.util.MLUtils;
 public abstract class OnlineComponent<S extends NLPState> implements NLPComponent, Serializable
 {
 	private static final long serialVersionUID = 59819173578703335L;
-	protected FeatureTemplate<S>  feature_template;
-	protected OnlineOptimizer     optimizer;
+	protected FeatureTemplate<S> feature_template;
+	protected OnlineOptimizer    optimizer;
 	
 	protected transient HyperParameter hyper_parameter;
 	protected transient NLPConfig      config;

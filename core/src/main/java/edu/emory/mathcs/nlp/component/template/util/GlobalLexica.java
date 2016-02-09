@@ -240,15 +240,9 @@ public class GlobalLexica implements ConfigXML
 		}
 	}
 	
-	static public String getNonStopWord(NLPNode node)
+	static public boolean isStopWord(NLPNode node)
 	{
-		if (stop_words != null)
-		{
-			String key = node.getValue(stop_words_field);
-			return stop_words.contains(key) ? null : key;
-		}
-		
-		return null;
+		return stop_words != null && stop_words.contains(node.getValue(stop_words_field));
 	}
 	
 	static private String getKey(NLPNode node, Field field)

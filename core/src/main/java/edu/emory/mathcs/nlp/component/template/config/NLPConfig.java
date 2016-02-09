@@ -123,15 +123,25 @@ public class NLPConfig implements ConfigXML
 		float   learningRate   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, LEARNING_RATE);
 		float   bias           = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, BIAS);
 		float   l1             = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, L1_REGULARIZATION);
+
+		// locally optimal learning to search
+		double decaying;
+		int fixed;
+		
+		if (eLOLS != null)
+		{
+			fixed    = XMLUtils.getIntegerAttribute(eLOLS, FIXED);
+			decaying = XMLUtils.getDoubleAttribute(eLOLS, DECAYING);
+
+		}
+		else
+		{
+			fixed = 0;
+			decaying = 1;
+		}
 		
 		// l1 regularization
 		RegularizedDualAveraging rda = (l1 > 0) ? new RegularizedDualAveraging(l1) : null;
-		
-		// locally optimal learning to search
-		int fixed = XMLUtils.getIntegerAttribute(eLOLS, FIXED);
-		double decaying = XMLUtils.getDoubleAttribute(eLOLS, DECAYING);
-		LOLS lols = new LOLS(fixed, decaying);
-		
 		HyperParameter hp = new HyperParameter();
 		
 		hp.setFeature_cutoff(feautureCutoff);
@@ -140,8 +150,8 @@ public class NLPConfig implements ConfigXML
 		hp.setLearningRate(learningRate);
 		hp.setBias(bias);
 		hp.setL1Regularizer(rda);
-		hp.setLOLS(lols);
-
+		hp.setLOLS(new LOLS(fixed, decaying));
+		
 		return hp;
 	}
 	
