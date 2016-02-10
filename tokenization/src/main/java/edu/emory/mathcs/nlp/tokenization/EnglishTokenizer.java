@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.emory.mathcs.nlp.common.collection.obj.Index;
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
@@ -80,7 +81,7 @@ public class EnglishTokenizer extends Tokenizer
 	
 	@Override
 	protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original,
-            String lower, char[] lcs, int bIndex2)
+            String lower, char[] lcs, Index bIndex2)
 	{
 		return tokenize(tokens, original, lower, lcs, d_apostrophe, bIndex2) || tokenize(tokens, original, lower, lcs, d_compound, bIndex2); 
 	}
