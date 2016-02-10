@@ -38,8 +38,8 @@ public class NLPDecode
 	public String input_ext = "*";
 	@Option(name="-oe", usage="output file extension (default: nlp)", required=false, metaVar="<string>")
 	public String output_ext = "nlp";
-	@Option(name="-format", usage="format of the input data (raw|sen|tsv; default: raw)", required=false, metaVar="<string>")
-	private String format = "raw";
+	@Option(name="-format", usage="format of the input data (raw|line|tsv; default: raw)", required=false, metaVar="<string>")
+	private String format = NLPDecoder.FORMAT_RAW;
 	@Option(name="-threads", usage="number of threads (default: 2)", required=false, metaVar="<integer>")
 	protected int threads = 2;
 	private NLPDecoder decoder;

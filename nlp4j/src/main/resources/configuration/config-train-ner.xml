@@ -8,13 +8,13 @@
     </tsv>
 
     <lexica>
-        <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/english/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
-        <named_entity_gazetteers field="word_form_simplified">edu/emory/mathcs/nlp/english/lexica/en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
-        <word_embeddings field="word_form_undigitalized">edu/emory/mathcs/nlp/english/lexica/en-word-embeddings-undigitalized.xz</word_embeddings>
+        <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
+        <word_embeddings field="word_form_undigitalized">edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz</word_embeddings>
+        <named_entity_gazetteers field="word_form_simplified">edu/emory/mathcs/nlp/lexica/en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
     </lexica>
 
     <optimizer>
-        <l1_regularization>0.000001</l1_regularization>
+        <l1_regularization>0.00001</l1_regularization>
         <algorithm>adagrad-mini-batch</algorithm>
         <learning_rate>0.02</learning_rate>
         <feature_cutoff>0</feature_cutoff>

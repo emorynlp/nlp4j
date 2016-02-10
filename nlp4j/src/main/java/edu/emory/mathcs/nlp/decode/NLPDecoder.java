@@ -46,9 +46,9 @@ import edu.emory.mathcs.nlp.tokenization.Tokenizer;
  */
 public class NLPDecoder
 {
-	static final public String FORMAT_RAW = "raw";
-	static final public String FORMAT_SEN = "sen";
-	static final public String FORMAT_TSV = "tsv";
+	static final public String FORMAT_RAW  = "raw";
+	static final public String FORMAT_LINE = "line";
+	static final public String FORMAT_TSV  = "tsv";
 	
 	volatile private NLPComponent[] components;
 	volatile private Tokenizer tokenizer;
@@ -150,9 +150,9 @@ public class NLPDecoder
 		{
 			switch (format)
 			{
-			case FORMAT_RAW: decodeRaw (in, out);
-			case FORMAT_SEN: decodeLine(in, out);
-			case FORMAT_TSV: decodeTSV (config.getTSVReader(), in, out);
+			case FORMAT_RAW : decodeRaw (in, out); break;
+			case FORMAT_LINE: decodeLine(in, out); break;
+			case FORMAT_TSV : decodeTSV (config.getTSVReader(), in, out); break;
 			}
 		}
 		catch (Exception e) {e.printStackTrace();}

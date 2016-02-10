@@ -16,7 +16,7 @@
         <feature_cutoff>2</feature_cutoff>
         <lols fixed="0" decaying="0.95"/>
         <batch_size>5</batch_size>
-        <max_epoch>36</max_epoch>
+        <max_epoch>40</max_epoch>
         <bias>0</bias>
     </optimizer>
 

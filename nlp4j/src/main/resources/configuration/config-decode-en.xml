@@ -6,9 +6,13 @@
     <lexica>
         <ambiguity_classes field="word_form_simplified_lowercase">/Users/jdchoi/Documents/EmoryNLP/english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
         <word_clusters field="word_form_simplified_lowercase">/Users/jdchoi/Documents/EmoryNLP/english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
+        <word_embeddings field="word_form_undigitalized">/Users/jdchoi/Documents/EmoryNLP/english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz</word_embeddings>
+        <named_entity_gazetteers field="word_form_simplified">/Users/jdchoi/Documents/EmoryNLP/english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
     </lexica>
 
     <models>
     	<pos>/Users/jdchoi/Documents/EmoryNLP/english/src/main/resources/edu/emory/mathcs/nlp/models/en-pos.xz</pos>
+    	<ner>/Users/jdchoi/Documents/EmoryNLP/english/src/main/resources/edu/emory/mathcs/nlp/models/en-ner.xz</ner>
+    	<dep>/Users/jdchoi/Documents/EmoryNLP/english/src/main/resources/edu/emory/mathcs/nlp/models/en-dep.xz</dep>
     </models>
 </configuration>

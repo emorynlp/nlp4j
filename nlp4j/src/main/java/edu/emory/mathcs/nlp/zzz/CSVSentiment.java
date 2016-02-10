@@ -31,9 +31,15 @@ import edu.emory.mathcs.nlp.decode.NLPDecoder;
  */
 public class CSVSentiment
 {
-	public void categorize(String configurationFile, String inputFile, String outputFile) throws Exception
+	final NLPDecoder decode;
+	
+	public CSVSentiment(String configurationFile)
 	{
-		NLPDecoder decode = new NLPDecoder(IOUtils.createFileInputStream(configurationFile), NLPDecoder.FORMAT_SEN);
+		decode = new NLPDecoder(IOUtils.createFileInputStream(configurationFile), NLPDecoder.FORMAT_LINE);		
+	}
+	
+	public void categorize(String inputFile, String outputFile) throws Exception
+	{
 		CSVParser parser = new CSVParser(IOUtils.createBufferedReader(inputFile), CSVFormat.DEFAULT);
 		PrintStream fout = IOUtils.createBufferedPrintStream(outputFile);
 		List<CSVRecord> records = parser.getRecords();
@@ -61,9 +67,9 @@ public class CSVSentiment
 		
 		try
 		{
-			CSVSentiment cvs = new CSVSentiment();
-			cvs.categorize(configurationFile, inputFile1, inputFile1+".txt");
-			cvs.categorize(configurationFile, inputFile2, inputFile2+".txt");
+			CSVSentiment cvs = new CSVSentiment(configurationFile);
+			cvs.categorize(inputFile1, inputFile1+".txt");
+			cvs.categorize(inputFile2, inputFile2+".txt");
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}

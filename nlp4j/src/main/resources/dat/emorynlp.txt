@@ -1,1 +1,5 @@
-The Emory NLP project provides software and resources for natural language processing. This project is under the Apache 2 license and developed by the NLP Research Group at Emory University.
+Emory University, recognized internationally for its outstanding liberal arts colleges, graduate and professional schools, and one of the Southeast's leading health care systems, is located on a beautiful, leafy campus in Atlanta, Georgia's historic Druid Hills suburb.
+
+Emory maintains an uncommon balance for an institution of its standing: our scholars and experts generate more than $572 million in research funding annually, while also maintaining a traditional emphasis on teaching. The university is enriched by the legacy and energy of Atlanta, and by collaboration among its schools, centers and partners.
+
+The 2014 Annual Report celebrates a detailed and diverse record of extraordinary achievement. President James W. Wagner commends faculty, staff, students and alumni for their work to uphold the challenge of Atticus Haygood, the eighth president of Emory College, whose quote, "Let us stand by what is good and try to make it better," is chiseled onto the front gate of the Atlanta campus.
