@@ -18,7 +18,6 @@ package edu.emory.mathcs.nlp.component.answer;
 import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 
@@ -37,13 +36,13 @@ public class AnswerFeatureTemplate extends FeatureTemplate<AnswerState>
 	@Override
 	public SparseVector createSparseVector(AnswerState state, boolean isTrain)
 	{
-		NLPNode[] answers  = state.getNodes();
-		NLPNode[] question = state.getQuestion();
+//		NLPNode[] answers  = state.getNodes();
+//		NLPNode[] question = state.getQuestion();
 		SparseVector x = new SparseVector();
-		int input = state.getInputIndex();
-		int type;
-		
-		type = 0;
+//		int input = state.getInputIndex();
+//		int type;
+//		
+//		type = 0;
 //		add(x, type, s, 1, isTrain);
 
 		return x;
