@@ -111,7 +111,7 @@ abstract public class Tokenizer
 			{
 			    if (flag)
                 {
-   // Assigning the start and end offset to all the lines except first line                 
+			    	// assigning the start and end offset to all the lines except first line                 
                     start = end + System.getProperty("line.separator").length();
                     end = start + line.length();
                 }
@@ -121,43 +121,66 @@ abstract public class Tokenizer
                     end = line.length();
                     flag = true;
                 }
-				t = tokenizeWhiteSpaces(line, start);
+				
+			    t = tokenizeWhiteSpaces(line, start);
 				if (!t.isEmpty()) tokens.addAll(t);
 			}
 			
 			reader.close();
 		}
 		catch (IOException e) {e.printStackTrace();}
-		
 		tokens.trimToSize();
-		for(int tIndex = 0; tIndex < tokens.size(); tIndex++){
-			tokens.get(tIndex).setID(tIndex + 1);
-		}
+		
+//		for(int tIndex = 0; tIndex < tokens.size(); tIndex++)
+//			tokens.get(tIndex).setID(tIndex + 1);
+
 		return tokens;
 	}
 	
 	/** @return a list of tokens in the specific string. */
 	public List<NLPNode> tokenize(String s)
 	{
-        int start = 0;
-        List<NLPNode> tokens = tokenizeWhiteSpaces(s, start);
-        for(int tIndex = 0; tIndex < tokens.size(); tIndex++){
-			tokens.get(tIndex).setID(tIndex + 1);
-		}
-        return tokens;
+//		List<NLPNode> tokens = tokenizeWhiteSpaces(s, 0);
+//
+//		for(int tIndex = 0; tIndex < tokens.size(); tIndex++)
+//			tokens.get(tIndex).setID(tIndex + 1);
+
+        return tokenizeWhiteSpaces(s, 0);
     }
 	
-	public List<List<NLPNode>> segmentize(InputStream in)
+	public List<NLPNode[]> segmentize(InputStream in)
 	{
 		return segmentize(tokenize(in));
 	}
 	
-	public List<List<NLPNode>> segmentize(String s)
+	public List<NLPNode[]> segmentize(String s)
 	{
 		return segmentize(tokenize(s));
 	}
 	
-	abstract public List<List<NLPNode>> segmentize(List<NLPNode> tokens);
+	abstract public List<NLPNode[]> segmentize(List<NLPNode> tokens);
+	
+	static public NLPNode[] toNodeArray(List<NLPNode> tokens)
+	{
+		return toNodeArray(tokens, 0, tokens.size());
+	}
+	
+	static public NLPNode[] toNodeArray(List<NLPNode> tokens, int beginIndex, int endIndex)
+	{
+		NLPNode[] nodes = new NLPNode[endIndex - beginIndex +1];
+		int id = 0;
+		
+		nodes[id] = new NLPNode();
+		nodes[id++].setToRoot();
+		
+		for (int i=beginIndex; i<endIndex; i++)
+		{
+			nodes[id] = tokens.get(i);
+			nodes[id].setID(id++);
+		}
+			
+		return nodes;
+	}
 	
 //	----------------------------------- Tokenize -----------------------------------
 	
@@ -638,12 +661,12 @@ abstract public class Tokenizer
                 .get(index + 1).getWordForm().charAt(0))))
 		{
             NLPNode currToken = tokens.get(index);
-            NLPNode nlpNode = new NLPNode(currToken.getStart(),
-                    currToken.getEnd() - 1, StringUtils.trim(
+            NLPNode nlpNode = new NLPNode(currToken.getStartOffset(),
+                    currToken.getEndOffset() - 1, StringUtils.trim(
                             currToken.getWordForm(), 1));
             tokens.set(index, nlpNode);
-            NLPNode nextInterval = new NLPNode(currToken.getEnd() - 1,
-                    currToken.getEnd(), StringConst.PERIOD);
+            NLPNode nextInterval = new NLPNode(currToken.getEndOffset() - 1,
+                    currToken.getEndOffset(), StringConst.PERIOD);
             tokens.add(index + 1, nextInterval);
             return 1;
         }
@@ -663,8 +686,8 @@ abstract public class Tokenizer
                 NLPNode prevToken = tokens.get(index - 1);
                 NLPNode currToken = tokens.get(index);
                 NLPNode nextToken = tokens.get(index + 1);
-                NLPNode nlpNode = new NLPNode(prevToken.getStart(),
-                        nextToken.getEnd(), prevToken.getWordForm()
+                NLPNode nlpNode = new NLPNode(prevToken.getStartOffset(),
+                        nextToken.getEndOffset(), prevToken.getWordForm()
                                 + currToken.getWordForm() + nextToken.getWordForm());
                 tokens.set(index - 1, nlpNode);
                 tokens.remove(index);
@@ -687,11 +710,11 @@ abstract public class Tokenizer
         if (1 < leng && ca[leng - 1] == CharConst.PERIOD
                 && !CharUtils.isFinalMark(ca[leng - 2]))
         {
-            NLPNode nlpNode = new NLPNode(lastInterval.getStart(),
-                    lastInterval.getEnd() - 1, StringUtils.trim(lastToken, 1));
+            NLPNode nlpNode = new NLPNode(lastInterval.getStartOffset(),
+                    lastInterval.getEndOffset() - 1, StringUtils.trim(lastToken, 1));
             tokens.set(lastIndex, nlpNode);
-            NLPNode nextInterval = new NLPNode(lastInterval.getEnd() - 1,
-                    lastInterval.getEnd(), StringConst.PERIOD);
+            NLPNode nextInterval = new NLPNode(lastInterval.getEndOffset() - 1,
+                    lastInterval.getEndOffset(), StringConst.PERIOD);
             tokens.add(lastIndex + 1, nextInterval);
         }
 	}

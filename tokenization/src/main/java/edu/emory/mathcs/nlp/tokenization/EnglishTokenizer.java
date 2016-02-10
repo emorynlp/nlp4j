@@ -80,8 +80,7 @@ public class EnglishTokenizer extends Tokenizer
 	}
 	
 	@Override
-	protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original,
-            String lower, char[] lcs, Index bIndex2)
+	protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original, String lower, char[] lcs, Index bIndex2)
 	{
 		return tokenize(tokens, original, lower, lcs, d_apostrophe, bIndex2) || tokenize(tokens, original, lower, lcs, d_compound, bIndex2); 
 	}
@@ -89,9 +88,9 @@ public class EnglishTokenizer extends Tokenizer
 //	----------------------------------- Segmentize -----------------------------------
 	
 	@Override
-	public List<List<NLPNode>> segmentize(List<NLPNode> tokens)
+	public List<NLPNode[]> segmentize(List<NLPNode> tokens)
 	{
-		List<List<NLPNode>> sentences = new ArrayList<>();
+		List<NLPNode[]> sentences = new ArrayList<>();
 		int[] brackets = new int[R_BRACKETS.length];
 		int bIndex, i, size = tokens.size();
 		boolean isTerminal = false;
@@ -110,19 +109,14 @@ public class EnglishTokenizer extends Tokenizer
 					continue;
 				}
 				
-				sentences.add(tokens.subList(bIndex, bIndex = i+1));
+				sentences.add(toNodeArray(tokens, bIndex, bIndex = i+1));
 				isTerminal = false;
 			}
 		}
 		
 		if (bIndex < size)
-			sentences.add(tokens.subList(bIndex, size));
-		
-		for(int sIndex = 0; sIndex < sentences.size(); sIndex++){
-			for(int tIndex = 0; tIndex < sentences.get(sIndex).size(); tIndex++){
-				sentences.get(sIndex).get(tIndex).setID(tIndex + 1);
-			}
-		}
+			sentences.add(toNodeArray(tokens, bIndex, size));
+
 		return sentences;
 	}
 		

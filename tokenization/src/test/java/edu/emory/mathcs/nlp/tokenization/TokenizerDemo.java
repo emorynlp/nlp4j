@@ -23,23 +23,24 @@ import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
-import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class TokenizerDemo
 {
-	@Test
+//	@Test
 	public void tokenizeRaw() throws Exception
 	{
 		Tokenizer tokenizer = new EnglishTokenizer();
 		String inputFile = "src/test/resources/emorynlp-raw.txt";
 		InputStream in = IOUtils.createFileInputStream(inputFile);
 		
-		for (List<NLPNode> tokens : tokenizer.segmentize(in))
-			System.out.println(tokens.toString());
+		for (NLPNode[] tokens : tokenizer.segmentize(in))
+		{
+			for (NLPNode token : tokens)
+				System.out.println(token.getWordForm());
+		}
 		
 		in.close();
 	}
@@ -56,7 +57,9 @@ public class TokenizerDemo
 		while ((line = in.readLine()) != null)
 		{
 			tokens = tokenizer.tokenize(line);
-			System.out.println(tokens.toString());
+			
+			for (NLPNode token : tokens)
+				System.out.println(token.getWordForm());
 		}
 		
 		in.close();

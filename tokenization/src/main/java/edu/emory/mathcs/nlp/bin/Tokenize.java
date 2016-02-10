@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -85,8 +84,8 @@ public class Tokenize
 		String tok_delim = output_format.equals(LINE) ? StringConst.SPACE : StringConst.NEW_LINE;
 		String sen_delim = output_format.equals(LINE) ? StringConst.EMPTY : StringConst.NEW_LINE;
 		
-		for (List<NLPNode> tokens : tokenizer.segmentize(in))
-			out.println(Joiner.join(tokens, tok_delim)+sen_delim);
+		for (NLPNode[] tokens : tokenizer.segmentize(in))
+			out.println(Joiner.join(tokens, tok_delim, 1)+sen_delim);
 		
 		in.close();
 		out.close();

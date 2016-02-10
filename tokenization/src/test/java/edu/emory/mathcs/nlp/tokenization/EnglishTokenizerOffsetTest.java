@@ -23,8 +23,6 @@ import java.util.List;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
-import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -55,7 +53,7 @@ public class EnglishTokenizerOffsetTest
 		
 	}
 
-	private List<String> getTokenStrings(List<NLPNode> tokens) {
+	List<String> getTokenStrings(List<NLPNode> tokens) {
 		List<String> tokenStrings = new ArrayList<String>();
 		for(int index = 0; index < tokens.size(); index++){
 			tokenStrings.add(tokens.get(index).getWordForm());
@@ -63,11 +61,11 @@ public class EnglishTokenizerOffsetTest
 		return tokenStrings;
 	}
 	
-	public static List<Integer> getTokenStartEnd(List<NLPNode> tokens) {
+	List<Integer> getTokenStartEnd(List<NLPNode> tokens) {
 		List<Integer> tokenStartEnd = new ArrayList<Integer>();
 		for(int index = 0; index < tokens.size(); index++){
-			tokenStartEnd.add(tokens.get(index).getStart());
-			tokenStartEnd.add(tokens.get(index).getEnd());
+			tokenStartEnd.add(tokens.get(index).getStartOffset());
+			tokenStartEnd.add(tokens.get(index).getEndOffset());
 		}
 		return tokenStartEnd;
 	}

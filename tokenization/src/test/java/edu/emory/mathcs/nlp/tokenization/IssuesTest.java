@@ -15,17 +15,12 @@
  */
 package edu.emory.mathcs.nlp.tokenization;
 
-import org.junit.Test;
-
-import jdk.nashorn.internal.ir.annotations.Ignore;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class IssuesTest
 {
-	@Test
-	@Ignore
+//	@Test
 	public void test()
 	{
 		Tokenizer t = new EnglishTokenizer();
