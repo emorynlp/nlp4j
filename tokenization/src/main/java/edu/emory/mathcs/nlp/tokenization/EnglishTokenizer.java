@@ -60,7 +60,7 @@ public class EnglishTokenizer extends Tokenizer
 	}
 	
 	@Override
-	protected int adjustLastSymbolSequenceGap(char[] cs,  int endIndex, String t)
+	protected int adjustLastSymbolSequenceGap(char[] cs, int endIndex, String t)
 	{
 		char sym = cs[endIndex];
 		

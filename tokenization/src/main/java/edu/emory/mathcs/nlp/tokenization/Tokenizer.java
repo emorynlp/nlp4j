@@ -215,8 +215,7 @@ abstract public class Tokenizer
 	 * Tokenizes hyperlinks, emoticons.
 	 * Called by {@link #tokenizeAux(String)}.
 	 */
-	private void tokenizeMetaInfo(List<NLPNode> tokens, String s, int bIndex2,
-            int i)
+	private void tokenizeMetaInfo(List<NLPNode> tokens, String s, int bIndex2, int i)
 	{
 		int[] ps;
 		Index bIndex3 = new Index(bIndex2);
@@ -224,12 +223,11 @@ abstract public class Tokenizer
 		{
 			int bIndex = ps[0], eIndex = ps[1], len = s.length();
 			
-			if (0 < bIndex)		tokenizeSymbols(tokens, s.substring(0, bIndex), bIndex3);
-            NLPNode nlpNode = new NLPNode(bIndex3.getVal(), bIndex3.getVal() + eIndex - bIndex,
-                    s.substring(bIndex, eIndex));
+			if (0 < bIndex) tokenizeSymbols(tokens, s.substring(0, bIndex), bIndex3);
+            NLPNode nlpNode = new NLPNode(bIndex3.getVal(), bIndex3.getVal() + eIndex - bIndex, s.substring(bIndex, eIndex));
             tokens.add(nlpNode);
             bIndex3.setVal(bIndex3.getVal() + eIndex - bIndex);
-			if (eIndex < len)	tokenizeSymbols(tokens, s.substring(eIndex), bIndex3);
+			if (eIndex < len) tokenizeSymbols(tokens, s.substring(eIndex), bIndex3);
 		}
 		else
 			tokenizeSymbols(tokens, s, bIndex3);
@@ -334,8 +332,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #tokenizeSymbols(List, String)}. */
-	private void tokenizeSymbolsAux(List<NLPNode> tokens, String s, char[] cs,
-            List<int[]> indices, Index bIndex2)
+	private void tokenizeSymbolsAux(List<NLPNode> tokens, String s, char[] cs, List<int[]> indices, Index bIndex2)
 	{
 		int i, pg, ng, bIndex, eIndex, size = indices.size() - 1;
 		boolean pb, nb;
@@ -583,8 +580,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #addMorphemes(List, String)}. */
-	private boolean tokenizeDigit(List<NLPNode> tokens, String original,
-            char[] lcs, Index bIndex2)
+	private boolean tokenizeDigit(List<NLPNode> tokens, String original, char[] lcs, Index bIndex2)
 	{
 		int len = lcs.length;
 		if (len < 2) return false;
@@ -628,8 +624,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #addMorphemes(List, String)}. */
-	abstract protected boolean tokenizeWordsMore(List<NLPNode> tokens,
-            String original, String lower, char[] lcs, Index bIndex2);
+	abstract protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original, String lower, char[] lcs, Index bIndex2);
 	
 //	----------------------------------- Finalize -----------------------------------
 	
