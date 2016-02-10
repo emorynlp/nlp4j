@@ -277,7 +277,7 @@ public class DSUtils
 			list.add(item);
 	}
 	
-	static public void addAll(List<NLPNode> tokens, String[] array,
+	static public int addAll(List<NLPNode> tokens, String[] array,
             int bIndex2)
     {
         for (String item : array)
@@ -287,6 +287,7 @@ public class DSUtils
             tokens.add(interval);
             bIndex2 = bIndex2 + item.length();
         }
+        return bIndex2;
     }
 	
 	static public <T>void removeLast(List<T> list)
