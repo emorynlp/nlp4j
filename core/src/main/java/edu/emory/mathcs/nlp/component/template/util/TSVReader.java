@@ -44,6 +44,7 @@ public class TSVReader
 	public int dhead  = -1;
 	public int deprel = -1;
 	public int sheads = -1;
+	public int answer = -1;
 	
 	public void open(InputStream in)
 	{
@@ -54,7 +55,8 @@ public class TSVReader
 	{
 		try
 		{
-			reader.close();
+			if (reader != null)
+				reader.close();
 		}
 		catch (IOException e) {e.printStackTrace();}
 	}
@@ -80,49 +82,50 @@ public class TSVReader
 		return list.isEmpty() ? null : toNodeList(list);
 	}
 	
-	public NLPNode[] toNodeList(List<String[]> values)
+	public NLPNode[] toNodeList(List<String[]> list)
 	{
-		int i, size = values.size();
+		int i, size = list.size();
 		NLPNode[] nodes = (NLPNode[])Array.newInstance(NLPNode.class, size+1);
 		
 		nodes[0] = new NLPNode();
 		nodes[0].setToRoot();
 		
 		for (i=1; i<=size; i++)
-			nodes[i] = create(values.get(i-1), i);
+			nodes[i] = create(i, list.get(i-1));
 		
 		if (dhead >= 0)
 		{
 			for (i=1; i<=size; i++)
-				initDependencyHead(i, nodes, values.get(i-1));
+				initDependencyHead(i, list.get(i-1), nodes);
 			
 			if (sheads >= 0)
 			{
 				for (i=1; i<=size; i++)
-					initSemanticHeads(i, nodes, values.get(i-1)[sheads]);
+					initSemanticHeads(i, list.get(i-1)[sheads], nodes);
 			}
 		}
 		
 		return nodes;
 	}
 	
-	protected NLPNode create(String[] values, int id)
+	protected NLPNode create(int id, String[] values)
 	{
 		String  f = (form   >= 0) ? values[form]   : null;
 		String  l = (lemma  >= 0) ? values[lemma]  : null;
 		String  p = (pos    >= 0) ? values[pos]    : null;
 		String  n = (nament >= 0) ? values[nament] : null;
+		String  a = (answer >= 0) ? values[answer] : null;
 		FeatMap t = (feats  >= 0) ? new FeatMap(values[feats]) : new FeatMap();
-		return new NLPNode(id, f, l, p, n, t, null, null);
+		return new NLPNode(id, f, l, p, n, a, t, null, null);
 	}
 	
-	private void initDependencyHead(int id, NLPNode[] nodes, String[] values)
+	private void initDependencyHead(int id, String[] values, NLPNode[] nodes)
 	{
 		int headID = Integer.parseInt(values[dhead]);
 		nodes[id].setDependencyHead(nodes[headID], values[deprel]);
 	}
 	
-	private void initSemanticHeads(int id, NLPNode[] nodes, String value)
+	private void initSemanticHeads(int id, String value, NLPNode[] nodes)
 	{
 		NLPNode node = nodes[id];
 		int headID;

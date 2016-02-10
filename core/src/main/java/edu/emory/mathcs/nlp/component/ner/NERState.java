@@ -57,8 +57,8 @@ public class NERState extends L2RState
 	@Override
 	public void evaluate(Eval eval)
 	{
-		Int2ObjectMap<ObjectIntIntTriple<String>> gMap = BILOU.collectNamedEntityMap(oracle, String::toString, 1, nodes.length);
-		Int2ObjectMap<ObjectIntIntTriple<String>> sMap = BILOU.collectNamedEntityMap(nodes , this::getLabel  , 1, nodes.length);
+		Int2ObjectMap<ObjectIntIntTriple<String>> gMap = BILOU.collectEntityMap(oracle, String::toString, 1, nodes.length);
+		Int2ObjectMap<ObjectIntIntTriple<String>> sMap = BILOU.collectEntityMap(nodes , this::getLabel  , 1, nodes.length);
 		((F1Eval)eval).add(countCorrect(sMap, gMap), sMap.size(), gMap.size());
 	}
 	
@@ -81,23 +81,23 @@ public class NERState extends L2RState
 	public void postProcess()
 	{
 		for (int i=2; i<nodes.length; i++) postProcessBILOUAux(i);
-		List<ObjectIntIntTriple<String>> list = BILOU.collectNamedEntityList(nodes, this::getLabel, 1, nodes.length);
+		List<ObjectIntIntTriple<String>> list = BILOU.collectEntityList(nodes, this::getLabel, 1, nodes.length);
 		int i;
 		
 		for (i=1; i<nodes.length; i++)
-			nodes[i].setNamedEntityTag("O");
+			setLabel(nodes[i], "O");
 		
 		for (ObjectIntIntTriple<String> t : list)
 		{
 			if (t.i1 == t.i2)
-				nodes[t.i1].setNamedEntityTag(BILOU.toBILOUTag(BILOU.U, t.o));
+				setLabel(nodes[t.i1], BILOU.toBILOUTag(BILOU.U, t.o));
 			else
 			{
-				nodes[t.i1].setNamedEntityTag(BILOU.toBILOUTag(BILOU.B, t.o));
-				nodes[t.i2].setNamedEntityTag(BILOU.toBILOUTag(BILOU.L, t.o));
+				setLabel(nodes[t.i1], BILOU.toBILOUTag(BILOU.B, t.o));
+				setLabel(nodes[t.i2], BILOU.toBILOUTag(BILOU.L, t.o));
 				
 				for (i=t.i1+1; i<t.i2; i++)
-					nodes[i].setNamedEntityTag(BILOU.toBILOUTag(BILOU.I, t.o));
+					setLabel(nodes[i], BILOU.toBILOUTag(BILOU.I, t.o));
 			}
 		}
 	}
@@ -107,34 +107,34 @@ public class NERState extends L2RState
 	{
 		NLPNode prev = nodes[index-1];
 		NLPNode curr = nodes[index];
-		BILOU p = BILOU.toBILOU(prev.getNamedEntityTag());
-		BILOU c = BILOU.toBILOU(curr.getNamedEntityTag());
+		BILOU p = BILOU.toBILOU(getLabel(prev));
+		BILOU c = BILOU.toBILOU(getLabel(curr));
 		
 		switch (p)
 		{
 		case I:
 			switch (c)
 			{
-			case U: curr.setNamedEntityTag(BILOU.changeChunkType(BILOU.I, curr.getNamedEntityTag())); break;	// IU -> II
+			case U: setLabel(curr, BILOU.changeChunkType(BILOU.I, getLabel(curr))); break;	// IU -> II
 			}
 			break;
 		case L:
 			switch (c)
 			{
-			case I: prev.setNamedEntityTag(BILOU.changeChunkType(BILOU.I, prev.getNamedEntityTag())); break;	// LI -> II
+			case I: setLabel(prev, BILOU.changeChunkType(BILOU.I, getLabel(prev))); break;	// LI -> II
 			}
 			break;
 		case O:
 			switch (c)
 			{
-			case I: prev.setNamedEntityTag(curr.getNamedEntityTag()); break;	// OI -> II
+			case I: setLabel(prev, getLabel(curr)); break;	// OI -> II
 			}
 			break;
 		case U:
 			switch (c)
 			{
-			case I: prev.setNamedEntityTag(BILOU.changeChunkType(BILOU.I, prev.getNamedEntityTag())); break;	// UI -> II
-			case L: prev.setNamedEntityTag(BILOU.changeChunkType(BILOU.B, prev.getNamedEntityTag())); break;	// UL -> BL
+			case I: setLabel(prev, BILOU.changeChunkType(BILOU.I, getLabel(prev))); break;	// UI -> II
+			case L: setLabel(prev, BILOU.changeChunkType(BILOU.B, getLabel(prev))); break;	// UL -> BL
 			}
 			break;
 		}

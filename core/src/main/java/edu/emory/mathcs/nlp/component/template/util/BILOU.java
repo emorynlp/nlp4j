@@ -56,9 +56,9 @@ public enum BILOU
 	 * @param beginIndex inclusive
 	 * @param endIndex exclusive
 	 */
-	public static <N>Int2ObjectMap<ObjectIntIntTriple<String>> collectNamedEntityMap(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
+	public static <N>Int2ObjectMap<ObjectIntIntTriple<String>> collectEntityMap(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
 	{
-		List<ObjectIntIntTriple<String>> list = collectNamedEntityList(nodes, f, beginIndex, endIndex);
+		List<ObjectIntIntTriple<String>> list = collectEntityList(nodes, f, beginIndex, endIndex);
 		Int2ObjectMap<ObjectIntIntTriple<String>> map = new Int2ObjectOpenHashMap<>();
 		int key, size = nodes.length;
 		
@@ -75,7 +75,7 @@ public enum BILOU
 	 * @param beginIndex inclusive
 	 * @param endIndex exclusive
 	 */
-	public static <N>List<ObjectIntIntTriple<String>> collectNamedEntityList(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
+	public static <N>List<ObjectIntIntTriple<String>> collectEntityList(N[] nodes, Function<N,String> f, int beginIndex, int endIndex)
 	{
 		List<ObjectIntIntTriple<String>> list = new ArrayList<>();
 		int i, beginChunk = -1;

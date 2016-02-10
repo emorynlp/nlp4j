@@ -36,7 +36,7 @@ public class BILOUTest
 				      "O","I-J","L-J","O","B-K","I-K","O","U-L","I-L",
 				      "O","U-M","B-N","I-N","L-N","B-P","L-P"};
 		
-		Int2ObjectMap<ObjectIntIntTriple<String>> map = BILOU.collectNamedEntityMap(s, String::toString, 1, s.length);
+		Int2ObjectMap<ObjectIntIntTriple<String>> map = BILOU.collectEntityMap(s, String::toString, 1, s.length);
 
 		assertEquals(10, map.size());
 		assertEquals(map.get( 308).o, "D");
