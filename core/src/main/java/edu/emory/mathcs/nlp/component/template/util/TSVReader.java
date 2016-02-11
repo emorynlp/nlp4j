@@ -35,6 +35,7 @@ public class TSVReader
 {
 	static public String BLANK = StringConst.UNDERSCORE;
 	private BufferedReader reader;
+	private final int multi;
 	
 	public int form   = -1;
 	public int lemma  = -1;
@@ -45,6 +46,16 @@ public class TSVReader
 	public int deprel = -1;
 	public int sheads = -1;
 	public int answer = -1;
+	
+	public TSVReader()
+	{
+		this(1);
+	}
+	
+	public TSVReader(int multi)
+	{
+		this.multi = multi;
+	}
 	
 	public void open(InputStream in)
 	{
@@ -62,6 +73,33 @@ public class TSVReader
 	}
 	
 	public NLPNode[] next() throws IOException
+	{
+		NLPNode[] nodes = nextAux();
+		if (nodes == null || multi < 2) return nodes;
+		NLPNode[][] n = new NLPNode[multi][];
+		int size = nodes.length;
+		n[0] = nodes;
+		
+		for (int i=1; i<multi; i++)
+		{
+			n[i] = nextAux();
+			size += n[i].length;
+		}
+
+		NLPNode[] mnodes = new NLPNode[size];
+		System.arraycopy(n[0], 0, mnodes, 0, n[0].length);
+		size = n[0].length;
+		
+		for (int i=1; i<multi; i++)
+		{
+			System.arraycopy(n[i], 0, mnodes, size, n[i].length);
+			size += n[i].length;
+		}
+
+		return mnodes;
+	}
+	
+	private NLPNode[] nextAux() throws IOException
 	{
 		List<String[]> list = new ArrayList<>();
 		String line;

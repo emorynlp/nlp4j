@@ -15,10 +15,15 @@
  */
 package edu.emory.mathcs.nlp.component.answer;
 
+import java.util.Set;
+
 import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.template.feature.Field;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
+import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 
 /**
@@ -36,18 +41,28 @@ public class AnswerFeatureTemplate extends FeatureTemplate<AnswerState>
 	@Override
 	public SparseVector createSparseVector(AnswerState state, boolean isTrain)
 	{
-//		NLPNode[] answers  = state.getNodes();
-//		NLPNode[] question = state.getQuestion();
 		SparseVector x = new SparseVector();
-//		int input = state.getInputIndex();
-//		int type;
-//		
-//		type = 0;
-//		add(x, type, s, 1, isTrain);
-
+		int type = 0;
+		
+		addOverlappingFeatures(state, x, type, isTrain);
 		return x;
 	}
 	
+	public void addOverlappingFeatures(AnswerState state, SparseVector x, int type, boolean isTrain)
+	{
+		// set of lemmas in the question
+		Set<String> qlemmas = NLPUtils.getBagOfWords(state.getQuestion(), Field.lemma);
+		int input = state.getInputIndex();
+		NLPNode node;
+		
+		for (int i=-2; i<=2; i++)
+		{
+			node = state.getNode(input, i);
+			
+			if (node != null && qlemmas.contains(node.getLemma()))
+				add(x, type, "o"+i, 1, isTrain);	
+		}
+	}
 	
 	@Override
 	public float[] createDenseVector(AnswerState state)

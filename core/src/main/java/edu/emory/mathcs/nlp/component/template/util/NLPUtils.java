@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import edu.emory.mathcs.nlp.common.util.FastUtils;
-import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -31,11 +30,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  */
 public class NLPUtils
 {
-	static public String joinWordForms(NLPNode[] nodes, String delim)
-	{
-		return Joiner.join(nodes, delim, 1, nodes.length, NLPNode::getWordForm);
-	}
-	
 	static public Set<String> getBagOfWords(NLPNode[] nodes, Field... fields)
 	{
 		Set<String> set = new HashSet<>();

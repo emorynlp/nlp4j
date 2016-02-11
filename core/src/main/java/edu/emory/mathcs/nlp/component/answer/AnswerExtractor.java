@@ -56,7 +56,7 @@ public class AnswerExtractor extends OnlineComponent<AnswerState>
 	
 	public int separator(NLPNode[] nodes)
 	{
-		for (int i=1; i<nodes.length; i++)
+		for (int i=2; i<nodes.length; i++)
 			if (nodes[i].isID(0))
 				return i;
 		
