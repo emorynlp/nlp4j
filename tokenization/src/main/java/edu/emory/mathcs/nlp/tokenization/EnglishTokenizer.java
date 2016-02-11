@@ -27,7 +27,7 @@ import edu.emory.mathcs.nlp.tokenization.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Compound;
 import edu.emory.mathcs.nlp.tokenization.dictionary.EnglishApostrophe;
 import edu.emory.mathcs.nlp.tokenization.dictionary.EnglishHyphen;
-import edu.emory.mathcs.nlp.tokenization.util.Index;
+import edu.emory.mathcs.nlp.tokenization.util.TokenIndex;
 
 /**
  * @since 3.0.0
@@ -80,7 +80,7 @@ public class EnglishTokenizer extends Tokenizer
 	}
 	
 	@Override
-	protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original, String lower, char[] lcs, Index bIndex2)
+	protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original, String lower, char[] lcs, TokenIndex bIndex2)
 	{
 		return tokenize(tokens, original, lower, lcs, d_apostrophe, bIndex2) || tokenize(tokens, original, lower, lcs, d_compound, bIndex2); 
 	}

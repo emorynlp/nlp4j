@@ -20,15 +20,15 @@ package edu.emory.mathcs.nlp.tokenization.util;
  * @author Amit-Deshmane
  * This class tracks the value of index variable.
  */
-public class Index {
+public class TokenIndex {
 	int val;
 	/**
 	 * 
 	 */
-	public Index() {
+	public TokenIndex() {
 		
 	}
-	public Index(int val){
+	public TokenIndex(int val){
 		this.val = val;
 	}
 	public int getVal(){
@@ -41,11 +41,11 @@ public class Index {
 		return Integer.toString(val);
 	}
 	public boolean equals(Object obj){
-		if(!Index.class.isInstance(obj)){
+		if(!TokenIndex.class.isInstance(obj)){
 			return false;
 		}
 		else{
-			Index input = (Index)obj;
+			TokenIndex input = (TokenIndex)obj;
 			if(input.getVal() == val){
 				return true;
 			}

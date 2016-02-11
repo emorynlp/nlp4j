@@ -41,7 +41,7 @@ import edu.emory.mathcs.nlp.tokenization.dictionary.Currency;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Dictionary;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Emoticon;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Unit;
-import edu.emory.mathcs.nlp.tokenization.util.Index;
+import edu.emory.mathcs.nlp.tokenization.util.TokenIndex;
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 
@@ -218,7 +218,7 @@ abstract public class Tokenizer
 	private void tokenizeMetaInfo(List<NLPNode> tokens, String s, int bIndex2, int i)
 	{
 		int[] ps;
-		Index bIndex3 = new Index(bIndex2);
+		TokenIndex bIndex3 = new TokenIndex(bIndex2);
 		if ((ps = getMetaRange(s)) != null)
 		{
 			int bIndex = ps[0], eIndex = ps[1], len = s.length();
@@ -253,7 +253,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #tokenizeMetaInfo(List, String)}. */
-	private void tokenizeSymbols(List<NLPNode> tokens, String s, Index bIndex2)
+	private void tokenizeSymbols(List<NLPNode> tokens, String s, TokenIndex bIndex2)
 	{
 		char[] cs = s.toCharArray();
 		int len = s.length();
@@ -332,7 +332,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #tokenizeSymbols(List, String)}. */
-	private void tokenizeSymbolsAux(List<NLPNode> tokens, String s, char[] cs, List<int[]> indices, Index bIndex2)
+	private void tokenizeSymbolsAux(List<NLPNode> tokens, String s, char[] cs, List<int[]> indices, TokenIndex bIndex2)
 	{
 		int i, pg, ng, bIndex, eIndex, size = indices.size() - 1;
 		boolean pb, nb;
@@ -457,7 +457,7 @@ abstract public class Tokenizer
 //	----------------------------------- Add symbols -----------------------------------
 	
 	/** Called by {@link #tokenizeSymbols(List, String)}. */
-	private int addSymbols(List<NLPNode> tokens, String s, Index bIndex2)
+	private int addSymbols(List<NLPNode> tokens, String s, TokenIndex bIndex2)
 	{
 		if (s.length() == 1)
 		{
@@ -540,7 +540,7 @@ abstract public class Tokenizer
 //	----------------------------------- Add morphmes -----------------------------------
 	
 	/** Called by {@link #tokenizeSymbols(List, String)}. */
-	private int addMorphemes(List<NLPNode> tokens, String s, Index bIndex2)
+	private int addMorphemes(List<NLPNode> tokens, String s, TokenIndex bIndex2)
 	{
 		if (s.length() == 1)
 		{
@@ -565,7 +565,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #addMorphemes(List, String)}. */
-	protected boolean tokenize(List<NLPNode> tokens, String original, String lower, char[] lcs, Dictionary tokenizer, Index bIndex2)
+	protected boolean tokenize(List<NLPNode> tokens, String original, String lower, char[] lcs, Dictionary tokenizer, TokenIndex bIndex2)
 	{
 		String[] t = tokenizer.tokenize(original, lower, lcs);
 		
@@ -579,7 +579,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #addMorphemes(List, String)}. */
-	private boolean tokenizeDigit(List<NLPNode> tokens, String original, char[] lcs, Index bIndex2)
+	private boolean tokenizeDigit(List<NLPNode> tokens, String original, char[] lcs, TokenIndex bIndex2)
 	{
 		int len = lcs.length;
 		if (len < 2) return false;
@@ -623,7 +623,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #addMorphemes(List, String)}. */
-	abstract protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original, String lower, char[] lcs, Index bIndex2);
+	abstract protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original, String lower, char[] lcs, TokenIndex bIndex2);
 	
 //	----------------------------------- Finalize -----------------------------------
 	
