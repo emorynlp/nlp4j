@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 
 import org.magicwerk.brownies.collections.GapList;
 
-import edu.emory.mathcs.nlp.common.collection.obj.Index;
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
@@ -42,6 +41,7 @@ import edu.emory.mathcs.nlp.tokenization.dictionary.Currency;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Dictionary;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Emoticon;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Unit;
+import edu.emory.mathcs.nlp.tokenization.util.Index;
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 
@@ -376,8 +376,7 @@ abstract public class Tokenizer
                     bIndex2.setVal(addSymbols(tokens, t, bIndex2));
                 else
                 {
-                    NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal()
-                            + t.length(), t);
+                    NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + t.length(), t);
                     tokens.add(nlpNode);
                     bIndex2.setVal(bIndex2.getVal() + t.length());
                 }
