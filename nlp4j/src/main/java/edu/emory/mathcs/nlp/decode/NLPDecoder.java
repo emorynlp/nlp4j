@@ -52,53 +52,55 @@ public class NLPDecoder
 	
 	volatile private NLPComponent[] components;
 	volatile private Tokenizer tokenizer;
-	private DecodeConfig config;
+	private DecodeConfig decode_config;
 
 //	======================================== CONSTRUCTORS ========================================
 	
 	public NLPDecoder() {}
 	
-	public NLPDecoder(InputStream configuration, String format)
+	public NLPDecoder(DecodeConfig config)
 	{
-		init(configuration, format);
+		init(config);
 	}
 	
-	public void init(InputStream configuration, String format)
+	public NLPDecoder(InputStream configuration)
+	{
+		init(new DecodeConfig(configuration));
+	}
+	
+	public void init(DecodeConfig config)
 	{
 		List<NLPComponent> components = new ArrayList<>();
-		config = new DecodeConfig(configuration);
+		decode_config = config;
 		
-		if (!format.equals(FORMAT_TSV))
-		{
-			BinUtils.LOG.info("Loading tokenizer\n");
-			setTokenizer(new EnglishTokenizer());	
-		}
+		BinUtils.LOG.info("Loading tokenizer\n");
+		setTokenizer(new EnglishTokenizer());
 		
-		if (config.getPartOfSpeechTagging() != null)
+		if (decode_config.getPartOfSpeechTagging() != null)
 		{
 			BinUtils.LOG.info("Loading part-of-speech tagger\n");
-			components.add(getComponent(IOUtils.getInputStream(config.getPartOfSpeechTagging())));
+			components.add(getComponent(IOUtils.getInputStream(decode_config.getPartOfSpeechTagging())));
 			
 			BinUtils.LOG.info("Loading morphological analyzer\n");
 			components.add(new EnglishMorphAnalyzer());
 		}
 		
-		if (config.getNamedEntityRecognition() != null)
+		if (decode_config.getNamedEntityRecognition() != null)
 		{
 			BinUtils.LOG.info("Loading named entity recognizer\n");
-			components.add(getComponent(IOUtils.getInputStream(config.getNamedEntityRecognition())));		
+			components.add(getComponent(IOUtils.getInputStream(decode_config.getNamedEntityRecognition())));		
 		}
 		
-		if (config.getDependencyParsing() != null)
+		if (decode_config.getDependencyParsing() != null)
 		{
 			BinUtils.LOG.info("Loading dependency parser\n");
-			components.add(getComponent(IOUtils.getInputStream(config.getDependencyParsing())));
+			components.add(getComponent(IOUtils.getInputStream(decode_config.getDependencyParsing())));
 		}
 		
-		if (config.getSemanticRoleLabeling() != null)
+		if (decode_config.getSemanticRoleLabeling() != null)
 		{
 			BinUtils.LOG.info("Loading semantic role labeler\n");
-			components.add(getComponent(IOUtils.getInputStream(config.getSemanticRoleLabeling())));		
+			components.add(getComponent(IOUtils.getInputStream(decode_config.getSemanticRoleLabeling())));		
 		}
 
 		this.components = new NLPComponent[components.size()];
@@ -152,7 +154,7 @@ public class NLPDecoder
 			{
 			case FORMAT_RAW : decodeRaw (in, out); break;
 			case FORMAT_LINE: decodeLine(in, out); break;
-			case FORMAT_TSV : decodeTSV (config.getTSVReader(), in, out); break;
+			case FORMAT_TSV : decodeTSV (decode_config.getTSVReader(), in, out); break;
 			}
 		}
 		catch (Exception e) {e.printStackTrace();}
@@ -161,11 +163,10 @@ public class NLPDecoder
 	public void decodeRaw(InputStream in, OutputStream out) throws IOException
 	{
 		PrintStream fout = IOUtils.createBufferedPrintStream(out);
-		NLPNode[] nodes;
 		
-		for (List<String> tokens : tokenizer.segmentize(in))
+		for (NLPNode[] nodes : tokenizer.segmentize(in))
 		{
-			nodes = decode(tokens);
+			decode(nodes);
 			fout.println(toString(nodes)+"\n");
 		}
 		
@@ -209,15 +210,15 @@ public class NLPDecoder
 	
 	public NLPNode[] decode(String sentence)
 	{
-		List<String> tokens = tokenizer.tokenize(sentence);
-		return decode(tokens);
+		List<NLPNode> tokens = tokenizer.tokenize(sentence);
+		return decode(Tokenizer.toNodeArray(tokens));
 	}
 	
-	public NLPNode[] decode(List<String> tokens)
-	{
-		NLPNode[] nodes = toNLPNodes(tokens);
-		return decode(nodes);
-	}
+//	public NLPNode[] decode(List<String> tokens)
+//	{
+//		NLPNode[] nodes = toNLPNodes(tokens);
+//		return decode(nodes);
+//	}
 	
 	public NLPNode[] decode(NLPNode[] nodes)
 	{
@@ -225,17 +226,6 @@ public class NLPDecoder
 		
 		for (NLPComponent component : components)
 			component.process(nodes);
-		
-		return nodes;
-	}
-	
-	public NLPNode[] toNLPNodes(List<String> tokens)
-	{
-		NLPNode[] nodes = new NLPNode[tokens.size()+1];
-		nodes[0] = new NLPNode(); nodes[0].setToRoot();
-		
-		for (int i=1; i<nodes.length; i++)
-			nodes[i] = new NLPNode(i, tokens.get(i-1));
 		
 		return nodes;
 	}

@@ -30,6 +30,7 @@ import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
@@ -81,8 +82,8 @@ public class CSVTokenize
 		{
 			PrintStream fout = IOUtils.createBufferedPrintStream(getOuputFilename(inputPath, i));
 			
-			for (List<String> tokens : tokenizer.segmentize(records.get(i).get(0)))
-				print(fout, tokens);
+			for (NLPNode[] nodes : tokenizer.segmentize(records.get(i).get(0)))
+				print(fout, nodes);
 			
 			fout.close();
 		}
@@ -104,9 +105,9 @@ public class CSVTokenize
 		return build.toString();
 	}
 	
-	void print(PrintStream fout, List<String> tokens)
+	void print(PrintStream fout, NLPNode[] nodes)
 	{
-		String s = Joiner.join(tokens, " ");
+		String s = Joiner.join(nodes, " ", 1, nodes.length, NLPNode::getWordForm);
 		
 		for (Pair<Pattern,String> p : P_BEFORE)
 		{

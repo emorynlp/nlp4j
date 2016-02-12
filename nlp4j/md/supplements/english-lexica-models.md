@@ -16,24 +16,22 @@ All lexica can be found [here](https://bitbucket.org/emorynlp/english/src/fc6cf3
 
 All models can be found [here](https://bitbucket.org/emorynlp/english/src/fc6cf377142cb554ab74c7b6377eff6d28e43620/src/main/resources/edu/emory/mathcs/nlp/models/?at=master):
 
-* `en-pos.xz`: part-of-speech tagging model.
-* `en-pos-lowercase.xz`: part-of-speech tagging model using only lowercase forms.
-* `en-ner.xz`: named entity recognition model.
-* `en-ner-lowercase.xz`: named entity recognition model using only lowercase forms.
-* `en-dep.xz`: dependency parsing model.
-* `en-srl.xz`: semantic role labeling model.
+* `en-pos.xz`: part-of-speech tagging.
+* `en-ner.xz`: named entity recognition.
+* `en-dep.xz`: dependency parsing.
+* `en-srl.xz`: semantic role labeling.
 
 Models are trained on the following corpora.
 
-| [OntoNotes 5.0](https://catalog.ldc.upenn.edu/LDC2013T19) | Sentences | Tokens |
-| -------------------------- | -----: | ------: |
-| Broadcasting conversations | 10,822 | 171,101 |
-| Broadcasting news          | 10,344 | 206,029 |
-| News magazines             |  6,672 | 163,627 |
-| Newswires                  | 34,438 | 875,800 |
-| Religious texts            | 21,418 | 296,432 |
-| Telephone conversations    |  8,963 |  85,444 |
-| Web texts                  | 12,448 | 284,951 |
+| [OntoNotes 5.0](https://catalog.ldc.upenn.edu/LDC2013T19) | Sentences | Tokens | Names |
+| -------------------------- | -----: | ------: | -----: |
+| Broadcasting conversations | 10,822 | 171,101 |  9,771 |
+| Broadcasting news          | 10,344 | 206,029 | 19,670 | 
+| News magazines             |  6,672 | 163,627 | 10,736 |
+| Newswires                  | 34,438 | 875,800 | 77,496 |
+| Religious texts            | 21,418 | 296,432 |      0 |
+| Telephone conversations    |  8,963 |  85,444 |  2,021 |
+| Web texts                  | 12,448 | 284,951 |  8,170 |
 
 | &nbsp;&nbsp;&nbsp;[English Web Treebank](https://catalog.ldc.upenn.edu/LDC2012T13)&nbsp;&nbsp;&nbsp; | Sentences | Tokens |
 | --------- | ----: | -----: |
@@ -65,7 +63,3 @@ Models are trained on the following corpora.
 | ----------------------------- | -----: | ------: |
 | Clinical / pathological notes | 26,661 | 387,943 |
 | Brain cancer                  | 18,722 | 225,899 |
-
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Craft](http://bionlp-corpora.sourceforge.net/CRAFT/)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Sentences | Tokens |
-| ------ | -----: | -------: |
-| BioNLP | 16,297 |  452,769 |

@@ -11,7 +11,7 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 -i       <filepath> : input path (required)
 -ie      <string>   : input file extension (default: *)
 -oe      <string>   : output file extension (default: nlp)
--format  <string>   : format of the input data (raw|sen|tsv; default: raw)
+-format  <string>   : format of the input data (raw|line|tsv; default: raw)
 -threads <integer>  : number of threads (default: 2)
 ```
 
@@ -19,7 +19,7 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 * `-i` specifies the input path pointing to either a file or a directory. When the path points to a file, only the specific file is processed. When the path points to a directory, all files with the file extension `-ie` under the specific directory are processed.
 * `-ie` specifies the input file extension. The default value `*` implies files with any extension. This option is used only when the input path `-i` points to a directory.
 * `-oe` specifies the output file extension appended to each input filename. The corresponding output file, consisting of the NLP output, will be generated.
-* `-format` specifies the format of the input file: `raw`, `sen`, or `tsv` (see [data format](../supplements/data-format.md)).
+* `-format` specifies the format of the input file: `raw`, `line`, or `tsv` (see [data format](../supplements/data-format.md)).
 * `-threads` specifies the number of threads to be used. When multi-threads are used, each file is assigned to an individual thread.
 
 ## Example
@@ -30,8 +30,9 @@ The following command takes [`emorynlp.txt`](../../src/main/resources/dat/emoryn
 $ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config-decode-general.xml -i emorynlp.txt
 Loading ambiguity classes: 408397
 Loading word clusters: 594491
-Loading word embeddings: 
+Loading word embeddings: 1067831
 Loading named entity gazetteers
+Loading tokenizer
 Loading part-of-speech tagger
 Loading morphological analyzer
 Loading named entity recognizer

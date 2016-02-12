@@ -35,7 +35,7 @@ public class CSVSentiment
 	
 	public CSVSentiment(String configurationFile)
 	{
-		decode = new NLPDecoder(IOUtils.createFileInputStream(configurationFile), NLPDecoder.FORMAT_LINE);		
+		decode = new NLPDecoder(IOUtils.createFileInputStream(configurationFile));		
 	}
 	
 	public void categorize(String inputFile, String outputFile) throws Exception

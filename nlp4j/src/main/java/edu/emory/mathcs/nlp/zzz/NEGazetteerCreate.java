@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
@@ -65,7 +66,7 @@ public class NEGazetteerCreate
 			line = line.trim();
 			if (skipColon && (line.contains(":") || line.contains(" of "))) continue;
 			if (redirect) line = splitRedirect(line);
-			tokens = tokenizer.tokenize(line);
+			tokens = tokenizer.tokenize(line).stream().map(n -> n.getWordForm()).collect(Collectors.toList());
 			concatPeriod(tokens);
 			trimTokens(tokens, single);
 			if (!tokens.isEmpty()) set.add(Joiner.join(tokens, " "));
