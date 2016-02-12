@@ -19,8 +19,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.List;
 
-import org.junit.Test;
-
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
@@ -45,7 +43,7 @@ public class TokenizerDemo
 		in.close();
 	}
 	
-	@Test
+//	@Test
 	public void tokenizeLine() throws Exception
 	{
 		Tokenizer tokenizer = new EnglishTokenizer();

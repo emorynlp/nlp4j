@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.tokenization;
 
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -24,7 +26,9 @@ public class IssuesTest
 	public void test()
 	{
 		Tokenizer t = new EnglishTokenizer();
-		String s = "!((a)).";
-		System.out.println(t.tokenize(s));
+		String s = "  !((a)).  dsjkds sdf;l s  ";
+		
+		for (NLPNode node : t.tokenize(s))
+			System.out.println(node.getWordForm()+" "+node.getStartOffset()+" "+node.getEndOffset());
 	}
 }
