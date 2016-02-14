@@ -1,0 +1,1 @@
+The NLP4J project provides a NLP toolkit for JVM languages. This project is under the Apache 2 license and is currently developed by the NLP Research Group at Emory University.

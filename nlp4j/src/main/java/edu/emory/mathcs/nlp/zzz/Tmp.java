@@ -16,6 +16,10 @@
 package edu.emory.mathcs.nlp.zzz;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 
@@ -26,11 +30,17 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		BufferedReader in = IOUtils.createBufferedReader(IOUtils.getInputStream("configuration/config-decode-en.xml"));
+		InputStream in = new ByteArrayInputStream("SDK\nLFS\nFSFS".getBytes());
+		BufferedReader reader = IOUtils.createBufferedReader(in);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		PrintStream fout = IOUtils.createBufferedPrintStream(out);
 		String line;
 		
-		while ((line = in.readLine()) != null)
-			System.out.println(line);
+		while ((line = reader.readLine()) != null)
+			fout.println(line);
+		
+		fout.close();
+		System.out.println(new String(out.toByteArray()));
 	}
 
 	static public void main(String[] args)

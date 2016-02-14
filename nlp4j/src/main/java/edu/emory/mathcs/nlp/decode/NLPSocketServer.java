@@ -21,9 +21,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 
@@ -33,56 +37,85 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
  */
 public class NLPSocketServer
 {
-	static public final int PORT = 8080;
 	static public final String END = "!E@N#D$"; 
+	private NLPDecoder decoder;
 	
 	@SuppressWarnings("resource")
-	public NLPSocketServer(InputStream configuration) throws Exception
+	public NLPSocketServer(InputStream configuration, int port, int threads) throws Exception
 	{
-		NLPDecoder decoder = new NLPDecoder(configuration);
-		ServerSocket server = new ServerSocket(PORT);
-		StringBuilder build = new StringBuilder();
-		byte[] buffer = new byte[2048];
-		ByteArrayOutputStream bout;
-		ByteArrayInputStream bin;
-		DataOutputStream out;
-		DataInputStream in;
-		String s, format;
+		ExecutorService executor = Executors.newFixedThreadPool(threads);
+		ServerSocket server = new ServerSocket(port);
 		Socket client;
-		int i;
+		
+		decoder = new NLPDecoder(configuration);
+		System.out.println("Listening...");
 		
 		while (true)
 		{
 			client = server.accept();
-			System.out.println(client.getInetAddress().toString());
-			in  = new DataInputStream (new BufferedInputStream (client.getInputStream()));
-			out = new DataOutputStream(new BufferedOutputStream(client.getOutputStream()));
-			build = new StringBuilder();
-			
-			while ((i = in.read(buffer, 0, buffer.length)) >= 0)
+			executor.submit(new NLPTask(client));
+		}
+
+//		executor.shutdown();
+//		server.close();
+	}
+	
+	class NLPTask implements Runnable 
+	{
+		OutputStream out;
+		InputStream  in;
+		
+		public NLPTask(Socket client)
+		{
+			try
 			{
-				build.append(new String(buffer, 0, i));
-				
-				if (build.toString().endsWith(END))
-				{
-					format = build.substring(0, 3);
-					s = build.substring(3, build.length()-END.length());
-					bin  = new ByteArrayInputStream(s.getBytes());
-					bout = new ByteArrayOutputStream();
-					decoder.decode(bin, bout, format);
-					out.write(bout.toByteArray());
-					out.flush();
-					build = new StringBuilder();
-				}
+				in  = new DataInputStream (new BufferedInputStream (client.getInputStream()));
+				out = new DataOutputStream(new BufferedOutputStream(client.getOutputStream()));
+				System.out.println(client.getInetAddress().toString());
 			}
+			catch (IOException e) {e.printStackTrace();}
 		}
 		
-//		server.close();
+		@Override
+		public void run()
+		{
+			StringBuilder build = new StringBuilder();
+			byte[] buffer = new byte[2048];
+			ByteArrayOutputStream bout;
+			ByteArrayInputStream  bin;
+			String s, format;
+			int i, idx;
+			
+			try
+			{
+				while ((i = in.read(buffer, 0, buffer.length)) >= 0)
+				{
+					build.append(new String(buffer, 0, i));
+					
+					if (build.toString().endsWith(END))
+					{
+						idx = build.indexOf(":");
+						format = build.substring(0, idx);
+						s = build.substring(idx+1, build.length()-END.length());
+						bin  = new ByteArrayInputStream(s.getBytes());
+						bout = new ByteArrayOutputStream();
+						decoder.decode(bin, bout, format);
+						out.write(bout.toByteArray());
+						out.close();
+						in.close();
+						break;
+					}
+				}
+			}
+			catch (IOException e) {e.printStackTrace();}
+		}
 	}
 	
 	static public void main(String[] args) throws Exception
 	{
 		final String configFile = args[0];
-		new NLPSocketServer(IOUtils.createFileInputStream(configFile));
+		final int port = Integer.parseInt(args[1]);
+		final int threads = Integer.parseInt(args[2]);
+		new NLPSocketServer(IOUtils.createFileInputStream(configFile), port, threads);
 	}
 }

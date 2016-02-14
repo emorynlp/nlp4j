@@ -10,9 +10,9 @@
   <url>http://nlp.mathcs.emory.edu</url>
   
   <scm>
-    <url>https://github.com/emorynlp/emorynlp</url>
-    <connection>scm:git:git://github.com/emorynlp/emorynlp.git</connection>
-    <developerConnection>scm:git:git@github.com:emorynlp/emorynlp.git</developerConnection>
+    <url>https://github.com/emorynlp/nlp4j</url>
+    <connection>scm:git:git://github.com/emorynlp/nlp4j.git</connection>
+    <developerConnection>scm:git:git@github.com:emorynlp/nlp4j.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -102,22 +102,17 @@
   <dependencies>
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
-      <artifactId>emorynlp-core</artifactId>
+      <artifactId>nlp4j-core</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
-      <artifactId>emorynlp-tokenization</artifactId>
+      <artifactId>nlp4j-tokenization</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
-      <artifactId>emorynlp-morphology</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>edu.emory.mathcs.nlp</groupId>
-      <artifactId>emorynlp-english</artifactId>
+      <artifactId>nlp4j-morphology</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>

@@ -1,1 +1,0 @@
-The Emory NLP project provides software and resources for natural language processing. This project is under the Apache 2 license and is developed by the NLP Research Group at Emory University.
