@@ -60,7 +60,7 @@ public class NLPConfig implements ConfigXML
 	public Language getLanguage()
 	{
 		String language = XMLUtils.getTextContentFromFirstElementByTagName(xml, LANGUAGE);
-		return Language.getType(language);
+		return language.isEmpty() ? null : Language.getType(language);
 	}
 	
 	public TSVReader getTSVReader()
