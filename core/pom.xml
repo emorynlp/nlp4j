@@ -10,7 +10,7 @@
   <url>http://nlp.mathcs.emory.edu</url>
   
   <scm>
-    <url>https://github.com/emorynlp/corenlp</url>
+    <url>https://github.com/emorynlp/nlp4j-core</url>
     <connection>scm:git:git://github.com/emorynlp/nlp4j-core.git</connection>
     <developerConnection>scm:git:git@github.com:emorynlp/nlp4j-core.git</developerConnection>
     <tag>HEAD</tag>
