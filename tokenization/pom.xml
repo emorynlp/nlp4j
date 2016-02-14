@@ -10,7 +10,7 @@
   <url>http://nlp.mathcs.emory.edu</url>
   
   <scm>
-    <url>https://github.com/emorynlp/tokenization</url>
+    <url>https://github.com/emorynlp/nlp4j-tokenization</url>
     <connection>scm:git:git://github.com/emorynlp/nlp4j-tokenization.git</connection>
     <developerConnection>scm:git:git@github.com:emorynlp/nlp4j-tokenization.git</developerConnection>
     <tag>HEAD</tag>
