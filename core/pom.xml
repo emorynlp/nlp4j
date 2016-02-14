@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>edu.emory.mathcs.nlp</groupId>
-  <artifactId>emorynlp-core</artifactId>
+  <artifactId>nlp4j-core</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -11,8 +11,8 @@
   
   <scm>
     <url>https://github.com/emorynlp/corenlp</url>
-    <connection>scm:git:git://github.com/emorynlp/corenlp.git</connection>
-    <developerConnection>scm:git:git@github.com:emorynlp/corenlp.git</developerConnection>
+    <connection>scm:git:git://github.com/emorynlp/nlp4j-core.git</connection>
+    <developerConnection>scm:git:git@github.com:emorynlp/nlp4j-core.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 

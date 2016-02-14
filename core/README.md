@@ -1,3 +1,3 @@
-# Core NLP
+# Core
 
-The Core NLP project develops low-level NLP components using advanced machine learning.
+The core library used for [NLP4J](https://github.com/emorynlp/nlp4j).
