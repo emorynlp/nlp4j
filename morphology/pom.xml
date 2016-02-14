@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>edu.emory.mathcs.nlp</groupId>
-  <artifactId>emorynlp-morphology</artifactId>
+  <artifactId>nlp4j-morphology</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -11,8 +11,8 @@
   
   <scm>
     <url>https://github.com/emorynlp/morphological_analysis</url>
-    <connection>scm:git:git://github.com/emorynlp/morphological_analysis.git</connection>
-    <developerConnection>scm:git:git@github.com:emorynlp/morphological_analysis.git</developerConnection>
+    <connection>scm:git:git://github.com/emorynlp/nlp4j-morphology.git</connection>
+    <developerConnection>scm:git:git@github.com:emorynlp/nlp4j-morphology.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -108,7 +108,7 @@
     </dependency>
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
-      <artifactId>emorynlp-core</artifactId>
+      <artifactId>nlp4j-core</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
