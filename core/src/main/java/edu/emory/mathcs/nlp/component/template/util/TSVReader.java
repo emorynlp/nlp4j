@@ -126,7 +126,7 @@ public class TSVReader
 		NLPNode[] nodes = (NLPNode[])Array.newInstance(NLPNode.class, size+1);
 		
 		nodes[0] = new NLPNode();
-		nodes[0].setToRoot();
+		nodes[0].toRoot();
 		
 		for (i=1; i<=size; i++)
 			nodes[i] = create(i, list.get(i-1));

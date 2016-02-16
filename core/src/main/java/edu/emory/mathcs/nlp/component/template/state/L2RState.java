@@ -74,6 +74,11 @@ public abstract class L2RState extends NLPState
 		return getRelativeNode(item, node);
 	}
 	
+	public NLPNode getInput()
+	{
+		return nodes[input];
+	}
+	
 	public int getInputIndex()
 	{
 		return input;

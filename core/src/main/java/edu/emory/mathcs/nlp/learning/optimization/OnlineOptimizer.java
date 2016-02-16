@@ -140,6 +140,11 @@ public abstract class OnlineOptimizer implements Serializable
 	
 //	=================================== LABEL & FEATURE ===================================
 
+	public void setLabelMap(LabelMap map)
+	{
+		label_map = map;
+	}
+	
 	public LabelMap getLabelMap()
 	{
 		return label_map;

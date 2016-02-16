@@ -41,4 +41,15 @@ public class POSState extends L2RState
 		node.setPartOfSpeechTag(label);
 		return s;
 	}
+	
+//	@Override
+//	public void next(LabelMap map, int yhat, float[] scores)
+//	{
+//		int[] top2 = MLUtils.argmax2(scores);
+//		
+//		if (scores[top2[0]] - scores[top2[1]] < 1)
+//			getInput().putFeat("pos2", map.getLabel(top2[1]));
+//
+//		super.next(map, yhat, scores);
+//	}
 }

@@ -140,9 +140,10 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		semantic_heads = new ArrayList<>();
 	}
 	
-	public void setToRoot()
+	public NLPNode toRoot()
 	{
 		set(0, ROOT_TAG, ROOT_TAG, ROOT_TAG, ROOT_TAG, ROOT_TAG, new FeatMap(), null, null);
+		return this;
 	}
 	
 //	============================== GETTERS ==============================
