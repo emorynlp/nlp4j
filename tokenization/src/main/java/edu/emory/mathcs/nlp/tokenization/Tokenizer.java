@@ -171,7 +171,7 @@ abstract public class Tokenizer
 		int id = 0;
 		
 		nodes[id] = new NLPNode();
-		nodes[id++].setToRoot();
+		nodes[id++].toRoot();
 		
 		for (int i=beginIndex; i<endIndex; i++)
 		{
