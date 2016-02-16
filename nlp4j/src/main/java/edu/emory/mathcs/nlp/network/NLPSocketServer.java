@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.decode;
+package edu.emory.mathcs.nlp.network;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -30,6 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.decode.NLPDecoder;
 
 
 /**
@@ -64,6 +63,7 @@ public class NLPSocketServer
 	{
 		OutputStream out;
 		InputStream  in;
+		Socket client;
 		
 		public NLPTask(Socket client)
 		{
@@ -71,6 +71,7 @@ public class NLPSocketServer
 			{
 				in  = new DataInputStream (new BufferedInputStream (client.getInputStream()));
 				out = new DataOutputStream(new BufferedOutputStream(client.getOutputStream()));
+				this.client = client;
 				System.out.println(client.getInetAddress().toString());
 			}
 			catch (IOException e) {e.printStackTrace();}
@@ -81,8 +82,6 @@ public class NLPSocketServer
 		{
 			StringBuilder build = new StringBuilder();
 			byte[] buffer = new byte[2048];
-			ByteArrayOutputStream bout;
-			ByteArrayInputStream  bin;
 			String s, format;
 			int i, idx;
 			
@@ -97,10 +96,7 @@ public class NLPSocketServer
 						idx = build.indexOf(":");
 						format = build.substring(0, idx);
 						s = build.substring(idx+1, build.length()-END.length());
-						bin  = new ByteArrayInputStream(s.getBytes());
-						bout = new ByteArrayOutputStream();
-						decoder.decode(bin, bout, format);
-						out.write(bout.toByteArray());
+						out.write(decoder.decodeByteArray(s, format));
 						out.close();
 						in.close();
 						break;

@@ -16,6 +16,8 @@
 package edu.emory.mathcs.nlp.decode;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -31,6 +33,7 @@ import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.component.morph.english.EnglishMorphAnalyzer;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
@@ -71,10 +74,11 @@ public class NLPDecoder
 	public void init(DecodeConfig config)
 	{
 		List<NLPComponent> components = new ArrayList<>();
+		Language language = config.getLanguage();
 		decode_config = config;
 		
 		BinUtils.LOG.info("Loading tokenizer\n");
-		setTokenizer(new EnglishTokenizer());
+		setTokenizer(createTokenizer(language));
 		
 		if (decode_config.getPartOfSpeechTagging() != null)
 		{
@@ -82,7 +86,7 @@ public class NLPDecoder
 			components.add(getComponent(IOUtils.getInputStream(decode_config.getPartOfSpeechTagging())));
 			
 			BinUtils.LOG.info("Loading morphological analyzer\n");
-			components.add(new EnglishMorphAnalyzer());
+			components.add(createMorphologicalAnalyzer(language));
 		}
 		
 		if (decode_config.getNamedEntityRecognition() != null)
@@ -106,6 +110,16 @@ public class NLPDecoder
 		this.components = new NLPComponent[components.size()];
 		components.toArray(this.components);
 		BinUtils.LOG.info("\n");
+	}
+	
+	static public Tokenizer createTokenizer(Language language)
+	{
+		return new EnglishTokenizer();
+	}
+	
+	static public NLPComponent createMorphologicalAnalyzer(Language language)
+	{
+		return new EnglishMorphAnalyzer();
 	}
 	
 //	======================================== GETTERS/SETTERS ========================================
@@ -144,6 +158,28 @@ public class NLPDecoder
 		}
 		
 		executor.shutdown();
+	}
+	
+	public String decode(String s, String format)
+	{
+		return new String(decodeByteArray(s, format));
+	}
+	
+	public byte[] decodeByteArray(String s, String format)
+	{
+		InputStream bin = new ByteArrayInputStream(s.getBytes());
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		
+		decode(bin, bout, format);
+		
+		try
+		{
+			bin .close();
+			bout.close();
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return bout.toByteArray();
 	}
 	
 	public void decode(InputStream in, OutputStream out, String format)
@@ -213,12 +249,6 @@ public class NLPDecoder
 		List<NLPNode> tokens = tokenizer.tokenize(sentence);
 		return decode(Tokenizer.toNodeArray(tokens));
 	}
-	
-//	public NLPNode[] decode(List<String> tokens)
-//	{
-//		NLPNode[] nodes = toNLPNodes(tokens);
-//		return decode(nodes);
-//	}
 	
 	public NLPNode[] decode(NLPNode[] nodes)
 	{
