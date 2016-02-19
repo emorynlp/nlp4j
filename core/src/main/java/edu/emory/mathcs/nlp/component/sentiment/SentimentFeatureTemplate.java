@@ -15,9 +15,6 @@
  */
 package edu.emory.mathcs.nlp.component.sentiment;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
@@ -48,24 +45,15 @@ public class SentimentFeatureTemplate extends FeatureTemplate<DOCState>
 		int type;
 		
 		type = 0;
-		for (String s : NLPUtils.getBagOfWords(nodes, Field.lemma))
+		for (String s : NLPUtils.getUnigramSet(nodes, Field.lemma))
 			add(x, type, s, 1, isTrain);
 		
+				
 //		type++;
 //		for (String s : NLPUtils.getBagOfWords(nodes, Field.lemma, Field.part_of_speech_tag))
 //			add(x, type, s, 1, isTrain);
 
 		return x;
-	}
-	
-	protected Set<String> getBagOfWords(NLPNode[] nodes)
-	{
-		Set<String> set = new HashSet<>();
-		
-		for (int i=1; i<nodes.length; i++)
-			set.add(nodes[i].getLemma());
-
-		return set;
 	}
 	
 	@Override

@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.template.util;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -30,7 +31,34 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  */
 public class NLPUtils
 {
-	static public Set<String> getBagOfWords(NLPNode[] nodes, Field... fields)
+	static public String FEAT_2ND_POS   = "p2";
+	static public String FEAT_PREDICATE = "pb";
+
+//	========================= TRANSFORMATION =========================
+	
+	static public NLPNode[] toNodeArray(List<NLPNode> tokens)
+	{
+		return toNodeArray(tokens, 0, tokens.size());
+	}
+	
+	static public NLPNode[] toNodeArray(List<NLPNode> tokens, int beginIndex, int endIndex)
+	{
+		NLPNode[] nodes = new NLPNode[endIndex - beginIndex +1];
+		int id = 0;
+		
+		nodes[id] = new NLPNode();
+		nodes[id++].toRoot();
+		
+		for (int i=beginIndex; i<endIndex; i++)
+		{
+			nodes[id] = tokens.get(i);
+			nodes[id].setID(id++);
+		}
+			
+		return nodes;
+	}
+	
+	static public Set<String> getUnigramSet(NLPNode[] nodes, Field... fields)
 	{
 		Set<String> set = new HashSet<>();
 		StringJoiner join;
@@ -45,7 +73,7 @@ public class NLPUtils
 		return set;
 	}
 	
-	static public Object2IntMap<String> getBagOfWordsCount(NLPNode[] nodes, Field... fields)
+	static public Object2IntMap<String> getUnigramSetCount(NLPNode[] nodes, Field... fields)
 	{
 		Object2IntMap<String> map = new Object2IntOpenHashMap<>();
 		StringJoiner join;
@@ -58,5 +86,20 @@ public class NLPUtils
 		}
 			
 		return map;
+	}
+	
+	static public Set<String> getBigramSet(NLPNode[] nodes, Field... fields)
+	{
+		Set<String> set = new HashSet<>();
+//		StringJoiner join;
+//		
+//		for (int i=1; i<nodes.length; i++)
+//		{
+//			join = new StringJoiner("_");
+//			for (Field f : fields) join.add(nodes[i].getValue(f));
+//			set.add(join.toString());
+//		}
+
+		return set;
 	}
 }

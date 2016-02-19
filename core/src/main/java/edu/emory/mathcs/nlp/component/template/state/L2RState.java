@@ -39,9 +39,11 @@ public abstract class L2RState extends NLPState
 //	============================== ORACLE ==============================
 	
 	@Override
-	public void saveOracle()
+	public boolean saveOracle()
 	{
 		oracle = Arrays.stream(nodes).map(n -> setLabel(n, null)).toArray(String[]::new);
+		for (String o : oracle) if (o != null) return true;
+		return false;
 	}
 	
 	@Override

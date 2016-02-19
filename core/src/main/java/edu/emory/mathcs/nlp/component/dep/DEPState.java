@@ -54,9 +54,11 @@ public class DEPState extends NLPState
 //	====================================== ORACLE ======================================
 
 	@Override
-	public void saveOracle()
+	public boolean saveOracle()
 	{
 		oracle = Arrays.stream(nodes).map(n -> n.clearDependencies()).toArray(DEPArc[]::new);
+		for (DEPArc o : oracle) if (o.getNode() != null) return true;
+		return false;
 	}
 	
 	@Override

@@ -33,7 +33,7 @@ public abstract class NLPState
 	}
 	
 	/** Clears and saves the gold-standard labels in the input nodes if available. */
-	public abstract void saveOracle();
+	public abstract boolean saveOracle();
 	
 	/** @return the gold label given the current state. */
 	public abstract String getOracle();

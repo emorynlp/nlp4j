@@ -41,9 +41,10 @@ public class DOCState extends NLPState
 	}
 
 	@Override
-	public void saveOracle()
+	public boolean saveOracle()
 	{
 		gold = key_node.removeFeat(feat_key);
+		return true;
 	}
 
 	@Override

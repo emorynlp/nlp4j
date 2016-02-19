@@ -36,7 +36,6 @@ import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.dep.DEPArc;
-import edu.emory.mathcs.nlp.component.srl.SRLArc;
 import edu.emory.mathcs.nlp.component.template.feature.Direction;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.util.TSVReader;
@@ -56,11 +55,10 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	protected String       lemma;
 	protected String       pos_tag;
 	protected String       nament_tag;
-	protected String       answer_tag;
 	protected FeatMap      feat_map;
 	protected String       dependency_label;
 	protected NLPNode      dependency_head;
-	protected List<SRLArc> semantic_heads;
+	protected List<DEPArc> semantic_heads;
     
 	// offsets
     protected int start_offset;
@@ -116,22 +114,16 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	
 	public NLPNode(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats, NLPNode dhead, String deprel)
 	{
-		this(id, form, lemma, posTag, namentTag, null, feats, dhead, deprel);
+		set(id, form, lemma, posTag, namentTag, feats, dhead, deprel);
 	}
 	
-	public NLPNode(int id, String form, String lemma, String posTag, String namentTag, String answerTag, FeatMap feats, NLPNode dhead, String deprel)
-	{
-		set(id, form, lemma, posTag, namentTag, answerTag, feats, dhead, deprel);
-	}
-	
-	public void set(int id, String form, String lemma, String posTag, String namentTag, String answerTag, FeatMap feats, NLPNode dhead, String deprel)
+	public void set(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats, NLPNode dhead, String deprel)
 	{
 		setID(id);
 		setWordForm(form);
 		setLemma(lemma);
 		setPartOfSpeechTag(posTag);
 		setNamedEntityTag(namentTag);
-		setAnswerTag(answerTag);
 		setFeatMap(feats);
 		setDependencyHead(dhead);
 		setDependencyLabel(deprel);
@@ -142,7 +134,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	
 	public NLPNode toRoot()
 	{
-		set(0, ROOT_TAG, ROOT_TAG, ROOT_TAG, ROOT_TAG, ROOT_TAG, new FeatMap(), null, null);
+		set(0, ROOT_TAG, ROOT_TAG, ROOT_TAG, ROOT_TAG, new FeatMap(), null, null);
 		return this;
 	}
 	
@@ -197,11 +189,6 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	public String getNamedEntityTag()
 	{
 		return nament_tag;
-	}
-	
-	public String getAnswerTag()
-	{
-		return answer_tag;
 	}
 	
 	public FeatMap getFeatMap()
@@ -338,11 +325,6 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	public void setNamedEntityTag(String tag)
 	{
 		nament_tag = tag;
-	}
-	
-	public void setAnswerTag(String tag)
-	{
-		answer_tag = tag;
 	}
 	
 	public void setAmbiguityClasses(List<String> classes)
@@ -1318,17 +1300,17 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 //	============================== SEMANTICS ==============================
 
 	/** @return a list of all semantic head arc of the node. */
-	public List<SRLArc> getSemanticHeadList()
+	public List<DEPArc> getSemanticHeadList()
 	{
 		return semantic_heads;
 	}
 	
 	/** @return a list of all semantic head arc of the node with the given label. */
-	public List<SRLArc> getSemanticHeadList(String label)
+	public List<DEPArc> getSemanticHeadList(String label)
 	{
-		List<SRLArc> list = new ArrayList<>();
+		List<DEPArc> list = new ArrayList<>();
 		
-		for (SRLArc arc : semantic_heads)
+		for (DEPArc arc : semantic_heads)
 		{
 			if (arc.isLabel(label))
 				list.add(arc);
@@ -1338,9 +1320,9 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	}
 	
 	/** @return semantic arc relationship between the node and another given node. */
-	public SRLArc getSemanticHeadArc(NLPNode node)
+	public DEPArc getSemanticHeadArc(NLPNode node)
 	{
-		for (SRLArc arc : semantic_heads)
+		for (DEPArc arc : semantic_heads)
 		{
 			if (arc.isNode(node))
 				return arc;
@@ -1350,9 +1332,9 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	}
 	
 	/** @return the semantic arc relationship between the node and another given node with a given label. */
-	public SRLArc getSemanticHeadArc(NLPNode node, String label)
+	public DEPArc getSemanticHeadArc(NLPNode node, String label)
 	{
-		for (SRLArc arc : semantic_heads)
+		for (DEPArc arc : semantic_heads)
 		{
 			if (arc.equals(node, label))
 				return arc;
@@ -1362,9 +1344,9 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	}
 	
 	/** @return the semantic arc relationship between the node and another given node with a given pattern. */
-	public SRLArc getSemanticHeadArc(NLPNode node, Pattern pattern)
+	public DEPArc getSemanticHeadArc(NLPNode node, Pattern pattern)
 	{
-		for (SRLArc arc : semantic_heads)
+		for (DEPArc arc : semantic_heads)
 		{
 			if (arc.equals(node, pattern))
 				return arc;
@@ -1376,7 +1358,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	/** @return the semantic label of the given in relation to the node. */
 	public String getSemanticLabel(NLPNode node)
 	{
-		for (SRLArc arc : semantic_heads)
+		for (DEPArc arc : semantic_heads)
 		{
 			if (arc.isNode(node))
 				return arc.getLabel();
@@ -1388,7 +1370,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	/** @return the first node that is found to have the semantic head of the given label from the node. */
 	public NLPNode getFirstSemanticHead(String label)
 	{
-		for (SRLArc arc : semantic_heads)
+		for (DEPArc arc : semantic_heads)
 		{
 			if (arc.isLabel(label))
 				return arc.getNode();
@@ -1400,7 +1382,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	/** @return the first node that is found to have the semantic head of the given pattern from the node. */
 	public NLPNode getFirstSemanticHead(Pattern pattern)
 	{
-		for (SRLArc arc : semantic_heads)
+		for (DEPArc arc : semantic_heads)
 		{
 			if (arc.isLabel(pattern))
 				return arc.getNode();
@@ -1409,8 +1391,8 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 		return null;
 	}
 	
-	/** @param arcs {@code Collection<SRLArc>} of the semantic heads. */
-	public void addSemanticHeads(Collection<SRLArc> arcs)
+	/** @param arcs {@code Collection<DEPArc>} of the semantic heads. */
+	public void addSemanticHeads(Collection<DEPArc> arcs)
 	{
 		semantic_heads.addAll(arcs);
 	}
@@ -1418,17 +1400,17 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	/** Adds a node a give the given semantic label to the node. */
 	public void addSemanticHead(NLPNode head, String label)
 	{
-		addSemanticHead(new SRLArc(head, label));
+		addSemanticHead(new DEPArc(head, label));
 	}
 	
 	/** Adds a semantic arc to the node. */
-	public void addSemanticHead(SRLArc arc)
+	public void addSemanticHead(DEPArc arc)
 	{
 		semantic_heads.add(arc);
 	}
 	
 	/** Sets semantic heads of the node. */
-	public void setSemanticHeads(List<SRLArc> arcs)
+	public void setSemanticHeads(List<DEPArc> arcs)
 	{
 		semantic_heads = arcs;
 	}
@@ -1438,7 +1420,7 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	 */
 	public boolean removeSemanticHead(NLPNode node)
 	{
-		for (SRLArc arc : semantic_heads)
+		for (DEPArc arc : semantic_heads)
 		{
 			if (arc.isNode(node))
 				return semantic_heads.remove(arc);
@@ -1448,13 +1430,13 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	}
 	
 	/** Removes a specific semantic head of the node. */
-	public boolean removeSemanticHead(SRLArc arc)
+	public boolean removeSemanticHead(DEPArc arc)
 	{
 		return semantic_heads.remove(arc);
 	}
 	
 	/** Removes a collection of specific semantic heads of the node. */
-	public void removeSemanticHeads(Collection<SRLArc> arcs)
+	public void removeSemanticHeads(Collection<DEPArc> arcs)
 	{
 		semantic_heads.removeAll(arcs);
 	}
@@ -1466,36 +1448,39 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	}
 	
 	/** Removes all semantic heads of the node. */
-	public void clearSemanticHeads()
+	public DEPArc[] clearSemanticHeads()
 	{
+		DEPArc[] array = new DEPArc[semantic_heads.size()];
+		semantic_heads.toArray(array);
 		semantic_heads.clear();
+		return array;
 	}
 	
-	/** @return {@code true}, else {@code false} if there is no SRLArc between the two nodes. */
+	/** @return {@code true}, else {@code false} if there is no DEPArc between the two nodes. */
 	public boolean isArgumentOf(NLPNode node)
 	{
 		return getSemanticHeadArc(node) != null;
 	}
 	
-	/** @return {@code true}, else {@code false} if there is no SRLArc with the given label. */
+	/** @return {@code true}, else {@code false} if there is no DEPArc with the given label. */
 	public boolean isArgumentOf(String label)
 	{
 		return getFirstSemanticHead(label) != null;
 	}
 	
-	/** @return {@code true}, else {@code false} if there is no SRLArc with the given pattern. */
+	/** @return {@code true}, else {@code false} if there is no DEPArc with the given pattern. */
 	public boolean isArgumentOf(Pattern pattern)
 	{
 		return getFirstSemanticHead(pattern) != null;
 	}
 	
-	/** @return {@code true}, else {@code false} if there is no SRLArc with the given label between the two node. */
+	/** @return {@code true}, else {@code false} if there is no DEPArc with the given label between the two node. */
 	public boolean isArgumentOf(NLPNode node, String label)
 	{
 		return getSemanticHeadArc(node, label) != null;
 	}
 	
-	/** @return {@code true}, else {@code false} if there is no SRLArc with the given pattern between the two node. */
+	/** @return {@code true}, else {@code false} if there is no DEPArc with the given pattern between the two node. */
 	public boolean isArgumentOf(NLPNode node, Pattern pattern)
 	{
 		return getSemanticHeadArc(node, pattern) != null;

@@ -18,9 +18,7 @@ package edu.emory.mathcs.nlp.component.srl;
 import java.io.InputStream;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
@@ -29,12 +27,16 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 public class SRLParser extends OnlineComponent<SRLState>
 {
 	private static final long serialVersionUID = 6802441378426099565L;
-
+	private int max_depth;
+	private int max_height;
+	
 	public SRLParser() {}
 	
 	public SRLParser(InputStream configuration)
 	{
 		super(configuration);
+		setMaxDepth (config.getInt("max_depth"));
+		setMaxHeight(config.getInt("max_height"));
 	}
 
 //	============================== ABSTRACT ==============================
@@ -42,23 +44,38 @@ public class SRLParser extends OnlineComponent<SRLState>
 	@Override
 	public Eval createEvaluator()
 	{
-		return new F1Eval();
+		return null;
 	}
 
 	@Override
 	protected SRLState initState(NLPNode[] nodes)
 	{
-		return new SRLState(nodes);
-	}
-	
-	@Override
-	public NLPConfig setConfiguration(InputStream in)
-	{
-		NLPConfig config = new NLPConfig(in);
-		setConfiguration(config);
-		return config;
+		return new SRLState(nodes, max_depth, max_height);
 	}
 
 	@Override
 	protected void postProcess(SRLState state) {}
+	
+
+//	====================================== GETTERS/SETTERS ======================================
+
+	public int getMaxDepth()
+	{
+		return max_depth;
+	}
+
+	public void setMaxDepth(int maxDepth)
+	{
+		this.max_depth = maxDepth;
+	}
+
+	public int getMaxHeight()
+	{
+		return max_height;
+	}
+
+	public void setMaxHeight(int maxHeight)
+	{
+		this.max_height = maxHeight;
+	}
 }

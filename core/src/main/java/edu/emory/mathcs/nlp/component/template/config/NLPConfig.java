@@ -57,6 +57,11 @@ public class NLPConfig implements ConfigXML
 	
 //	=================================== GETTERS & SETTERS ===================================  
 	
+	public int getInt(String tagName)
+	{
+		return XMLUtils.getIntegerTextContentFromFirstElementByTagName(xml, tagName);
+	}
+	
 	public Language getLanguage()
 	{
 		String language = XMLUtils.getTextContentFromFirstElementByTagName(xml, LANGUAGE);
@@ -77,6 +82,8 @@ public class NLPConfig implements ConfigXML
 		reader.dhead  = map.getOrDefault(FIELD_DHEAD , -1);
 		reader.deprel = map.getOrDefault(FIELD_DEPREL, -1);
 		reader.sheads = map.getOrDefault(FIELD_SHEADS, -1);
+		
+		reader.setDocumentBased(XMLUtils.getBooleanTextContentFromFirstElementByTagName(eReader, "document_based"));
 		
 		return reader;
 	}

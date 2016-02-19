@@ -133,10 +133,10 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	
 //	============================== FLAGS ==============================
 	
-	public boolean isCollect()
-	{
-		return flag == NLPFlag.COLLECT;
-	}
+//	public boolean isCollect()
+//	{
+//		return flag == NLPFlag.COLLECT;
+//	}
 	
 	public boolean isTrain()
 	{
@@ -164,7 +164,7 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	/** Process the sequence of the nodes given the state. */
 	public void process(NLPNode[] nodes, S state)
 	{
-		if (!isDecode()) state.saveOracle();
+		if (!isDecode() && !state.saveOracle()) return;
 		Instance instance;
 		FeatureVector x;
 		float[] scores;

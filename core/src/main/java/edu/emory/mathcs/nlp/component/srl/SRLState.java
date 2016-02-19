@@ -26,40 +26,47 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
  */
 public class SRLState extends NLPState
 {
-	public SRLState(NLPNode[] nodes)
+//	private List<Pair<NLPNode,NLPNode>> argument_candidates;
+//	private NLPNode predicate;
+//	private DEPArc[][] oracle;
+	private int max_depth;
+	private int max_height;
+	
+	public SRLState(NLPNode[] nodes, int maxDepth, int maxHeight)
 	{
 		super(nodes);
+		setMaxDepth (maxDepth);
+		setMaxHeight(maxHeight);
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#saveOracle()
-	 */
+	
 	@Override
-	public void saveOracle()
+	public boolean saveOracle()
 	{
-		// TODO Auto-generated method stub
-		
+		return false;
+//		oracle = Arrays.stream(nodes).map(n -> n.clearSemanticHeads()).toArray(DEPArc[][]::new);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#getOracle()
-	 */
 	@Override
 	public String getOracle()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+//	====================================== TRANSITION ======================================
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#next(edu.emory.mathcs.nlp.learning.util.LabelMap, int, float[])
-	 */
 	@Override
 	public void next(LabelMap map, int yhat, float[] scores)
 	{
 		// TODO Auto-generated method stub
 		
 	}
+	
+//	private NLPNode nextPredicate(NLPNode currentPredicate)
+//	{
+//		
+//	}
+	
 
 	/* (non-Javadoc)
 	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#isTerminate()
@@ -91,4 +98,26 @@ public class SRLState extends NLPState
 		
 	}
 
+	
+//	====================================== GETTERS/SETTERS ======================================
+
+	public int getMaxDepth()
+	{
+		return max_depth;
+	}
+
+	public void setMaxDepth(int maxDepth)
+	{
+		this.max_depth = maxDepth;
+	}
+
+	public int getMaxHeight()
+	{
+		return max_height;
+	}
+
+	public void setMaxHeight(int maxHeight)
+	{
+		this.max_height = maxHeight;
+	}
 }

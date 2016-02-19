@@ -53,7 +53,7 @@ public class FeatMap extends HashMap<String,String>
 	 */
 	public void add(String feats)
 	{
-		if (feats.equals(TSVReader.BLANK)) return;
+		if (feats == null) return;
 		String key, value;
 		int    idx;
 		

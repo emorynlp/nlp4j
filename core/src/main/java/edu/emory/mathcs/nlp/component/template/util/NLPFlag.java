@@ -20,7 +20,7 @@ package edu.emory.mathcs.nlp.component.template.util;
  */
 public enum NLPFlag
 {
-	COLLECT,
+//	COLLECT,
 	TRAIN,
 	EVALUATE,
 	DECODE;
