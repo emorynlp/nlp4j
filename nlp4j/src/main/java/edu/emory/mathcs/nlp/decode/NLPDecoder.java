@@ -40,6 +40,7 @@ import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
@@ -247,7 +248,7 @@ public class NLPDecoder
 	public NLPNode[] decode(String sentence)
 	{
 		List<NLPNode> tokens = tokenizer.tokenize(sentence);
-		return decode(Tokenizer.toNodeArray(tokens));
+		return decode(NLPUtils.toNodeArray(tokens));
 	}
 	
 	public NLPNode[] decode(NLPNode[] nodes)
@@ -302,5 +303,10 @@ public class NLPDecoder
 			OutputStream out = IOUtils.createFileOutputStream(output_file);
 			decode(in, out, format);
 		}
+	}
+	
+	public void learn(NLPNode[] nodes)
+	{
+		
 	}
 }

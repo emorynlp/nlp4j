@@ -72,7 +72,7 @@ public class NLPSocketServer
 				in  = new DataInputStream (new BufferedInputStream (client.getInputStream()));
 				out = new DataOutputStream(new BufferedOutputStream(client.getOutputStream()));
 				this.client = client;
-				System.out.println(client.getInetAddress().toString());
+//				System.out.println(client.getInetAddress().toString());
 			}
 			catch (IOException e) {e.printStackTrace();}
 		}
