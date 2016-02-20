@@ -15,13 +15,10 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
-
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -30,27 +27,29 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		InputStream in = new ByteArrayInputStream("SDK\nLFS\nFSFS".getBytes());
-		BufferedReader reader = IOUtils.createBufferedReader(in);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		PrintStream fout = IOUtils.createBufferedPrintStream(out);
-		String line;
+		TSVReader reader = new TSVReader();
+		reader.form = 1;
+		reader.lemma = 2;
+		reader.pos = 3;
+		reader.feats = 4;
+		reader.dhead = 5;
+		reader.deprel = 6;
+		reader.sheads = 7;
+		reader.nament = 9;
 		
-		while ((line = reader.readLine()) != null)
-			fout.println(line);
+		NLPNode[] nodes;
+		reader.open(IOUtils.createFileInputStream("/Users/jdchoi/Documents/Data/experiments/general-en/dev/ontonotes_mz.dev"));
 		
-		fout.close();
-		System.out.println(new String(out.toByteArray()));
+		while ((nodes = reader.next()) != null)
+			System.out.println(Joiner.join(nodes, "\n", 1)+"\n");
 	}
 
 	static public void main(String[] args)
 	{
-		try {
+		try
+		{
 			new Tmp(args);
 		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		catch (Exception e) {e.printStackTrace();}
 	}
 }
