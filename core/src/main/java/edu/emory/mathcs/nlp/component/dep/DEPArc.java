@@ -44,7 +44,7 @@ public class DEPArc extends AbstractArc<NLPNode>
 	@Override
 	public String toString()
 	{
-		return node.getID() + ARC_DELIM + label;
+		return node.getID() + LABEL_DELIM + label;
 	}
 	
 	@Override
