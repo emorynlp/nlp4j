@@ -23,6 +23,7 @@ import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Compound;
 import edu.emory.mathcs.nlp.tokenization.dictionary.EnglishApostrophe;
@@ -109,13 +110,13 @@ public class EnglishTokenizer extends Tokenizer
 					continue;
 				}
 				
-				sentences.add(toNodeArray(tokens, bIndex, bIndex = i+1));
+				sentences.add(NLPUtils.toNodeArray(tokens, bIndex, bIndex = i+1));
 				isTerminal = false;
 			}
 		}
 		
 		if (bIndex < size)
-			sentences.add(toNodeArray(tokens, bIndex, size));
+			sentences.add(NLPUtils.toNodeArray(tokens, bIndex, size));
 
 		return sentences;
 	}

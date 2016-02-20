@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.tokenization;
 
+import java.util.stream.Collectors;
+
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
@@ -30,5 +32,13 @@ public class IssuesTest
 		
 		for (NLPNode node : t.tokenize(s))
 			System.out.println(node.getWordForm()+" "+node.getStartOffset()+" "+node.getEndOffset());
+	}
+	
+//	@Test
+	public void testEmoticons()
+	{
+		Tokenizer t = new EnglishTokenizer();
+		String s = "Hello ^u^.";
+		System.out.println(t.tokenize(s).stream().map(n -> n.getWordForm()).collect(Collectors.toList()).toString());
 	}
 }

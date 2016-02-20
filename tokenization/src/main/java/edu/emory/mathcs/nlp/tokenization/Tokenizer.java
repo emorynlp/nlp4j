@@ -160,28 +160,6 @@ abstract public class Tokenizer
 	
 	abstract public List<NLPNode[]> segmentize(List<NLPNode> tokens);
 	
-	static public NLPNode[] toNodeArray(List<NLPNode> tokens)
-	{
-		return toNodeArray(tokens, 0, tokens.size());
-	}
-	
-	static public NLPNode[] toNodeArray(List<NLPNode> tokens, int beginIndex, int endIndex)
-	{
-		NLPNode[] nodes = new NLPNode[endIndex - beginIndex +1];
-		int id = 0;
-		
-		nodes[id] = new NLPNode();
-		nodes[id++].toRoot();
-		
-		for (int i=beginIndex; i<endIndex; i++)
-		{
-			nodes[id] = tokens.get(i);
-			nodes[id].setID(id++);
-		}
-			
-		return nodes;
-	}
-	
 //	----------------------------------- Tokenize -----------------------------------
 	
 	/**
