@@ -2,7 +2,7 @@
 
 ## Lexica
 
-All lexica can be found [here](https://bitbucket.org/emorynlp/english/src/fc6cf377142cb554ab74c7b6377eff6d28e43620/src/main/resources/edu/emory/mathcs/nlp/lexica/?at=master):
+All lexica can be found [here](https://bitbucket.org/emorynlp/nlp4j-english/src/fc6cf377142cb554ab74c7b6377eff6d28e43620/src/main/resources/edu/emory/mathcs/nlp/lexica/?at=master):
 
 * `en-ambiguity-classes-simplified.xz`<br>: ambiguity classes for part-of-speech tagging with simplified word forms.
 * `en-ambiguity-classes-simplified-lowercase.xz`<br>: ambiguity classes for part-of-speech tagging with simplified lowercase word forms.
@@ -14,7 +14,7 @@ All lexica can be found [here](https://bitbucket.org/emorynlp/english/src/fc6cf3
 
 ## Models
 
-All models can be found [here](https://bitbucket.org/emorynlp/english/src/fc6cf377142cb554ab74c7b6377eff6d28e43620/src/main/resources/edu/emory/mathcs/nlp/models/?at=master):
+All models can be found [here](https://bitbucket.org/emorynlp/nlp4j-english/src/fc6cf377142cb554ab74c7b6377eff6d28e43620/src/main/resources/edu/emory/mathcs/nlp/models/?at=master):
 
 * `en-pos.xz`: part-of-speech tagging.
 * `en-ner.xz`: named entity recognition.
