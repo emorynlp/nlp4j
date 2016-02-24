@@ -52,7 +52,7 @@
 ## Without Maven
 
 * Make sure [Java 8](http://www.oracle.com/technetwork/java/javase/) is installed on your machine.
-* Download [`nlp4j-x.x.x.jar`](http://nlp.mathcs.emory.edu/nlp4j/nlp4j-1.0.0.jar) and add it to your classpath. If you are using the [bash](https://www.gnu.org/software/bash/) shel, export `CLASSPATH`:
+* Download [`nlp4j-x.x.x.jar`](http://nlp.mathcs.emory.edu/nlp4j/nlp4j-1.0.0.jar) and add it to your classpath. If you are using [bash](https://www.gnu.org/software/bash/), export `CLASSPATH`:
 
 	```bash
 	export CLASSPATH=nlp4j-x.x.x.jar:.
