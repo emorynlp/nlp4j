@@ -8,7 +8,7 @@
 	```xml
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
-      <artifactId>emorynlp</artifactId>
+      <artifactId>nlp4j</artifactId>
       <version>RELEASE</version>
     </dependency>
 	```
@@ -31,10 +31,10 @@
 	[INFO] Scanning for projects...
 	[INFO]                                                                         
 	[INFO] ------------------------------------------------------------------------
-	[INFO] Building emorynlp x.x.x
+	[INFO] Building nlp4j x.x.x
 	[INFO] ------------------------------------------------------------------------
 	[INFO] 
-	[INFO] --- exec-maven-plugin:1.4.0:java (default-cli) @ emorynlp ---
+	[INFO] --- exec-maven-plugin:1.4.0:java (default-cli) @ nlp4j ---
 	====================================
 	Emory NLP Version x.x.x
 	Webpage: http://nlp.mathcs.emory.edu
@@ -52,10 +52,10 @@
 ## Without Maven
 
 * Make sure [Java 8](http://www.oracle.com/technetwork/java/javase/) is installed on your machine.
-* Download [`emorynlp.jar`]() and add it to your classpath. If you are using the [bash](https://www.gnu.org/software/bash/) shel, export `CLASSPATH`:
+* Download [`nlp4j-x.x.x.jar`](http://nlp.mathcs.emory.edu/nlp4j/nlp4j-1.0.0.jar) and add it to your classpath. If you are using the [bash](https://www.gnu.org/software/bash/) shel, export `CLASSPATH`:
 
 	```bash
-	export CLASSPATH=emorynlp.jar:.
+	export CLASSPATH=nlp4j-x.x.x.jar:.
 	```
 
 
@@ -69,7 +69,7 @@
 
 	```
 	====================================
-	Emory NLP Version x.x.x
+	NLP4J Version x.x.x
 	Webpage: http://nlp.mathcs.emory.edu
 	Contact: jinho.choi@emory.edu
 	====================================

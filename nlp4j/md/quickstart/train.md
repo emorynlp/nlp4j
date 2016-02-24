@@ -22,14 +22,14 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 * `-p` specifies the previously trained model file. If this option is set, a new model is trained on top of the previous model.
 * `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the specific directory are trained. It is possible to train a model without using a development set by not setting the `-d` option (see the example below).
 * `-te|de` specifies the training or development file extension. The default value `*` implies files with any extension. This option is used only when the training or development path `-t|d` points to a directory.
-* `-mode` specifies the NLP component to be trained (see [`NLPMode`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/NLPMode.java)).
+* `-mode` specifies the NLP component to be trained (see [`NLPMode`](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/NLPMode.java)).
 
 ## Example
 
-The following command takes [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../src/main/resources/dat/sample-dev.tsv), and trains a dependency parsing model using [`config-train-sample.xml`](../../src/main/resources/configuration/config-train-sample.xml). Note that no model is saved after training because `-m` is not set.
+The following command takes [`sample-trn.tsv`](../../src/test/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../src/test/resources/dat/sample-dev.tsv), and trains a dependency parsing model using [`config-train-sample.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample.xml). Note that no model is saved after training because `-m` is not set.
 
 ```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample.xml -t sample-trn.tsv -d sample-dev.tsv
+$ java -Xmx1g -XX:+UseConcMarkSweepGC -Dlog4j.configuration=edu/emory/mathcs/nlp/configuration/log4j.properties java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample.xml -t sample-trn.tsv -d sample-dev.tsv
 
 AdaGrad Mini-batch
 - Max epoch: 5
@@ -48,16 +48,16 @@ Training:
 ```
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* Add [`log4j.properties`](../../src/main/resources/configuration/log4j.properties) to your classpath or put it under the directory you run (see [log4j](http://logging.apache.org/log4j/)).
+* The `-Dlog4j.configuration` option specifies the configuration file for [log4j](http://logging.apache.org/log4j/) (e.g., [`log4j.properties`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/log4j.properties)).
  * `L`: number of labels.
  * `SF`: number of sparse features.
  * `NZW`: number of non-zero weights.
  * `N/S`: number of nodes processed per second. 
 
-Once you figure out the optimized set of hyper-parameters, modify the values in the configuration file. In this case, we would modify the max epoch to `3` (see [`config-train-sample-optimized.xml`](../../src/main/resources/configuration/config-train-sample-optimized.xml#L18)). The following command takes [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv), trains a dependency parsing model, and saves the final model to `dep.xz`. Note that the development set is not used for this training because `-d` is not set.
+Once you figure out the optimized set of hyper-parameters, modify the values in the configuration file. In this case, we would modify the max epoch to `3` (see [`config-train-sample-optimized.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample-optimized.xml#L18)). The following command takes [`sample-trn.tsv`](../../src/test/resources/dat/sample-trn.tsv), trains a dependency parsing model, and saves the final model to `dep.xz`. Note that the development set is not used for this training because `-d` is not set.
 
 ```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample-optimized.xml -t sample-trn.tsv -m dep.xz
+$ java -Xmx1g -XX:+UseConcMarkSweepGC -Dlog4j.configuration=edu/emory/mathcs/nlp/configuration/log4j.properties java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample-optimized.xml -t sample-trn.tsv -m dep.xz
 
 AdaGrad Mini-batch
 - Max epoch: 3
@@ -76,7 +76,7 @@ You should see the new file `dep.xz` created, which can be specified in the conf
 
 ## Configuration
 
-Sample configuration files for training can be found here: [`config-train-*`](../../src/main/resources/configuration/).
+Sample configuration files for training can be found here: [`config-train-*`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/).
 
 ```xml
 <configuration>
@@ -119,7 +119,7 @@ Sample configuration files for training can be found here: [`config-train-*`](..
 </configuration>
 ```
 
-* `<tsv>` specifies the configuration for [`TSVReader`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample-trn.tsv`](../../src/main/resources/dat/sample-trn.tsv)):
+* `<tsv>` specifies the configuration for [`TSVReader`](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/TSVReader.java). `index` specifies the index of the field, starting at 0. `field` specifies the name of the field (e.g., [`sample-trn.tsv`](../../src/test/resources/dat/sample-trn.tsv)):
  * `form`&nbsp;&nbsp;&nbsp;&nbsp;: word form.
  * `lemma`&nbsp;&nbsp;: lemma.
  * `pos`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: part-of-speech tag.
@@ -129,7 +129,7 @@ Sample configuration files for training can be found here: [`config-train-*`](..
  * `sheads`: semantic heads.
  * `nament`: named entity tag.
 
-* `<lexica>` specifies the lexica used globally across multiple components (e.g., [english lexica](../supplements/english-lexica-models.md#lexica)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L193)).
+* `<lexica>` specifies the lexica used globally across multiple components (e.g., [english lexica](../supplements/english-lexica-models.md#lexica)). `field` specifies the type of word forms used to generate these lexica (see [`NLPNode::getValue`](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L193)).
  * `ambiguity_classes`: ambiguity classes for part-of-speech tagging.
  * `word_clusters`: word clusters (e.g., brown clusters).
  * `word_embeddings`: word embeddings (e.g., [word2vec](http://word2vec.googlecode.com)).
@@ -152,8 +152,8 @@ Sample configuration files for training can be found here: [`config-train-*`](..
     ```
 
  * `f#`: `#` must start with 0. When multiple features are joined, they must be in a consecutive order.
- * `source`: see [`Source.java`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Source.java).
+ * `source`: see [`Source.java`](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Source.java).
  * `window`: the context window with respect to the source.
- * `relation`: see [`Relation.java`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Relation.java).
- * `field`: see [`Field.java`](https://github.com/emorynlp/corenlp/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Field.java).
+ * `relation`: see [`Relation.java`](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Relation.java).
+ * `field`: see [`Field.java`](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Field.java).
  * `value`: specifies the extra value of the field.
