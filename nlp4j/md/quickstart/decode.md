@@ -24,7 +24,7 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 
 ## Example
 
-The following command takes [`emorynlp.txt`](../../src/test/resources/dat/emorynlp.txt) and generates [`emorynlp.txt.nlp`](../../src/test/resources/dat/emorynlp.txt.nlp) using [`config-decode-en.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml).
+The following command takes [`nlp4j.txt`](../../src/test/resources/dat/nlp4j.txt) and generates [`nlp4j.txt.nlp`](../../src/test/resources/dat/nlp4j.txt.nlp) using [`config-decode-en.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml).
 
 ```bash
 $ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config-decode-general.xml -i emorynlp.txt
