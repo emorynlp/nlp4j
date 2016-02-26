@@ -58,20 +58,39 @@
       </resource>
     </resources>
   	
+    <pluginManagement>
+	  <plugins>
+	    <plugin>
+	      <groupId>org.eclipse.m2e</groupId>
+	      <artifactId>lifecycle-mapping</artifactId>
+	      <version>1.0.0</version>
+	      <configuration>
+	        <lifecycleMappingMetadata>
+	          <pluginExecutions>
+	            <pluginExecution>
+	              <pluginExecutionFilter>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-enforcer-plugin</artifactId>
+	                <versionRange>[1.0.0,)</versionRange>
+	                <goals>
+	                  <goal>enforce</goal>
+	                </goals>
+	              </pluginExecutionFilter>
+	              <action>
+	                <ignore />
+	              </action>
+	            </pluginExecution>
+	          </pluginExecutions>
+	        </lifecycleMappingMetadata>
+	      </configuration>
+	    </plugin>
+	  </plugins>
+	</pluginManagement>
+	
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
         <configuration>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <useReleaseProfile>false</useReleaseProfile>
@@ -79,6 +98,15 @@
           <goals>deploy</goals>
         </configuration>
 	  </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
 	  <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -102,22 +130,17 @@
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
       <artifactId>nlp4j-core</artifactId>
-      <version>1.0.1</version>
+      <version>RELEASE</version>
     </dependency>
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
       <artifactId>nlp4j-tokenization</artifactId>
-      <version>1.0.0</version>
+      <version>RELEASE</version>
     </dependency>
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
       <artifactId>nlp4j-morphology</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-csv</artifactId>
-      <version>1.2</version>
+      <version>RELEASE</version>
     </dependency>
   </dependencies>
 </project>

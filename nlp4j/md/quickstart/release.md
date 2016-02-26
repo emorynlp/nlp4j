@@ -1,5 +1,10 @@
 # Release Notes
 
+## Next Version
+
+* The morphological analyzer lemmatizes `'s` into `be` and `have` now.
+* Thanks to [Anatoly Vostryakov](https://github.com/avostryakov). [`adjective.exc`](https://github.com/emorynlp/nlp4j-morphology/blob/master/src/main/resources/edu/emory/mathcs/nlp/component/morph/english/adjective.exc) and [`averb.base`](https://github.com/emorynlp/nlp4j-morphology/blob/master/src/main/resources/edu/emory/mathcs/nlp/component/morph/english/adverb.base) are cleaned up.
+
 ## Version 1.0.0 (02/24/2016)
 
 * NLP4J is the successor of the widely used toolkit, [ClearNLP](https://github.com/clir/clearnlp), developed by the [NLP Research Group](http://nlp.mathcs.emory.edu) at Emory University. Please visit our [Github page](https://github.com/emorynlp/nlp4j) for more details about this project.
