@@ -15,43 +15,21 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import edu.emory.mathcs.nlp.common.util.IOUtils;
+import java.util.regex.Pattern;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Tmp
 {
-	@SuppressWarnings("unchecked")
 	public Tmp(String[] args) throws Exception
 	{
-		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(args[0]);
-		Map<String,float[]> emb = (Map<String,float[]>)oin.readObject();
-		oin.close();
-		
-		System.out.println(emb.size());
-		Iterator<Entry<String, float[]>> it = emb.entrySet().iterator();
-		Entry<String, float[]> e;
-		
-		while (it.hasNext())
-		{
-			e = it.next();
-			
-			if (skip(e.getKey()))
-				it.remove();
-		}
-		
-		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(args[1]);
-		out.writeObject(emb);
-		out.close();
-		
-		System.out.println(emb.size());
+		final Pattern DEPREL = Pattern.compile("^(nsubj|nsubjpass|dobj)$");
+		System.out.println(DEPREL.matcher("nsubj").find());
+		System.out.println(DEPREL.matcher("nsubjpass").find());
+		System.out.println(DEPREL.matcher("dobj").find());
+		System.out.println(DEPREL.matcher("csubj").find());
+		System.out.println(DEPREL.matcher("iobj").find());
 	}
 	
 	boolean skip(String form)

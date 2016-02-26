@@ -42,8 +42,7 @@ public abstract class L2RState extends NLPState
 	public boolean saveOracle()
 	{
 		oracle = Arrays.stream(nodes).map(n -> setLabel(n, null)).toArray(String[]::new);
-		for (String o : oracle) if (o != null) return true;
-		return false;
+		return Arrays.stream(oracle).filter(o -> o != null).findFirst().isPresent();
 	}
 	
 	@Override

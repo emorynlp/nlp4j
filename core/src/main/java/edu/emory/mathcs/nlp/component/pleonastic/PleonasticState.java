@@ -15,6 +15,9 @@
  */
 package edu.emory.mathcs.nlp.component.pleonastic;
 
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -26,21 +29,27 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
  */
 public class PleonasticState extends NLPState
 {
+	static public final Pattern DEPREL = Pattern.compile("^(nsubj|nsubjpass|dobj)$");
+	static public final String KEY = "it"; 
+	private String[] oracle;
+	private int input;
+	
 	public PleonasticState(NLPNode[] nodes)
 	{
 		super(nodes);
+		input = 0;
+		shift();
 	}
-
+	
+//	====================================== ORACLE ======================================
+	
 	@Override
 	public boolean saveOracle()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		oracle = Arrays.stream(nodes).map(n -> n.removeFeat(KEY)).toArray(String[]::new);
+		return Arrays.stream(oracle).filter(o -> o != null).findFirst().isPresent();
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#getOracle()
-	 */
 	@Override
 	public String getOracle()
 	{
@@ -48,6 +57,8 @@ public class PleonasticState extends NLPState
 		return null;
 	}
 
+//	====================================== TRANSITION ======================================
+	
 	/* (non-Javadoc)
 	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#next(edu.emory.mathcs.nlp.learning.util.LabelMap, int, float[])
 	 */
@@ -56,6 +67,17 @@ public class PleonasticState extends NLPState
 	{
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void shift()
+	{
+		for (input++; input<nodes.length; input++)
+		{
+			NLPNode node = nodes[input];
+			
+			if (node.isLemma("it") && node.isDependencyLabel(DEPREL))
+				break;
+		}
 	}
 
 	/* (non-Javadoc)
