@@ -163,5 +163,10 @@
       <artifactId>brownies-collections</artifactId>
       <version>0.9.11</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.2</version>
+    </dependency>
   </dependencies>
 </project>
