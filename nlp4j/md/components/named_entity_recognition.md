@@ -2,7 +2,8 @@
 
 Our named entity recognizer uses both sparse and dense features extracted from named entity gazetteers, word clusters, and word embeddings. It processes over 47K tokens per second on an Intel Xeon 2.30GHz machine and shows the state-of-the-art accuracy (91.0% on the CoNLL'03 corpus).
 
-* [Intrinsic and Extrinsic Evaluations of Word Embeddings](), Michael Zhai, Johnny Tan, Jinho D. Choi, Proceedings of the AAAI 2015 Student Program, Phoenix, AZ, 2015.
+* [Dynamic Feature Induction: The Last Gist to the State-of-the-Art](http://naacl.org/naacl-hlt-2016/), Jinho D. Choi, Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (NAACL'16), San Diego, CA, 2016.
+* [Intrinsic and Extrinsic Evaluations of Word Embeddings](http://www.aaai.org/Conferences/AAAI/2016/aaai16accepted-papers.pdf), Michael Zhai, Johnny Tan, Jinho D. Choi, Proceedings of the AAAI 2015 Student Program, Phoenix, AZ, 2015.
 
 ## English Tags
 

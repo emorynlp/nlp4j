@@ -304,9 +304,4 @@ public class NLPDecoder
 			decode(in, out, format);
 		}
 	}
-	
-	public void learn(NLPNode[] nodes)
-	{
-		
-	}
 }

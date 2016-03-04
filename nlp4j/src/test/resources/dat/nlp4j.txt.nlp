@@ -1,12 +1,12 @@
 1	The	the	DT	_	3	det	_	O
-2	NLP4J	nlp0j	NNP	_	3	compound	_	U-ORG
+2	NLP4J	nlp0j	NNP	p2=NN	3	compound	_	U-ORG
 3	project	project	NN	_	4	nsubj	_	O
 4	provides	provide	VBZ	_	0	root	_	O
 5	a	a	DT	_	7	det	_	O
-6	NLP	nlp	NN	_	7	compound	_	O
+6	NLP	nlp	NN	p2=NNP	7	compound	_	O
 7	toolkit	toolkit	NN	_	4	dobj	_	O
 8	for	for	IN	_	7	prep	_	O
-9	JVM	jvm	NN	_	10	compound	_	U-ORG
+9	JVM	jvm	NN	p2=NNP	10	compound	_	U-ORG
 10	languages	language	NNS	_	8	pobj	_	O
 11	.	.	.	_	4	punct	_	O
 
@@ -15,9 +15,9 @@
 3	is	be	VBZ	_	0	root	_	O
 4	under	under	IN	_	3	prep	_	O
 5	the	the	DT	_	8	det	_	O
-6	Apache	apache	NNP	_	8	nmod	_	O
-7	2	0	CD	_	6	nmod	_	O
-8	license	license	NN	_	4	pobj	_	O
+6	Apache	apache	NNP	p2=NN	8	nmod	_	O
+7	2	0	CD	p2=NNP	6	nmod	_	O
+8	license	license	NN	p2=NNS	4	pobj	_	O
 9	and	and	CC	_	3	cc	_	O
 10	is	be	VBZ	_	12	auxpass	_	O
 11	currently	currently	RB	_	12	advmod	_	O

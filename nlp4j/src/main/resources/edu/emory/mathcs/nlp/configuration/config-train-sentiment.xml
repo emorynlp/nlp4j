@@ -1,0 +1,32 @@
+<configuration>
+	<tsv>
+        <column index="1" field="form"/>
+        <column index="2" field="lemma"/>
+        <column index="3" field="pos"/>
+        <column index="4" field="feats"/>
+    </tsv>
+
+    <lexica>
+        <stop_words field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-stop-words-simplified-lowercase.xz</stop_words>
+    </lexica>
+    
+    <sentiment_negative>-1</sentiment_negative>
+    <sentiment_positive>1</sentiment_positive>
+
+    <optimizer>
+        <algorithm>adagrad</algorithm>
+        <learning_rate>0.01</learning_rate>
+        <feature_cutoff>0</feature_cutoff>
+        <max_epoch>20</max_epoch>
+        <bias>0</bias>
+    </optimizer>
+
+    <feature_template>
+        <feature f0="i:bow1:word_form_simplified"/>
+        <feature f0="i:bow2:word_form_simplified"/>
+        <feature f0="i:bow3:word_form_simplified"/>
+        <feature f0="i:bow1_exclude_stopwords:word_form_simplified"/>
+        <feature f0="i:bow2_exclude_stopwords:word_form_simplified"/>
+        <feature f0="i:bow3_exclude_stopwords:word_form_simplified"/>
+    </feature_template>
+</configuration>

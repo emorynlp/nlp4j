@@ -130,7 +130,7 @@
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
       <artifactId>nlp4j-core</artifactId>
-      <version>RELEASE</version>
+      <version>1.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
