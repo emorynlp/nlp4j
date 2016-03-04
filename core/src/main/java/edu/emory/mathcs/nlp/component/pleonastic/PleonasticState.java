@@ -16,8 +16,8 @@
 package edu.emory.mathcs.nlp.component.pleonastic;
 
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
+import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -29,8 +29,7 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
  */
 public class PleonasticState extends NLPState
 {
-	static public final Pattern DEPREL = Pattern.compile("^(nsubj|nsubjpass|dobj)$");
-	static public final String KEY = "it"; 
+	static public final String FEAT_KEY = "it"; 
 	private String[] oracle;
 	private int input;
 	
@@ -46,27 +45,30 @@ public class PleonasticState extends NLPState
 	@Override
 	public boolean saveOracle()
 	{
-		oracle = Arrays.stream(nodes).map(n -> n.removeFeat(KEY)).toArray(String[]::new);
+		oracle = Arrays.stream(nodes).map(n -> n.removeFeat(FEAT_KEY)).toArray(String[]::new);
 		return Arrays.stream(oracle).filter(o -> o != null).findFirst().isPresent();
 	}
 
 	@Override
 	public String getOracle()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return oracle[input];
 	}
 
 //	====================================== TRANSITION ======================================
 	
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#next(edu.emory.mathcs.nlp.learning.util.LabelMap, int, float[])
-	 */
 	@Override
 	public void next(LabelMap map, int yhat, float[] scores)
 	{
-		// TODO Auto-generated method stub
-		
+		String label = map.getLabel(yhat);
+		nodes[input].putFeat(FEAT_KEY, label);
+		shift();
+	}
+	
+	@Override
+	public boolean isTerminate()
+	{
+		return input >= nodes.length;
 	}
 	
 	private void shift()
@@ -74,42 +76,34 @@ public class PleonasticState extends NLPState
 		for (input++; input<nodes.length; input++)
 		{
 			NLPNode node = nodes[input];
-			
-			if (node.isLemma("it") && node.isDependencyLabel(DEPREL))
-				break;
+			if (node.isLemma("it")) break;
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#isTerminate()
-	 */
-	@Override
-	public boolean isTerminate()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#getNode(edu.emory.mathcs.nlp.component.template.feature.FeatureItem)
-	 */
 	@Override
 	public NLPNode getNode(FeatureItem item)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		NLPNode node = getNode(input, item.window);
+		return getRelativeNode(item, node);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.emory.mathcs.nlp.component.template.state.NLPState#evaluate(edu.emory.mathcs.nlp.component.template.eval.Eval)
-	 */
 	@Override
 	public void evaluate(Eval eval)
 	{
-		// TODO Auto-generated method stub
+		int correct = 0, total = 0;
 		
-	}
-	
-	
+		for (int i=1; i<oracle.length; i++)
+		{
+			NLPNode n = nodes[i];
+			String o = oracle[i];
+			
+			if (o != null)
+			{
+				if (o.equals(n.getFeat(FEAT_KEY))) correct++;
+				total++;
+			}
+		}
 
+		((AccuracyEval)eval).add(correct, total);
+	}
 }

@@ -41,8 +41,8 @@ public abstract class NLPState
 	/**
 	 * Applies the prediction and moves onto the next state.
 	 * @param map retrieves the string label from its index. 
-	 * @param yhat predicated label.
-	 * @param scores scores of the labels.
+	 * @param yhat index of the top predicated label.
+	 * @param scores scores of all labels.
 	 */
 	public abstract void next(LabelMap map, int yhat, float[] scores);
 	
@@ -58,6 +58,11 @@ public abstract class NLPState
 	public NLPNode[] getNodes()
 	{
 		return nodes;
+	}
+	
+	public NLPNode getNode(int index)
+	{
+		return getNode(index, 0, false);
 	}
 	
 	/** @return the node in the (index+window) position of {@link #nodes} if exists; otherwise, null. */

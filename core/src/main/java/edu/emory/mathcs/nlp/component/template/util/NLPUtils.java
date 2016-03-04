@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import edu.emory.mathcs.nlp.common.util.FastUtils;
+import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -34,6 +35,11 @@ public class NLPUtils
 	static public String FEAT_2ND_POS   = "p2";
 	static public String FEAT_PREDICATE = "pb";
 
+	static public String toStringLine(NLPNode[] nodes, String delim, Field field)
+	{
+		return Joiner.join(nodes, delim, 1, nodes.length, n -> n.getValue(field));
+	}
+	
 //	========================= TRANSFORMATION =========================
 	
 	static public NLPNode[] toNodeArray(List<NLPNode> tokens)

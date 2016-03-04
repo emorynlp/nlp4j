@@ -31,6 +31,7 @@ import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.dep.DEPParser;
 import edu.emory.mathcs.nlp.component.ner.NERTagger;
+import edu.emory.mathcs.nlp.component.pleonastic.PleonasticClassifier;
 import edu.emory.mathcs.nlp.component.pos.POSTagger;
 import edu.emory.mathcs.nlp.component.sentiment.SentimentAnalyzer;
 import edu.emory.mathcs.nlp.component.srl.SRLParser;
@@ -101,11 +102,12 @@ public class OnlineTrainer<S extends NLPState>
 	{
 		switch (mode)
 		{
-		case pos : return (OnlineComponent<S>)new POSTagger(config);
-		case ner : return (OnlineComponent<S>)new NERTagger(config);
-		case dep : return (OnlineComponent<S>)new DEPParser(config);
-		case srl : return (OnlineComponent<S>)new SRLParser(config);
-		case sent: return (OnlineComponent<S>)new SentimentAnalyzer(config);
+		case pos: return (OnlineComponent<S>)new POSTagger(config);
+		case ner: return (OnlineComponent<S>)new NERTagger(config);
+		case dep: return (OnlineComponent<S>)new DEPParser(config);
+		case srl: return (OnlineComponent<S>)new SRLParser(config);
+		case sentiment : return (OnlineComponent<S>)new SentimentAnalyzer(config);
+		case pleonastic: return (OnlineComponent<S>)new PleonasticClassifier(config);
 		default : throw new IllegalArgumentException("Unsupported mode: "+mode);
 		}
 	}

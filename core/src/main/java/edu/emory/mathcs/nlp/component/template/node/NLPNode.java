@@ -61,8 +61,8 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	protected List<DEPArc> semantic_heads;
     
 	// offsets
-    protected int start_offset;
-    protected int end_offset;
+	protected int start_offset;
+	protected int end_offset;
     
 	// inferred fields
 	protected int id;
