@@ -58,9 +58,9 @@ public class PleonasticState extends NLPState
 //	====================================== TRANSITION ======================================
 	
 	@Override
-	public void next(LabelMap map, int yhat, float[] scores)
+	public void next(LabelMap map, int[] top2, float[] scores)
 	{
-		String label = map.getLabel(yhat);
+		String label = map.getLabel(top2[0]);
 		nodes[input].putFeat(FEAT_KEY, label);
 		shift();
 	}

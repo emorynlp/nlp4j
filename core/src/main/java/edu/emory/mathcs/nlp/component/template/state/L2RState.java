@@ -57,9 +57,9 @@ public abstract class L2RState extends NLPState
 //	============================== TRANSITION ==============================
 
 	@Override
-	public void next(LabelMap map, int yhat, float[] scores)
+	public void next(LabelMap map, int[] top2, float[] scores)
 	{
-		setLabel(nodes[input++], map.getLabel(yhat));
+		setLabel(nodes[input++], map.getLabel(top2[0]));
 	}
 	
 	@Override

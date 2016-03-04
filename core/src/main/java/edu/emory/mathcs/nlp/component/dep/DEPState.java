@@ -144,9 +144,9 @@ public class DEPState extends NLPState
 //	====================================== TRANSITION ======================================
 	
 	@Override
-	public void next(LabelMap map, int yhat, float[] scores)
+	public void next(LabelMap map, int[] top2, float[] scores)
 	{
-		DEPLabel label = new DEPLabel(map.getLabel(yhat));
+		DEPLabel label = new DEPLabel(map.getLabel(top2[0]));
 		NLPNode  stack = getStack();
 		NLPNode  input = getInput();
 		

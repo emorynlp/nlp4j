@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.template;
 
+import java.util.List;
+
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
@@ -22,6 +24,9 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
  */
 public interface NLPComponent
 {
-	/** Processes the sequence of nodes. */
-	void process(NLPNode[] nodes);
+	/** Processes a sentence. */
+	public abstract void process(NLPNode[] nodes);
+	
+	/** Processes a document. */
+	public void process(List<NLPNode[]> document);
 }

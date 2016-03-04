@@ -85,10 +85,10 @@ public class DEPLabelCandidate implements Serializable
 		return null;
 	}
 	
-	public int getLabelIndex(NLPNode stack, NLPNode input, float[] scores)
+	public int[] getLabelIndices(NLPNode stack, NLPNode input, float[] scores)
 	{
 		IntSet candidates = get(stack, input);
-		return MLUtils.argmax(scores, candidates);
+		return MLUtils.argmax2(scores, candidates);
 	}
 	
 	public IntSet getLeftArcs()

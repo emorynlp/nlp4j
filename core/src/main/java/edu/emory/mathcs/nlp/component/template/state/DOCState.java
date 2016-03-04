@@ -15,11 +15,12 @@
  */
 package edu.emory.mathcs.nlp.component.template.state;
 
+import java.util.List;
+
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
@@ -27,36 +28,46 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
  */
 public class DOCState extends NLPState
 {
-	private final String feat_key; 
+	protected final String feat_key;
+	protected NLPNode key_node;
 	private boolean terminate;
-	private NLPNode key_node;
-	private String gold;
+	private String  oracle;
 	
-	public DOCState(NLPNode[] nodes, String key)
+	public DOCState(List<NLPNode[]> document, String key)
 	{
-		super(nodes);
+		super(document);
 		feat_key  = key;
-		key_node  = nodes[1];
+		key_node  = document.get(0)[1];
 		terminate = false;
 	}
 
 	@Override
 	public boolean saveOracle()
 	{
-		gold = key_node.removeFeat(feat_key);
-		return true;
+		oracle = key_node.removeFeat(feat_key);
+		return oracle != null;
 	}
 
 	@Override
 	public String getOracle()
 	{
-		return gold;
+		return oracle;
+	}
+	
+	public String getLabel()
+	{
+		return key_node.getFeat(feat_key);
+	}
+	
+	public void setLabel(String label)
+	{
+		key_node.putFeat(feat_key, label);
 	}
 
 	@Override
-	public void next(LabelMap map, int yhat, float[] scores)
+	public void next(LabelMap map, int[] top2, float[] scores)
 	{
-		key_node.putFeat(feat_key, map.getLabel(yhat));
+		setLabel(map.getLabel(top2[0]));
 		terminate = true;
 	}
 
@@ -75,7 +86,7 @@ public class DOCState extends NLPState
 	@Override
 	public void evaluate(Eval eval)
 	{
-		int correct = gold.equals(key_node.getFeat(feat_key)) ? 1 : 0;
+		int correct = oracle.equals(key_node.getFeat(feat_key)) ? 1 : 0;
 		((AccuracyEval)eval).add(correct, 1);
 	}
 }

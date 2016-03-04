@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.srl;
 
 import java.io.InputStream;
+import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -35,8 +36,8 @@ public class SRLParser extends OnlineComponent<SRLState>
 	public SRLParser(InputStream configuration)
 	{
 		super(configuration);
-		setMaxDepth (config.getInt("max_depth"));
-		setMaxHeight(config.getInt("max_height"));
+		setMaxDepth (config.getIntegerTextContent("max_depth"));
+		setMaxHeight(config.getIntegerTextContent("max_height"));
 	}
 
 //	============================== ABSTRACT ==============================
@@ -51,6 +52,12 @@ public class SRLParser extends OnlineComponent<SRLState>
 	protected SRLState initState(NLPNode[] nodes)
 	{
 		return new SRLState(nodes, max_depth, max_height);
+	}
+	
+	@Override
+	protected SRLState initState(List<NLPNode[]> document)
+	{
+		return null;
 	}
 
 	@Override

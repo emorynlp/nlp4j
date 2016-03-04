@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.pleonastic;
 
 import java.io.InputStream;
+import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
@@ -40,6 +41,12 @@ public class PleonasticClassifier extends OnlineComponent<PleonasticState>
 	protected PleonasticState initState(NLPNode[] nodes)
 	{
 		return new PleonasticState(nodes);
+	}
+	
+	@Override
+	protected PleonasticState initState(List<NLPNode[]> document)
+	{
+		return null;
 	}
 
 	@Override

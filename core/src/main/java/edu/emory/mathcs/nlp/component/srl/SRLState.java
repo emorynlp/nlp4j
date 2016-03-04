@@ -56,7 +56,7 @@ public class SRLState extends NLPState
 //	====================================== TRANSITION ======================================
 
 	@Override
-	public void next(LabelMap map, int yhat, float[] scores)
+	public void next(LabelMap map, int[] top2, float[] scores)
 	{
 		// TODO Auto-generated method stub
 		

@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.ner;
 
 import java.io.InputStream;
+import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -48,6 +49,12 @@ public class NERTagger extends OnlineComponent<NERState>
 	protected NERState initState(NLPNode[] nodes)
 	{
 		return new NERState(nodes);
+	}
+	
+	@Override
+	protected NERState initState(List<NLPNode[]> document)
+	{
+		return null;
 	}
 	
 	@Override

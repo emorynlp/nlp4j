@@ -17,6 +17,7 @@ package edu.emory.mathcs.nlp.component.template;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -158,18 +159,24 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	@Override
 	public void process(NLPNode[] nodes)
 	{
-		process(nodes, initState(nodes));
+		process(initState(nodes));
+	}
+	
+	@Override
+	public void process(List<NLPNode[]> document)
+	{
+		process(initState(document));
 	}
 	
 	/** Process the sequence of the nodes given the state. */
-	public void process(NLPNode[] nodes, S state)
+	public void process(S state)
 	{
 		if (!isDecode() && !state.saveOracle()) return;
+		int[] top2 = {0,-1};
 		Instance instance;
 		FeatureVector x;
 		float[] scores;
 		String label;
-		int yhat;
 
 		while (!state.isTerminate())
 		{
@@ -182,15 +189,15 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 				optimizer.train(instance);
 				scores = instance.getScores();
 				putLabel(instance.getStringLabel(), instance.getGoldLabel());
-				yhat = hyper_parameter.getLOLS().chooseGold() ? instance.getGoldLabel() : getPrediction(state, scores);
+				top2[0] = hyper_parameter.getLOLS().chooseGold() ? instance.getGoldLabel() : getPrediction(state, scores)[0];
 			}
 			else
 			{
 				scores = optimizer.scores(x);
-				yhat = getPrediction(state, scores);
+				top2 = getPrediction(state, scores);
 			}
 			
-			state.next(optimizer.getLabelMap(), yhat, scores);
+			state.next(optimizer.getLabelMap(), top2, scores);
 		}
 		
 		if (isDecode() || isEvaluate())
@@ -202,15 +209,18 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	
 //	============================== HELPERS ==============================
 
-	protected int getPrediction(S state, float[] scores)
+	protected int[] getPrediction(S state, float[] scores)
 	{
-		return MLUtils.argmax(scores);
+		return MLUtils.argmax2(scores);
 	}
 	
 	public abstract Eval createEvaluator();
 	
 	/** @return the processing state for the input nodes. */
 	protected abstract S initState(NLPNode[] nodes);
+	
+	/** @return the processing state for the input document. */
+	protected abstract S initState(List<NLPNode[]> document);
 	
 	/** Post-processes if necessary. */
 	protected abstract void postProcess(S state);

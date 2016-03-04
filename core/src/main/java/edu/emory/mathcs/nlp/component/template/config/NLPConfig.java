@@ -57,9 +57,14 @@ public class NLPConfig implements ConfigXML
 	
 //	=================================== GETTERS & SETTERS ===================================  
 	
-	public int getInt(String tagName)
+	public int getIntegerTextContent(String tagName)
 	{
 		return XMLUtils.getIntegerTextContentFromFirstElementByTagName(xml, tagName);
+	}
+	
+	public String getTextContent(String tagName)
+	{
+		return XMLUtils.getTextContentFromFirstElementByTagName(xml, tagName);
 	}
 	
 	public Language getLanguage()

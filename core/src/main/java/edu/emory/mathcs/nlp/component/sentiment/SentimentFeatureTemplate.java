@@ -20,7 +20,6 @@ import org.w3c.dom.Element;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.state.DOCState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
@@ -28,7 +27,7 @@ import edu.emory.mathcs.nlp.learning.util.SparseVector;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SentimentFeatureTemplate extends FeatureTemplate<DOCState>
+public class SentimentFeatureTemplate extends FeatureTemplate<SentimentState>
 {
 	private static final long serialVersionUID = -5155132966568754061L;
 
@@ -38,7 +37,7 @@ public class SentimentFeatureTemplate extends FeatureTemplate<DOCState>
 	}
 
 	@Override
-	public SparseVector createSparseVector(DOCState state, boolean isTrain)
+	public SparseVector createSparseVector(SentimentState state, boolean isTrain)
 	{
 		SparseVector x = new SparseVector();
 		NLPNode[] nodes = state.getNodes();
@@ -57,7 +56,7 @@ public class SentimentFeatureTemplate extends FeatureTemplate<DOCState>
 	}
 	
 	@Override
-	public float[] createDenseVector(DOCState state)
+	public float[] createDenseVector(SentimentState state)
 	{
 		return null;
 	}

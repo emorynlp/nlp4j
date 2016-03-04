@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.pos;
 
 import java.io.InputStream;
+import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
@@ -48,6 +49,12 @@ public class POSTagger extends OnlineComponent<POSState>
 	protected POSState initState(NLPNode[] nodes)
 	{
 		return new POSState(nodes);
+	}
+	
+	@Override
+	protected POSState initState(List<NLPNode[]> document)
+	{
+		return null;
 	}
 	
 	@Override

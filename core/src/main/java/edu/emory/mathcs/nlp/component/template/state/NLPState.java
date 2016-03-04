@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.template.state;
 
+import java.util.List;
+
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -25,11 +27,17 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
  */
 public abstract class NLPState
 {
+	protected List<NLPNode[]> document;
 	protected NLPNode[] nodes;
 
 	public NLPState(NLPNode[] nodes)
 	{
 		this.nodes = nodes;
+	}
+	
+	public NLPState(List<NLPNode[]> document)
+	{
+		this.document = document;
 	}
 	
 	/** Clears and saves the gold-standard labels in the input nodes if available. */
@@ -41,10 +49,10 @@ public abstract class NLPState
 	/**
 	 * Applies the prediction and moves onto the next state.
 	 * @param map retrieves the string label from its index. 
-	 * @param yhat index of the top predicated label.
+	 * @param top2 indices of the top 2 predicated labels.
 	 * @param scores scores of all labels.
 	 */
-	public abstract void next(LabelMap map, int yhat, float[] scores);
+	public abstract void next(LabelMap map, int[] top2, float[] scores);
 	
 	/** @return true if no more state can be processed; otherwise, false. */
 	public abstract boolean isTerminate();
@@ -58,6 +66,11 @@ public abstract class NLPState
 	public NLPNode[] getNodes()
 	{
 		return nodes;
+	}
+	
+	public List<NLPNode[]> getDocument()
+	{
+		return document;
 	}
 	
 	public NLPNode getNode(int index)

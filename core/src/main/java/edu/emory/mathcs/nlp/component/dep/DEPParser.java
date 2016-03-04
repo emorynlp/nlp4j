@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.dep;
 
 import java.io.InputStream;
+import java.util.List;
 
 import edu.emory.mathcs.nlp.common.treebank.DEPTagEn;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
@@ -58,6 +59,12 @@ public class DEPParser extends OnlineComponent<DEPState>
 		return new DEPState(nodes);
 	}
 	
+	@Override
+	protected DEPState initState(List<NLPNode[]> document)
+	{
+		return null;
+	}
+	
 //	============================== LABELS ==============================
 	
 	@Override
@@ -67,9 +74,9 @@ public class DEPParser extends OnlineComponent<DEPState>
 	}
 	
 	@Override
-	protected int getPrediction(DEPState state, float[] scores)
+	protected int[] getPrediction(DEPState state, float[] scores)
 	{
-		return label_candidates.getLabelIndex(state.getStack(), state.getInput(), scores);
+		return label_candidates.getLabelIndices(state.getStack(), state.getInput(), scores);
 	}
 	
 	public DEPLabelCandidate getLabelCandidates()

@@ -17,7 +17,9 @@ package edu.emory.mathcs.nlp.learning.util;
 
 import org.apache.commons.math3.util.FastMath;
 
+import edu.emory.mathcs.nlp.common.util.DSUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -79,17 +81,17 @@ public class MLUtils
 		return maxIndex;
 	}
 	
-	static public int[] argmax2(float[] array)
+	static public int[] argmax2(float[] scores)
 	{
-		return argmax2(array, array.length);
+		return argmax2(scores, scores.length);
 	}
 	
-	static public int[] argmax2(float[] array, int size)
+	static public int[] argmax2(float[] scores, int size)
 	{
 		if (size < 2) return new int[]{0,-1};
 		int[] max = {0,1};
 		
-		if (array[0] < array[1])
+		if (scores[0] < scores[1])
 		{
 			max[0] = 1;
 			max[1] = 0;
@@ -97,12 +99,38 @@ public class MLUtils
 		
 		for (int i=2; i<size; i++)
 		{
-			if (array[max[0]] < array[i])
+			if (scores[max[0]] < scores[i])
 			{
 				max[1] = max[0];
 				max[0] = i;
 			}
-			else if (array[max[1]] < array[i])
+			else if (scores[max[1]] < scores[i])
+				max[1] = i;
+		}
+		
+		return max;
+	}
+	
+	static public int[] argmax2(float[] scores, IntCollection labels)
+	{
+		if (labels == null || labels.isEmpty()) return argmax2(scores);
+		IntIterator it = labels.iterator();
+		if (labels.size() < 2) return new int[]{it.nextInt(),-1};
+		int[] max = {it.nextInt(), it.nextInt()};
+		
+		if (scores[0] < scores[1])
+			DSUtils.swap(max, 0, 1);
+		
+		while (it.hasNext())
+		{
+			int i = it.nextInt();
+			
+			if (scores[max[0]] < scores[i])
+			{
+				max[1] = max[0];
+				max[0] = i;
+			}
+			else if (scores[max[1]] < scores[i])
 				max[1] = i;
 		}
 		

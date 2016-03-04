@@ -52,10 +52,6 @@ public enum Field
 	word_embedding,
 	named_entity_gazetteers,
 	
-	// document
-	bag_of_words,
-	bag_of_words_count,
-	
 	// more
 	positional;
 }

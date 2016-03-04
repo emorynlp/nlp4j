@@ -23,7 +23,7 @@ import edu.emory.mathcs.nlp.common.util.MathUtils;
 public class F1Eval implements Eval
 {
 	private int total_system;
-	private int total_gold;
+	private int total_oracle;
 	private int correct;
 	
 	public F1Eval()
@@ -31,11 +31,11 @@ public class F1Eval implements Eval
 		clear();
 	}
 	
-	public void add(int correct, int totalSystem, int totalGold)
+	public void add(int correct, int totalSystem, int totalOracle)
 	{
 		this.correct += correct;
 		total_system += totalSystem;
-		total_gold   += totalGold;
+		total_oracle += totalOracle;
 	}
 	
 	public double getPrecision()
@@ -45,7 +45,7 @@ public class F1Eval implements Eval
 	
 	public double getRecall()
 	{
-		return MathUtils.accuracy(correct, total_gold);
+		return MathUtils.accuracy(correct, total_oracle);
 	}
 	
 	public double getF1()
@@ -56,7 +56,7 @@ public class F1Eval implements Eval
 	@Override
 	public void clear()
 	{
-		correct = total_system = total_gold = 0;
+		correct = total_system = total_oracle = 0;
 	}
 	
 	@Override

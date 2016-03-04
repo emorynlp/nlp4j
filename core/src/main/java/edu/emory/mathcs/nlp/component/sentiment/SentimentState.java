@@ -13,43 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pos;
+package edu.emory.mathcs.nlp.component.sentiment;
 
+import java.util.List;
+
+import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.state.L2RState;
+import edu.emory.mathcs.nlp.component.template.state.DOCState;
 import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
-import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSState extends L2RState
+public class SentimentState extends DOCState
 {
-	public POSState(NLPNode[] nodes)
+	public SentimentState(List<NLPNode[]> document)
 	{
-		super(nodes);
+		super(document, NLPUtils.FEAT_SENTIMENT);
 	}
-	
-	@Override
-	protected String getLabel(NLPNode node)
-	{
-		return node.getPartOfSpeechTag();
-	}
-	
-	@Override
-	protected String setLabel(NLPNode node, String label)
-	{
-		String s = node.getPartOfSpeechTag();
-		node.setPartOfSpeechTag(label);
-		return s;
-	}
-	
-	@Override
-	public void next(LabelMap map, int[] top2, float[] scores)
-	{
-		if (0 <= top2[1] && scores[top2[0]] - scores[top2[1]] < 1)
-			getInput().putFeat(NLPUtils.FEAT_POS_2ND, map.getLabel(top2[1]));
 
-		super.next(map, top2, scores);
+	@Override
+	public void evaluate(Eval eval)
+	{
+		if (!((SentimentEval)eval).add(getOracle(), getLabel()))
+			super.evaluate(eval);
 	}
 }
