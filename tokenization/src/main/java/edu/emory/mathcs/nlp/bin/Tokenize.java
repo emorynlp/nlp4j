@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,6 +31,7 @@ import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Language;
+import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
@@ -85,7 +87,7 @@ public class Tokenize
 		String sen_delim = output_format.equals(LINE) ? StringConst.EMPTY : StringConst.NEW_LINE;
 		
 		for (NLPNode[] tokens : tokenizer.segmentize(in))
-			out.println(Joiner.join(tokens, tok_delim, 1)+sen_delim);
+			out.println(Joiner.join(tokens, tok_delim, 1, tokens.length, n -> n.getValue(Field.word_form))+sen_delim);
 		
 		in.close();
 		out.close();
@@ -101,7 +103,10 @@ public class Tokenize
 		String sen_delim = output_format.equals(LINE) ? StringConst.EMPTY : StringConst.NEW_LINE;
 		
 		while ((line = reader.readLine()) != null)
-			out.println(Joiner.join(tokenizer.tokenize(line), tok_delim)+sen_delim);
+		{
+			List<NLPNode> tokens = tokenizer.tokenize(line);
+			out.println(Joiner.join(tokens, tok_delim, 0, tokens.size(), n -> n.getValue(Field.word_form))+sen_delim);
+		}
 		
 		reader.close();
 		out.close();
