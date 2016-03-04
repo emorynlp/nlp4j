@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.morph;
 
+import java.util.List;
+
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -34,6 +36,13 @@ public abstract class MorphAnalyzer implements NLPComponent
 			node = nodes[i];
 			node.setLemma(lemmatize(node.getWordFormSimplified(), node.getPartOfSpeechTag()));
 		}
+	}
+	
+	@Override
+	public void process(List<NLPNode[]> document)
+	{
+		for (NLPNode[] nodes : document)
+			process(nodes);
 	}
 	
 	/**
