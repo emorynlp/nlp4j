@@ -13,31 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.sentiment;
+package edu.emory.mathcs.nlp.common.collection.tuple;
 
-import java.util.List;
+import java.io.Serializable;
 
-import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.state.DocumentState;
-import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SentimentState extends DocumentState
+public class ObjectFloatPair<T> implements Serializable, Comparable<ObjectFloatPair<T>>
 {
-	public SentimentState(List<NLPNode[]> document)
+	private static final long serialVersionUID = -4442614450903889259L;
+
+	public T     o;
+	public float f;
+	
+	public ObjectFloatPair(T o, float f)
 	{
-		super(document, NLPUtils.FEAT_SENTIMENT);
+		set(o, f);
+	}
+	
+	public void set(T o, float f)
+	{
+		this.o = o;
+		this.f = f;
+	}
+	
+	public T getObject()
+	{
+		return o;
+	}
+	
+	public float getFloat()
+	{
+		return f;
 	}
 
 	@Override
-	public void evaluate(Eval eval)
+	public int compareTo(ObjectFloatPair<T> p)
 	{
-		if (eval instanceof SentimentEval)
-			((SentimentEval)eval).add(getOracle(), getLabel());
-		else
-			super.evaluate(eval);
+		return MathUtils.signum(f - p.f);
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "("+o.toString()+","+f+")";
 	}
 }

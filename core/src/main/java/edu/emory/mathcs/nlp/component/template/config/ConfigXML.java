@@ -41,6 +41,8 @@ public interface ConfigXML
 	String FIELD_SHEADS	= "sheads";
 	String FIELD_COREF	= "coref";
 	
+	String DOCUMENT_BASED = "document_based";
+	
 //	========================== LEXICA ==========================
 	
 	String LEXICA					= "lexica";

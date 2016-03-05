@@ -30,11 +30,11 @@ public class NERTagger extends OnlineComponent<NERState>
 {
 	private static final long serialVersionUID = 87807440372806016L;
 
-	public NERTagger() {}
+	public NERTagger() {super(false);}
 	
 	public NERTagger(InputStream configuration)
 	{
-		super(configuration);
+		super(false, configuration);
 	}
 	
 //	============================== ABSTRACT ==============================
@@ -52,14 +52,11 @@ public class NERTagger extends OnlineComponent<NERState>
 	}
 	
 	@Override
-	protected NERState initState(List<NLPNode[]> document)
-	{
-		return null;
-	}
-	
-	@Override
 	protected void postProcess(NERState state)
 	{
 		state.postProcess();
 	}
+
+	@Override
+	protected NERState initState(List<NLPNode[]> document) {return null;}
 }

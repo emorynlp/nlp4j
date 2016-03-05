@@ -17,12 +17,16 @@ package edu.emory.mathcs.nlp.component.template.state;
 
 import java.util.List;
 
+import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
+import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
+ * This class consists of processing states 
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class NLPState
@@ -30,37 +34,54 @@ public abstract class NLPState
 	protected List<NLPNode[]> document;
 	protected NLPNode[] nodes;
 
+	/**
+	 * For sentence-based NLP components.
+	 * @param nodes {@code node[0]} is reserved for the artificial root, {@code node[1]} represents the first token, and so on.
+	 */
 	public NLPState(NLPNode[] nodes)
 	{
 		this.nodes = nodes;
 	}
 	
+	/**
+	 * For document-based NLP components.
+	 * @param document each node array represents a sentence.
+	 */
 	public NLPState(List<NLPNode[]> document)
 	{
 		this.document = document;
 	}
 	
-	/** Clears and saves the gold-standard labels in the input nodes if available. */
+	/**
+	 * Saves and removes the gold labels from {@link #nodes} or {@link #document}.
+	 * @return {@code true} if any gold label was saved; otherwise, {@code false}. 
+	 */
 	public abstract boolean saveOracle();
 	
 	/** @return the gold label given the current state. */
 	public abstract String getOracle();
 	
 	/**
-	 * Applies the prediction and moves onto the next state.
-	 * @param map retrieves the string label from its index. 
-	 * @param top2 indices of the top 2 predicated labels.
+	 * Applies the predictions to the current state, and moves onto the next state.
+	 * @param map to retrieve the string label from its index. 
+	 * @param top2 indices of the top 2 predications, where {@code top2[0]} is the best prediction and {@code top2[1]} is the 2nd best prediction.
 	 * @param scores scores of all labels.
 	 */
 	public abstract void next(LabelMap map, int[] top2, float[] scores);
 	
-	/** @return true if no more state can be processed; otherwise, false. */
+	/** @return {@code true} if no more state can be processed; otherwise, {@code false}. */
 	public abstract boolean isTerminate();
 	
-	/** @return the node with respect to the feature item if exists; otherwise, null. */
+	/**
+	 * @return the node with respect to the feature item if exists; otherwise, {@code null}.
+	 * @see {@link FeatureTemplate}.
+	 */
 	public abstract NLPNode getNode(FeatureItem item);
 	
-	/** Evaluates all predictions given the current input and the evaluator. */
+	/**
+	 * Evaluates all predictions made for either {@link #nodes} or {@link #document} using the specific evaluator.
+	 * @param eval e.g., {@link AccuracyEval}, {@link F1Eval}.
+	 */
 	public abstract void evaluate(Eval eval);
 	
 	public NLPNode[] getNodes()
@@ -78,12 +99,18 @@ public abstract class NLPState
 		return getNode(index, 0, false);
 	}
 	
-	/** @return the node in the (index+window) position of {@link #nodes} if exists; otherwise, null. */
+	/** @return {@link #getNode(int, int, boolean)}, where {@code includeRoot = false}. */
 	public NLPNode getNode(int index, int window)
 	{
 		return getNode(index, window, false);
 	}
 	
+	/**
+	 * @return the {@code index+window}'th node in {@link #nodes} if exists; otherwise, {@code null}.
+	 * @param index the index of the input node.
+	 * @param window context window.
+	 * @param includeRoot if {@code true}, the artificial root node is considered a part of context.
+	 */
 	public NLPNode getNode(int index, int window, boolean includeRoot)
 	{
 		index += window;
@@ -91,16 +118,11 @@ public abstract class NLPState
 		return begin <= index && index < nodes.length ? nodes[index] : null;
 	}
 	
-	public boolean isFirst(NLPNode node)
-	{
-		return nodes[1] == node; 
-	}
-	
-	public boolean isLast(NLPNode node)
-	{
-		return nodes[nodes.length-1] == node;
-	}
-	
+	/**
+	 * @return the relative node with respect to the feature template and the input node.
+	 * @param item the feature template.
+	 * @param node the input node.
+	 */
 	protected NLPNode getRelativeNode(FeatureItem item, NLPNode node)
 	{
 		if (node == null || item.relation == null)
@@ -125,5 +147,17 @@ public abstract class NLPState
 		}
 		
 		return null;
+	}
+	
+	/** @return {@code true} if the node is the first node in the sentence. */
+	public boolean isFirst(NLPNode node)
+	{
+		return nodes[1] == node; 
+	}
+	
+	/** @return {@code true} if the node is the first node in the sentence. */
+	public boolean isLast(NLPNode node)
+	{
+		return nodes[nodes.length-1] == node;
 	}
 }

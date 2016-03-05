@@ -94,7 +94,6 @@ public abstract class L2RState extends NLPState
 		
 		for (int i=1; i<nodes.length; i++)
 		{
-//			if (POSTrainer.train_words != null && POSTrainer.train_words.contains(nodes[i].getWordForm())) continue;
 			if (oracle[i].equals(getLabel(nodes[i]))) correct++;
 			total++;
 		}

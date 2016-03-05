@@ -34,7 +34,6 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 public class TSVReader
 {
 	static public String BLANK = StringConst.UNDERSCORE;
-	private boolean document_based;
 	private BufferedReader reader;
 	
 	public int form   = -1;
@@ -61,7 +60,7 @@ public class TSVReader
 		catch (IOException e) {e.printStackTrace();}
 	}
 	
-	public List<NLPNode[]> getDocument() throws Exception
+	public List<NLPNode[]> readDocument() throws Exception
 	{
 		List<NLPNode[]> document = new ArrayList<>();
 		NLPNode[] nodes;
@@ -156,15 +155,5 @@ public class TSVReader
 			headID = Integer.parseInt(t[0]);
 			node.addSemanticHead(nodes[headID], t[1]);
 		}			
-	}
-	
-	public boolean getDocumentBased()
-	{
-		return document_based;
-	}
-	
-	public void setDocumentBased(boolean document)
-	{
-		document_based = document;
 	}
 }

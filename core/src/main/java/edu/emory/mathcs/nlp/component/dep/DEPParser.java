@@ -36,12 +36,13 @@ public class DEPParser extends OnlineComponent<DEPState>
 
 	public DEPParser()
 	{
+		super(false);
 		label_candidates = new DEPLabelCandidate(); 
 	}
 	
 	public DEPParser(InputStream configuration)
 	{
-		super(configuration);
+		super(false, configuration);
 		label_candidates = new DEPLabelCandidate();
 	}
 	
@@ -60,10 +61,7 @@ public class DEPParser extends OnlineComponent<DEPState>
 	}
 	
 	@Override
-	protected DEPState initState(List<NLPNode[]> document)
-	{
-		return null;
-	}
+	protected DEPState initState(List<NLPNode[]> document) {return null;}
 	
 //	============================== LABELS ==============================
 	

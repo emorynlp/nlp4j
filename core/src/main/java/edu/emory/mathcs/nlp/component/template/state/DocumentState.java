@@ -26,21 +26,21 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DOCState extends NLPState
+public class DocumentState extends NLPState
 {
-	protected final String feat_key;
 	protected NLPNode key_node;
-	private boolean terminate;
-	private String  oracle;
+	protected String  feat_key;
+	protected String  oracle;
+	protected boolean terminate;
 	
-	public DOCState(List<NLPNode[]> document, String key)
+	public DocumentState(List<NLPNode[]> document, String key)
 	{
 		super(document);
 		feat_key  = key;
 		key_node  = document.get(0)[1];
 		terminate = false;
 	}
-
+	
 	@Override
 	public boolean saveOracle()
 	{
@@ -86,7 +86,7 @@ public class DOCState extends NLPState
 	@Override
 	public void evaluate(Eval eval)
 	{
-		int correct = oracle.equals(key_node.getFeat(feat_key)) ? 1 : 0;
+		int correct = oracle.equals(getLabel()) ? 1 : 0;
 		((AccuracyEval)eval).add(correct, 1);
 	}
 }

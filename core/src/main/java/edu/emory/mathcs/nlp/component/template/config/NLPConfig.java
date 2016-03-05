@@ -88,8 +88,6 @@ public class NLPConfig implements ConfigXML
 		reader.deprel = map.getOrDefault(FIELD_DEPREL, -1);
 		reader.sheads = map.getOrDefault(FIELD_SHEADS, -1);
 		
-		reader.setDocumentBased(XMLUtils.getBooleanTextContentFromFirstElementByTagName(eReader, "document_based"));
-		
 		return reader;
 	}
 	

@@ -31,11 +31,11 @@ public class SRLParser extends OnlineComponent<SRLState>
 	private int max_depth;
 	private int max_height;
 	
-	public SRLParser() {}
+	public SRLParser() {super(false);}
 	
 	public SRLParser(InputStream configuration)
 	{
-		super(configuration);
+		super(false, configuration);
 		setMaxDepth (config.getIntegerTextContent("max_depth"));
 		setMaxHeight(config.getIntegerTextContent("max_height"));
 	}

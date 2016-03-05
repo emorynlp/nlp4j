@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
@@ -130,9 +129,9 @@ public class OnlineTrainer<S extends NLPState>
 	public void train(List<String> trainFiles, List<String> developFiles, String modelFile, OnlineComponent<S> component) throws Exception
 	{
 		OnlineOptimizer optimizer = component.getOptimizer();
+		HyperParameter hp = component.getHyperParameter();
 		NLPConfig config = component.getConfiguration();
 		TSVReader reader = config.getTSVReader();
-		HyperParameter info = component.getHyperParameter();
 		
 		int bestEpoch = -1, bestNZW = -1, NZW, L, SF;
 		Random rand = new XORShiftRandom(9);
@@ -140,16 +139,16 @@ public class OnlineTrainer<S extends NLPState>
 		DoubleIntPair p;
 		String eval;
 		
-		BinUtils.LOG.info(optimizer.toString()+"\n"+component.getHyperParameter().toString("- ")+"\n\n");
+		BinUtils.LOG.info(optimizer.toString()+"\n"+hp.toString("- ")+"\n\n");
 		BinUtils.LOG.info("Training:\n");
 		
-		for (int epoch=1; epoch<=info.getMaxEpochs(); epoch++)
+		for (int epoch=1; epoch<=hp.getMaxEpochs(); epoch++)
 		{
 			// train
 			component.setFlag(NLPFlag.TRAIN);
 			Collections.shuffle(trainFiles, rand);
-			info.getLOLS().updateGoldProbability();
-			iterate(reader, trainFiles, component::process, optimizer, info);
+			hp.getLOLS().updateGoldProbability();
+			iterate(reader, trainFiles, component, true);
 
 			// info
 			L   = optimizer.getLabelSize();
@@ -181,27 +180,23 @@ public class OnlineTrainer<S extends NLPState>
 			saveModel(component, IOUtils.createFileOutputStream(modelFile));
 	}
 	
-	protected DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<?> component, TSVReader reader)
+	protected DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<S> component, TSVReader reader)
 	{
 		component.setFlag(NLPFlag.EVALUATE);
 		Eval eval = component.getEval();
 		eval.clear();
-		double time = iterate(reader, developFiles, component::process);
+		double time = iterate(reader, developFiles, component, true);
 		return new DoubleIntPair(eval.score(), (int)Math.round(time));
 	}
 	
 //	=================================== HELPERS ===================================
 	
-	protected double iterate(TSVReader reader, List<String> inputFiles, Consumer<NLPNode[]> f)
+	protected double iterate(TSVReader reader, List<String> inputFiles, OnlineComponent<S> component, boolean evaluate)
 	{
-		return iterate(reader, inputFiles, f, null, null);
-	}
-	
-	protected double iterate(TSVReader reader, List<String> inputFiles, Consumer<NLPNode[]> f, OnlineOptimizer optimizer, HyperParameter info)
-	{
+		long st, et, time = 0, unit = 0;
+		List<NLPNode[]> document;
 		NLPNode[] nodes;
 		int count = 0;
-		long st, et, ttime = 0, tnode = 0;
 		
 		for (String inputFile : inputFiles)
 		{
@@ -209,30 +204,45 @@ public class OnlineTrainer<S extends NLPState>
 			
 			try
 			{
-				while ((nodes = reader.next()) != null)
+				if (component.isDocumentBased())
 				{
-					GlobalLexica.assignGlobalLexica(nodes);
+					document = reader.readDocument();
+					for (NLPNode[] ns : document) GlobalLexica.assignGlobalLexica(ns);
 					st = System.currentTimeMillis();
-					f.accept(nodes);
+					component.process(document);
 					et = System.currentTimeMillis();
-					ttime += et - st;
-					tnode += nodes.length - 1;
-					count = update(optimizer, info, count, false);
+					if (!evaluate) count = update(component, count, false);
+					time += et - st;
+					unit++;
+				}
+				else
+				{
+					while ((nodes = reader.next()) != null)
+					{
+						GlobalLexica.assignGlobalLexica(nodes);
+						st = System.currentTimeMillis();
+						component.process(nodes);
+						et = System.currentTimeMillis();
+						if (!evaluate) count = update(component, count, false);
+						time += et - st;
+						unit += nodes.length - 1;
+					}					
 				}
 			}
-			catch (IOException e) {e.printStackTrace();}
+			catch (Exception e) {e.printStackTrace();}
 			reader.close();
 		}
 		
-		update(optimizer, info, count, true);
-		return 1000d * tnode / ttime;
+		if (!evaluate) update(component, count, true);
+		return 1000d * unit / time;
 	}
 	
-	protected int update(OnlineOptimizer optimizer, HyperParameter info, int count, boolean last)
+	protected int update(OnlineComponent<S> component, int count, boolean last)
 	{
-		if (optimizer == null) return count;
+		OnlineOptimizer optimizer = component.getOptimizer();
+		HyperParameter hp = component.getHyperParameter();
 		
-		if ((last && count > 0) || ++count == info.getBatchSize())
+		if ((last && count > 0) || ++count == hp.getBatchSize())
 		{
 			optimizer.updateMiniBatch();
 			count = 0;

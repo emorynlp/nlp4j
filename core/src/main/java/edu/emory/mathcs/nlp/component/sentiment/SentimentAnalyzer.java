@@ -34,11 +34,11 @@ public class SentimentAnalyzer extends OnlineComponent<SentimentState>
 	private String positive_label;
 	private String negative_label;
 
-	public SentimentAnalyzer() {}
+	public SentimentAnalyzer() {super(true);}
 	
 	public SentimentAnalyzer(InputStream configuration)
 	{
-		super(configuration);
+		super(true, configuration);
 		setPositiveLabel(config.getTextContent(XML_POSITIVE));
 		setNegativeLabel(config.getTextContent(XML_NEGATIVE));
 	}
@@ -84,13 +84,10 @@ public class SentimentAnalyzer extends OnlineComponent<SentimentState>
 	{
 		return (positive_label != null && negative_label != null) ? new SentimentEval(positive_label, negative_label) : new AccuracyEval();
 	}
-
-	@Override
-	protected SentimentState initState(NLPNode[] nodes)
-	{
-		return null;
-	}
 	
 	@Override
 	protected void postProcess(SentimentState state) {}
+	
+	@Override
+	protected SentimentState initState(NLPNode[] nodes) {return null;}
 }

@@ -52,6 +52,27 @@ public enum Field
 	word_embedding,
 	named_entity_gazetteers,
 	
-	// more
-	positional;
-}
+	// boolean
+	positional,
+	
+	// document
+	bag_of_words_1,
+	bag_of_words_2,
+	bag_of_words_3,
+	bag_of_words_count_1,
+	bag_of_words_count_2,
+	bag_of_words_count_3,
+	bag_of_words_norm_1,
+	bag_of_words_norm_2,
+	bag_of_words_norm_3,
+	
+	bag_of_words_stopwords_1,
+	bag_of_words_stopwords_2,
+	bag_of_words_stopwords_3,
+	bag_of_words_stopwords_count_1,
+	bag_of_words_stopwords_count_2,
+	bag_of_words_stopwords_count_3,
+	bag_of_words_stopwords_norm_1,
+	bag_of_words_stopwords_norm_2,
+	bag_of_words_stopwords_norm_3,
+;}

@@ -30,11 +30,11 @@ public class PleonasticClassifier extends OnlineComponent<PleonasticState>
 {
 	private static final long serialVersionUID = 3585863417135590906L;
 
-	public PleonasticClassifier() {}
+	public PleonasticClassifier() {super(false);}
 	
 	public PleonasticClassifier(InputStream configuration)
 	{
-		super(configuration);
+		super(false, configuration);
 	}
 	
 	@Override

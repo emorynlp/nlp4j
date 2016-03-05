@@ -39,6 +39,7 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	private static final long serialVersionUID = 59819173578703335L;
 	protected FeatureTemplate<S> feature_template;
 	protected OnlineOptimizer    optimizer;
+	protected boolean            document_based;
 	
 	protected transient HyperParameter hyper_parameter;
 	protected transient NLPConfig      config;
@@ -47,10 +48,14 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 
 //	============================== CONSTRUCTORS ==============================
 	
-	public OnlineComponent() {}
-	
-	public OnlineComponent(InputStream configuration)
+	public OnlineComponent(boolean document)
 	{
+		setDocumentBased(document);
+	}
+	
+	public OnlineComponent(boolean document, InputStream configuration)
+	{
+		this(document);
 		setConfiguration(configuration);
 	}
 
@@ -132,6 +137,16 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 		return config;
 	}
 	
+	public boolean isDocumentBased()
+	{
+		return document_based;
+	}
+	
+	public void setDocumentBased(boolean document)
+	{
+		document_based = document;
+	}
+	
 //	============================== FLAGS ==============================
 	
 //	public boolean isCollect()
@@ -165,7 +180,8 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	@Override
 	public void process(List<NLPNode[]> document)
 	{
-		process(initState(document));
+		if (document_based) process(initState(document));
+		else for (NLPNode[] nodes : document) process(nodes);
 	}
 	
 	/** Process the sequence of the nodes given the state. */

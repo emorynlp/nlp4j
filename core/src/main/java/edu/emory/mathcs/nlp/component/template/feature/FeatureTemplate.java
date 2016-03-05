@@ -84,24 +84,28 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 	{
 		if (eFeatures == null) return;
 		NodeList nodes = eFeatures.getElementsByTagName("feature");
-		FeatureItem[] items;
 		Element element;
 		
 		for (int i=0; i<nodes.getLength(); i++)
 		{
 			element = (Element)nodes.item(i);
-			items = createFeatureItems(element);
-			
-			if (XMLUtils.getBooleanAttribute(element, "set"))
-				addSet(items[0]);
-			else if (items[0].field == Field.word_embedding)
-				addWordEmbedding(items[0]);
-			else
-				add(items);
+			initFeatureItems(element);
 		}
 	}
 	
-	private FeatureItem[] createFeatureItems(Element element)
+	protected void initFeatureItems(Element element)
+	{
+		FeatureItem[] items = createFeatureItems(element);
+		
+		if (XMLUtils.getBooleanAttribute(element, "set"))
+			addSet(items[0]);
+		else if (items[0].field == Field.word_embedding)
+			addWordEmbedding(items[0]);
+		else
+			add(items);
+	}
+	
+	protected FeatureItem[] createFeatureItems(Element element)
 	{
 		List<String> list = new ArrayList<>();
 		String s;

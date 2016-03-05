@@ -30,14 +30,12 @@ public class POSTagger extends OnlineComponent<POSState>
 {
 	private static final long serialVersionUID = -7926217238116337203L;
 	
-	public POSTagger() {}
+	public POSTagger() {super(false);}
 	
 	public POSTagger(InputStream configuration)
 	{
-		super(configuration);
+		super(false, configuration);
 	}
-	
-//	============================== ABSTRACT ==============================
 	
 	@Override
 	public Eval createEvaluator()
@@ -52,11 +50,8 @@ public class POSTagger extends OnlineComponent<POSState>
 	}
 	
 	@Override
-	protected POSState initState(List<NLPNode[]> document)
-	{
-		return null;
-	}
+	protected void postProcess(POSState state) {}
 	
 	@Override
-	protected void postProcess(POSState state) {}
+	protected POSState initState(List<NLPNode[]> document) {return null;}
 }
