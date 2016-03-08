@@ -14,12 +14,12 @@
         <stop_words field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-stop-words-simplified-lowercase.xz</stop_words>
     </lexica>
     
-    <sentiment_positive>1</sentiment_positive>
-    <sentiment_negative>-1</sentiment_negative>
+    <sentiment_positive>positive</sentiment_positive>
+    <sentiment_negative>negative</sentiment_negative>
 
     <optimizer>
         <algorithm>adagrad</algorithm>
-        <learning_rate>0.01</learning_rate>
+        <learning_rate>0.02</learning_rate>
         <feature_cutoff>0</feature_cutoff>
         <max_epoch>20</max_epoch>
         <bias>0</bias>
