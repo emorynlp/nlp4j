@@ -24,6 +24,8 @@ import org.apache.commons.csv.CSVRecord;
 
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
 
 /**
@@ -42,6 +44,7 @@ public class CSVSentiment
 	{
 		CSVParser parser = new CSVParser(IOUtils.createBufferedReader(inputFile), CSVFormat.DEFAULT);
 		List<CSVRecord> records = parser.getRecords();
+		List<NLPNode[]> document;
 		String outputDir;
 		PrintStream fout;
 		CSVRecord record;
@@ -52,9 +55,13 @@ public class CSVSentiment
 		{
 			if (i == 0) continue;
 			record = records.get(i);
+			document = decode.decodeDocument(record.get(6));
+			document.get(0)[1].putFeat(NLPUtils.FEAT_SENTIMENT, record.get(0));
+			
 			outputDir = inputFile.substring(0, inputFile.length()-4);
 			fout = IOUtils.createBufferedPrintStream(outputDir+"/"+FileUtils.getBaseName(outputDir)+"_"+i+".nlp");
-			decode.decodeRaw(record.get(6), fout);
+			for (NLPNode[] nodes : document) fout.println(decode.toString(nodes)+"\n");
+			fout.close();
 		}
 		
 		parser.close();

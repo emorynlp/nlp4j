@@ -197,6 +197,25 @@ public class NLPDecoder
 		catch (Exception e) {e.printStackTrace();}
 	}
 	
+	public List<NLPNode[]> decodeDocument(String s) throws IOException
+	{
+		return decodeDocument(new ByteArrayInputStream(s.getBytes()));
+	}
+	
+	public List<NLPNode[]> decodeDocument(InputStream in) throws IOException
+	{
+		List<NLPNode[]> document = new ArrayList<>();
+		
+		for (NLPNode[] nodes : tokenizer.segmentize(in))
+		{
+			decode(nodes);
+			document.add(nodes);
+		}
+		
+		in.close();
+		return document;
+	}
+	
 	public void decodeRaw(String s, OutputStream out) throws IOException
 	{
 		decodeRaw(new ByteArrayInputStream(s.getBytes()), out);
