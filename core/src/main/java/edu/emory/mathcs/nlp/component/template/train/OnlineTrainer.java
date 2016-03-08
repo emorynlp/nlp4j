@@ -139,7 +139,7 @@ public class OnlineTrainer<S extends NLPState>
 		DoubleIntPair p;
 		String eval;
 		
-		BinUtils.LOG.info(optimizer.toString()+"\n"+hp.toString("- ")+"\n\n");
+		BinUtils.LOG.info(optimizer.toString()+"\n"+hp.toString("- ")+"\n");
 		BinUtils.LOG.info("Training:\n");
 		
 		for (int epoch=1; epoch<=hp.getMaxEpochs(); epoch++)

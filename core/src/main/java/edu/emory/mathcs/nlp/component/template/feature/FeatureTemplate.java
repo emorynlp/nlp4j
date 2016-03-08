@@ -71,8 +71,8 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 		feature_set     = new ArrayList<>();
 		word_embeddings = new ArrayList<>();
 
-		feature_count = new Object2IntOpenHashMap<String>();
-		feature_map   = new FeatureMap();
+		feature_count   = new Object2IntOpenHashMap<String>();
+		feature_map     = new FeatureMap();
 		
 		setCutoff(hp.getFeature_cutoff());
 		init(eFeatures);

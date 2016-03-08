@@ -15,14 +15,24 @@
  */
 package edu.emory.mathcs.nlp.component.template.feature;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectFloatPair;
+import edu.emory.mathcs.nlp.common.util.XMLUtils;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.state.DocumentState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
+import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -30,10 +40,28 @@ import edu.emory.mathcs.nlp.learning.util.SparseVector;
 public class DocumentFeatureTemplate<S extends DocumentState> extends FeatureTemplate<S>
 {
 	private static final long serialVersionUID = 8581842859392646419L;
-
+	private List<Field> feature_list_type;
+	
 	public DocumentFeatureTemplate(Element eFeatures, HyperParameter hp)
 	{
 		super(eFeatures, hp);
+	}
+	
+	@Override
+	protected void initFeatureItems(Element element)
+	{
+		FeatureItem[] items = createFeatureItems(element);
+		if (feature_list_type == null) feature_list_type = new ArrayList<>();
+		
+		if (XMLUtils.getBooleanAttribute(element, "set"))
+			addSet(items[0]);
+		else if (items.length > 0 && items[0].field == Field.word_embedding)
+			addWordEmbedding(items[0]);
+		else
+		{
+			add(items);
+			feature_list_type.add(Field.valueOf(XMLUtils.getTrimmedAttribute(element, "t")));
+		}
 	}
 	
 	@Override
@@ -43,21 +71,165 @@ public class DocumentFeatureTemplate<S extends DocumentState> extends FeatureTem
 		SparseVector x = new SparseVector();
 		int i, type = 0;
 		
-		for (i=0; i<feature_set.size(); i++,type++)
+		for (i=0; i<feature_list.size(); i++,type++)
 		{
-			t = getWeightedFeatures(state, feature_set.get(i));
+			t = getWeightedFeatures(state, feature_list.get(i), feature_list_type.get(i));
 			if (t != null) for (ObjectFloatPair<String> s : t) add(x, type, s.o, s.f, isTrain);
 		}
 		
 		return x;
 	}
 	
-	protected Collection<ObjectFloatPair<String>> getWeightedFeatures(S state, FeatureItem item)
+	protected Collection<ObjectFloatPair<String>> getWeightedFeatures(S state, FeatureItem[] items, Field type)
 	{
-		switch (item.field)
+		Object2FloatMap<String> map = getBagOfLexicons(state, items, type);
+		return (map == null || map.isEmpty()) ? null : getBagOfLexicons(map, type);
+	}
+	
+	protected Object2FloatMap<String> getBagOfLexicons(S state, FeatureItem[] items, Field type)
+	{
+		switch (type)
 		{
+		case bag_of_words:
+		case bag_of_words_norm:
+		case bag_of_words_count:
+			return getBagOfWords(state, items);
+		case bag_of_words_stopwords:
+		case bag_of_words_stopwords_norm:
+		case bag_of_words_stopwords_count:
+			return getBagOfWordsStopWords(state, items);
+		case bag_of_clusters:
+		case bag_of_clusters_norm:
+		case bag_of_clusters_count:
+			return getBagOfClusters(state, items);
+		case bag_of_clusters_stopwords:
+		case bag_of_clusters_stopwords_norm:
+		case bag_of_clusters_stopwords_count:
+			return getBagOfClustersStopWords(state, items);
 		default: return null;
 		}
+	}
+	
+	protected Collection<ObjectFloatPair<String>> getBagOfLexicons(Object2FloatMap<String> map, Field type)
+	{
+		switch (type)
+		{
+		case bag_of_words:
+		case bag_of_clusters:
+		case bag_of_words_stopwords:
+		case bag_of_clusters_stopwords:
+			return map.entrySet().stream().map(e -> new ObjectFloatPair<>(e.getKey(), 1f)).collect(Collectors.toList());
+		case bag_of_words_count:
+		case bag_of_clusters_count:
+		case bag_of_words_stopwords_count:
+		case bag_of_clusters_stopwords_count:
+			return map.entrySet().stream().map(e -> new ObjectFloatPair<>(e.getKey(), e.getValue())).collect(Collectors.toList());
+		case bag_of_words_norm:
+		case bag_of_clusters_norm:
+		case bag_of_words_stopwords_norm:
+		case bag_of_clusters_stopwords_norm:
+			float total = (float)map.entrySet().stream().mapToDouble(e -> e.getValue()).sum();
+			return map.entrySet().stream().map(e -> new ObjectFloatPair<>(e.getKey(), e.getValue()/total)).collect(Collectors.toList());
+		default: return null;
+		}
+	}
+	
+	protected Object2FloatMap<String> getBagOfWords(S state, FeatureItem[] items)
+	{
+		Object2FloatMap<String> map = new Object2FloatOpenHashMap<>();
+		NLPNode node;
+		int index;
+		String f;
+		
+		for (NLPNode[] nodes : state.getDocument())
+		{
+			outer: for (int i=1; i<nodes.length; i++)
+			{
+				StringJoiner join = new StringJoiner("_");
+				
+				for (FeatureItem item : items)
+				{
+					index = i + item.window;
+					if (index < 1 || index >= nodes.length) continue outer;
+					node = state.getRelativeNode(nodes[index], item.relation);
+					if (node == null) continue outer;
+					f = getFeature(state, item, node);
+					if (f == null) continue outer;
+					join.add(f);
+				}
+				
+				map.merge(join.toString(), 1f, (oldCount, newCount) -> oldCount + newCount);
+			}
+		}
+		
+		return map;
+	}
+	
+	protected Object2FloatMap<String> getBagOfWordsStopWords(S state, FeatureItem[] items)
+	{
+		List<NLPNode> nodes = NLPUtils.toNodeListExcludeStopWords(state.getDocument());
+		Object2FloatMap<String> map = new Object2FloatOpenHashMap<>();
+		NLPNode node;
+		int index;
+		String f;
+		
+		outer: for (int i=0; i<nodes.size(); i++)
+		{
+			StringJoiner join = new StringJoiner("_");
+			
+			for (FeatureItem item : items)
+			{
+				index = i + item.window;
+				if (index < 0 || index >= nodes.size()) continue outer;
+				node = state.getRelativeNode(nodes.get(index), item.relation);
+				if (node == null) continue outer;
+				f = getFeature(state, item, node);
+				if (f == null) continue outer;
+				join.add(f);
+			}
+			
+			map.merge(join.toString(), 1f, (oldCount, newCount) -> oldCount + newCount);
+		}
+		
+		return map;
+	}
+	
+	protected Object2FloatMap<String> getBagOfClusters(S state, FeatureItem[] items)
+	{
+		Object2FloatMap<String> map = new Object2FloatOpenHashMap<>();
+		Set<String> clusters;
+		
+		for (NLPNode[] nodes : state.getDocument())
+		{
+			for (int i=1; i<nodes.length; i++)
+			{
+				clusters = nodes[i].getWordClusters();
+				if (clusters == null) continue;
+				
+				for (String f : clusters)
+					map.merge(f, 1f, (oldCount, newCount) -> oldCount + newCount);
+			}
+		}
+		
+		return map;
+	}
+	
+	protected Object2FloatMap<String> getBagOfClustersStopWords(S state, FeatureItem[] items)
+	{
+		List<NLPNode> nodes = NLPUtils.toNodeListExcludeStopWords(state.getDocument());
+		Object2FloatMap<String> map = new Object2FloatOpenHashMap<>();
+		Set<String> clusters;
+		
+		for (int i=0; i<nodes.size(); i++)
+		{
+			clusters = nodes.get(i).getWordClusters();
+			if (clusters == null) continue;
+			
+			for (String f : clusters)
+				map.merge(f, 1f, (oldCount, newCount) -> oldCount + newCount);
+		}
+		
+		return map;
 	}
 	
 	@Override

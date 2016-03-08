@@ -15,17 +15,12 @@
  */
 package edu.emory.mathcs.nlp.component.template.util;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
 
-import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -64,49 +59,16 @@ public class NLPUtils
 			
 		return nodes;
 	}
-	
-	static public Set<String> getUnigramSet(NLPNode[] nodes, Field... fields)
-	{
-		Set<String> set = new HashSet<>();
-		StringJoiner join;
-		
-		for (int i=1; i<nodes.length; i++)
-		{
-			join = new StringJoiner("_");
-			for (Field f : fields) join.add(nodes[i].getValue(f));
-			set.add(join.toString());
-		}
 
-		return set;
-	}
-	
-	static public Object2IntMap<String> getUnigramSetCount(NLPNode[] nodes, Field... fields)
+	static public List<NLPNode> toNodeListExcludeStopWords(List<NLPNode[]> document)
 	{
-		Object2IntMap<String> map = new Object2IntOpenHashMap<>();
-		StringJoiner join;
+		List<NLPNode> list = new ArrayList<>();
 		
-		for (int i=1; i<nodes.length; i++)
-		{
-			join = new StringJoiner("_");
-			for (Field f : fields) join.add(nodes[i].getValue(f));
-			FastUtils.increment(map, join.toString());
-		}
-			
-		return map;
-	}
-	
-	static public Set<String> getBigramSet(NLPNode[] nodes, Field... fields)
-	{
-		Set<String> set = new HashSet<>();
-//		StringJoiner join;
-//		
-//		for (int i=1; i<nodes.length; i++)
-//		{
-//			join = new StringJoiner("_");
-//			for (Field f : fields) join.add(nodes[i].getValue(f));
-//			set.add(join.toString());
-//		}
-
-		return set;
+		for (NLPNode[] nodes : document)
+			for (int i=1; i<nodes.length; i++)
+				if (!GlobalLexica.isStopWord(nodes[i]))
+					list.add(nodes[i]);
+		
+		return list;
 	}
 }

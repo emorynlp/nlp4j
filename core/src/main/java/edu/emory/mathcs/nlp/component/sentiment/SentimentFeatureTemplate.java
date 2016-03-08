@@ -17,17 +17,14 @@ package edu.emory.mathcs.nlp.component.sentiment;
 
 import org.w3c.dom.Element;
 
-import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.feature.Field;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.feature.DocumentFeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
-import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class SentimentFeatureTemplate extends FeatureTemplate<SentimentState>
+public class SentimentFeatureTemplate extends DocumentFeatureTemplate<SentimentState>
 {
 	private static final long serialVersionUID = -5155132966568754061L;
 
@@ -39,20 +36,7 @@ public class SentimentFeatureTemplate extends FeatureTemplate<SentimentState>
 	@Override
 	public SparseVector createSparseVector(SentimentState state, boolean isTrain)
 	{
-		SparseVector x = new SparseVector();
-		NLPNode[] nodes = state.getNodes();
-		int type;
-		
-		type = 0;
-		for (String s : NLPUtils.getUnigramSet(nodes, Field.lemma))
-			add(x, type, s, 1, isTrain);
-		
-				
-//		type++;
-//		for (String s : NLPUtils.getBagOfWords(nodes, Field.lemma, Field.part_of_speech_tag))
-//			add(x, type, s, 1, isTrain);
-
-		return x;
+		return super.createSparseVector(state, isTrain);
 	}
 	
 	@Override

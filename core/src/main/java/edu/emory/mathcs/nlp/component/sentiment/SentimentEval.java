@@ -32,6 +32,8 @@ public class SentimentEval implements Eval
 	{
 		positive_label = positiveLabel;
 		negative_label = negativeLabel;
+		positive_eval  = new F1Eval();
+		negative_eval  = new F1Eval();
 	}
 	
 	@Override
@@ -54,7 +56,7 @@ public class SentimentEval implements Eval
 		
 		int[] pos = count(oracle, system, positive_label);
 		int[] neg = count(oracle, system, negative_label);
-
+		
 		positive_eval.add(pos[0], pos[1], pos[2]);
 		negative_eval.add(neg[0], neg[1], neg[2]);
 		
@@ -67,5 +69,11 @@ public class SentimentEval implements Eval
 		int totalOracle = label.equals(oracle) ? 1 : 0;
 		int correct = totalSystem * totalOracle;
 		return new int[]{correct, totalSystem, totalOracle};
+	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format("AVG = %5.2f, POS = %5.2f, NEG = %5.2f", score(), positive_eval.getF1(), negative_eval.getF1());		
 	}
 }
