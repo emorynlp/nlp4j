@@ -197,6 +197,11 @@ public class NLPDecoder
 		catch (Exception e) {e.printStackTrace();}
 	}
 	
+	public void decodeRaw(String s, OutputStream out) throws IOException
+	{
+		decodeRaw(new ByteArrayInputStream(s.getBytes()), out);
+	}
+	
 	public void decodeRaw(InputStream in, OutputStream out) throws IOException
 	{
 		PrintStream fout = IOUtils.createBufferedPrintStream(out);

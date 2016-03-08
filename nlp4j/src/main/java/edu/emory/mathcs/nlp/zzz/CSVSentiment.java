@@ -22,8 +22,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
 
 /**
@@ -38,38 +38,42 @@ public class CSVSentiment
 		decode = new NLPDecoder(IOUtils.createFileInputStream(configurationFile));		
 	}
 	
-	public void categorize(String inputFile, String outputFile) throws Exception
+	public void categorize(String inputFile) throws Exception
 	{
 		CSVParser parser = new CSVParser(IOUtils.createBufferedReader(inputFile), CSVFormat.DEFAULT);
-		PrintStream fout = IOUtils.createBufferedPrintStream(outputFile);
 		List<CSVRecord> records = parser.getRecords();
+		String outputDir;
+		PrintStream fout;
 		CSVRecord record;
-		NLPNode[] nodes;
+		
+		System.out.println(inputFile);
 		
 		for (int i=0; i<records.size(); i++)
 		{
 			if (i == 0) continue;
 			record = records.get(i);
-			nodes  = decode.decode(record.get(6));
-			nodes[1].putFeat("sent", record.get(0));
-			fout.println(decode.toString(nodes)+"\n");
+			outputDir = inputFile.substring(0, inputFile.length()-4);
+			fout = IOUtils.createBufferedPrintStream(outputDir+"/"+FileUtils.getBaseName(outputDir)+"_"+i+".nlp");
+			decode.decodeRaw(record.get(6), fout);
 		}
 		
 		parser.close();
-		fout.close();
 	}
 		
 	static public void main(String[] args)
 	{
-		String configurationFile = "/Users/jdchoi/Documents/EmoryNLP/emorynlp/src/main/resources/configuration/config-decode-en.xml";
-		String inputFile1 = "/Users/jdchoi/Documents/Data/semeval-sentiment/semeval13_T2B_16T4A_train_dev_npo.csv";
-		String inputFile2 = "/Users/jdchoi/Documents/Data/semeval-sentiment/semeval16_T4A_devtest_npo.csv";
+		String configurationFile = "/Users/jdchoi/Documents/EmoryNLP/nlp4j/src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml";
+		String[] inputFiles = {
+				"/Users/jdchoi/Documents/Data/semeval-sentiment/semeval13_T2B_16T4A_train_dev_npo.csv",
+				"/Users/jdchoi/Documents/Data/semeval-sentiment/semeval16_T4A_dev_npo.csv",
+				"/Users/jdchoi/Documents/Data/semeval-sentiment/semeval16_T4A_devtest_npo.csv",
+				"/Users/jdchoi/Documents/Data/semeval-sentiment/semeval16_T4A_test_npo.csv",
+				"/Users/jdchoi/Documents/Data/semeval-sentiment/semeval16_T4A_train_npo.csv"};
 		
 		try
 		{
 			CSVSentiment cvs = new CSVSentiment(configurationFile);
-			cvs.categorize(inputFile1, inputFile1+".txt");
-			cvs.categorize(inputFile2, inputFile2+".txt");
+			for (String inputFile : inputFiles) cvs.categorize(inputFile);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}
