@@ -34,6 +34,7 @@ import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.dep.DEPArc;
 import edu.emory.mathcs.nlp.component.template.feature.Direction;
@@ -76,6 +77,10 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 	protected List<String> ambiguity_classes;
 	protected Set<String>  word_clusters;
 	protected float[]      word_embedding;
+	protected boolean      stop_word;
+	
+	// sentiment
+	protected float[] sentiment_scores;
 	
 	public NLPNode() {}
 
@@ -272,6 +277,21 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
         return end_offset;
     }
 	
+	public boolean isStopWord()
+	{
+		return stop_word;
+	}
+	
+	public float[] getSentimentScores()
+	{
+		return sentiment_scores;
+	}
+	
+	public float getSentimentScoreTotal()
+	{
+		return sentiment_scores != null ? (float)MathUtils.sum(sentiment_scores) : 0;
+	}
+	
 //	============================== SETTERS ==============================
 	
 	public void setID(int id)
@@ -353,6 +373,16 @@ public class NLPNode implements Serializable, Comparable<NLPNode>
 			named_entity_gazetteers = new TreeSet<>();
 		
 		named_entity_gazetteers.add(gazetteer);
+	}
+	
+	public void setStopWord(boolean stopword)
+	{
+		stop_word = stopword;
+	}
+	
+	public void setSentimentScores(float[] scores)
+	{
+		sentiment_scores = scores;
 	}
 	
 //	============================== BOOLEANS ==============================

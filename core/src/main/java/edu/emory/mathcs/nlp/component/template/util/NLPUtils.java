@@ -15,7 +15,6 @@
  */
 package edu.emory.mathcs.nlp.component.template.util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.util.Joiner;
@@ -58,17 +57,5 @@ public class NLPUtils
 		}
 			
 		return nodes;
-	}
-
-	static public List<NLPNode> toNodeListExcludeStopWords(List<NLPNode[]> document)
-	{
-		List<NLPNode> list = new ArrayList<>();
-		
-		for (NLPNode[] nodes : document)
-			for (int i=1; i<nodes.length; i++)
-				if (!GlobalLexica.isStopWord(nodes[i]))
-					list.add(nodes[i]);
-		
-		return list;
 	}
 }

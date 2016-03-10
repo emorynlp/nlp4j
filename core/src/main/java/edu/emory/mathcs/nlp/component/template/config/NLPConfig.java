@@ -24,7 +24,6 @@ import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.train.LOLS;
-import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.optimization.method.AdaDeltaMiniBatch;
@@ -52,10 +51,14 @@ public class NLPConfig implements ConfigXML
 	public NLPConfig(InputStream in)
 	{
 		xml = XMLUtils.getDocumentElement(in);
-		GlobalLexica.init(xml);
 	}
 	
 //	=================================== GETTERS & SETTERS ===================================  
+	
+	public Element getDocumentElement()
+	{
+		return xml;
+	}
 	
 	public int getIntegerTextContent(String tagName)
 	{

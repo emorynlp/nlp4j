@@ -17,9 +17,10 @@ package edu.emory.mathcs.nlp.component.sentiment;
 
 import org.w3c.dom.Element;
 
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.component.template.feature.DocumentFeatureTemplate;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
-import edu.emory.mathcs.nlp.learning.util.SparseVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -34,14 +35,79 @@ public class SentimentFeatureTemplate extends DocumentFeatureTemplate<SentimentS
 	}
 
 	@Override
-	public SparseVector createSparseVector(SentimentState state, boolean isTrain)
-	{
-		return super.createSparseVector(state, isTrain);
-	}
-	
-	@Override
 	public float[] createDenseVector(SentimentState state)
 	{
-		return null;
+		float[] sum = state.getDocument().get(0)[1].getSentimentScores();
+		if (sum == null) return null;
+		int[] count = new int[sum.length];
+		sum = new float[sum.length];
+		boolean first = true;
+		float[] scores;
+		
+		for (NLPNode[] nodes : state.getDocument())
+		{
+			for (int i=1; i<nodes.length; i++)
+			{
+				if (first) {first = false; continue;}
+				scores = nodes[i].getSentimentScores();
+				
+				for (int j=0; j<scores.length; j++)
+				{
+					if (scores[j] != 0)
+					{
+						sum[j] += scores[j];
+						count[j]++;
+					}
+				}
+			}
+		}
+		
+		for (int j=0; j<sum.length; j++)
+			sum[j] = count[j] == 0 ? 0 : sum[j] / count[j];
+		
+		float[] v = getEmbeddingFeaturess(state);
+		scores = new float[v != null ? sum.length+v.length : sum.length];
+		
+		int des = 0;
+		System.arraycopy(sum, 0, scores, des, sum.length);
+		
+		if (v != null)
+		{
+			des += sum.length;
+			System.arraycopy(v, 0, scores, des, v.length);
+		}
+		
+		return scores;
+	}
+	
+	public float[] getEmbeddingFeaturess(SentimentState state)
+	{
+		float[] w, v = null;
+		int count = 0;
+		NLPNode node;
+		
+		for (NLPNode[] nodes : state.getDocument())
+		{
+			for (int i=1; i<nodes.length; i++)
+			{
+				node = nodes[i];
+				
+				if (!node.isStopWord() && node.hasWordEmbedding())
+				{
+					w = node.getWordEmbedding();
+					if (v == null) v = new float[w.length];
+					MathUtils.add(v, w);
+					count++;
+				}
+			}
+		}
+		
+		if (v != null)
+		{
+			for (int i=0; i<v.length; i++)
+				v[i] /= count;
+		}
+
+		return v;
 	}
 }

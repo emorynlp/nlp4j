@@ -37,7 +37,6 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.node.Orthographic;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
-import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.learning.util.ColumnMajorVector;
 import edu.emory.mathcs.nlp.learning.util.FeatureMap;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
@@ -475,7 +474,7 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 	
 	public float[] getEmbeddingFeatures(S state)
 	{
-		if (GlobalLexica.word_embeddings == null || word_embeddings == null || word_embeddings.isEmpty()) return null;
+		if (word_embeddings == null || word_embeddings.isEmpty()) return null;
 		float[] w, v = null;
 		NLPNode node;
 		int i = -1;
