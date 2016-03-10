@@ -10,8 +10,12 @@
     </tsv>
 
     <lexica>
-        <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
-        <stop_words field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-stop-words-simplified-lowercase.xz</stop_words>
+        <word_clusters field="word_form">/Users/jdchoi/Desktop/sentiment/50mpaths2.xz</word_clusters>
+        <word_embeddings field="word_form_undigitalized">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz</word_embeddings>
+        <stop_words field="word_form_simplified_lowercase">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-stop-words-simplified-lowercase.xz</stop_words>
+        <sentiment_lexicon field="word_form_simplified_lowercase">/Users/jdchoi/Desktop/sentiment/S140-AFFLEX-NEGLEX-unigrams.xz</sentiment_lexicon>
+        <sentiment_lexicon field="word_form_simplified_lowercase">/Users/jdchoi/Desktop/sentiment/HS-AFFLEX-NEGLEX-unigrams.xz</sentiment_lexicon>
+        <sentiment_lexicon field="word_form_simplified_lowercase">/Users/jdchoi/Desktop/sentiment/bingliu.xz</sentiment_lexicon>
     </lexica>
     
     <sentiment_positive>positive</sentiment_positive>
@@ -19,51 +23,17 @@
 
     <optimizer>
         <algorithm>adagrad</algorithm>
-        <learning_rate>0.02</learning_rate>
+        <learning_rate>0.03</learning_rate>
         <feature_cutoff>0</feature_cutoff>
         <max_epoch>20</max_epoch>
         <bias>0</bias>
     </optimizer>
 
     <feature_template>
-        <feature t="bag_of_words"       f0="i:word_form_simplified"/>
-        <feature t="bag_of_words_norm"  f0="i:word_form_simplified"/>
-        <feature t="bag_of_words_count" f0="i:word_form_simplified"/>
-
-        <feature t="bag_of_words"       f0="i:word_form_simplified" f1="i-1:word_form_simplified"/>
-        <feature t="bag_of_words_norm"  f0="i:word_form_simplified" f1="i-1:word_form_simplified"/>
-        <feature t="bag_of_words_count" f0="i:word_form_simplified" f1="i-1:word_form_simplified"/>
-
-        <feature t="bag_of_words"       f0="i:word_form_simplified" f1="i_h:word_form_simplified"/>
-        <feature t="bag_of_words_norm"  f0="i:word_form_simplified" f1="i_h:word_form_simplified"/>
-        <feature t="bag_of_words_count" f0="i:word_form_simplified" f1="i_h:word_form_simplified"/>
-
-        <feature t="bag_of_words_stopwords"       f0="i:word_form_simplified"/>
-        <feature t="bag_of_words_stopwords_norm"  f0="i:word_form_simplified"/>
-        <feature t="bag_of_words_stopwords_count" f0="i:word_form_simplified"/>
-
-        <feature t="bag_of_words_stopwords"       f0="i:word_form_simplified" f1="i-1:word_form_simplified"/>
-        <feature t="bag_of_words_stopwords_norm"  f0="i:word_form_simplified" f1="i-1:word_form_simplified"/>
-        <feature t="bag_of_words_stopwords_count" f0="i:word_form_simplified" f1="i-1:word_form_simplified"/>
-
-        <feature t="bag_of_words_stopwords"       f0="i:word_form_simplified" f1="i_h:word_form_simplified"/>
-        <feature t="bag_of_words_stopwords_norm"  f0="i:word_form_simplified" f1="i_h:word_form_simplified"/>
-        <feature t="bag_of_words_stopwords_count" f0="i:word_form_simplified" f1="i_h:word_form_simplified"/>
-
-        <feature t="bag_of_words" f0="i:part_of_speech_tag"/>
-        <feature t="bag_of_words_norm" f0="i:part_of_speech_tag"/>
-        <feature t="bag_of_words_count" f0="i:part_of_speech_tag"/>
-
-        <feature t="bag_of_words_stopwords" f0="i:part_of_speech_tag"/>
-        <feature t="bag_of_words_stopwords_norm" f0="i:part_of_speech_tag"/>
-        <feature t="bag_of_words_stopwords_count" f0="i:part_of_speech_tag"/>
-
+        <feature t="bag_of_words_stopwords" f0="i:word_form_simplified"/>
+        <feature t="bag_of_words_stopwords" f0="i:lemma"/>
+        <feature t="bag_of_words" f0="i:dependency_label"/>
         <feature t="bag_of_clusters"/>
-        <feature t="bag_of_clusters_norm"/>
-        <feature t="bag_of_clusters_count"/>
-
-        <feature t="bag_of_clusters_stopwords"/>
-        <feature t="bag_of_clusters_stopwords_norm"/>
-        <feature t="bag_of_clusters_stopwords_count"/>
+        
     </feature_template>
 </configuration>

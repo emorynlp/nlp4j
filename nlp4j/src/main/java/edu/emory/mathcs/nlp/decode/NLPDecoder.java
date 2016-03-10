@@ -78,6 +78,8 @@ public class NLPDecoder
 		Language language = config.getLanguage();
 		decode_config = config;
 		
+		components.add(new GlobalLexica(decode_config.getDocumentElement()));
+		
 		BinUtils.LOG.info("Loading tokenizer\n");
 		setTokenizer(createTokenizer(language));
 		
@@ -277,15 +279,13 @@ public class NLPDecoder
 	
 	public NLPNode[] decode(NLPNode[] nodes)
 	{
-		GlobalLexica.assignGlobalLexica(nodes);
-		
 		for (NLPComponent component : components)
 			component.process(nodes);
 		
 		return nodes;
 	}
 	
-	public NLPComponent getComponent(InputStream in)
+	static public NLPComponent getComponent(InputStream in)
 	{
 		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(in);
 		OnlineComponent<?> component = null;
