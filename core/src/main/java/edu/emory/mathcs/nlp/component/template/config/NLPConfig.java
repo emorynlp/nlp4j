@@ -134,6 +134,7 @@ public class NLPConfig implements ConfigXML
 		int     batchSize      = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
 		int     maxEpoch       = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCH);
 		float   learningRate   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, LEARNING_RATE);
+		float   decayingRate   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, DECAYING_RATE);
 		float   bias           = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, BIAS);
 		float   l1             = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, L1_REGULARIZATION);
 
@@ -161,6 +162,7 @@ public class NLPConfig implements ConfigXML
 		hp.setBatchSize(batchSize);
 		hp.setMaxEpochs(maxEpoch);
 		hp.setLearningRate(learningRate);
+		hp.setDecayingRate(decayingRate);
 		hp.setBias(bias);
 		hp.setL1Regularizer(rda);
 		hp.setLOLS(new LOLS(fixed, decaying));
