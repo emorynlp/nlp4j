@@ -22,10 +22,12 @@
     <sentiment_negative>negative</sentiment_negative>
 
     <optimizer>
-        <algorithm>adagrad</algorithm>
+        <algorithm>adadelta-mini-batch</algorithm>
         <learning_rate>0.03</learning_rate>
+        <decaying_rate>0.1</decaying_rate>
         <feature_cutoff>0</feature_cutoff>
         <max_epoch>20</max_epoch>
+        <batch_size>5</batch_size>
         <bias>0</bias>
     </optimizer>
 
