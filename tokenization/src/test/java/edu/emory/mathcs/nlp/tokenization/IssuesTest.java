@@ -17,6 +17,8 @@ package edu.emory.mathcs.nlp.tokenization;
 
 import java.util.stream.Collectors;
 
+import org.junit.Test;
+
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
@@ -24,6 +26,15 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
  */
 public class IssuesTest
 {
+	@Test
+	public void test1()
+	{
+		Tokenizer t = new EnglishTokenizer();
+		String s = "There 's Mother 's Day , there 's Father 's Day , there 's no . .. Lesbian Lover Day .";
+
+		for (NLPNode node : t.tokenize(s))
+			System.out.print(node.getWordForm()+" ");	}
+	
 //	@Test
 	public void test()
 	{

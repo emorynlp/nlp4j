@@ -176,14 +176,12 @@ abstract public class Tokenizer
 		{
 			if (CharUtils.isWhiteSpace(cs[i - start]))
 			{
-				if (bIndex < i) tokenizeMetaInfo(tokens,
-                        s.substring(bIndex - start, i - start), bIndex, i);
+				if (bIndex < i) tokenizeMetaInfo(tokens, s.substring(bIndex - start, i - start), bIndex, i);
 				bIndex = i + 1;
 			}
 		}
 		 
-		if (bIndex < start + len) tokenizeMetaInfo(tokens, s.substring(bIndex - start), bIndex, len
-                - bIndex + start);
+		if (bIndex < start + len) tokenizeMetaInfo(tokens, s.substring(bIndex - start), bIndex, len - bIndex + start);
 		if (!tokens.isEmpty()) finalize(tokens);
 		
 		return tokens;
@@ -213,7 +211,7 @@ abstract public class Tokenizer
 	
 	/** Called by {@link #tokenizeMetaInfo(List, String)}. */
 	private int[] getMetaRange(String s)
-	{
+	{System.out.println(d_preserve.toString());
 		if (MetaUtils.startsWithNetworkProtocol(s) || d_preserve.contains(s))
 			return new int[]{0, s.length()};
 		
