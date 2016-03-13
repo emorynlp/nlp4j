@@ -28,12 +28,6 @@ import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.dep.DEPParser;
-import edu.emory.mathcs.nlp.component.ner.NERTagger;
-import edu.emory.mathcs.nlp.component.pleonastic.PleonasticClassifier;
-import edu.emory.mathcs.nlp.component.pos.POSTagger;
-import edu.emory.mathcs.nlp.component.sentiment.SentimentAnalyzer;
-import edu.emory.mathcs.nlp.component.srl.SRLParser;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -49,7 +43,7 @@ import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
  * Provide instances and methods for training NLP components.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class OnlineTrainer<S extends NLPState>
+public abstract class OnlineTrainer<S extends NLPState>
 {
 	public OnlineTrainer() {};
 	
@@ -96,20 +90,21 @@ public class OnlineTrainer<S extends NLPState>
 		return component;
 	}
 	
-	@SuppressWarnings("unchecked")
-	protected OnlineComponent<S> createComponent(NLPMode mode, InputStream config)
-	{
-		switch (mode)
-		{
-		case pos: return (OnlineComponent<S>)new POSTagger(config);
-		case ner: return (OnlineComponent<S>)new NERTagger(config);
-		case dep: return (OnlineComponent<S>)new DEPParser(config);
-		case srl: return (OnlineComponent<S>)new SRLParser(config);
-		case sentiment : return (OnlineComponent<S>)new SentimentAnalyzer(config);
-		case pleonastic: return (OnlineComponent<S>)new PleonasticClassifier(config);
-		default : throw new IllegalArgumentException("Unsupported mode: "+mode);
-		}
-	}
+	public abstract OnlineComponent<S> createComponent(NLPMode mode, InputStream config);	
+	
+//	@SuppressWarnings("unchecked")
+//	protected OnlineComponent<S> createComponent(NLPMode mode, InputStream config)
+//	{
+//		switch (mode)
+//		{
+//		case pos: return (OnlineComponent<S>)new POSTagger(config);
+//		case ner: return (OnlineComponent<S>)new NERTagger(config);
+//		case dep: return (OnlineComponent<S>)new DEPParser(config);
+//		case srl: return (OnlineComponent<S>)new SRLParser(config);
+//		case pleonastic: return (OnlineComponent<S>)new PleonasticClassifier(config);
+//		default : throw new IllegalArgumentException("Unsupported mode: "+mode);
+//		}
+//	}
 	
 //	=================================== TRAIN ===================================
 	

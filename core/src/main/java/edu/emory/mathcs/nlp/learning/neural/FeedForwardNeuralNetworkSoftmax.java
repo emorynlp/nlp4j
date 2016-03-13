@@ -82,7 +82,7 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 
 		return errors;
 	}
-//	
+
 	@Override
 	protected float[] backwardPropagationH2H(MajorVector weights, float[] gradients, float[] input, int layer)
 	{
