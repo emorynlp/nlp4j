@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.template.state;
+package edu.emory.mathcs.nlp.component.doc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,29 +23,31 @@ import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DocumentState extends NLPState
+public class DOCState extends NLPState
 {
 	protected NLPNode         key_node;
 	protected String          feat_key;
 	protected String          oracle;
 	protected boolean         terminate;
-	protected List<NLPNode[]> document_stopwords;
+	protected List<NLPNode[]> non_stopwords;
+	protected float[]         prediction_scores;
 	
-	public DocumentState(List<NLPNode[]> document, String key)
+	public DOCState(List<NLPNode[]> document, String key)
 	{
 		super(document);
 		feat_key  = key;
 		key_node  = document.get(0)[1];
 		terminate = false;
-		document_stopwords = initDocumentStopWords();
+		non_stopwords = initNonStopWords();
 	}
 	
-	protected List<NLPNode[]> initDocumentStopWords()
+	protected List<NLPNode[]> initNonStopWords()
 	{
 		List<NLPNode[]> document = new ArrayList<>();
 		NLPNode node;
@@ -78,7 +80,7 @@ public class DocumentState extends NLPState
 	
 	public List<NLPNode[]> getDocument(boolean excludeStopwords)
 	{
-		return excludeStopwords ? document_stopwords : super.getDocument();
+		return excludeStopwords ? non_stopwords : getDocument();
 	}
 	
 	@Override
@@ -108,6 +110,7 @@ public class DocumentState extends NLPState
 	public void next(LabelMap map, int[] top2, float[] scores)
 	{
 		setLabel(map.getLabel(top2[0]));
+		setPredictionScores(scores);
 		terminate = true;
 	}
 
@@ -129,4 +132,15 @@ public class DocumentState extends NLPState
 		int correct = oracle.equals(getLabel()) ? 1 : 0;
 		((AccuracyEval)eval).add(correct, 1);
 	}
+	
+	public float[] getPredictionScores()
+	{
+		return prediction_scores;
+	}
+
+	public void setPredictionScores(float[] scores)
+	{
+		this.prediction_scores = scores;
+	}
+
 }

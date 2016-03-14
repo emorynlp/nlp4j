@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.template.feature;
+package edu.emory.mathcs.nlp.component.doc;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +26,10 @@ import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectFloatPair;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.state.DocumentState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
@@ -36,12 +38,12 @@ import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DocumentFeatureTemplate<S extends DocumentState> extends FeatureTemplate<S>
+public class DOCFeatureTemplate<S extends DOCState> extends FeatureTemplate<S>
 {
 	private static final long serialVersionUID = 8581842859392646419L;
 	private List<Field> feature_list_type;
 	
-	public DocumentFeatureTemplate(Element eFeatures, HyperParameter hp)
+	public DOCFeatureTemplate(Element eFeatures, HyperParameter hp)
 	{
 		super(eFeatures, hp);
 	}
@@ -52,15 +54,8 @@ public class DocumentFeatureTemplate<S extends DocumentState> extends FeatureTem
 		FeatureItem[] items = createFeatureItems(element);
 		if (feature_list_type == null) feature_list_type = new ArrayList<>();
 		
-		if (XMLUtils.getBooleanAttribute(element, "set"))
-			addSet(items[0]);
-		else if (items.length > 0 && items[0].field == Field.word_embedding)
-			addWordEmbedding(items[0]);
-		else
-		{
-			add(items);
-			feature_list_type.add(Field.valueOf(XMLUtils.getTrimmedAttribute(element, "t")));
-		}
+		add(items);
+		feature_list_type.add(Field.valueOf(XMLUtils.getTrimmedAttribute(element, "t")));
 	}
 	
 	@Override

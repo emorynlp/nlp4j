@@ -28,7 +28,6 @@ public class NLPUtils
 {
 	static public String FEAT_POS_2ND   = "pos2";
 	static public String FEAT_PREDICATE = "pred";
-	static public String FEAT_SENTIMENT = "sent";
 
 	static public String toStringLine(NLPNode[] nodes, String delim, Field field)
 	{
