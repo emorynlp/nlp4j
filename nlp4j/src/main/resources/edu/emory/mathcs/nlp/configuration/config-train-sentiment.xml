@@ -10,7 +10,7 @@
     </tsv>
 
     <lexica>
-        <word_clusters field="word_form">/Users/jdchoi/Desktop/sentiment/50mpaths2.xz</word_clusters>
+        <word_clusters field="word_form">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-brown-clusters-twit-lowercase.xz</word_clusters>
         <word_embeddings field="word_form_undigitalized">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz</word_embeddings>
         <stop_words field="word_form_simplified_lowercase">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-stop-words-simplified-lowercase.xz</stop_words>
         <sentiment_lexicon field="word_form_simplified_lowercase">/Users/jdchoi/Desktop/sentiment/S140-AFFLEX-NEGLEX-unigrams.xz</sentiment_lexicon>
@@ -18,8 +18,10 @@
         <sentiment_lexicon field="word_form_simplified_lowercase">/Users/jdchoi/Desktop/sentiment/bingliu.xz</sentiment_lexicon>
     </lexica>
     
-    <sentiment_positive>positive</sentiment_positive>
-    <sentiment_negative>negative</sentiment_negative>
+    <sentiment>
+        <positive_label>positive</positive_label>
+        <negative_label>negative</negative_label>
+    </sentiment>
 
     <optimizer>
         <algorithm>adadelta-mini-batch</algorithm>
