@@ -15,15 +15,14 @@
  */
 package edu.emory.mathcs.nlp.component.doc;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
+import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
@@ -42,54 +41,16 @@ public class DOCState extends NLPState
 	public DOCState(List<NLPNode[]> document, String key)
 	{
 		super(document);
-		init(document.get(0)[1], key, initNonStopWords());
+		feat_key = key;
+		key_node = document.get(0)[1];
+		non_stopwords = NLPUtils.getNonStopWords(document);
+		reinit();
 	}
 	
-	public DOCState(List<NLPNode[]> document, DOCState state)
+	public void reinit()
 	{
-		super(document);
-		init(state.key_node, state.feat_key, state.non_stopwords);
-	}
-	
-//	============================== INITIALIZATION ==============================
-	
-	protected void init(NLPNode keyNode, String featKey, List<NLPNode[]> nonStopwords)
-	{
-		key_node  = document.get(0)[1];
-		feat_key  = featKey;
 		terminate = false;
-		non_stopwords = nonStopwords;
-	}
-	
-	protected List<NLPNode[]> initNonStopWords()
-	{
-		List<NLPNode[]> document = new ArrayList<>();
-		NLPNode node;
-		
-		for (NLPNode[] nodes : getDocument())
-		{
-			List<NLPNode> sen = new ArrayList<>();
-			
-			for (int i=1; i<nodes.length; i++)
-			{
-				node = nodes[i];
-				if (!node.isStopWord() && !StringUtils.containsPunctuationOrDigitsOrWhiteSpacesOnly(node.getWordFormSimplified()))
-					sen.add(node);
-			}
-			
-			if (!sen.isEmpty())
-			{
-				NLPNode[] snodes = new NLPNode[sen.size()+1];
-				snodes[0] = nodes[0];
-				
-				for (int i=1; i<snodes.length; i++)
-					snodes[i] = sen.get(i-1);
-				
-				document.add(snodes);
-			}
-		}
-		
-		return document;
+		prediction_scores = null;
 	}
 	
 //	============================== ORACLE ==============================

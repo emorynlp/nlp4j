@@ -149,11 +149,6 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	
 //	============================== FLAGS ==============================
 	
-//	public boolean isCollect()
-//	{
-//		return flag == NLPFlag.COLLECT;
-//	}
-	
 	public boolean isTrain()
 	{
 		return flag == NLPFlag.TRAIN;
@@ -174,34 +169,20 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	@Override
 	public void process(NLPNode[] nodes)
 	{
-		processState(nodes, null);
+		process(initState(nodes));
 	}
 	
 	@Override
 	public void process(List<NLPNode[]> document)
 	{
-		if (document_based) processState(document, null);
+		if (document_based) process(initState(document));
 		else for (NLPNode[] nodes : document) process(nodes);
 	}
 	
-	public S processState(NLPNode[] nodes, S state)
-	{
-		state = initState(nodes, state);
-		process(state);
-		return state;
-	}
-	
-	public S processState(List<NLPNode[]> document, S state)
-	{
-		state = initState(document, state);
-		process(state);
-		return state;
-	}
-	
 	/** Process the sequence of the nodes given the state. */
-	public void process(S state)
+	public S process(S state)
 	{
-		if (!isDecode() && !state.saveOracle()) return;
+		if (!isDecode() && !state.saveOracle()) return state;
 		int[] top2 = {0,-1};
 		Instance instance;
 		FeatureVector x;
@@ -235,6 +216,8 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 			postProcess(state);
 			if (isEvaluate()) state.evaluate(eval);
 		}
+		
+		return state;
 	}
 	
 //	============================== HELPERS ==============================
@@ -244,16 +227,16 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 		return MLUtils.argmax2(scores);
 	}
 	
-	public abstract Eval createEvaluator();
+	protected void putLabel(String label, int index) {}
 	
 	/** @return the processing state for the input nodes. */
-	protected abstract S initState(NLPNode[] nodes, S state);
+	protected abstract S initState(NLPNode[] nodes);
 	
 	/** @return the processing state for the input document. */
-	protected abstract S initState(List<NLPNode[]> document, S state);
+	protected abstract S initState(List<NLPNode[]> document);
+	
+	public abstract Eval createEvaluator();
 	
 	/** Post-processes if necessary. */
 	protected abstract void postProcess(S state);
-	
-	protected void putLabel(String label, int index) {}
 }

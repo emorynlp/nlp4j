@@ -52,5 +52,5 @@ public abstract class DOCAnalyzer<S extends DOCState> extends OnlineComponent<S>
 	protected void postProcess(S state) {}
 
 	@Override
-	protected S initState(NLPNode[] nodes, DOCState state) {return null;}
+	protected S initState(NLPNode[] nodes) {return null;}
 }
