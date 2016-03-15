@@ -111,6 +111,11 @@ public class DOCState extends NLPState
 		this.ensemble_scores = scores;
 	}
 	
+	public NLPNode getKeyNode()
+	{
+		return key_node;
+	}
+	
 	@Override
 	public NLPNode getNode(FeatureItem item)
 	{
