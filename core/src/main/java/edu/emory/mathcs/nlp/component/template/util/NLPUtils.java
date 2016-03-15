@@ -15,9 +15,14 @@
  */
 package edu.emory.mathcs.nlp.component.template.util;
 
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.List;
 
+import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.component.template.NLPComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
@@ -56,5 +61,21 @@ public class NLPUtils
 		}
 			
 		return nodes;
+	}
+	
+	static public NLPComponent getComponent(InputStream in)
+	{
+		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(in);
+		OnlineComponent<?> component = null;
+		
+		try
+		{
+			component = (OnlineComponent<?>)oin.readObject();
+			component.setFlag(NLPFlag.DECODE);
+			oin.close();
+		}
+		catch (Exception e) {e.printStackTrace();}
+
+		return component;
 	}
 }

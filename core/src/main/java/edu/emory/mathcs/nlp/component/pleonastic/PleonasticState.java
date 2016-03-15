@@ -54,6 +54,11 @@ public class PleonasticState extends NLPState
 	{
 		return oracle[input];
 	}
+	
+	public void resetOracle()
+	{
+		// TODO:
+	}
 
 //	====================================== TRANSITION ======================================
 	

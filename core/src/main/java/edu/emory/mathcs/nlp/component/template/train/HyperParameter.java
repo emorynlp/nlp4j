@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.template.train;
 
+import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
+import edu.emory.mathcs.nlp.learning.initialization.WeightGenerator;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
 
 /**
@@ -22,17 +24,22 @@ import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
  */
 public class HyperParameter
 {
-	private int     batch_size;
-	private int     max_epoch;
-	private float   learning_rate;
-	private float   decaying_rate;
-	private float   bias;
-	private int     feature_cutoff;
+	private int         batch_size;
+	private int         max_epoch;
+	private float       learning_rate;
+	private float       decaying_rate;
+	private float       bias;
+	private int         feature_cutoff;
 	private Regularizer l1_regularizer;
 	private LOLS        lols;
+	
+	// neural networks
+	private int[] hidden_dimensions;
+	private ActivationFunction[]  activation_functions;
+	private WeightGenerator weightGenerator;
 
 //	========================== FEATURE CUTOFF ==========================
-	
+
 	public int getFeature_cutoff()
 	{
 		return feature_cutoff;
@@ -132,6 +139,43 @@ public class HyperParameter
 		decaying_rate = decayingRate;
 	}
 
+//	========================== HIDDEN DIMENSIONS ==========================
+
+	public int[] getHiddenDimensions()
+	{
+		return hidden_dimensions;
+	}
+
+	public void setHiddenDimensions(int[] dimensions)
+	{
+		this.hidden_dimensions = dimensions;
+	}
+
+//	========================== ACTIVATION FUNCTIONS ==========================
+
+	public ActivationFunction[] getActivationFunctions()
+	{
+		return activation_functions;
+	}
+
+	public void setActivationFunctions(ActivationFunction[] functions)
+	{
+		this.activation_functions = functions;
+	}
+
+	public WeightGenerator getWeightGenerator()
+	{
+		return weightGenerator;
+	}
+
+//	========================== WEIGHT GENERATOR ==========================
+	
+	public void setWeightGenerator(WeightGenerator weightGenerator)
+	{
+		this.weightGenerator = weightGenerator;
+	}
+	
+	
 //	========================== UTILITIES ==========================
 	
 	public String toString(String prefix)

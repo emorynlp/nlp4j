@@ -20,10 +20,11 @@ package edu.emory.mathcs.nlp.component.template.util;
  */
 public enum NLPMode
 {
-	pos,			// part-of-speech tagging
-	ner,			// named entity recognition
-	dep,			// dependency parsing
-	srl,			// semantic role labeling
-	sentiment,		// sentiment analysis
-	pleonastic;		// pleonastic-it classification
+	pos,				// part-of-speech tagging
+	ner,				// named entity recognition
+	dep,				// dependency parsing
+	srl,				// semantic role labeling
+	sentiment,			// sentiment analysis
+	sentiment_ensemble,	// sentiment analysis: ensemble
+	pleonastic;			// pleonastic-it classification
 }

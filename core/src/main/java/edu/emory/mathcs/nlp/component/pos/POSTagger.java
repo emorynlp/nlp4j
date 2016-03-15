@@ -44,7 +44,7 @@ public class POSTagger extends OnlineComponent<POSState>
 	}
 	
 	@Override
-	protected POSState initState(NLPNode[] nodes)
+	protected POSState initState(NLPNode[] nodes, POSState state)
 	{
 		return new POSState(nodes);
 	}
@@ -53,5 +53,5 @@ public class POSTagger extends OnlineComponent<POSState>
 	protected void postProcess(POSState state) {}
 	
 	@Override
-	protected POSState initState(List<NLPNode[]> document) {return null;}
+	protected POSState initState(List<NLPNode[]> document, POSState state) {return null;}
 }

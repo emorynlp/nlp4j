@@ -51,6 +51,13 @@ public abstract class L2RState extends NLPState
 		return oracle[input];
 	}
 	
+	@Override
+	public void resetOracle()
+	{
+		for (int i=1; i<nodes.length; i++)
+			setLabel(nodes[i], oracle[i]);
+	}
+	
 	protected abstract String setLabel(NLPNode node, String label);
 	protected abstract String getLabel(NLPNode node);
 	

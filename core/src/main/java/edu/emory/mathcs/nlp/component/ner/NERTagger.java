@@ -46,7 +46,7 @@ public class NERTagger extends OnlineComponent<NERState>
 	}
 	
 	@Override
-	protected NERState initState(NLPNode[] nodes)
+	protected NERState initState(NLPNode[] nodes, NERState state)
 	{
 		return new NERState(nodes);
 	}
@@ -58,5 +58,5 @@ public class NERTagger extends OnlineComponent<NERState>
 	}
 
 	@Override
-	protected NERState initState(List<NLPNode[]> document) {return null;}
+	protected NERState initState(List<NLPNode[]> document, NERState state) {return null;}
 }

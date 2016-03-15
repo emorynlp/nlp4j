@@ -49,13 +49,13 @@ public class SRLParser extends OnlineComponent<SRLState>
 	}
 
 	@Override
-	protected SRLState initState(NLPNode[] nodes)
+	protected SRLState initState(NLPNode[] nodes, SRLState state)
 	{
 		return new SRLState(nodes, max_depth, max_height);
 	}
 	
 	@Override
-	protected SRLState initState(List<NLPNode[]> document)
+	protected SRLState initState(List<NLPNode[]> document, SRLState state)
 	{
 		return null;
 	}

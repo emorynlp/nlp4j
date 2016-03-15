@@ -62,6 +62,9 @@ public abstract class NLPState
 	/** @return the gold label given the current state. */
 	public abstract String getOracle();
 	
+	/** Resets the oracle with gold information. */
+	public abstract void resetOracle();
+	
 	/**
 	 * Applies the predictions to the current state, and moves onto the next state.
 	 * @param map to retrieve the string label from its index. 

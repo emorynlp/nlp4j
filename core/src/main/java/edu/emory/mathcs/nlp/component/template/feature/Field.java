@@ -23,6 +23,7 @@ public enum Field
 {
 	// form features
 	word_form,
+	word_form_lowercase,
 	word_form_undigitalized,
 	word_form_simplified,
 	word_form_simplified_lowercase,

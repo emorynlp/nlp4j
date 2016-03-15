@@ -37,14 +37,28 @@ public class DOCState extends NLPState
 	protected boolean         terminate;
 	protected List<NLPNode[]> non_stopwords;
 	protected float[]         prediction_scores;
+	protected float[][]       ensemble_scores;
 	
 	public DOCState(List<NLPNode[]> document, String key)
 	{
 		super(document);
-		feat_key  = key;
+		init(document.get(0)[1], key, initNonStopWords());
+	}
+	
+	public DOCState(List<NLPNode[]> document, DOCState state)
+	{
+		super(document);
+		init(state.key_node, state.feat_key, state.non_stopwords);
+	}
+	
+//	============================== INITIALIZATION ==============================
+	
+	protected void init(NLPNode keyNode, String featKey, List<NLPNode[]> nonStopwords)
+	{
 		key_node  = document.get(0)[1];
+		feat_key  = featKey;
 		terminate = false;
-		non_stopwords = initNonStopWords();
+		non_stopwords = nonStopwords;
 	}
 	
 	protected List<NLPNode[]> initNonStopWords()
@@ -78,10 +92,7 @@ public class DOCState extends NLPState
 		return document;
 	}
 	
-	public List<NLPNode[]> getDocument(boolean excludeStopwords)
-	{
-		return excludeStopwords ? non_stopwords : getDocument();
-	}
+//	============================== ORACLE ==============================
 	
 	@Override
 	public boolean saveOracle()
@@ -89,11 +100,24 @@ public class DOCState extends NLPState
 		oracle = key_node.removeFeat(feat_key);
 		return oracle != null;
 	}
+	
+	@Override
+	public void resetOracle()
+	{
+		setLabel(oracle);
+	}
 
 	@Override
 	public String getOracle()
 	{
 		return oracle;
+	}
+	
+//	============================== GETTERS/SETTERS ==============================
+	
+	public List<NLPNode[]> getDocument(boolean excludeStopwords)
+	{
+		return excludeStopwords ? non_stopwords : getDocument();
 	}
 	
 	public String getLabel()
@@ -105,7 +129,35 @@ public class DOCState extends NLPState
 	{
 		key_node.putFeat(feat_key, label);
 	}
+	
+	public float[] getPredictionScores()
+	{
+		return prediction_scores;
+	}
 
+	public void setPredictionScores(float[] scores)
+	{
+		this.prediction_scores = scores;
+	}
+	
+	public float[][] getEnsembleScores()
+	{
+		return ensemble_scores;
+	}
+
+	public void setEnsembleScores(float[][] scores)
+	{
+		this.ensemble_scores = scores;
+	}
+	
+	@Override
+	public NLPNode getNode(FeatureItem item)
+	{
+		return null;
+	}
+
+//	============================== TRANSITION ==============================
+	
 	@Override
 	public void next(LabelMap map, int[] top2, float[] scores)
 	{
@@ -120,11 +172,6 @@ public class DOCState extends NLPState
 		return terminate;
 	}
 
-	@Override
-	public NLPNode getNode(FeatureItem item)
-	{
-		return null;
-	}
 
 	@Override
 	public void evaluate(Eval eval)
@@ -132,15 +179,4 @@ public class DOCState extends NLPState
 		int correct = oracle.equals(getLabel()) ? 1 : 0;
 		((AccuracyEval)eval).add(correct, 1);
 	}
-	
-	public float[] getPredictionScores()
-	{
-		return prediction_scores;
-	}
-
-	public void setPredictionScores(float[] scores)
-	{
-		this.prediction_scores = scores;
-	}
-
 }
