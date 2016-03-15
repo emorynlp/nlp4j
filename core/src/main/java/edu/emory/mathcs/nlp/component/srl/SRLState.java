@@ -53,6 +53,11 @@ public class SRLState extends NLPState
 		return null;
 	}
 	
+	public void resetOracle()
+	{
+		// TODO Auto-generated method stub
+	}
+	
 //	====================================== TRANSITION ======================================
 
 	@Override

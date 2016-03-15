@@ -15,167 +15,182 @@
  */
 package edu.emory.mathcs.nlp.component.template.util;
 
+import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
-import org.tukaani.xz.XZInputStream;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import edu.emory.mathcs.nlp.common.collection.tree.PrefixTree;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
+import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.component.template.config.ConfigXML;
+import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class GlobalLexica implements ConfigXML
+public class GlobalLexica implements NLPComponent
 {
-	static public PrefixTree<String,Set<String>> named_entity_gazetteers;
-	static public Map<String,List<String>>       ambiguity_classes;
-	static public Map<String,Set<String>>        word_clusters;
-	static public Map<String,float[]>            word_embeddings;
-	static public Set<String>                    stop_words;
+	static final public String LEXICA = "lexica";
+	static final public String FIELD  = "field";
 	
-	static private Field named_entity_gazetteers_field;
-	static private Field ambiguity_classes_field;
-	static private Field word_clusters_field;
-	static private Field word_embeddings_field;
-	static private Field stop_words_field; 
+	protected Pair<Map<String,List<String>>,Field>       ambiguity_classes;
+	protected Pair<Map<String,Set<String>>,Field>        word_clusters;	
+	protected Pair<Map<String,float[]>,Field>            word_embeddings;
+	protected Pair<PrefixTree<String,Set<String>>,Field> named_entity_gazetteers;
+	protected Pair<Set<String>,Field>                    stop_words;
+	protected List<Pair<Object2FloatMap<String>,Field>>  sentiment_lexica;
 	
-	static private boolean initialized = false;
+//	=================================== CONSTRUCTOR ===================================
 	
-//	=================================== INITIALIZATION ===================================
+	/** @param in configuration xml. */
+	public GlobalLexica(InputStream in)
+	{
+		this(XMLUtils.getDocumentElement(in));
+	}
 	
-	static public void init(Element doc)
+	public GlobalLexica(Element doc)
 	{
 		Element eLexica = XMLUtils.getFirstElementByTagName(doc, LEXICA);
-		if (initialized || eLexica == null) return;
-		initialized = true;
 		
-		initLexica(eLexica, AMBIGUITY_CLASSES      , GlobalLexica::initAmbiguityClasses);
-		initLexica(eLexica, WORD_CLUSTERS          , GlobalLexica::initWordClusters);
-		initLexica(eLexica, WORD_EMBEDDINGS        , GlobalLexica::initWordEmbeddings);
-		initLexica(eLexica, NAMED_ENTITY_GAZETTEERS, GlobalLexica::initNamedEntityGazetteers);
-		initLexica(eLexica, STOP_WORDS             , GlobalLexica::initStopWords);
+		setAmbiguityClasses     (getLexiconFieldPair(eLexica, "ambiguity_classes"      , "Loading ambiguity classes\n"));
+		setWordClusters         (getLexiconFieldPair(eLexica, "word_clusters"          , "Loading word clusters\n"));
+		setWordEmbeddings       (getLexiconFieldPair(eLexica, "word_embeddings"        , "Loading word embeddings\n"));
+		setNamedEntityGazetteers(getLexiconFieldPair(eLexica, "named_entity_gazetteers", "Loading named entity gazetteers\n"));
+		setStopWords            (getLexiconFieldPair(eLexica, "stop_words"             , "Loading stop words\n"));
+		setSentimentLexica      (getSentimentLexica (eLexica));
 	}
 	
-	static private void initLexica(Element eLexica, String tag, BiConsumer<XZInputStream,Field> f)
+	private <T>Pair<T,Field> getLexiconFieldPair(Element eLexica, String tag, String message)
 	{
-		Element element = XMLUtils.getFirstElementByTagName(eLexica, tag);
-		if (element == null) return;
+		return getLexiconFieldPair(XMLUtils.getFirstElementByTagName(eLexica, tag), message);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T>Pair<T,Field> getLexiconFieldPair(Element element, String message)
+	{
+		if (element == null) return null;
+		BinUtils.LOG.info(message);
 		
 		String path = XMLUtils.getTrimmedTextContent(element);
-		XZInputStream in = IOUtils.createXZBufferedInputStream(IOUtils.getInputStream(path));
+		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(path);
 		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, FIELD));
-		f.accept(in, field);
-	}
-	
-	@SuppressWarnings("unchecked")
-	static public void initAmbiguityClasses(XZInputStream in, Field field)
-	{
-		BinUtils.LOG.info("Loading ambiguity classes: ");
+		T lexicon = null;
 		
 		try
 		{
-			ObjectInputStream oin = new ObjectInputStream(in);
-			ambiguity_classes = (Map<String,List<String>>)oin.readObject();
-			ambiguity_classes_field = field;
+			lexicon = (T)oin.readObject();
 			oin.close();
 		}
 		catch (Exception e) {e.printStackTrace();}
-		
-		BinUtils.LOG.info(ambiguity_classes.size()+"\n");
+
+		return new Pair<>(lexicon, field);
 	}
 	
-	@SuppressWarnings("unchecked")
-	static public void initWordClusters(XZInputStream in, Field field)
+	private List<Pair<Object2FloatMap<String>,Field>> getSentimentLexica(Element eLexica) 
 	{
-		BinUtils.LOG.info("Loading word clusters: ");
+		List<Pair<Object2FloatMap<String>,Field>> lexica = new ArrayList<>();
+		NodeList nodes = eLexica.getElementsByTagName("sentiment_lexicon");
 		
-		try
-		{
-			ObjectInputStream oin = new ObjectInputStream(in);
-			word_clusters = (Map<String,Set<String>>)oin.readObject();
-			word_clusters_field = field;
-			oin.close();
-		}
-		catch (Exception e) {e.printStackTrace();}
-		
-		BinUtils.LOG.info(word_clusters.size()+"\n");
+		for (int i=0; i<nodes.getLength(); i++)
+			lexica.add(getLexiconFieldPair((Element)nodes.item(i), "Loading sentiment lexicon: "+i+"\n"));
+			
+		return lexica.isEmpty() ? null : lexica;
 	}
 	
-	@SuppressWarnings("unchecked")
-	static public void initWordEmbeddings(XZInputStream in, Field field)
+//	=================================== GETTERS/SETTERS ===================================
+	
+	public Pair<Map<String,List<String>>,Field> getAmbiguityClasses()
 	{
-		BinUtils.LOG.info("Loading word embeddings: ");
-		
-		try
-		{
-			ObjectInputStream oin = new ObjectInputStream(in);
-			word_embeddings = (Map<String,float[]>)oin.readObject();
-			word_embeddings_field = field;
-			oin.close();
-		}
-		catch (Exception e) {e.printStackTrace();}
-		
-		BinUtils.LOG.info(word_embeddings.size()+"\n");
+		return ambiguity_classes;
 	}
 	
-	@SuppressWarnings("unchecked")
-	static public void initNamedEntityGazetteers(XZInputStream in, Field field)
+	public void setAmbiguityClasses(Pair<Map<String,List<String>>,Field> classes)
 	{
-		BinUtils.LOG.info("Loading named entity gazetteers\n");
-		
-		try
-		{
-			ObjectInputStream oin = new ObjectInputStream(in);
-			named_entity_gazetteers = (PrefixTree<String,Set<String>>)oin.readObject();
-			named_entity_gazetteers_field = field;
-			oin.close();
-		}
-		catch (Exception e) {e.printStackTrace();}
+		ambiguity_classes = classes;
 	}
 	
-	@SuppressWarnings("unchecked")
-	static public void initStopWords(XZInputStream in, Field field)
+	public Pair<Map<String,Set<String>>,Field> getWordClusters()
 	{
-		BinUtils.LOG.info("Loading stop words: ");
-		
-		try
-		{
-			ObjectInputStream oin = new ObjectInputStream(in);
-			stop_words = (Set<String>)oin.readObject();
-			stop_words_field = field;
-			oin.close();
-		}
-		catch (Exception e) {e.printStackTrace();}
-		
-		BinUtils.LOG.info(stop_words.size()+"\n");
+		return word_clusters;
 	}
 	
-//	=================================== ASSIGNMENTS ===================================
-	
-	static public void assignGlobalLexica(NLPNode[] nodes)
+	public void setWordClusters(Pair<Map<String,Set<String>>,Field> p)
 	{
-		if (nodes[0].hasWordClusters()) return;
-		nodes[0].setWordClusters(new HashSet<>());
-		
-		assignAmbiguityClasses(nodes);
-		assignWordClusters(nodes);
-		assignWordEmbeddings(nodes);
-		assignNamedEntityGazetteers(nodes);
+		word_clusters = p;
 	}
 	
-	static public void assignAmbiguityClasses(NLPNode[] nodes)
+	public Pair<Map<String,float[]>,Field> getWordEmbeddings() 
+	{
+		return word_embeddings;
+	}
+	
+	public void setWordEmbeddings(Pair<Map<String,float[]>,Field> embeddings) 
+	{
+		word_embeddings = embeddings;
+	}
+	
+	public Pair<PrefixTree<String,Set<String>>,Field> getNamedEntityGazetteers()
+	{
+		return named_entity_gazetteers;
+	}
+	
+	public void setNamedEntityGazetteers(Pair<PrefixTree<String,Set<String>>,Field> gazetteers)
+	{
+		named_entity_gazetteers = gazetteers;
+	}
+	
+	public Pair<Set<String>,Field> getStopWords()
+	{
+		return stop_words;
+	}
+	
+	public void setStopWords(Pair<Set<String>,Field> stopwords)
+	{
+		stop_words = stopwords;
+	}
+	
+	public List<Pair<Object2FloatMap<String>,Field>> getSentimentLexica()
+	{
+		return sentiment_lexica;
+	}
+	
+	public void setSentimentLexica(List<Pair<Object2FloatMap<String>,Field>> lexica)
+	{
+		sentiment_lexica = lexica;
+	}
+	
+//	=================================== PROCESS ===================================
+	
+	@Override
+	public void process(List<NLPNode[]> document)
+	{
+		for (NLPNode[] nodes : document)
+			process(nodes);
+	}
+	
+	@Override
+	public void process(NLPNode[] nodes)
+	{
+		processAmbiguityClasses(nodes);
+		processWordClusters(nodes);
+		processWordEmbeddings(nodes);
+		processNamedEntityGazetteers(nodes);
+		processStopWords(nodes);
+		processSentimentScores(nodes);
+	}
+	
+	public void processAmbiguityClasses(NLPNode[] nodes)
 	{
 		if (ambiguity_classes == null) return;
 		List<String> list;
@@ -184,12 +199,12 @@ public class GlobalLexica implements ConfigXML
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			list = ambiguity_classes.get(getKey(node, ambiguity_classes_field));
+			list = ambiguity_classes.o1.get(getKey(node, ambiguity_classes.o2));
 			node.setAmbiguityClasses(list);
 		}
 	}
 	
-	static public void assignWordClusters(NLPNode[] nodes)
+	public void processWordClusters(NLPNode[] nodes)
 	{
 		if (word_clusters == null) return;
 		Set<String> set;
@@ -198,12 +213,12 @@ public class GlobalLexica implements ConfigXML
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			set  = word_clusters.get(getKey(node, word_clusters_field));
+			set  = word_clusters.o1.get(getKey(node, word_clusters.o2));
 			node.setWordClusters(set);
 		}
 	}
 	
-	static public void assignWordEmbeddings(NLPNode[] nodes)
+	public void processWordEmbeddings(NLPNode[] nodes)
 	{
 		if (word_embeddings == null) return;
 		float[] embedding;
@@ -212,15 +227,15 @@ public class GlobalLexica implements ConfigXML
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			embedding = word_embeddings.get(getKey(node, word_embeddings_field));
+			embedding = word_embeddings.o1.get(getKey(node, word_embeddings.o2));
 			node.setWordEmbedding(embedding);
 		}
 	}
 	
-	static public void assignNamedEntityGazetteers(NLPNode[] nodes)
+	public void processNamedEntityGazetteers(NLPNode[] nodes)
 	{
 		if (named_entity_gazetteers == null) return;
-		List<ObjectIntIntTriple<Set<String>>> list = named_entity_gazetteers.getAll(nodes, 1, n -> getKey(n, named_entity_gazetteers_field), false, false);
+		List<ObjectIntIntTriple<Set<String>>> list = named_entity_gazetteers.o1.getAll(nodes, 1, n -> getKey(n, named_entity_gazetteers.o2), false, false);
 		
 		for (ObjectIntIntTriple<Set<String>> t : list)
 		{
@@ -240,12 +255,45 @@ public class GlobalLexica implements ConfigXML
 		}
 	}
 	
-	static public boolean isStopWord(NLPNode node)
+	public void processStopWords(NLPNode[] nodes)
 	{
-		return stop_words != null && stop_words.contains(node.getValue(stop_words_field));
+		if (stop_words == null) return;
+		NLPNode node;
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			node = nodes[i];
+			node.setStopWord(stop_words.o1.contains(getKey(node, stop_words.o2)));
+		}
 	}
 	
-	static private String getKey(NLPNode node, Field field)
+	public void processSentimentScores(NLPNode[] nodes)
+	{
+		if (sentiment_lexica == null) return;
+		NLPNode node;
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			node = nodes[i];
+			node.setSentimentScores(getSentimentScores(node));
+		}
+	}
+	
+	public float[] getSentimentScores(NLPNode node)
+	{
+		float[] scores = new float[sentiment_lexica.size()];
+		Pair<Object2FloatMap<String>,Field> p;
+		
+		for (int i=0; i<scores.length; i++)
+		{
+			p = sentiment_lexica.get(i);
+			scores[i] = p.o1.getOrDefault(getKey(node, p.o2), 0f);
+		}
+		
+		return scores;
+	}
+	
+	protected String getKey(NLPNode node, Field field)
 	{
 		return node.getValue(field);
 	}

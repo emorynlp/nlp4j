@@ -55,13 +55,13 @@ public class DEPParser extends OnlineComponent<DEPState>
 	}
 	
 	@Override
-	protected DEPState initState(NLPNode[] nodes)
+	protected DEPState initState(NLPNode[] nodes, DEPState state)
 	{
 		return new DEPState(nodes);
 	}
 	
 	@Override
-	protected DEPState initState(List<NLPNode[]> document) {return null;}
+	protected DEPState initState(List<NLPNode[]> document, DEPState state) {return null;}
 	
 //	============================== LABELS ==============================
 	

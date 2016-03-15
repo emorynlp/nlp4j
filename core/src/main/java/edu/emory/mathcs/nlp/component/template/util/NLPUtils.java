@@ -15,17 +15,16 @@
  */
 package edu.emory.mathcs.nlp.component.template.util;
 
-import java.util.HashSet;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
 
-import edu.emory.mathcs.nlp.common.util.FastUtils;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.component.template.NLPComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -34,7 +33,6 @@ public class NLPUtils
 {
 	static public String FEAT_POS_2ND   = "pos2";
 	static public String FEAT_PREDICATE = "pred";
-	static public String FEAT_SENTIMENT = "sent";
 
 	static public String toStringLine(NLPNode[] nodes, String delim, Field field)
 	{
@@ -65,48 +63,19 @@ public class NLPUtils
 		return nodes;
 	}
 	
-	static public Set<String> getUnigramSet(NLPNode[] nodes, Field... fields)
+	static public NLPComponent getComponent(InputStream in)
 	{
-		Set<String> set = new HashSet<>();
-		StringJoiner join;
+		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(in);
+		OnlineComponent<?> component = null;
 		
-		for (int i=1; i<nodes.length; i++)
+		try
 		{
-			join = new StringJoiner("_");
-			for (Field f : fields) join.add(nodes[i].getValue(f));
-			set.add(join.toString());
+			component = (OnlineComponent<?>)oin.readObject();
+			component.setFlag(NLPFlag.DECODE);
+			oin.close();
 		}
+		catch (Exception e) {e.printStackTrace();}
 
-		return set;
-	}
-	
-	static public Object2IntMap<String> getUnigramSetCount(NLPNode[] nodes, Field... fields)
-	{
-		Object2IntMap<String> map = new Object2IntOpenHashMap<>();
-		StringJoiner join;
-		
-		for (int i=1; i<nodes.length; i++)
-		{
-			join = new StringJoiner("_");
-			for (Field f : fields) join.add(nodes[i].getValue(f));
-			FastUtils.increment(map, join.toString());
-		}
-			
-		return map;
-	}
-	
-	static public Set<String> getBigramSet(NLPNode[] nodes, Field... fields)
-	{
-		Set<String> set = new HashSet<>();
-//		StringJoiner join;
-//		
-//		for (int i=1; i<nodes.length; i++)
-//		{
-//			join = new StringJoiner("_");
-//			for (Field f : fields) join.add(nodes[i].getValue(f));
-//			set.add(join.toString());
-//		}
-
-		return set;
+		return component;
 	}
 }

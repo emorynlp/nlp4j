@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pos;
+package edu.emory.mathcs.nlp.component.doc;
 
 import java.io.InputStream;
-import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
@@ -26,15 +25,21 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTagger extends OnlineComponent<POSState>
+public abstract class DOCAnalyzer<S extends DOCState> extends OnlineComponent<S>
 {
-	private static final long serialVersionUID = -7926217238116337203L;
+	private static final long serialVersionUID = 408764219381044191L;
+
+	public DOCAnalyzer() {super(true);}
 	
-	public POSTagger() {super(false);}
-	
-	public POSTagger(InputStream configuration)
+	public DOCAnalyzer(InputStream configuration)
 	{
-		super(false, configuration);
+		super(true, configuration);
+	}
+	
+	@Override
+	public void initFeatureTemplate()
+	{
+		feature_template = new DOCFeatureTemplate<S>(config.getFeatureTemplateElement(), getHyperParameter());
 	}
 	
 	@Override
@@ -42,16 +47,10 @@ public class POSTagger extends OnlineComponent<POSState>
 	{
 		return new AccuracyEval();
 	}
-	
+
 	@Override
-	protected POSState initState(NLPNode[] nodes, POSState state)
-	{
-		return new POSState(nodes);
-	}
-	
+	protected void postProcess(S state) {}
+
 	@Override
-	protected void postProcess(POSState state) {}
-	
-	@Override
-	protected POSState initState(List<NLPNode[]> document, POSState state) {return null;}
+	protected S initState(NLPNode[] nodes, DOCState state) {return null;}
 }

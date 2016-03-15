@@ -16,16 +16,23 @@
 package edu.emory.mathcs.nlp.component.template.config;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import edu.emory.mathcs.nlp.common.util.Language;
+import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.train.LOLS;
-import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.TSVReader;
+import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
+import edu.emory.mathcs.nlp.learning.activation.SigmoidFunction;
+import edu.emory.mathcs.nlp.learning.activation.SoftmaxFunction;
+import edu.emory.mathcs.nlp.learning.initialization.RandomWeightGenerator;
+import edu.emory.mathcs.nlp.learning.initialization.WeightGenerator;
+import edu.emory.mathcs.nlp.learning.neural.FeedForwardNeuralNetworkSoftmax;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.optimization.method.AdaDeltaMiniBatch;
 import edu.emory.mathcs.nlp.learning.optimization.method.AdaGrad;
@@ -52,10 +59,14 @@ public class NLPConfig implements ConfigXML
 	public NLPConfig(InputStream in)
 	{
 		xml = XMLUtils.getDocumentElement(in);
-		GlobalLexica.init(xml);
 	}
 	
 //	=================================== GETTERS & SETTERS ===================================  
+	
+	public Element getDocumentElement()
+	{
+		return xml;
+	}
 	
 	public int getIntegerTextContent(String tagName)
 	{
@@ -131,6 +142,7 @@ public class NLPConfig implements ConfigXML
 		int     batchSize      = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, BATCH_SIZE);
 		int     maxEpoch       = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, MAX_EPOCH);
 		float   learningRate   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, LEARNING_RATE);
+		float   decayingRate   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, DECAYING_RATE);
 		float   bias           = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, BIAS);
 		float   l1             = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eOptimizer, L1_REGULARIZATION);
 
@@ -158,9 +170,15 @@ public class NLPConfig implements ConfigXML
 		hp.setBatchSize(batchSize);
 		hp.setMaxEpochs(maxEpoch);
 		hp.setLearningRate(learningRate);
+		hp.setDecayingRate(decayingRate);
 		hp.setBias(bias);
 		hp.setL1Regularizer(rda);
 		hp.setLOLS(new LOLS(fixed, decaying));
+		
+		// neural network
+		hp.setHiddenDimensions(getHiddenDimensions(eOptimizer));
+		hp.setActivationFunctions(getActivationFunction(eOptimizer));
+		hp.setWeightGenerator(getWeightGenerator(eOptimizer));
 		
 		return hp;
 	}
@@ -179,44 +197,45 @@ public class NLPConfig implements ConfigXML
 		case ADAGRAD            : return new AdaGrad(w, hp.getLearningRate(), hp.getBias(), hp.getL1Regularizer());
 		case ADAGRAD_MINI_BATCH : return new AdaGradMiniBatch(w, hp.getLearningRate(), hp.getBias(), hp.getL1Regularizer());
 		case ADADELTA_MINI_BATCH: return new AdaDeltaMiniBatch(w, hp.getLearningRate(), hp.getDecayingRate(), hp.getBias(), hp.getL1Regularizer());
+		case FFNN_SOFTMAX       : new FeedForwardNeuralNetworkSoftmax(hp.getHiddenDimensions(), hp.getActivationFunctions(), hp.getLearningRate(), hp.getBias(), hp.getWeightGenerator());
 		default: throw new IllegalArgumentException(algorithm+" is not a valid algorithm name."); 
 		}
 	}
 	
-//	private FeedForwardNeuralNetworkSoftmax getFeedForwardNeuralNetworkSoftmax(Element eOptimizer)
-//	{
-//		float  learningRate = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
-//		float  bias         = XMLUtils.getFloatTextContentFromFirstElementByTagName(eOptimizer, BIAS);
-//		String hidden       = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, HIDDEN);
-//		String activation   = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, ACTIVATION);
-//		String bound        = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, RANDOM_BOUND);
-//		
-//		String[] t = Splitter.splitCommas(hidden);
-//		int[] hiddenDimensions = Arrays.stream(t).mapToInt(Integer::parseInt).toArray();
-//		
-//		t = Splitter.splitCommas(activation);
-//		ActivationFunction[] functions = toActivationFunction(t);
-//		
-//		t = Splitter.splitCommas(bound);
-//		double[] bounds = Arrays.stream(t).mapToDouble(Double::parseDouble).toArray();
-//		WeightGenerator generator = new RandomWeightGenerator((float)bounds[0], (float)bounds[1]);
-//		
-//		return new FeedForwardNeuralNetworkSoftmax(hiddenDimensions, functions, learningRate, bias, generator);
-//	}
-//	
-//	private ActivationFunction[] toActivationFunction(String[] t)
-//	{
-//		ActivationFunction[] functions = new ActivationFunction[t.length];
-//		
-//		for (int i=0; i<t.length; i++)
-//		{
-//			switch (t[i])
-//			{
-//			case SIGMOID: functions[i] = new SigmoidFunction(); break;
-//			case SOFTMAX: functions[i] = new SoftmaxFunction(); break;
-//			}
-//		}
-//		
-//		return functions;
-//	}
+	private int[] getHiddenDimensions(Element eOptimizer)
+	{
+		String hidden = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, HIDDEN_DIMENSIONS);
+		if (hidden == null || hidden.isEmpty()) return null;
+		String[] t = Splitter.splitCommas(hidden);
+		return Arrays.stream(t).mapToInt(Integer::parseInt).toArray();
+	}
+	
+	private ActivationFunction[] getActivationFunction(Element eOptimizer)
+	{
+		String activation = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, ACTIVATION_FUNCTIONS);
+		if (activation == null || activation.isEmpty()) return null;
+		String[] t = Splitter.splitCommas(activation);
+		ActivationFunction[] functions = new ActivationFunction[t.length];
+		
+		for (int i=0; i<t.length; i++)
+		{
+			switch (t[i])
+			{
+			case SIGMOID: functions[i] = new SigmoidFunction(); break;
+			case SOFTMAX: functions[i] = new SoftmaxFunction(); break;
+			}
+		}
+		
+		return functions;
+	}
+	
+	private WeightGenerator getWeightGenerator(Element eOptimizer)
+	{
+		Element element = XMLUtils.getFirstElementByTagName(eOptimizer, WEIGHT_GENERATOR);
+		if (element == null) return null;
+		
+		float lower = Float.parseFloat(XMLUtils.getTrimmedAttribute(element, "lower"));
+		float upper = Float.parseFloat(XMLUtils.getTrimmedAttribute(element, "upper"));
+		return new RandomWeightGenerator(lower, upper); 
+	}
 }

@@ -43,15 +43,6 @@ public interface ConfigXML
 	
 	String DOCUMENT_BASED = "document_based";
 	
-//	========================== LEXICA ==========================
-	
-	String LEXICA					= "lexica";
-	String AMBIGUITY_CLASSES		= "ambiguity_classes";
-	String WORD_CLUSTERS			= "word_clusters";
-	String WORD_EMBEDDINGS			= "word_embeddings";
-	String NAMED_ENTITY_GAZETTEERS	= "named_entity_gazetteers";
-	String STOP_WORDS 				= "stop_words";
-	
 //	========================== OPTIMIZER ==========================
 
 	String OPTIMIZER			= "optimizer";
@@ -83,13 +74,12 @@ public interface ConfigXML
 
 //	========================== NEURAL NETWORKS ==========================
 	
-	String FFNN_SOFTMAX	= "ffnn-softmax";
-
-	String HIDDEN		= "hidden";
-	String ACTIVATION	= "activation";
-	String SOFTMAX		= "softmax";
-	String SIGMOID		= "sigmoid";
-	String RANDOM_BOUND	= "random_bound";
+	String FFNN_SOFTMAX			= "ffnn-softmax";
+	String HIDDEN_DIMENSIONS	= "hidden_dimensions";
+	String ACTIVATION_FUNCTIONS	= "activation_functions";
+	String SOFTMAX				= "softmax";
+	String SIGMOID				= "sigmoid";
+	String WEIGHT_GENERATOR		= "weight_generator";
 
 //	========================== FEATURE TEMPLATE ==========================
 	

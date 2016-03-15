@@ -23,6 +23,7 @@ public enum Field
 {
 	// form features
 	word_form,
+	word_form_lowercase,
 	word_form_undigitalized,
 	word_form_simplified,
 	word_form_simplified_lowercase,
@@ -56,23 +57,19 @@ public enum Field
 	positional,
 	
 	// document
-	bag_of_words_1,
-	bag_of_words_2,
-	bag_of_words_3,
-	bag_of_words_count_1,
-	bag_of_words_count_2,
-	bag_of_words_count_3,
-	bag_of_words_norm_1,
-	bag_of_words_norm_2,
-	bag_of_words_norm_3,
+	bag_of_words,
+	bag_of_words_norm,
+	bag_of_words_count,
+
+	bag_of_words_stopwords,
+	bag_of_words_stopwords_norm,
+	bag_of_words_stopwords_count,
 	
-	bag_of_words_stopwords_1,
-	bag_of_words_stopwords_2,
-	bag_of_words_stopwords_3,
-	bag_of_words_stopwords_count_1,
-	bag_of_words_stopwords_count_2,
-	bag_of_words_stopwords_count_3,
-	bag_of_words_stopwords_norm_1,
-	bag_of_words_stopwords_norm_2,
-	bag_of_words_stopwords_norm_3,
+	bag_of_clusters,
+	bag_of_clusters_norm,
+	bag_of_clusters_count,
+
+	bag_of_clusters_stopwords,
+	bag_of_clusters_stopwords_norm,
+	bag_of_clusters_stopwords_count,
 ;}

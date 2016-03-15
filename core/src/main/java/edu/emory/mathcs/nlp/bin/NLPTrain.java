@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +23,12 @@ import org.kohsuke.args4j.Option;
 
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
+import edu.emory.mathcs.nlp.component.dep.DEPParser;
+import edu.emory.mathcs.nlp.component.ner.NERTagger;
+import edu.emory.mathcs.nlp.component.pos.POSTagger;
+import edu.emory.mathcs.nlp.component.srl.SRLParser;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
 import edu.emory.mathcs.nlp.component.template.util.NLPMode;
 
@@ -47,20 +54,45 @@ public class NLPTrain
 	@Option(name="-mode", usage="mode (required: pos|ner|dep|srl|sent)", required=true, metaVar="<string>")
 	protected String mode = null;
 	
-	public NLPTrain(String[] args)
+	public void train(String[] args)
 	{
 		BinUtils.initArgs(args, this);
 		List<String> trainFiles   = FileUtils.getFileList(train_path  , train_ext);
 		List<String> developFiles = (develop_path != null) ? FileUtils.getFileList(develop_path, develop_ext) : null;
-		OnlineTrainer<?> trainer = new OnlineTrainer<>();
+		OnlineTrainer<?> trainer  = createOnlineTrainer();
 		
 		Collections.sort(trainFiles);
 		if (developFiles != null) Collections.sort(developFiles);
 		trainer.train(NLPMode.valueOf(mode), trainFiles, developFiles, configuration_file, model_file, previous_model_file);
 	}
 	
+	public <S extends NLPState>OnlineTrainer<S> createOnlineTrainer()
+	{
+		return new OnlineTrainer<S>()
+		{
+			@Override
+			public OnlineComponent<S> createComponent(NLPMode mode, InputStream config)
+			{
+				return createOnlineComponent(mode, config);
+			}
+		};
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <S extends NLPState>OnlineComponent<S> createOnlineComponent(NLPMode mode, InputStream config)
+	{
+		switch (mode)
+		{
+		case pos: return (OnlineComponent<S>)new POSTagger(config);
+		case ner: return (OnlineComponent<S>)new NERTagger(config);
+		case dep: return (OnlineComponent<S>)new DEPParser(config);
+		case srl: return (OnlineComponent<S>)new SRLParser(config);
+		default : throw new IllegalArgumentException("Unsupported mode: "+mode);
+		}
+	}
+	
 	static public void main(String[] args)
 	{
-		new NLPTrain(args);
+		new NLPTrain().train(args);
 	}
 }

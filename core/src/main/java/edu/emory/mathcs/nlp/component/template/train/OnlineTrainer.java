@@ -28,12 +28,6 @@ import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.dep.DEPParser;
-import edu.emory.mathcs.nlp.component.ner.NERTagger;
-import edu.emory.mathcs.nlp.component.pleonastic.PleonasticClassifier;
-import edu.emory.mathcs.nlp.component.pos.POSTagger;
-import edu.emory.mathcs.nlp.component.sentiment.SentimentAnalyzer;
-import edu.emory.mathcs.nlp.component.srl.SRLParser;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -49,7 +43,7 @@ import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
  * Provide instances and methods for training NLP components.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class OnlineTrainer<S extends NLPState>
+public abstract class OnlineTrainer<S extends NLPState>
 {
 	public OnlineTrainer() {};
 	
@@ -96,20 +90,21 @@ public class OnlineTrainer<S extends NLPState>
 		return component;
 	}
 	
-	@SuppressWarnings("unchecked")
-	protected OnlineComponent<S> createComponent(NLPMode mode, InputStream config)
-	{
-		switch (mode)
-		{
-		case pos: return (OnlineComponent<S>)new POSTagger(config);
-		case ner: return (OnlineComponent<S>)new NERTagger(config);
-		case dep: return (OnlineComponent<S>)new DEPParser(config);
-		case srl: return (OnlineComponent<S>)new SRLParser(config);
-		case sentiment : return (OnlineComponent<S>)new SentimentAnalyzer(config);
-		case pleonastic: return (OnlineComponent<S>)new PleonasticClassifier(config);
-		default : throw new IllegalArgumentException("Unsupported mode: "+mode);
-		}
-	}
+	public abstract OnlineComponent<S> createComponent(NLPMode mode, InputStream config);	
+	
+//	@SuppressWarnings("unchecked")
+//	protected OnlineComponent<S> createComponent(NLPMode mode, InputStream config)
+//	{
+//		switch (mode)
+//		{
+//		case pos: return (OnlineComponent<S>)new POSTagger(config);
+//		case ner: return (OnlineComponent<S>)new NERTagger(config);
+//		case dep: return (OnlineComponent<S>)new DEPParser(config);
+//		case srl: return (OnlineComponent<S>)new SRLParser(config);
+//		case pleonastic: return (OnlineComponent<S>)new PleonasticClassifier(config);
+//		default : throw new IllegalArgumentException("Unsupported mode: "+mode);
+//		}
+//	}
 	
 //	=================================== TRAIN ===================================
 	
@@ -117,16 +112,17 @@ public class OnlineTrainer<S extends NLPState>
 	{
 		InputStream configStream = IOUtils.createFileInputStream(configurationFile);
 		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
+		GlobalLexica lexica = new GlobalLexica(IOUtils.createFileInputStream(configurationFile));
 		OnlineComponent<S> component = initComponent(mode, configStream, previousModelStream);
 		
 		try
 		{
-			train(trainFiles, developFiles, modelFile, component);
+			train(trainFiles, developFiles, modelFile, component, lexica);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}
 	
-	public void train(List<String> trainFiles, List<String> developFiles, String modelFile, OnlineComponent<S> component) throws Exception
+	public void train(List<String> trainFiles, List<String> developFiles, String modelFile, OnlineComponent<S> component, GlobalLexica lexica) throws Exception
 	{
 		OnlineOptimizer optimizer = component.getOptimizer();
 		HyperParameter hp = component.getHyperParameter();
@@ -139,7 +135,7 @@ public class OnlineTrainer<S extends NLPState>
 		DoubleIntPair p;
 		String eval;
 		
-		BinUtils.LOG.info(optimizer.toString()+"\n"+hp.toString("- ")+"\n\n");
+		BinUtils.LOG.info(optimizer.toString()+"\n"+hp.toString("- ")+"\n");
 		BinUtils.LOG.info("Training:\n");
 		
 		for (int epoch=1; epoch<=hp.getMaxEpochs(); epoch++)
@@ -148,7 +144,7 @@ public class OnlineTrainer<S extends NLPState>
 			component.setFlag(NLPFlag.TRAIN);
 			Collections.shuffle(trainFiles, rand);
 			hp.getLOLS().updateGoldProbability();
-			iterate(reader, trainFiles, component, true);
+			iterate(reader, trainFiles, component, lexica, false);
 
 			// info
 			L   = optimizer.getLabelSize();
@@ -160,7 +156,7 @@ public class OnlineTrainer<S extends NLPState>
 				BinUtils.LOG.info(String.format("%5d: L = %3d, SF = %7d, NZW = %9d\n", epoch, L, SF, NZW));
 			else
 			{
-				p = evaluate(developFiles, component, reader);
+				p = evaluate(developFiles, component, lexica, reader);
 				score = p.d;
 				eval = component.getEval().toString();
 				BinUtils.LOG.info(String.format("%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %6d\n", epoch, eval, L, SF, NZW, p.i));
@@ -180,18 +176,18 @@ public class OnlineTrainer<S extends NLPState>
 			saveModel(component, IOUtils.createFileOutputStream(modelFile));
 	}
 	
-	protected DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<S> component, TSVReader reader)
+	protected DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<S> component, GlobalLexica lexica, TSVReader reader)
 	{
 		component.setFlag(NLPFlag.EVALUATE);
 		Eval eval = component.getEval();
 		eval.clear();
-		double time = iterate(reader, developFiles, component, true);
+		double time = iterate(reader, developFiles, component, lexica, true);
 		return new DoubleIntPair(eval.score(), (int)Math.round(time));
 	}
 	
 //	=================================== HELPERS ===================================
 	
-	protected double iterate(TSVReader reader, List<String> inputFiles, OnlineComponent<S> component, boolean evaluate)
+	protected double iterate(TSVReader reader, List<String> inputFiles, OnlineComponent<S> component, GlobalLexica lexica, boolean evaluate)
 	{
 		long st, et, time = 0, unit = 0;
 		List<NLPNode[]> document;
@@ -207,7 +203,7 @@ public class OnlineTrainer<S extends NLPState>
 				if (component.isDocumentBased())
 				{
 					document = reader.readDocument();
-					for (NLPNode[] ns : document) GlobalLexica.assignGlobalLexica(ns);
+					lexica.process(document);
 					st = System.currentTimeMillis();
 					component.process(document);
 					et = System.currentTimeMillis();
@@ -219,7 +215,7 @@ public class OnlineTrainer<S extends NLPState>
 				{
 					while ((nodes = reader.next()) != null)
 					{
-						GlobalLexica.assignGlobalLexica(nodes);
+						lexica.process(nodes);
 						st = System.currentTimeMillis();
 						component.process(nodes);
 						et = System.currentTimeMillis();

@@ -174,14 +174,28 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	@Override
 	public void process(NLPNode[] nodes)
 	{
-		process(initState(nodes));
+		processState(nodes, null);
 	}
 	
 	@Override
 	public void process(List<NLPNode[]> document)
 	{
-		if (document_based) process(initState(document));
+		if (document_based) processState(document, null);
 		else for (NLPNode[] nodes : document) process(nodes);
+	}
+	
+	public S processState(NLPNode[] nodes, S state)
+	{
+		state = initState(nodes, state);
+		process(state);
+		return state;
+	}
+	
+	public S processState(List<NLPNode[]> document, S state)
+	{
+		state = initState(document, state);
+		process(state);
+		return state;
 	}
 	
 	/** Process the sequence of the nodes given the state. */
@@ -233,10 +247,10 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	public abstract Eval createEvaluator();
 	
 	/** @return the processing state for the input nodes. */
-	protected abstract S initState(NLPNode[] nodes);
+	protected abstract S initState(NLPNode[] nodes, S state);
 	
 	/** @return the processing state for the input document. */
-	protected abstract S initState(List<NLPNode[]> document);
+	protected abstract S initState(List<NLPNode[]> document, S state);
 	
 	/** Post-processes if necessary. */
 	protected abstract void postProcess(S state);

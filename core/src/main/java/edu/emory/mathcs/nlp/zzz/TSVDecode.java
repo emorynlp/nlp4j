@@ -54,13 +54,14 @@ public class TSVDecode
 	{
 		BinUtils.initArgs(args, this);
 		
+		GlobalLexica lexica = new GlobalLexica(IOUtils.createFileInputStream(configuration_file));
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
 		OnlineComponent<S> component = (OnlineComponent<S>)in.readObject();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
-		evaluate(FileUtils.getFileList(input_path, input_ext), component);
+		evaluate(FileUtils.getFileList(input_path, input_ext), component, lexica);
 	}
 	
-	public <S extends NLPState>void evaluate(List<String> inputFiles, OnlineComponent<S> component) throws Exception
+	public <S extends NLPState>void evaluate(List<String> inputFiles, OnlineComponent<S> component, GlobalLexica lexica) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		PrintStream fout;
@@ -73,7 +74,7 @@ public class TSVDecode
 			
 			while ((nodes = reader.next()) != null)
 			{
-				GlobalLexica.assignGlobalLexica(nodes);
+				lexica.process(nodes);
 				component.process(nodes);
 				fout.println(Joiner.join(nodes, "\n", 1)+"\n");
 			}

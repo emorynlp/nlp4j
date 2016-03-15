@@ -22,6 +22,7 @@ import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
+import edu.emory.mathcs.nlp.component.template.feature.Relation;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
@@ -40,7 +41,7 @@ public abstract class NLPState
 	 */
 	public NLPState(NLPNode[] nodes)
 	{
-		this.nodes = nodes;
+		setNodes(nodes);
 	}
 	
 	/**
@@ -49,7 +50,7 @@ public abstract class NLPState
 	 */
 	public NLPState(List<NLPNode[]> document)
 	{
-		this.document = document;
+		setDocument(document);
 	}
 	
 	/**
@@ -60,6 +61,9 @@ public abstract class NLPState
 	
 	/** @return the gold label given the current state. */
 	public abstract String getOracle();
+	
+	/** Resets the oracle with gold information. */
+	public abstract void resetOracle();
 	
 	/**
 	 * Applies the predictions to the current state, and moves onto the next state.
@@ -89,9 +93,19 @@ public abstract class NLPState
 		return nodes;
 	}
 	
+	public void setNodes(NLPNode[] nodes)
+	{
+		this.nodes = nodes;
+	}
+	
 	public List<NLPNode[]> getDocument()
 	{
 		return document;
+	}
+	
+	public void setDocument(List<NLPNode[]> document)
+	{
+		this.document = document;
 	}
 	
 	public NLPNode getNode(int index)
@@ -103,6 +117,11 @@ public abstract class NLPState
 	public NLPNode getNode(int index, int window)
 	{
 		return getNode(index, window, false);
+	}
+	
+	public NLPNode getNode(int index, int window, Relation relation)
+	{
+		return getRelativeNode(getNode(index, window), relation);
 	}
 	
 	/**
@@ -118,17 +137,12 @@ public abstract class NLPState
 		return begin <= index && index < nodes.length ? nodes[index] : null;
 	}
 	
-	/**
-	 * @return the relative node with respect to the feature template and the input node.
-	 * @param item the feature template.
-	 * @param node the input node.
-	 */
-	protected NLPNode getRelativeNode(FeatureItem item, NLPNode node)
+	public NLPNode getRelativeNode(NLPNode node, Relation relation)
 	{
-		if (node == null || item.relation == null)
+		if (node == null || relation == null)
 			return node;
 		
-		switch (item.relation)
+		switch (relation)
 		{
 		case h   : return node.getDependencyHead();
 		case h2  : return node.getGrandDependencyHead();
@@ -147,6 +161,16 @@ public abstract class NLPState
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * @return the relative node with respect to the feature template and the input node.
+	 * @param item the feature template.
+	 * @param node the input node.
+	 */
+	public NLPNode getRelativeNode(FeatureItem item, NLPNode node)
+	{
+		return getRelativeNode(node, item.relation);
 	}
 	
 	/** @return {@code true} if the node is the first node in the sentence. */

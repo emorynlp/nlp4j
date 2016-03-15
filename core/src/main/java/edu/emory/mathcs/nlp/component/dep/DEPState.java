@@ -61,6 +61,19 @@ public class DEPState extends NLPState
 	}
 	
 	@Override
+	public void resetOracle()
+	{
+		for (int i=1; i<nodes.length; i++)
+			nodes[i].clearDependencies();
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			DEPArc o = oracle[i];
+			nodes[i].setDependencyHead(o.getNode(), o.getLabel());
+		}
+	}
+	
+	@Override
 	public String getOracle()
 	{
 		DEPLabel label = getOracleLabel();

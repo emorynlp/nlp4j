@@ -23,11 +23,11 @@ import java.io.Serializable;
 public class FeatureItem implements Serializable
 {
 	private static final long serialVersionUID = 7297765746466162241L;
-	public Source    source;
-	public Relation  relation;
-	public int       window;
-	public Field     field;
-	public Object    attribute;
+	public Source   source;
+	public Relation relation;
+	public int      window;
+	public Field    field;
+	public Object   attribute;
 	
 	public FeatureItem(Source source, Relation relation, int window, Field field, Object attribute)
 	{

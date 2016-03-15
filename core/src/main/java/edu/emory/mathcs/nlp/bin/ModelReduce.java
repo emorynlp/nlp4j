@@ -64,6 +64,7 @@ public class ModelReduce
 	{
 		BinUtils.initArgs(args, this);
 		
+		GlobalLexica lexica = new GlobalLexica(IOUtils.createFileInputStream(configuration_file));
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
 		OnlineComponent<S> component = (OnlineComponent<S>)in.readObject(); in.close();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
@@ -74,25 +75,25 @@ public class ModelReduce
 		if (save)
 		{
 			component.getFeatureTemplate().reduce(optimizer.getWeightVector(), start);
-			evaluate(inputFiles, component, start);
+			evaluate(inputFiles, component, lexica, start);
 			ObjectOutputStream fout = IOUtils.createObjectXZBufferedOutputStream(model_file+"."+output_ext);
 			fout.writeObject(component);
 			fout.close();
 		}
 		else
 		{
-			evaluate(inputFiles, component, 0f);
+			evaluate(inputFiles, component, lexica, 0f);
 			
 			for (float f=start; ; f+=increment)
 			{
 				component.getFeatureTemplate().reduce(optimizer.getWeightVector(), f);
-				currScore = evaluate(inputFiles, component, f);
+				currScore = evaluate(inputFiles, component, lexica, f);
 				if (lower_bound >= currScore) break;
 			}			
 		}
 	}
 	
-	public <S extends NLPState>double evaluate(List<String> inputFiles, OnlineComponent<S> component, float rate) throws Exception
+	public <S extends NLPState>double evaluate(List<String> inputFiles, OnlineComponent<S> component, GlobalLexica lexica, float rate) throws Exception
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		long st, et, ttime = 0, tnode = 0;
@@ -108,7 +109,7 @@ public class ModelReduce
 			
 			while ((nodes = reader.next()) != null)
 			{
-				GlobalLexica.assignGlobalLexica(nodes);
+				lexica.process(nodes);
 				st = System.currentTimeMillis();
 				component.process(nodes);
 				et = System.currentTimeMillis();
