@@ -62,10 +62,13 @@ public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 		// weights
 		w_h2h = new WeightVector[hiddenDimensions.length - 1];
 		
+		// for bias
+		int sparseFeatureSize = 1;
+		
 		for (int i=1; i<hiddenDimensions.length; i++)
 		{
 			w_h2h[i-1] = new WeightVector(functions[i]);
-			w_h2h[i-1].expand(0, hiddenDimensions[i-1], hiddenDimensions[i]);
+			w_h2h[i-1].expand(sparseFeatureSize, hiddenDimensions[i-1], hiddenDimensions[i], generator);
 		}
 		
 		w_h2o = new WeightVector(createActivationFunctionH2O());
@@ -104,7 +107,7 @@ public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 		// hidden -> output
 		denseDimension = hidden_dimensions[hidden_dimensions.length-1];
 		labelSize      = getLabelSize();
-		w_h2o.expand(0, denseDimension, labelSize);
+		w_h2o.expand(sparseDimension, denseDimension, labelSize, generator);
 	}
 	
 	@Override
@@ -130,11 +133,15 @@ public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 		layers[0] = weight_vector.scores(x);
 		
 		// hidden -> hidden
-		for (i=1; i<hidden_dimensions.length; i++)
-			layers[i] = w_h2h[i-1].scores(new FeatureVector(layers[i-1]));
-			
+		for (i=1; i<hidden_dimensions.length; i++){
+			FeatureVector local_input = new FeatureVector(layers[i-1]);
+			augment(local_input);
+			layers[i] = w_h2h[i-1].scores(local_input);
+		}	
 		// hidden -> output
-		layers[i] = w_h2o.scores(new FeatureVector(layers[i-1]));
+		FeatureVector local_input = new FeatureVector(layers[i-1]);
+		augment(local_input);
+		layers[i] = w_h2o.scores(local_input);
 		return layers;
 	}
 
@@ -149,15 +156,15 @@ public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 		
 		// hidden -> hidden
 		for (i--; i>=0; i--)
-			errors = backwardPropagationH2H(w_h2h[i].getDenseWeightVector(), errors, layers[i], i);
+			errors = backwardPropagationH2H(w_h2h[i].getDenseWeightVector(), errors, layers[i], layers[i+1], i);
 
 		// hidden -> input
-		backwardPropagationH2I(instance.getFeatureVector(), errors);
+		backwardPropagationH2I(instance.getFeatureVector(), errors, layers[i+1]);
 	}
 	
 	protected abstract float[] backwardPropagationO2H(Instance instance, float[] input);
-	protected abstract float[] backwardPropagationH2H(MajorVector weights, float[] gradients, float[] input, int layer);
-	protected abstract void    backwardPropagationH2I(FeatureVector input, float[] gradients);
+	protected abstract float[] backwardPropagationH2H(MajorVector weights, float[] gradients, float[] input, float[] output, int layer);
+	protected abstract void    backwardPropagationH2I(FeatureVector input, float[] gradients, float[] output);
 	
 	@Override
 	public String toString()
