@@ -15,6 +15,8 @@
  */
 package edu.emory.mathcs.nlp.learning.neural;
 
+import java.util.Arrays;
+
 import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
 import edu.emory.mathcs.nlp.learning.activation.SoftmaxFunction;
 import edu.emory.mathcs.nlp.learning.initialization.WeightGenerator;
@@ -63,9 +65,13 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 	@Override
 	protected float[] backwardPropagationO2H(Instance instance, float[] input)
 	{
+		float[] output = Arrays.copyOf(instance.getScores(), getLabelSize());
 		float[] gradients = getGradientsRegression(instance);
+		for(int index = 0; index < gradients.length; index++){
+			gradients[index] = -1 * gradients[index];
+		}
 		float[] errors = new float[input.length];
-		float g; int index;
+		int index;
 		
 		MajorVector weights = w_h2o.getDenseWeightVector();
 		
@@ -74,9 +80,8 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 			for (int xi=0; xi<input.length; xi++)
 			{
 				index = weights.indexOf(y, xi);
-				g = gradients[y] * getLearningRate(index, false);
-				errors[xi] += g * weights.get(index);
-				weights.add(index, g * input[xi]);
+				errors[xi] += gradients[y] * output[y] * weights.get(index);
+				weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * input[xi]);
 			}
 		}
 
@@ -84,7 +89,7 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 	}
 
 	@Override
-	protected float[] backwardPropagationH2H(MajorVector weights, float[] gradients, float[] input, int layer)
+	protected float[] backwardPropagationH2H(MajorVector weights, float[] gradients, float[] input, float[] output, int layer)
 	{
 		float[] errors = new float[input.length];
 		int index;
@@ -95,7 +100,7 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 			{
 				index = weights.indexOf(y, xi);
 				errors[xi] += gradients[y] * weights.get(index);
-				weights.add(index, gradients[y] * input[xi]);
+				weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * input[xi]);
 			}
 		}
 		
@@ -103,7 +108,7 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 	}
 	
 	@Override
-	protected void backwardPropagationH2I(FeatureVector input, float[] gradients)
+	protected void backwardPropagationH2I(FeatureVector input, float[] gradients, float[] output)
 	{
 		MajorVector weights;
 		int index;
@@ -133,7 +138,7 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 				for (int xi=0; xi<x.length; xi++)
 				{
 					index = weights.indexOf(y, xi);
-					weights.add(index, gradients[y] * x[xi]);
+					weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * x[xi]);
 				}
 			}
 		}
