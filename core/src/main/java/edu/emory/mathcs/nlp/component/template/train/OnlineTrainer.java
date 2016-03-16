@@ -203,7 +203,10 @@ public abstract class OnlineTrainer<S extends NLPState>
 			BinUtils.LOG.info(String.format(" Best: %5.2f, epoch = %d\n\n", bestScore, bestEpoch));
 		if (modelFile != null)
 		{
-			if (bestEpoch != hp.getMaxEpochs())
+			if (bestEpoch==-1 || bestEpoch == hp.getMaxEpochs())
+			{
+				saveModel(component, IOUtils.createFileOutputStream(modelFile));
+			} else
 			{
 				InputStream configStream = IOUtils.createFileInputStream(configurationFile);
 				InputStream previousModelStream = (previousModelFile != null)
@@ -212,9 +215,6 @@ public abstract class OnlineTrainer<S extends NLPState>
 				bestComponent.getHyperParameter().setMaxEpochs(bestEpoch);
 				lexica = new GlobalLexica(IOUtils.createFileInputStream(configurationFile));
 				train(originalTrainingFiles, developFiles, modelFile, bestComponent, lexica);
-			} else
-			{
-				saveModel(component, IOUtils.createFileOutputStream(modelFile));
 			}
 		}
 	}
