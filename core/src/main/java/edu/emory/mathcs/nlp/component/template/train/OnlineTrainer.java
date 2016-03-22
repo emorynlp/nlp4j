@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -42,56 +41,47 @@ import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 
 /**
  * Provide instances and methods for training NLP components.
- * 
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class OnlineTrainer<S extends NLPState>
 {
-	private NLPMode mode;
-	private String configurationFile;
-	private String previousModelFile;
-	private ArrayList<String> originalTrainingFiles;
-
-	public OnlineTrainer()
-	{
-	};
-
-	// =================================== COMPONENT
-	// ===================================
+	public OnlineTrainer() {};
+	
+//	=================================== COMPONENT ===================================
 
 	@SuppressWarnings("unchecked")
 	public OnlineComponent<S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream)
 	{
 		OnlineComponent<S> component = null;
 		NLPConfig configuration = null;
-
+		
 		if (previousModelStream != null)
 		{
 			BinUtils.LOG.info("Loading the previous model\n");
 			ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(previousModelStream);
-
+			
 			try
 			{
-				component = (OnlineComponent<S>) oin.readObject();
+				component = (OnlineComponent<S>)oin.readObject();
 				configuration = component.setConfiguration(configStream);
 				oin.close();
-			} catch (Exception e)
-			{
-				e.printStackTrace();
 			}
-		} else
+			catch (Exception e) {e.printStackTrace();}
+		}
+		else
 		{
 			component = createComponent(mode, configStream);
 			configuration = component.getConfiguration();
 		}
-
+		
 		HyperParameter hp = configuration.getHyperParameter();
 		component.setHyperParameter(hp);
-
+		
 		if (component.getOptimizer() != null)
 		{
-			component.getOptimizer().adapt(hp);
-		} else
+			component.getOptimizer().adapt(hp);			
+		}
+		else
 		{
 			component.setOptimizer(configuration.getOnlineOptimizer(hp));
 			component.initFeatureTemplate();
@@ -99,74 +89,56 @@ public abstract class OnlineTrainer<S extends NLPState>
 
 		return component;
 	}
-
-	public abstract OnlineComponent<S> createComponent(NLPMode mode, InputStream config);
-
-	// @SuppressWarnings("unchecked")
-	// protected OnlineComponent<S> createComponent(NLPMode mode, InputStream
-	// config)
-	// {
-	// switch (mode)
-	// {
-	// case pos: return (OnlineComponent<S>)new POSTagger(config);
-	// case ner: return (OnlineComponent<S>)new NERTagger(config);
-	// case dep: return (OnlineComponent<S>)new DEPParser(config);
-	// case srl: return (OnlineComponent<S>)new SRLParser(config);
-	// case pleonastic: return (OnlineComponent<S>)new
-	// PleonasticClassifier(config);
-	// default : throw new IllegalArgumentException("Unsupported mode: "+mode);
-	// }
-	// }
-
-	// =================================== TRAIN
-	// ===================================
-
-	public void train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile,
-			String modelFile, String previousModelFile)
+	
+	public abstract OnlineComponent<S> createComponent(NLPMode mode, InputStream config);	
+	
+//	@SuppressWarnings("unchecked")
+//	protected OnlineComponent<S> createComponent(NLPMode mode, InputStream config)
+//	{
+//		switch (mode)
+//		{
+//		case pos: return (OnlineComponent<S>)new POSTagger(config);
+//		case ner: return (OnlineComponent<S>)new NERTagger(config);
+//		case dep: return (OnlineComponent<S>)new DEPParser(config);
+//		case srl: return (OnlineComponent<S>)new SRLParser(config);
+//		case pleonastic: return (OnlineComponent<S>)new PleonasticClassifier(config);
+//		default : throw new IllegalArgumentException("Unsupported mode: "+mode);
+//		}
+//	}
+	
+//	=================================== TRAIN ===================================
+	
+	public void train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile)
 	{
-		this.mode = mode;
-		this.configurationFile = configurationFile;
-		this.previousModelFile = previousModelFile;
-		this.originalTrainingFiles = new ArrayList<String>(trainFiles);
 		InputStream configStream = IOUtils.createFileInputStream(configurationFile);
-		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile)
-				: null;
+		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
 		GlobalLexica lexica = new GlobalLexica(IOUtils.createFileInputStream(configurationFile));
 		OnlineComponent<S> component = initComponent(mode, configStream, previousModelStream);
-
+		
 		try
 		{
 			train(trainFiles, developFiles, modelFile, component, lexica);
-		} catch (Exception e)
-		{
-			e.printStackTrace();
 		}
+		catch (Exception e) {e.printStackTrace();}
 	}
-
-	public void train(List<String> trainFiles, List<String> developFiles, String modelFile,
-			OnlineComponent<S> component, GlobalLexica lexica) throws Exception
-	{
-		train(trainFiles, developFiles, modelFile, component, lexica, -1);
-	}
-
-	public void train(List<String> trainFiles, List<String> developFiles, String modelFile,
-			OnlineComponent<S> component, GlobalLexica lexica, int retrainEpoch) throws Exception
+	
+	public void train(List<String> trainFiles, List<String> developFiles, String modelFile, OnlineComponent<S> component, GlobalLexica lexica) throws Exception
 	{
 		OnlineOptimizer optimizer = component.getOptimizer();
 		HyperParameter hp = component.getHyperParameter();
 		NLPConfig config = component.getConfiguration();
 		TSVReader reader = config.getTSVReader();
-
+		
 		int bestEpoch = -1, bestNZW = -1, NZW, L, SF;
 		Random rand = new XORShiftRandom(9);
 		double bestScore = 0, score;
 		DoubleIntPair p;
 		String eval;
-
-		BinUtils.LOG.info(optimizer.toString() + "\n" + hp.toString("- ") + "\n");
+		
+		BinUtils.LOG.info(optimizer.toString()+"\n"+hp.toString("- ")+"\n");
 		BinUtils.LOG.info("Training:\n");
-
-		for (int epoch = 1; epoch <= hp.getMaxEpochs(); epoch++)
+		
+		for (int epoch=1; epoch<=hp.getMaxEpochs(); epoch++)
 		{
 			// train
 			component.setFlag(NLPFlag.TRAIN);
@@ -175,11 +147,11 @@ public abstract class OnlineTrainer<S extends NLPState>
 			iterate(reader, trainFiles, component, lexica, false);
 
 			// info
-			L = optimizer.getLabelSize();
-			SF = component.getFeatureTemplate().getSparseFeatureSize();
+			L   = optimizer.getLabelSize();
+			SF  = component.getFeatureTemplate().getSparseFeatureSize();
 			NZW = optimizer.getWeightVector().countNonZeroWeights();
 			component.getFeatureTemplate().initFeatureCount();
-
+			
 			if (developFiles == null)
 				BinUtils.LOG.info(String.format("%5d: L = %3d, SF = %7d, NZW = %9d\n", epoch, L, SF, NZW));
 			else
@@ -187,63 +159,45 @@ public abstract class OnlineTrainer<S extends NLPState>
 				p = evaluate(developFiles, component, lexica, reader);
 				score = p.d;
 				eval = component.getEval().toString();
-				BinUtils.LOG.info(String.format("%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %6d\n", epoch, eval, L,
-						SF, NZW, p.i));
-
+				BinUtils.LOG.info(String.format("%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %6d\n", epoch, eval, L, SF, NZW, p.i));
+				
 				if (bestScore < score || (bestScore == score && NZW < bestNZW))
 				{
-					bestNZW = NZW;
+					bestNZW   = NZW;
 					bestEpoch = epoch;
 					bestScore = score;
 				}
 			}
 		}
-
+		
 		if (developFiles != null)
 			BinUtils.LOG.info(String.format(" Best: %5.2f, epoch = %d\n\n", bestScore, bestEpoch));
 		if (modelFile != null)
-		{
-			if (bestEpoch==-1 || bestEpoch == hp.getMaxEpochs())
-			{
-				saveModel(component, IOUtils.createFileOutputStream(modelFile));
-			} else
-			{
-				InputStream configStream = IOUtils.createFileInputStream(configurationFile);
-				InputStream previousModelStream = (previousModelFile != null)
-						? IOUtils.createFileInputStream(previousModelFile) : null;
-				OnlineComponent<S> bestComponent = initComponent(mode, configStream, previousModelStream);
-				bestComponent.getHyperParameter().setMaxEpochs(bestEpoch);
-				lexica = new GlobalLexica(IOUtils.createFileInputStream(configurationFile));
-				train(originalTrainingFiles, developFiles, modelFile, bestComponent, lexica);
-			}
-		}
+			saveModel(component, IOUtils.createFileOutputStream(modelFile));
 	}
-
-	protected DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<S> component, GlobalLexica lexica,
-			TSVReader reader)
+	
+	protected DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<S> component, GlobalLexica lexica, TSVReader reader)
 	{
 		component.setFlag(NLPFlag.EVALUATE);
 		Eval eval = component.getEval();
 		eval.clear();
 		double time = iterate(reader, developFiles, component, lexica, true);
-		return new DoubleIntPair(eval.score(), (int) Math.round(time));
+		return new DoubleIntPair(eval.score(), (int)Math.round(time));
 	}
-
-	// =================================== HELPERS
-	// ===================================
-
-	protected double iterate(TSVReader reader, List<String> inputFiles, OnlineComponent<S> component,
-			GlobalLexica lexica, boolean evaluate)
+	
+//	=================================== HELPERS ===================================
+	
+	protected double iterate(TSVReader reader, List<String> inputFiles, OnlineComponent<S> component, GlobalLexica lexica, boolean evaluate)
 	{
 		long st, et, time = 0, unit = 0;
 		List<NLPNode[]> document;
 		NLPNode[] nodes;
 		int count = 0;
-
+		
 		for (String inputFile : inputFiles)
 		{
 			reader.open(IOUtils.createFileInputStream(inputFile));
-
+			
 			try
 			{
 				if (component.isDocumentBased())
@@ -253,11 +207,11 @@ public abstract class OnlineTrainer<S extends NLPState>
 					st = System.currentTimeMillis();
 					component.process(document);
 					et = System.currentTimeMillis();
-					if (!evaluate)
-						count = update(component, count, false);
+					if (!evaluate) count = update(component, count, false);
 					time += et - st;
 					unit++;
-				} else
+				}
+				else
 				{
 					while ((nodes = reader.next()) != null)
 					{
@@ -265,50 +219,43 @@ public abstract class OnlineTrainer<S extends NLPState>
 						st = System.currentTimeMillis();
 						component.process(nodes);
 						et = System.currentTimeMillis();
-						if (!evaluate)
-							count = update(component, count, false);
+						if (!evaluate) count = update(component, count, false);
 						time += et - st;
 						unit += nodes.length - 1;
-					}
+					}					
 				}
-			} catch (Exception e)
-			{
-				e.printStackTrace();
 			}
+			catch (Exception e) {e.printStackTrace();}
 			reader.close();
 		}
-
-		if (!evaluate)
-			update(component, count, true);
+		
+		if (!evaluate) update(component, count, true);
 		return 1000d * unit / time;
 	}
-
+	
 	protected int update(OnlineComponent<S> component, int count, boolean last)
 	{
 		OnlineOptimizer optimizer = component.getOptimizer();
 		HyperParameter hp = component.getHyperParameter();
-
+		
 		if ((last && count > 0) || ++count == hp.getBatchSize())
 		{
 			optimizer.updateMiniBatch();
 			count = 0;
 		}
-
+		
 		return count;
 	}
-
+	
 	public void saveModel(OnlineComponent<S> component, OutputStream stream)
 	{
 		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(stream);
-
+		
 		try
 		{
 			out.writeObject(component);
 			out.close();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
 		}
+		catch (IOException e) {e.printStackTrace();}
 	}
-
 }
