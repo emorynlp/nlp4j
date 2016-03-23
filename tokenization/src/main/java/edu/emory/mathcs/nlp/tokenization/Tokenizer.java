@@ -211,7 +211,7 @@ abstract public class Tokenizer
 	
 	/** Called by {@link #tokenizeMetaInfo(List, String)}. */
 	private int[] getMetaRange(String s)
-	{System.out.println(d_preserve.toString());
+	{
 		if (MetaUtils.startsWithNetworkProtocol(s) || d_preserve.contains(s))
 			return new int[]{0, s.length()};
 		

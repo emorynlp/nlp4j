@@ -26,14 +26,15 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
  */
 public class IssuesTest
 {
-	@Test
+//	@Test
 	public void test1()
 	{
 		Tokenizer t = new EnglishTokenizer();
 		String s = "There 's Mother 's Day , there 's Father 's Day , there 's no . .. Lesbian Lover Day .";
 
 		for (NLPNode node : t.tokenize(s))
-			System.out.print(node.getWordForm()+" ");	}
+			System.out.print(node.getWordForm()+" ");	
+	}
 	
 //	@Test
 	public void test()
@@ -51,5 +52,19 @@ public class IssuesTest
 		Tokenizer t = new EnglishTokenizer();
 		String s = "Hello ^u^.";
 		System.out.println(t.tokenize(s).stream().map(n -> n.getWordForm()).collect(Collectors.toList()).toString());
+	}
+	
+	@Test
+	public void issue3()
+	{
+		Tokenizer t = new EnglishTokenizer();
+		
+		String s = "I did it my way.";
+		for (NLPNode node : t.tokenize(s))
+			System.out.print(node.getWordForm()+" ");
+		
+		s = "Definitely not worth stopping by.";
+		for (NLPNode node : t.tokenize(s))
+			System.out.print(node.getWordForm()+" ");
 	}
 }
