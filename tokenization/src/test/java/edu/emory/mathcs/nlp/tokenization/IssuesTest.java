@@ -15,10 +15,13 @@
  */
 package edu.emory.mathcs.nlp.tokenization;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
@@ -26,6 +29,17 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
  */
 public class IssuesTest
 {
+	@Test
+	public void issues()
+	{
+		Tokenizer t = new EnglishTokenizer();
+		
+		// https://github.com/emorynlp/nlp4j-tokenization/pull/3
+		String s = "I did it my way. Definitely not worth stopping by.";
+		String r = "I did it my way . Definitely not worth stopping by .";
+		assertEquals(r, Joiner.join(t.tokenize(s), " ", NLPNode::getWordForm));
+	}
+	
 //	@Test
 	public void test1()
 	{
@@ -52,19 +66,5 @@ public class IssuesTest
 		Tokenizer t = new EnglishTokenizer();
 		String s = "Hello ^u^.";
 		System.out.println(t.tokenize(s).stream().map(n -> n.getWordForm()).collect(Collectors.toList()).toString());
-	}
-	
-	@Test
-	public void issue3()
-	{
-		Tokenizer t = new EnglishTokenizer();
-		
-		String s = "I did it my way.";
-		for (NLPNode node : t.tokenize(s))
-			System.out.print(node.getWordForm()+" ");
-		
-		s = "Definitely not worth stopping by.";
-		for (NLPNode node : t.tokenize(s))
-			System.out.print(node.getWordForm()+" ");
 	}
 }

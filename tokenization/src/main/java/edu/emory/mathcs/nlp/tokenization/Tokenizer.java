@@ -50,14 +50,14 @@ import it.unimi.dsi.fastutil.chars.CharSet;
  */
 abstract public class Tokenizer
 {
-	private final CharSet S_SYMBOL_IN_BETWEEN = new CharOpenHashSet(new char[]{CharConst.SEMICOLON, CharConst.COMMA, CharConst.TILDA, CharConst.EQUAL, CharConst.PLUS, CharConst.AMPERSAND, CharConst.PIPE, CharConst.FW_SLASH});
-	private final Pattern P_ABBREVIATION = PatternUtils.createClosedPattern("\\p{Alnum}([\\.|-]\\p{Alnum})*");
-	private final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['\u2019]?[sS]?");
+	protected final CharSet S_SYMBOL_IN_BETWEEN = new CharOpenHashSet(new char[]{CharConst.SEMICOLON, CharConst.COMMA, CharConst.TILDA, CharConst.EQUAL, CharConst.PLUS, CharConst.AMPERSAND, CharConst.PIPE, CharConst.FW_SLASH});
+	protected final Pattern P_ABBREVIATION = PatternUtils.createClosedPattern("\\p{Alnum}([\\.|-]\\p{Alnum})*");
+	protected final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['\u2019]?[sS]?");
 
-	private Emoticon    d_emoticon;
-	private Currency    d_currency;
-	private Unit        d_unit;
-	private Set<String> d_preserve;
+	protected Emoticon    d_emoticon;
+	protected Currency    d_currency;
+	protected Unit        d_unit;
+	protected Set<String> d_preserve;
 	
 	public Tokenizer()
 	{
