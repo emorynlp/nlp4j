@@ -721,7 +721,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #adjustLastSymbolSequenceGap(char[], int, String)}. */
-	private boolean preservePeriod(char[] cs, int endIndex, String t)
+	protected boolean preservePeriod(char[] cs, int endIndex, String t)
 	{
 		if (endIndex+1 < cs.length)
 		{
