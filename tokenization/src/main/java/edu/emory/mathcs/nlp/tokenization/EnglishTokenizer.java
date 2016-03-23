@@ -187,11 +187,11 @@ public class EnglishTokenizer extends Tokenizer
 		
 		// Y being either a vowel or consonant is likely to be language dependent, 
 		// while handling this correctly requires complex heuristics we can handle final 'y' this way.
-		char lastCharacter = cs.length - 1;
-		return !isY(lastCharacter) || CharUtils.isConsonant(lastCharacter);
+		char lastCharacter = cs[cs.length - 1];
+		return !isY(lastCharacter) && CharUtils.isConsonant(lastCharacter);
 	}
 	
-	public static boolean isY(char character)
+	public static boolean isY(char c)
 	{
 		return (c == 'y') || (c == 'Y');
 	}
