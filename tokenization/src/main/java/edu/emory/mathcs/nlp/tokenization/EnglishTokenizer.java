@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
+import edu.emory.mathcs.nlp.common.util.CharUtils;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -180,14 +181,14 @@ public class EnglishTokenizer extends Tokenizer
 	{
 		for (int i = cs.length - 2; i >= 0; i--)
 		{
-			if (!isConsonant(cs[i]))
+			if (!CharUtils.isConsonant(cs[i]))
 				return false;
 		}
 		
 		// Y being either a vowel or consonant is likely to be language dependent, 
 		// while handling this correctly requires complex heuristics we can handle final 'y' this way.
 		char lastCharacter = cs.length - 1;
-		return !isY(lastCharacter) || isConsonant(lastCharacter);
+		return !isY(lastCharacter) || CharUtils.isConsonant(lastCharacter);
 	}
 	
 	public static boolean isY(char character)
