@@ -62,10 +62,8 @@ public class GlobalLexica implements NLPComponent
 	public GlobalLexica(Element doc)
 	{
 		Element eLexica = XMLUtils.getFirstElementByTagName(doc, LEXICA);
-		//check if config contains any lexica
-		if(eLexica==null){
-			return;
-		}
+		if (eLexica == null) return;
+		
 		setAmbiguityClasses     (getLexiconFieldPair(eLexica, "ambiguity_classes"      , "Loading ambiguity classes\n"));
 		setWordClusters         (getLexiconFieldPair(eLexica, "word_clusters"          , "Loading word clusters\n"));
 		setWordEmbeddings       (getLexiconFieldPair(eLexica, "word_embeddings"        , "Loading word embeddings\n"));
