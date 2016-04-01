@@ -38,13 +38,13 @@ public class PleonasticClassifier extends OnlineComponent<PleonasticState>
 	}
 	
 	@Override
-	protected PleonasticState initState(NLPNode[] nodes, PleonasticState state)
+	protected PleonasticState initState(NLPNode[] nodes)
 	{
 		return new PleonasticState(nodes);
 	}
 	
 	@Override
-	protected PleonasticState initState(List<NLPNode[]> document, PleonasticState state)
+	protected PleonasticState initState(List<NLPNode[]> document)
 	{
 		return null;
 	}
