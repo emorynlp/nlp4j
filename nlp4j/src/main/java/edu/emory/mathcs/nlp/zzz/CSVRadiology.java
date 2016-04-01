@@ -37,7 +37,7 @@ import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class CSVTokenize
+public class CSVRadiology
 {
 	final String[] BEFORE = {"Patient Name :", "DOB :", "SEX :", "Ordering Physician :", "Exam :", "HEAD CT", "CLINICAL", "TECHNIQUE :", "COMPARISON :", "FINDINGS :", "IMPRESSION :"};
 	final String[] AFTER  = {"INDICATION :", "TECHNIQUE :", "COMPARISON :", "FINDINGS :", "IMPRESSION :"};
@@ -66,7 +66,7 @@ public class CSVTokenize
 		parser.close();
 	}
 	
-	public void tokenize(String inputFile) throws Exception
+	public void tokenize(String inputFile, int outputStart) throws Exception
 	{
 		CSVParser parser = new CSVParser(IOUtils.createBufferedReader(inputFile), CSVFormat.DEFAULT);
 		String inputPath = FileUtils.getPath(inputFile)+"/";
@@ -80,7 +80,7 @@ public class CSVTokenize
 		
 		for (int i=0; i<records.size(); i++)
 		{
-			PrintStream fout = IOUtils.createBufferedPrintStream(getOuputFilename(inputPath, i));
+			PrintStream fout = IOUtils.createBufferedPrintStream(getOuputFilename(inputPath, i+outputStart));
 			
 			for (NLPNode[] nodes : tokenizer.segmentize(records.get(i).get(0)))
 				print(fout, nodes);
@@ -131,13 +131,15 @@ public class CSVTokenize
 	static public void main(String[] args)
 	{
 //		String inputFile = "/Users/jdchoi/Emory/radiology/tools/500/500-original.csv";
-		String inputFile = "/Users/jdchoi/Emory/radiology/dat/radiology_report_151112_lemmon.csv";
+//		String inputFile = "/Users/jdchoi/Emory/radiology/dat/radiology_report_151112_lemmon.csv";
+		
+		String inputFile = "/Users/jdchoi/Emory/radiology/de-identification/1986/Remaining_1986Reports_FULL.csv";
 		
 		try
 		{
-			CSVTokenize cvs = new CSVTokenize();
-//			cvs.tokenize(inputFile);
-			cvs.categorize(inputFile);
+			CSVRadiology cvs = new CSVRadiology();
+			cvs.tokenize(inputFile, 500);
+//			cvs.categorize(inputFile);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}

@@ -1,0 +1,18 @@
+<configuration>
+	<tsv>
+        <column index="0" field="form"/>
+        <column index="1" field="nament"/>
+    </tsv>
+
+    <lexica>
+        <ambiguity_classes field="word_form_simplified_lowercase">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
+        <word_clusters field="word_form_simplified_lowercase">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
+        <word_embeddings field="word_form_undigitalized">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz</word_embeddings>
+    </lexica>
+
+    <models>
+    	<pos>edu/emory/mathcs/nlp/models/en-pos.xz</pos>
+    	<dep>edu/emory/mathcs/nlp/models/en-dep.xz</dep>
+    	<ner>/Users/jdchoi/Desktop/radiology/models/deident-1q.xz</ner>
+    </models>
+</configuration>
