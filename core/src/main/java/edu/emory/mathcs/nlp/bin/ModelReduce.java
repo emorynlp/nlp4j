@@ -97,6 +97,7 @@ public class ModelReduce
 	{
 		TSVReader reader = component.getConfiguration().getTSVReader();
 		long st, et, ttime = 0, tnode = 0;
+		List<NLPNode[]> document;
 		NLPNode[] nodes;
 		
 		component.setFlag(NLPFlag.EVALUATE);
@@ -107,14 +108,28 @@ public class ModelReduce
 		{
 			reader.open(IOUtils.createFileInputStream(inputFile));
 			
-			while ((nodes = reader.next()) != null)
+			if (component.isDocumentBased())
 			{
-				lexica.process(nodes);
+				document = reader.readDocument();
+				lexica.process(document);
 				st = System.currentTimeMillis();
-				component.process(nodes);
+				component.process(document);
 				et = System.currentTimeMillis();
 				ttime += et - st;
-				tnode += nodes.length - 1;
+				tnode++;
+			}
+
+			else
+			{
+				while ((nodes = reader.next()) != null)
+				{
+					lexica.process(nodes);
+					st = System.currentTimeMillis();
+					component.process(nodes);
+					et = System.currentTimeMillis();
+					ttime += et - st;
+					tnode += nodes.length - 1;
+				}	
 			}
 			
 			reader.close();

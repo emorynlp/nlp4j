@@ -469,10 +469,10 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 
 	public float[] createDenseVector(S state)
 	{
-		return getEmbeddingFeatures(state);
+		return getAverageEmbeddings(state);
 	}
 	
-	public float[] getEmbeddingFeatures(S state)
+	public float[] getAverageEmbeddings(S state)
 	{
 		if (word_embeddings == null || word_embeddings.isEmpty()) return null;
 		float[] w, v = null;

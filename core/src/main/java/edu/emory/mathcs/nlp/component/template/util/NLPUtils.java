@@ -17,10 +17,12 @@ package edu.emory.mathcs.nlp.component.template.util;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
@@ -38,8 +40,6 @@ public class NLPUtils
 	{
 		return Joiner.join(nodes, delim, 1, nodes.length, n -> n.getValue(field));
 	}
-	
-//	========================= TRANSFORMATION =========================
 	
 	static public NLPNode[] toNodeArray(List<NLPNode> tokens)
 	{
@@ -77,5 +77,36 @@ public class NLPUtils
 		catch (Exception e) {e.printStackTrace();}
 
 		return component;
+	}
+	
+	static public List<NLPNode[]> getNonStopWords(List<NLPNode[]> document)
+	{
+		List<NLPNode[]> nonstop = new ArrayList<>();
+		NLPNode node;
+		
+		for (NLPNode[] nodes : document)
+		{
+			List<NLPNode> sen = new ArrayList<>();
+			
+			for (int i=1; i<nodes.length; i++)
+			{
+				node = nodes[i];
+				if (!node.isStopWord() && !StringUtils.containsPunctuationOrDigitsOrWhiteSpacesOnly(node.getWordFormSimplified()))
+					sen.add(node);
+			}
+			
+			if (!sen.isEmpty())
+			{
+				NLPNode[] snodes = new NLPNode[sen.size()+1];
+				snodes[0] = nodes[0];
+				
+				for (int i=1; i<snodes.length; i++)
+					snodes[i] = sen.get(i-1);
+				
+				nonstop.add(snodes);
+			}
+		}
+		
+		return nonstop;
 	}
 }

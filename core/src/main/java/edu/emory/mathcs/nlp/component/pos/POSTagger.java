@@ -38,20 +38,20 @@ public class POSTagger extends OnlineComponent<POSState>
 	}
 	
 	@Override
+	protected POSState initState(NLPNode[] nodes)
+	{
+		return new POSState(nodes);
+	}
+	
+	@Override
 	public Eval createEvaluator()
 	{
 		return new AccuracyEval();
 	}
 	
 	@Override
-	protected POSState initState(NLPNode[] nodes, POSState state)
-	{
-		return new POSState(nodes);
-	}
+	protected POSState initState(List<NLPNode[]> document) {return null;}	
 	
 	@Override
 	protected void postProcess(POSState state) {}
-	
-	@Override
-	protected POSState initState(List<NLPNode[]> document, POSState state) {return null;}
 }

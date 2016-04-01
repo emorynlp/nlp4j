@@ -162,13 +162,16 @@ public class CharUtils
 	
 	public static boolean containsOnlyConsonants(char[] cs)
 	{
-		for (char c : cs)
+		for (int i=cs.length-2; i>=0; i--)
 		{
-			if (!isConsonant(c))
+			if (!CharUtils.isConsonant(cs[i]))
 				return false;
 		}
 		
-		return true;
+		// Y being either a vowel or consonant is likely to be language dependent, 
+		// while handling this correctly requires complex heuristics we can handle final 'y' this way.
+		char last = cs[cs.length-1];
+		return last != 'y' && last != 'Y' && CharUtils.isConsonant(last);
 	}
 	
 //	----------------------------------- Symbols -----------------------------------
