@@ -470,9 +470,9 @@ abstract public class Tokenizer
 		
 		if (bIndex < len)
 		{
-            NLPNode nlpNode = new NLPNode(bIndex2.getVal(), len, s.substring(bIndex));
+            NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + len, s.substring(bIndex));
             tokens.add(nlpNode);
-            bIndex2.setVal(len);
+            bIndex2.setVal(bIndex2.getVal() + len);
         }
 		return bIndex2.getVal();
 	}
