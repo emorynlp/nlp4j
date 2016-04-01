@@ -454,14 +454,13 @@ abstract public class Tokenizer
 			if (0 < flag || i+1 < j)
 			{
 				if (bIndex < i) 
-				    {
-                    NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + i
-                            - bIndex, s.substring(bIndex, i));
-                    tokens.add(nlpNode);
-                    bIndex2.setVal(bIndex2.getVal() + i - bIndex);
-				    }
-				NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + j - i,
-                        s.substring(i, j));
+				{
+					NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + i - bIndex, s.substring(bIndex, i));
+					tokens.add(nlpNode);
+					bIndex2.setVal(bIndex2.getVal() + i - bIndex);
+				}
+				
+				NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + j - i, s.substring(i, j));
                 tokens.add(nlpNode);
                 bIndex2.setVal(bIndex2.getVal() + j - i);
                 bIndex = j;
@@ -470,9 +469,9 @@ abstract public class Tokenizer
 		
 		if (bIndex < len)
 		{
-            NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + len, s.substring(bIndex));
-            tokens.add(nlpNode);
-            bIndex2.setVal(bIndex2.getVal() + len);
+			NLPNode nlpNode = new NLPNode(bIndex2.getVal(), len, s.substring(bIndex));
+			tokens.add(nlpNode);
+			bIndex2.setVal(len);
         }
 		return bIndex2.getVal();
 	}
