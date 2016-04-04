@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
-import edu.emory.mathcs.nlp.common.util.CharUtils;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -154,46 +153,4 @@ public class EnglishTokenizer extends Tokenizer
 		
 		return false;
 	}
-	
-	/** Called by {@link #adjustLastSymbolSequenceGap(char[], int, String)}. */
-	@Override
-	protected boolean preservePeriod(char[] cs, int endIndex, String t)
-	{
-		if (endIndex+1 < cs.length)
-		{
-			char c = cs[endIndex+1];
-			
-			if (CharUtils.isSeparatorMark(c))
-				return true;
-			
-			if (CharUtils.isFinalMark(c) || CharUtils.isQuotationMark(c))
-				return false;
-		}
-		
-		if (P_ABBREVIATION.matcher(t).find())
-			return true;
-		
-		int len = t.length();
-		return (2 <= len && len <= 5) && containsOnlyConsonants(t.toCharArray());
-	}
-	
-	public static boolean containsOnlyConsonants(char[] cs)
-	{
-		for (int i = cs.length - 2; i >= 0; i--)
-		{
-			if (!CharUtils.isConsonant(cs[i]))
-				return false;
-		}
-		
-		// Y being either a vowel or consonant is likely to be language dependent, 
-		// while handling this correctly requires complex heuristics we can handle final 'y' this way.
-		char lastCharacter = cs[cs.length - 1];
-		return !isY(lastCharacter) && CharUtils.isConsonant(lastCharacter);
-	}
-	
-	public static boolean isY(char c)
-	{
-		return (c == 'y') || (c == 'Y');
-	}
-
 }
