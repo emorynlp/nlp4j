@@ -182,7 +182,7 @@ abstract public class Tokenizer
 		}
 		 
 		if (bIndex < start + len) tokenizeMetaInfo(tokens, s.substring(bIndex - start), bIndex, len - bIndex + start);
-		if (!tokens.isEmpty()) finalize(tokens);
+		if (!tokens.isEmpty()) finalize(tokens, s);
 		
 		return tokens;
 	}
@@ -604,7 +604,7 @@ abstract public class Tokenizer
 //	----------------------------------- Finalize -----------------------------------
 	
 	/** Called by {@link #tokenize(String)}. */
-	private void finalize(List<NLPNode> tokens)
+	private void finalize(List<NLPNode> tokens, String input)
 	{
 		int i, j, size = tokens.size();
 		String token, lower;
@@ -614,7 +614,7 @@ abstract public class Tokenizer
 		    token = tokens.get(i).getWordForm();
 			lower = StringUtils.toLowerCase(token);
 			
-			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeParenthesis(tokens, token, i)) != 0)
+			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeParenthesis(tokens, token, i, input)) != 0)
 			{
 				size = tokens.size();
 				i += j;
@@ -645,7 +645,7 @@ abstract public class Tokenizer
 	}
 	
 	/** Called by {@link #finalize()}. */
-	private int mergeParenthesis(List<NLPNode> tokens, String token, int index)
+	private int mergeParenthesis(List<NLPNode> tokens, String token, int index, String input)
 	{
 		if (token.length() == 1 && 0 <= index-1 && index+1 < tokens.size())
 		{
@@ -657,8 +657,7 @@ abstract public class Tokenizer
                 NLPNode currToken = tokens.get(index);
                 NLPNode nextToken = tokens.get(index + 1);
                 NLPNode nlpNode = new NLPNode(prevToken.getStartOffset(),
-                        nextToken.getEndOffset(), prevToken.getWordForm()
-                                + currToken.getWordForm() + nextToken.getWordForm());
+                        nextToken.getEndOffset(), input.substring(prevToken.getStartOffset(), nextToken.getEndOffset()));
                 tokens.set(index - 1, nlpNode);
                 tokens.remove(index);
                 tokens.remove(index);
