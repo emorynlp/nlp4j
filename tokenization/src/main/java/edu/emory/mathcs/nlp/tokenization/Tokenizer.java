@@ -755,7 +755,7 @@ abstract public class Tokenizer
 	/** Called by {@link #addNextSymbolSequenceIndices(List, char[], int, int)}. */
 	private boolean isEllipsis(char[] cs, int index)
 	{
-		if (cs[index] == CharConst.PERIOD && index+1 < cs.length)
+		if (CharUtils.isFinalMark(cs[index]) && index+1 < cs.length)
 		{
 			char c = cs[index+1];
 			return CharUtils.isFinalMark(c) || CharUtils.isSeparatorMark(c) || CharUtils.isQuotationMark(c);
