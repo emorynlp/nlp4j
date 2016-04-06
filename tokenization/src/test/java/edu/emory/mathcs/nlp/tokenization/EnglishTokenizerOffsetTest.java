@@ -85,12 +85,14 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		s = " A B  C\n D \t\nE\r\f ";
 		r = "[1, 2, 3, 4, 6, 7, 9, 10, 13, 14]";
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// hyperlinks
 		s = "|http://www.clearnlp.com|www.clearnlp.com|mailto:support@clearnlp.com|jinho_choi@clearnlp.com|";
@@ -98,6 +100,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// emoticons
 		s = ":-))) :---( Hi:).";
@@ -105,6 +108,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// surrounding symbols
 		s = "---\"((``@#$Choi%&*''))\".?!===";
@@ -112,6 +116,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// in-between symbols
 		s = ",,A---C**D~~~~E==F,G,,H..I.J-1.--2-K||L-#3";
@@ -119,6 +124,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// brackets
 		s = "(1){2}[3]<4>";
@@ -126,6 +132,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// twitter tags
 		s = "@UserID #HashTag";
@@ -133,6 +140,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// abbreviations
 		s = "Dr. ph.d. w.r.t. 1.2. A-1. a.1 (e.g., bcd. BCD. and. T. T.. T.";
@@ -140,6 +148,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// symbols in numbers
 		s = ".1,-2.3,+4,567,8:9\"0\" -1+2=1 +82-2-000-0000 12/25/2014";
@@ -147,6 +156,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// currency
 		s = "$1 E2 L3 USD1 2KPW $1 USD1 us$ US$ ub$";
@@ -154,6 +164,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// unit
 		s = "1m 2mm 3kg 4oz 1D 2nM 3CM 4LB";
@@ -161,6 +172,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// apostrophe
 		s = "he's we'd I'm you'll they're I've didn't did'nt he'S DON'T gue'ss he'mm 90's";
@@ -168,6 +180,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// compounds
 		s = "aint cannot don'cha d'ye i'mma dunno lemme LEMME";
@@ -175,6 +188,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// hyphens
 		s = "dis-able cross-validation o-kay art-o-torium s-e-e art-work DIS-ABLE CROSS-VALIDATION";
@@ -182,6 +196,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// years
 		s = "'90 '90s '90's '100's";
@@ -189,6 +204,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// ampersand
 		s = "AT&T at&t A&1";
@@ -196,6 +212,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// no.
 		s = "No. 5 No.";
@@ -203,6 +220,7 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		// more examples
 		s = "\"John & Mary's dog,\" Jane thought (to herself).\n" + "\"What a #$%!\n" + "a- ``I like AT&T''.\"";
@@ -210,29 +228,59 @@ public class EnglishTokenizerOffsetTest
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		s = "I said at 4:45pm.";
 		r = "[0, 1, 2, 6, 7, 9, 10, 14, 14, 16, 16, 17]";
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		s = "I can't believe they wanna keep 40% of that. ``Whatcha think?'' \"I don't --- think so...,\"";
 		r = "[0, 1, 2, 4, 4, 7, 8, 15, 16, 20, 21, 24, 24, 26, 27, 31, 32, 34, 34, 35, 36, 38, 39, 43, 43, 44, 45, 47, 47, 51, 51, 54, 55, 60, 60, 61, 61, 63, 64, 65, 65, 66, 67, 69, 69, 72, 73, 76, 77, 82, 83, 85, 85, 88, 88, 89, 89, 90]";
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		s = "You `paid' US$170,000?!\nYou should've paid only $16.75.";
 		r = "[0, 3, 4, 5, 5, 9, 9, 10, 11, 14, 14, 21, 21, 23, 24, 27, 28, 34, 34, 37, 38, 42, 43, 47, 48, 49, 49, 54, 54, 55]";
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
 		
 		s = " 1. Buy a new Chevrolet (37%-owned in the U.S.) . 15%";
 		r = "[1, 3, 4, 7, 8, 9, 10, 13, 14, 23, 24, 25, 25, 27, 27, 28, 28, 29, 29, 34, 35, 37, 38, 41, 42, 46, 46, 47, 48, 49, 50, 52, 52, 53]";
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
+		
+		s = "A slashed up white leather jacket for $3000???That's unbelievable!";
+		r = "[0, 1, 2, 9, 10, 12, 13, 18, 19, 26, 27, 33, 34, 37, 38, 39, 39, 43, 43, 46, 46, 50, 50, 52, 53, 65, 65, 66]";
+		tokens = t.tokenize(s);
+		tokenStartEnd = getTokenStartEnd(tokens);
+		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
+		
+		s = "He loves Acne (! ) disgusting";
+		r = "[0, 2, 3, 8, 9, 13, 14, 18, 19, 29]";
+		tokens = t.tokenize(s);
+		tokenStartEnd = getTokenStartEnd(tokens);
+		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
+		
+		s = "It should be suffixed as follows %_of_fat";
+		r = "[0, 2, 3, 9, 10, 12, 13, 21, 22, 24, 25, 32, 33, 35, 35, 41]";
+		tokens = t.tokenize(s);
+		tokenStartEnd = getTokenStartEnd(tokens);
+		assertEquals(r, tokenStartEnd.toString());
+		assertWordFormsEquals(s, tokens);
+	}
+	
+	private void assertWordFormsEquals(final String tokenizedString, final List<NLPNode> tokens) {
+		tokens.forEach(token -> assertEquals(tokenizedString.substring(token.getStartOffset(), token.getEndOffset()), token.getWordForm()));
 	}
 }
