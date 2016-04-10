@@ -5,8 +5,10 @@
 * The sentiment analyzer for twits is added.
 * The morphological analyzer lemmatizes `'s` into `be` and `have` now.
 * Thanks to [Anatoly Vostryakov](https://github.com/avostryakov). [`adjective.exc`](https://github.com/emorynlp/nlp4j-morphology/blob/master/src/main/resources/edu/emory/mathcs/nlp/component/morph/english/adjective.exc) and [`averb.base`](https://github.com/emorynlp/nlp4j-morphology/blob/master/src/main/resources/edu/emory/mathcs/nlp/component/morph/english/adverb.base) are cleaned up.
+* Thanks to [spraynasal](https://github.com/spraynasal). Some bugs in tokenization are fixed [5](https://github.com/emorynlp/nlp4j-tokenization/pull/5).
 * The POS tagger gives the 2nd-best predictions when the best predictions have low confidence (`pos2` in the extra feats).
 * Global lexica are no longer static.
+* NLPNode is abstracted for components and states.
 
 ## Version 1.0.0 (02/24/2016)
 

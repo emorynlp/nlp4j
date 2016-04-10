@@ -15,10 +15,7 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
-import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.util.TSVReader;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -27,21 +24,15 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		TSVReader reader = new TSVReader();
-		reader.form = 1;
-		reader.lemma = 2;
-		reader.pos = 3;
-		reader.feats = 4;
-		reader.dhead = 5;
-		reader.deprel = 6;
-		reader.sheads = 7;
-		reader.nament = 9;
+		long l1 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+		float[] array = new float[100000000];
+		long l2 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+		for (int i=0; i<array.length; i++) array[i] = i;
+		long l3 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 		
-		NLPNode[] nodes;
-		reader.open(IOUtils.createFileInputStream("/Users/jdchoi/Documents/Data/experiments/general-en/dev/ontonotes_mz.dev"));
-		
-		while ((nodes = reader.next()) != null)
-			System.out.println(Joiner.join(nodes, "\n", 1)+"\n");
+		System.out.println(l1/MathUtils.sq(1024));
+		System.out.println(l2/MathUtils.sq(1024));
+		System.out.println(l3/MathUtils.sq(1024));
 	}
 
 	static public void main(String[] args)

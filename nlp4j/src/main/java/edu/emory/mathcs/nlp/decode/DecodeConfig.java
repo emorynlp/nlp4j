@@ -21,11 +21,12 @@ import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DecodeConfig extends NLPConfig
+public class DecodeConfig extends NLPConfig<NLPNode>
 {
 	private String part_of_speech_tagging;
 	private String named_entity_recognition;

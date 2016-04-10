@@ -1,0 +1,37 @@
+<configuration>
+	<tsv document_based="true">
+        <column index="1" field="form"/>
+        <column index="2" field="lemma"/>
+        <column index="3" field="pos"/>
+        <column index="4" field="feats"/>
+        <column index="5" field="dhead"/>
+        <column index="6" field="deprel"/>
+        <column index="8" field="nament"/>
+    </tsv>
+    
+    <lexica>
+    	<word_embeddingsx field="word_form_undigitalized">/Users/jdchoi/Documents/EmoryNLP/nlp4j-english/src/main/resources/edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz</word_embeddingsx>
+    </lexica>
+    
+    <doc_feat_key>r3</doc_feat_key>
+
+    <optimizer>
+        <algorithm>adagrad</algorithm>
+        <learning_rate>0.01</learning_rate>
+        <l1_regularization>0.001</l1_regularization>
+        <feature_cutoff>0</feature_cutoff>
+        <max_epoch>20</max_epoch>
+        <bias>0</bias>
+    </optimizer>
+
+    <feature_template>
+    	<feature t="bag_of_words_count" f0="i:word_form_simplified"/>
+    </feature_template>
+    
+    
+    
+    <feature_template_r0>
+    	<feature t="bag_of_words_count" f0="i:word_form_simplified"/>
+    	<feature t="bag_of_words_count" f0="i:word_form_simplified" f1="i+1:word_form_simplified"/>
+    </feature_template_r0>
+</configuration>
