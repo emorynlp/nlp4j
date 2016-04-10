@@ -653,7 +653,7 @@ abstract public class Tokenizer
             if (prev.equals(StringConst.LRB) && next.equals(StringConst.RRB))
             {
                 NLPNode prevToken = tokens.get(index - 1);
-                NLPNode currToken = tokens.get(index);
+//             NLPNode currToken = tokens.get(index);
                 NLPNode nextToken = tokens.get(index + 1);
                 NLPNode nlpNode = new NLPNode(prevToken.getStartOffset(),
                         nextToken.getEndOffset(), input.substring(prevToken.getStartOffset(), nextToken.getEndOffset()));

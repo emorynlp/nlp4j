@@ -20,39 +20,53 @@ package edu.emory.mathcs.nlp.tokenization.util;
  * @author Amit-Deshmane
  * This class tracks the value of index variable.
  */
-public class TokenIndex {
+public class TokenIndex
+{
 	int val;
-	/**
-	 * 
-	 */
-	public TokenIndex() {
-		
-	}
-	public TokenIndex(int val){
+
+	public TokenIndex() {}
+	
+	public TokenIndex(int val)
+	{
 		this.val = val;
 	}
-	public int getVal(){
+	
+	public int getVal()
+	{
 		return val;
 	}
-	public void setVal(int val){
+	
+	public void setVal(int val)
+	{
 		this.val = val;
 	}
-	public String toString(){
+	
+	public String toString()
+	{
 		return Integer.toString(val);
 	}
-	public boolean equals(Object obj){
-		if(!TokenIndex.class.isInstance(obj)){
+	
+	public boolean equals(Object obj)
+	{
+		if(!TokenIndex.class.isInstance(obj))
+		{
 			return false;
 		}
-		else{
+		else
+		{
 			TokenIndex input = (TokenIndex)obj;
-			if(input.getVal() == val){
+			
+			if(input.getVal() == val)
+			{
 				return true;
 			}
 		}
+		
 		return false;
 	}
-	public int hashCode(){
+	
+	public int hashCode()
+	{
 		int prime = 31;
 		int result = 1;
 		result = result*prime + val;
