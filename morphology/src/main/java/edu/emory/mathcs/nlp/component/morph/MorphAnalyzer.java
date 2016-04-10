@@ -19,17 +19,17 @@ import java.util.List;
 
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class MorphAnalyzer implements NLPComponent
+public abstract class MorphAnalyzer<N extends AbstractNLPNode<N>> implements NLPComponent<N>
 {
 	@Override
-	public void process(NLPNode[] nodes)
+	public void process(N[] nodes)
 	{
-		NLPNode node;
+		N node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
@@ -39,9 +39,9 @@ public abstract class MorphAnalyzer implements NLPComponent
 	}
 	
 	@Override
-	public void process(List<NLPNode[]> document)
+	public void process(List<N[]> document)
 	{
-		for (NLPNode[] nodes : document)
+		for (N[] nodes : document)
 			process(nodes);
 	}
 	

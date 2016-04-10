@@ -37,11 +37,12 @@ import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.morph.MorphAnalyzer;
 import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixMatcher;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class EnglishMorphAnalyzer extends MorphAnalyzer
+public class EnglishMorphAnalyzer<N extends AbstractNLPNode<N>> extends MorphAnalyzer<N>
 {
 	final String ROOT = "edu/emory/mathcs/nlp/component/morph/english/";
 	
