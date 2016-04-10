@@ -21,7 +21,7 @@ import java.util.List;
 import edu.emory.mathcs.nlp.common.treebank.DEPTagEn;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -29,21 +29,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPParser extends OnlineComponent<DEPState>
+public class DEPParser<N extends AbstractNLPNode<N>> extends OnlineComponent<N,DEPState<N>>
 {
 	private static final long serialVersionUID = 7031031976396726276L;
-	private DEPLabelCandidate label_candidates;
+	private DEPLabelCandidate<N> label_candidates;
 
 	public DEPParser()
 	{
 		super(false);
-		label_candidates = new DEPLabelCandidate(); 
+		label_candidates = new DEPLabelCandidate<>(); 
 	}
 	
 	public DEPParser(InputStream configuration)
 	{
 		super(false, configuration);
-		label_candidates = new DEPLabelCandidate();
+		label_candidates = new DEPLabelCandidate<>();
 	}
 	
 //	============================== ABSTRACT ==============================
@@ -55,13 +55,13 @@ public class DEPParser extends OnlineComponent<DEPState>
 	}
 	
 	@Override
-	protected DEPState initState(NLPNode[] nodes)
+	protected DEPState<N> initState(N[] nodes)
 	{
-		return new DEPState(nodes);
+		return new DEPState<>(nodes);
 	}
 	
 	@Override
-	protected DEPState initState(List<NLPNode[]> document) {return null;}
+	protected DEPState<N> initState(List<N[]> document) {return null;}
 	
 //	============================== LABELS ==============================
 	
@@ -72,12 +72,12 @@ public class DEPParser extends OnlineComponent<DEPState>
 	}
 	
 	@Override
-	protected int[] getPrediction(DEPState state, float[] scores)
+	protected int[] getPrediction(DEPState<N> state, float[] scores)
 	{
 		return label_candidates.getLabelIndices(state.getStack(), state.getInput(), scores);
 	}
 	
-	public DEPLabelCandidate getLabelCandidates()
+	public DEPLabelCandidate<N> getLabelCandidates()
 	{
 		return label_candidates;
 	}
@@ -85,11 +85,11 @@ public class DEPParser extends OnlineComponent<DEPState>
 //	============================== POST-PROCESS ==============================
 
 	@Override
-	protected void postProcess(DEPState state)
+	protected void postProcess(DEPState<N> state)
 	{
-		NLPNode[] nodes = state.getNodes();
+		N[] nodes = state.getNodes();
 		DEPTriple max;
-		NLPNode   node;
+		N node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
@@ -109,10 +109,10 @@ public class DEPParser extends OnlineComponent<DEPState>
 		}
 	}
 
-	void processHeadless(DEPState state, DEPTriple max, NLPNode[] nodes, int currID, int dir)
+	void processHeadless(DEPState<N> state, DEPTriple max, N[] nodes, int currID, int dir)
 	{
 		IntSet labels = (dir > 0) ? label_candidates.getLeftArcs() : label_candidates.getRightArcs();
-		NLPNode head, node = nodes[currID];
+		N head, node = nodes[currID];
 		int yhat, window = 0;
 		float[] scores;
 		FeatureVector x;

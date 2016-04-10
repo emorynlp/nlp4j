@@ -21,12 +21,12 @@ import java.util.List;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERTagger extends OnlineComponent<NERState>
+public class NERTagger<N extends AbstractNLPNode<N>> extends OnlineComponent<N,NERState<N>>
 {
 	private static final long serialVersionUID = 87807440372806016L;
 
@@ -46,17 +46,17 @@ public class NERTagger extends OnlineComponent<NERState>
 	}
 	
 	@Override
-	protected NERState initState(NLPNode[] nodes)
+	protected NERState<N> initState(N[] nodes)
 	{
-		return new NERState(nodes);
+		return new NERState<>(nodes);
 	}
 	
 	@Override
-	protected void postProcess(NERState state)
+	protected void postProcess(NERState<N> state)
 	{
 		state.postProcess();
 	}
 
 	@Override
-	protected NERState initState(List<NLPNode[]> document) {return null;}
+	protected NERState<N> initState(List<N[]> document) {return null;}
 }

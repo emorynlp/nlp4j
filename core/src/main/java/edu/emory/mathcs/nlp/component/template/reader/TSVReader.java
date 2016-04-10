@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.template.util;
+package edu.emory.mathcs.nlp.component.template.reader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,16 +25,17 @@ import java.util.List;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.node.FeatMap;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class TSVReader
+public abstract class TSVReader<N extends AbstractNLPNode<N>>
 {
 	static public String BLANK = StringConst.UNDERSCORE;
-	private BufferedReader reader;
+	protected BufferedReader reader;
 	
 	public int form   = -1;
 	public int lemma  = -1;
@@ -44,6 +45,20 @@ public class TSVReader
 	public int dhead  = -1;
 	public int deprel = -1;
 	public int sheads = -1;
+	
+	public TSVReader() {}
+	
+	public TSVReader(Object2IntMap<String> map)
+	{
+		form   = map.getOrDefault("form"  , -1);
+		lemma  = map.getOrDefault("lemma" , -1);
+		pos    = map.getOrDefault("pos"   , -1);
+		nament = map.getOrDefault("nament", -1);
+		feats  = map.getOrDefault("feats" , -1);
+		dhead  = map.getOrDefault("dhead" , -1);
+		deprel = map.getOrDefault("deprel", -1);
+		sheads = map.getOrDefault("sheads", -1);
+	}
 	
 	public void open(InputStream in)
 	{
@@ -60,10 +75,10 @@ public class TSVReader
 		catch (IOException e) {e.printStackTrace();}
 	}
 	
-	public List<NLPNode[]> readDocument() throws Exception
+	public List<N[]> readDocument() throws Exception
 	{
-		List<NLPNode[]> document = new ArrayList<>();
-		NLPNode[] nodes;
+		List<N[]> document = new ArrayList<>();
+		N[] nodes;
 		
 		while ((nodes = next()) != null)
 			document.add(nodes);
@@ -71,7 +86,7 @@ public class TSVReader
 		return document;
 	}
 	
-	public NLPNode[] next() throws IOException
+	public N[] next() throws IOException
 	{
 		List<String[]> list = new ArrayList<>();
 		String line;
@@ -92,13 +107,15 @@ public class TSVReader
 		return list.isEmpty() ? null : toNodeList(list);
 	}
 	
-	public NLPNode[] toNodeList(List<String[]> list)
+	@SuppressWarnings("unchecked")
+	public N[] toNodeList(List<String[]> list)
 	{
 		int i, size = list.size();
-		NLPNode[] nodes = (NLPNode[])Array.newInstance(NLPNode.class, size+1);
+		N node = create();
+		N[] nodes = (N[])Array.newInstance(node.getClass(), size+1);
 		
-		nodes[0] = new NLPNode();
-		nodes[0].toRoot();
+		node.toRoot();
+		nodes[0] = node;
 		
 		for (i=1; i<=size; i++)
 			nodes[i] = create(i, list.get(i-1));
@@ -118,34 +135,39 @@ public class TSVReader
 		return nodes;
 	}
 	
-	protected NLPNode create(int id, String[] values)
+	protected N create(int id, String[] values)
 	{
-		String  f = getValue(values, form  , false);
-		String  l = getValue(values, lemma , false);
-		String  p = getValue(values, pos   , true);
-		String  n = getValue(values, nament, true);
-		FeatMap t = new FeatMap(getValue(values, feats, true));
-		return new NLPNode(id, f, l, p, n, t, null, null);
+		String  f = (form   >= 0) ? values[form]   : null;
+		String  l = (lemma  >= 0) ? values[lemma]  : null;
+		String  p = (pos    >= 0) ? values[pos]    : null;
+		String  n = (nament >= 0) ? values[nament] : null;
+		FeatMap t = (feats  >= 0) ? new FeatMap(values[feats]) : new FeatMap();
+		
+		N node = create();
+		node.set(id, f, l, p, n, t, null, null);
+		return node;
 	}
 	
-	private String getValue(String[] values, int index, boolean tag)
+	protected abstract N create();
+	
+	protected String getValue(String[] values, int index, boolean tag)
 	{
 		if (index < 0 || values.length <= index) return null;
 		String s = values[index];
 		return tag && BLANK.equals(s) ? null : s; 
 	}
 	
-	private void initDependencyHead(int id, String[] values, NLPNode[] nodes)
+	protected void initDependencyHead(int id, String[] values, N[] nodes)
 	{
 		if (BLANK.equals(values[dhead])) return;
 		int headID = Integer.parseInt(values[dhead]);
 		nodes[id].setDependencyHead(nodes[headID], values[deprel]);
 	}
 	
-	private void initSemanticHeads(int id, String value, NLPNode[] nodes)
+	protected void initSemanticHeads(int id, String value, N[] nodes)
 	{
 		if (BLANK.equals(value)) return;
-		NLPNode node = nodes[id];
+		N node = nodes[id];
 		int headID;
 		String[] t;
 		

@@ -20,7 +20,7 @@ import java.util.List;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.state.L2RState;
 import edu.emory.mathcs.nlp.component.template.util.BILOU;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -29,9 +29,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERState extends L2RState
+public class NERState<N extends AbstractNLPNode<N>> extends L2RState<N>
 {
-	public NERState(NLPNode[] nodes)
+	public NERState(N[] nodes)
 	{
 		super(nodes);
 	}
@@ -39,13 +39,13 @@ public class NERState extends L2RState
 //	============================== ORACLE ==============================
 	
 	@Override
-	protected String getLabel(NLPNode node)
+	protected String getLabel(N node)
 	{
 		return node.getNamedEntityTag();
 	}
 	
 	@Override
-	protected String setLabel(NLPNode node, String label)
+	protected String setLabel(N node, String label)
 	{
 		String s = node.getNamedEntityTag();	
 		node.setNamedEntityTag(label);
@@ -105,8 +105,8 @@ public class NERState extends L2RState
 	@SuppressWarnings("incomplete-switch")
 	private void postProcessBILOUAux(int index)
 	{
-		NLPNode prev = nodes[index-1];
-		NLPNode curr = nodes[index];
+		N prev = nodes[index-1];
+		N curr = nodes[index];
 		BILOU p = BILOU.toBILOU(getLabel(prev));
 		BILOU c = BILOU.toBILOU(getLabel(curr));
 		

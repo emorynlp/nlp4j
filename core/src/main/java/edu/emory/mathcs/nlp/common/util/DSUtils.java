@@ -277,16 +277,15 @@ public class DSUtils
 			list.add(item);
 	}
 	
-	static public int addAll(List<NLPNode> tokens, String[] array,
-            int bIndex2)
+	static public int addAll(List<NLPNode> tokens, String[] array, int bIndex2)
     {
         for (String item : array)
         {
-            NLPNode interval = new NLPNode(bIndex2, bIndex2 + item.length(),
-                    item);
+            NLPNode interval = new NLPNode(bIndex2, bIndex2 + item.length(), item);
             tokens.add(interval);
             bIndex2 = bIndex2 + item.length();
         }
+        
         return bIndex2;
     }
 	

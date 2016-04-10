@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.pos;
 
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.state.L2RState;
 import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
@@ -23,21 +23,21 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSState extends L2RState
+public class POSState<N extends AbstractNLPNode<N>> extends L2RState<N>
 {
-	public POSState(NLPNode[] nodes)
+	public POSState(N[] nodes)
 	{
 		super(nodes);
 	}
 	
 	@Override
-	protected String getLabel(NLPNode node)
+	protected String getLabel(N node)
 	{
 		return node.getPartOfSpeechTag();
 	}
 	
 	@Override
-	protected String setLabel(NLPNode node, String label)
+	protected String setLabel(N node, String label)
 	{
 		String s = node.getPartOfSpeechTag();
 		node.setPartOfSpeechTag(label);

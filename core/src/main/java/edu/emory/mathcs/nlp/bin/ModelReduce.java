@@ -26,12 +26,14 @@ import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
+import edu.emory.mathcs.nlp.component.template.reader.NLPReader;
+import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
-import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -60,13 +62,13 @@ public class ModelReduce
 	public <N,S>ModelReduce() {}
 	
 	@SuppressWarnings("unchecked")
-	public <S extends NLPState>ModelReduce(String[] args) throws Exception
+	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>ModelReduce(String[] args) throws Exception
 	{
 		BinUtils.initArgs(args, this);
 		
-		GlobalLexica lexica = new GlobalLexica(IOUtils.createFileInputStream(configuration_file));
+		GlobalLexica<N> lexica = new GlobalLexica<>(IOUtils.createFileInputStream(configuration_file));
 		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(model_file);
-		OnlineComponent<S> component = (OnlineComponent<S>)in.readObject(); in.close();
+		OnlineComponent<N,S> component = (OnlineComponent<N,S>)in.readObject(); in.close();
 		component.setConfiguration(IOUtils.createFileInputStream(configuration_file));
 		List<String> inputFiles = FileUtils.getFileList(input_path, input_ext);
 		OnlineOptimizer optimizer = component.getOptimizer();
@@ -93,12 +95,12 @@ public class ModelReduce
 		}
 	}
 	
-	public <S extends NLPState>double evaluate(List<String> inputFiles, OnlineComponent<S> component, GlobalLexica lexica, float rate) throws Exception
+	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>double evaluate(List<String> inputFiles, OnlineComponent<N,S> component, GlobalLexica<N> lexica, float rate) throws Exception
 	{
-		TSVReader reader = component.getConfiguration().getTSVReader();
+		TSVReader<N> reader = createTSVReader(component.getConfiguration().getReaderFieldMap());
 		long st, et, ttime = 0, tnode = 0;
-		List<NLPNode[]> document;
-		NLPNode[] nodes;
+		List<N[]> document;
+		N[] nodes;
 		
 		component.setFlag(NLPFlag.EVALUATE);
 		Eval eval = component.getEval();
@@ -137,6 +139,12 @@ public class ModelReduce
 		
 		System.out.println(String.format("%5.4f: %s -> %7d, %3d, N/S = %d", rate, eval.toString(), component.getFeatureTemplate().getSparseFeatureSize(), component.getOptimizer().getLabelSize(), (int)Math.round(1000d * tnode / ttime)));
 		return eval.score();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <N extends AbstractNLPNode<N>>TSVReader<N> createTSVReader(Object2IntMap<String> map)
+	{
+		return (TSVReader<N>)new NLPReader(map);
 	}
 	
 	static public void main(String[] args)

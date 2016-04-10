@@ -17,7 +17,7 @@ package edu.emory.mathcs.nlp.component.dep;
 
 import java.io.Serializable;
 
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPLabelCandidate implements Serializable
+public class DEPLabelCandidate<N extends AbstractNLPNode<N>> implements Serializable
 {
 	private static final long serialVersionUID = 5579863219050051216L;
 	
@@ -68,7 +68,7 @@ public class DEPLabelCandidate implements Serializable
 			NOT_NO_REDUCE.add(index);
 	}
 	
-	public IntSet get(NLPNode stack, NLPNode input)
+	public IntSet get(N stack, N input)
 	{
 		if (stack.getID() == 0)
 			return X_SHIFT;
@@ -85,7 +85,7 @@ public class DEPLabelCandidate implements Serializable
 		return null;
 	}
 	
-	public int[] getLabelIndices(NLPNode stack, NLPNode input, float[] scores)
+	public int[] getLabelIndices(N stack, N input, float[] scores)
 	{
 		IntSet candidates = get(stack, input);
 		return MLUtils.argmax2(scores, candidates);

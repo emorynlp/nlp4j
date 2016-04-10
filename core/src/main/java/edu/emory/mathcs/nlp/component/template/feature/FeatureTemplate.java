@@ -33,7 +33,7 @@ import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.node.Orthographic;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
@@ -52,7 +52,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class FeatureTemplate<S extends NLPState> implements Serializable
+public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>> implements Serializable
 {
 	private static final long serialVersionUID = -6755594173767815098L;
 
@@ -284,11 +284,11 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 	
 	protected String getFeature(S state, FeatureItem item)
 	{
-		NLPNode node = state.getNode(item);
+		N node = state.getNode(item);
 		return (node == null) ? null : getFeature(state, item, node);
 	}
 	
-	protected String getFeature(S state, FeatureItem item, NLPNode node)
+	protected String getFeature(S state, FeatureItem item, N node)
 	{
 		String f = node.getValue(item.field);
 		if (f != null) return f;
@@ -304,14 +304,14 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 	}
 	
 	/** The prefix cannot be the entire word (e.g., getPrefix("abc", 3) -> null). */
-	protected String getPrefix(NLPNode node, int n)
+	protected String getPrefix(N node, int n)
 	{
 		String s = node.getWordFormSimplifiedLowercase();
 		return (n < s.length()) ? s.substring(0, n) : null;
 	}
 	
 	/** The suffix cannot be the entire word (e.g., getSuffix("abc", 3) -> null). */
-	protected String getSuffix(NLPNode node, int n)
+	protected String getSuffix(N node, int n)
 	{
 		String s = node.getWordFormSimplifiedLowercase();
 		return (n < s.length()) ? s.substring(s.length()-n) : null;
@@ -321,11 +321,11 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 	
 	protected Collection<String> getFeatures(S state, FeatureItem item)
 	{
-		NLPNode node = state.getNode(item);
+		N node = state.getNode(item);
 		return (node == null) ? null : getFeatures(state, item, node);
 	}
 	
-	protected Collection<String> getFeatures(S state, FeatureItem item, NLPNode node)
+	protected Collection<String> getFeatures(S state, FeatureItem item, N node)
 	{
 		switch (item.field)
 		{
@@ -339,7 +339,7 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 		}
 	}
 	
-	protected List<String> getPositionFeatures(S state, NLPNode node)
+	protected List<String> getPositionFeatures(S state, N node)
 	{
 		List<String> values = new ArrayList<>();
 		
@@ -349,7 +349,7 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 		return values.isEmpty() ? null : values;
 	}
 	
-	protected List<String> getOrthographicFeatures(S state, NLPNode node, boolean caseSensitive)
+	protected List<String> getOrthographicFeatures(S state, N node, boolean caseSensitive)
 	{
 		List<String> list = new ArrayList<>();
 		
@@ -476,7 +476,7 @@ public class FeatureTemplate<S extends NLPState> implements Serializable
 	{
 		if (word_embeddings == null || word_embeddings.isEmpty()) return null;
 		float[] w, v = null;
-		NLPNode node;
+		N node;
 		int i = -1;
 		
 		for (FeatureItem item : word_embeddings)

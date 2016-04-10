@@ -16,11 +16,13 @@
 package edu.emory.mathcs.nlp.component.dep;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -28,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPState extends NLPState
+public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 {
 	public static final String ARC_LEFT    = "L";
 	public static final String ARC_RIGHT   = "R";
@@ -37,12 +39,12 @@ public class DEPState extends NLPState
 	public static final String LIST_REDUCE = "R";
 	public static final String LIST_PASS   = "P";
 	
-	private DEPArc[]     oracle;
-	private IntArrayList stack;
-	private IntArrayList inter;
-	private int          input;
+	private List<DEPArc<N>> oracle;
+	private IntArrayList    stack;
+	private IntArrayList    inter;
+	private int             input;
 	
-	public DEPState(NLPNode[] nodes)
+	public DEPState(N[] nodes)
 	{
 		super(nodes);
 		stack = new IntArrayList();
@@ -56,8 +58,8 @@ public class DEPState extends NLPState
 	@Override
 	public boolean saveOracle()
 	{
-		oracle = Arrays.stream(nodes).map(n -> n.clearDependencies()).toArray(DEPArc[]::new);
-		return Arrays.stream(oracle).filter(n -> n.getNode() != null).findFirst().isPresent();
+		oracle = Arrays.stream(nodes).map(n -> n.clearDependencies()).collect(Collectors.toList());
+		return oracle.stream().filter(n -> n.getNode() != null).findFirst().isPresent();
 	}
 	
 	@Override
@@ -68,7 +70,7 @@ public class DEPState extends NLPState
 		
 		for (int i=1; i<nodes.length; i++)
 		{
-			DEPArc o = oracle[i];
+			DEPArc<N> o = oracle.get(i);
 			nodes[i].setDependencyHead(o.getNode(), o.getLabel());
 		}
 	}
@@ -82,13 +84,13 @@ public class DEPState extends NLPState
 	
 	public DEPLabel getOracleLabel()
 	{
-		NLPNode stack = getStack();
-		NLPNode input = getInput();
-		DEPArc gold;
+		N stack = getStack();
+		N input = getInput();
+		DEPArc<N> gold;
 		String list;
 		
 		// left arc
-		gold = oracle[stack.getID()];
+		gold = oracle.get(stack.getID());
 		
 		if (gold.isNode(input) && !input.isDescendantOf(stack))
 		{
@@ -97,7 +99,7 @@ public class DEPState extends NLPState
 		}
 				
 		// right arc
-		gold = oracle[input.getID()];
+		gold = oracle.get(input.getID());
 		
 		if (gold.isNode(stack) && !stack.isDescendantOf(input))
 		{
@@ -117,18 +119,18 @@ public class DEPState extends NLPState
 	private boolean isOracleShift()
 	{
 		// if head(input) < stack
-		NLPNode stack = getStack();
+		N stack = getStack();
 		
-		if (oracle[input].getNode().getID() < stack.getID())
+		if (oracle.get(input).getNode().getID() < stack.getID())
 			return false;
 		
 		// if child(input) < stack
-		NLPNode input = getInput();
+		N input = getInput();
 		int i = 0;
 
 		while ((stack = peekStack(--i)) != null)
 		{
-			if (oracle[stack.getID()].isNode(input))
+			if (oracle.get(stack.getID()).isNode(input))
 				return false;
 		}
 		
@@ -139,7 +141,7 @@ public class DEPState extends NLPState
 	private boolean isOracleReduce(boolean hasHead)
 	{
 		// if stack has no head
-		NLPNode stack = getStack();
+		N stack = getStack();
 		
 		if (!hasHead && !stack.hasDependencyHead())
 			return false;
@@ -147,7 +149,7 @@ public class DEPState extends NLPState
 		// if child(stack) > input 
 		for (int i=input+1; i<nodes.length; i++)
 		{
-			if (oracle[i].isNode(stack))
+			if (oracle.get(i).isNode(stack))
 				return false;
 		}
 		
@@ -160,8 +162,8 @@ public class DEPState extends NLPState
 	public void next(LabelMap map, int[] top2, float[] scores)
 	{
 		DEPLabel label = new DEPLabel(map.getLabel(top2[0]));
-		NLPNode  stack = getStack();
-		NLPNode  input = getInput();
+		N  stack = getStack();
+		N  input = getInput();
 		
 		if (label.isArc(ARC_LEFT))
 		{
@@ -211,7 +213,7 @@ public class DEPState extends NLPState
 	 * @return the window'th top of the stack if exists; otherwise, -1.
 	 * @param window 0: top, 1: 2nd-top, so one.
 	 */
-	public NLPNode peekStack(int window)
+	public N peekStack(int window)
 	{
 		if (window <= 0)
 		{
@@ -224,30 +226,30 @@ public class DEPState extends NLPState
 		return null;
 	}
 	
-	public NLPNode getStack(int window)
+	public N getStack(int window)
 	{
 		return getNode(stack.topInt(), window, true);
 	}
 	
-	public NLPNode getInput(int window)
+	public N getInput(int window)
 	{
 		return getNode(input, window, true);
 	}
 	
-	public NLPNode getStack()
+	public N getStack()
 	{
 		return getStack(0);
 	}
 	
-	public NLPNode getInput()
+	public N getInput()
 	{
 		return getInput(0);
 	}
 	
 	@Override
-	public NLPNode getNode(FeatureItem item)
+	public N getNode(FeatureItem item)
 	{
-		NLPNode node = null;
+		N node = null;
 		
 		switch (item.source)
 		{
@@ -265,13 +267,13 @@ public class DEPState extends NLPState
 	public void evaluate(Eval eval)
 	{
 		int las = 0, uas = 0;
-		DEPArc  gold;
-		NLPNode node;
+		DEPArc<N> gold;
+		N node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
-			gold = oracle[i];
-			node = nodes [i];
+			gold = oracle.get(i);
+			node = nodes[i];
 			
 			if (gold.isNode(node.getDependencyHead()))
 			{

@@ -23,23 +23,23 @@ import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.feature.Relation;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
  * This class consists of processing states 
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class NLPState
+public abstract class NLPState<N extends AbstractNLPNode<N>>
 {
-	protected List<NLPNode[]> document;
-	protected NLPNode[] nodes;
+	protected List<N[]> document;
+	protected N[] nodes;
 
 	/**
 	 * For sentence-based NLP components.
 	 * @param nodes {@code node[0]} is reserved for the artificial root, {@code node[1]} represents the first token, and so on.
 	 */
-	public NLPState(NLPNode[] nodes)
+	public NLPState(N[] nodes)
 	{
 		setNodes(nodes);
 	}
@@ -48,7 +48,7 @@ public abstract class NLPState
 	 * For document-based NLP components.
 	 * @param document each node array represents a sentence.
 	 */
-	public NLPState(List<NLPNode[]> document)
+	public NLPState(List<N[]> document)
 	{
 		setDocument(document);
 	}
@@ -80,7 +80,7 @@ public abstract class NLPState
 	 * @return the node with respect to the feature item if exists; otherwise, {@code null}.
 	 * @see {@link FeatureTemplate}.
 	 */
-	public abstract NLPNode getNode(FeatureItem item);
+	public abstract N getNode(FeatureItem item);
 	
 	/**
 	 * Evaluates all predictions made for either {@link #nodes} or {@link #document} using the specific evaluator.
@@ -88,38 +88,38 @@ public abstract class NLPState
 	 */
 	public abstract void evaluate(Eval eval);
 	
-	public NLPNode[] getNodes()
+	public N[] getNodes()
 	{
 		return nodes;
 	}
 	
-	public void setNodes(NLPNode[] nodes)
+	public void setNodes(N[] nodes)
 	{
 		this.nodes = nodes;
 	}
 	
-	public List<NLPNode[]> getDocument()
+	public List<N[]> getDocument()
 	{
 		return document;
 	}
 	
-	public void setDocument(List<NLPNode[]> document)
+	public void setDocument(List<N[]> document)
 	{
 		this.document = document;
 	}
 	
-	public NLPNode getNode(int index)
+	public N getNode(int index)
 	{
 		return getNode(index, 0, false);
 	}
 	
 	/** @return {@link #getNode(int, int, boolean)}, where {@code includeRoot = false}. */
-	public NLPNode getNode(int index, int window)
+	public N getNode(int index, int window)
 	{
 		return getNode(index, window, false);
 	}
 	
-	public NLPNode getNode(int index, int window, Relation relation)
+	public N getNode(int index, int window, Relation relation)
 	{
 		return getRelativeNode(getNode(index, window), relation);
 	}
@@ -130,14 +130,14 @@ public abstract class NLPState
 	 * @param window context window.
 	 * @param includeRoot if {@code true}, the artificial root node is considered a part of context.
 	 */
-	public NLPNode getNode(int index, int window, boolean includeRoot)
+	public N getNode(int index, int window, boolean includeRoot)
 	{
 		index += window;
 		int begin = includeRoot ? 0 : 1;
 		return begin <= index && index < nodes.length ? nodes[index] : null;
 	}
 	
-	public NLPNode getRelativeNode(NLPNode node, Relation relation)
+	public N getRelativeNode(N node, Relation relation)
 	{
 		if (node == null || relation == null)
 			return node;
@@ -168,19 +168,19 @@ public abstract class NLPState
 	 * @param item the feature template.
 	 * @param node the input node.
 	 */
-	public NLPNode getRelativeNode(FeatureItem item, NLPNode node)
+	public N getRelativeNode(FeatureItem item, N node)
 	{
 		return getRelativeNode(node, item.relation);
 	}
 	
 	/** @return {@code true} if the node is the first node in the sentence. */
-	public boolean isFirst(NLPNode node)
+	public boolean isFirst(N node)
 	{
 		return nodes[1] == node; 
 	}
 	
 	/** @return {@code true} if the node is the first node in the sentence. */
-	public boolean isLast(NLPNode node)
+	public boolean isLast(N node)
 	{
 		return nodes[nodes.length-1] == node;
 	}
