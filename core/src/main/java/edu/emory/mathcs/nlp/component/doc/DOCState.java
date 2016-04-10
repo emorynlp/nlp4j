@@ -37,7 +37,6 @@ public class DOCState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	protected boolean   terminate;
 	protected List<N[]> non_stopwords;
 	protected float[]   prediction_scores;
-	protected float[][] ensemble_scores;
 	
 	public DOCState(List<N[]> document, String key)
 	{
@@ -131,16 +130,6 @@ public class DOCState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	public void setPredictionScores(float[] scores)
 	{
 		this.prediction_scores = scores;
-	}
-	
-	public float[][] getEnsembleScores()
-	{
-		return ensemble_scores;
-	}
-
-	public void setEnsembleScores(float[][] scores)
-	{
-		this.ensemble_scores = scores;
 	}
 	
 	public N getKeyNode()

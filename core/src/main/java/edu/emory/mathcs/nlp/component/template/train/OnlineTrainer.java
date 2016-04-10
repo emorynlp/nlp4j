@@ -286,7 +286,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 			in.close();
 			
 			component.getFeatureTemplate().reduce(component.getOptimizer().getWeightVector(), rate);
-			saveModel(component, IOUtils.createObjectXZBufferedOutputStream(modelFile+".red"));
+			saveModel(component, IOUtils.createFileOutputStream(modelFile+".red"));
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}

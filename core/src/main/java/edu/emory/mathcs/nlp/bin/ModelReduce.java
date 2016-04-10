@@ -49,7 +49,7 @@ public class ModelReduce
 	@Option(name="-de", usage="development file extension (default: *)", required=false, metaVar="<string>")
 	public String input_ext = "*";
 	@Option(name="-oe", usage="output file extension (default: sk)", required=false, metaVar="<string>")
-	public String output_ext = "sk";
+	public String output_ext = "red";
 	@Option(name="-start", usage="starting reduce rate (default: 0.05)", required=false, metaVar="<float>")
 	public float start = 0.05f;
 	@Option(name="-inc", usage="incremental reduce rate (default: 0.01)", required=false, metaVar="<float>")
