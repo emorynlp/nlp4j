@@ -25,6 +25,10 @@ import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
  */
 public class RandomWeightGenerator implements WeightGenerator
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4923093894775449475L;
 	private float  lower_bound;	// inclusive
 	private float  upper_bound;	// exclusive
 	private Random rand;

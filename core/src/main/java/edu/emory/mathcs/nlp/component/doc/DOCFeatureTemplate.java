@@ -54,7 +54,10 @@ public class DOCFeatureTemplate<S extends DOCState> extends FeatureTemplate<S>
 		FeatureItem[] items = createFeatureItems(element);
 		if (feature_list_type == null) feature_list_type = new ArrayList<>();
 		
-		add(items);
+		if (items != null && items.length > 0 && items[0].field == Field.word_embedding)
+			addWordEmbedding(items[0]);
+		else
+			add(items);
 		feature_list_type.add(Field.valueOf(XMLUtils.getTrimmedAttribute(element, "t")));
 	}
 	

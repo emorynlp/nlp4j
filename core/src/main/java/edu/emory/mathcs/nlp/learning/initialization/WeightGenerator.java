@@ -15,10 +15,12 @@
  */
 package edu.emory.mathcs.nlp.learning.initialization;
 
+import java.io.Serializable;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public interface WeightGenerator
+public interface WeightGenerator extends Serializable
 {
 	float next();
 }
