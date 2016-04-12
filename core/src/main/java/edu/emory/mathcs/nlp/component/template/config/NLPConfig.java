@@ -24,9 +24,9 @@ import org.w3c.dom.NodeList;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.train.LOLS;
-import edu.emory.mathcs.nlp.component.template.util.TSVReader;
 import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
 import edu.emory.mathcs.nlp.learning.activation.SigmoidFunction;
 import edu.emory.mathcs.nlp.learning.activation.SoftmaxFunction;
@@ -48,8 +48,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NLPConfig implements ConfigXML
+public class NLPConfig<N extends AbstractNLPNode<N>> implements ConfigXML
 {
+	protected Object2IntMap<String> reader_map;
 	protected Element xml;
 	
 //	=================================== CONSTRUCTORS ===================================
@@ -84,27 +85,9 @@ public class NLPConfig implements ConfigXML
 		return language == null ? Language.ENGLISH : Language.getType(language);
 	}
 	
-	public TSVReader getTSVReader()
+	public Object2IntMap<String> getReaderFieldMap()
 	{
-		Element eReader = XMLUtils.getFirstElementByTagName(xml, TSV);
-		Object2IntMap<String> map = getFieldMap(eReader);
-		TSVReader reader = new TSVReader();
-		
-		reader.form   = map.getOrDefault(FIELD_FORM  , -1);
-		reader.lemma  = map.getOrDefault(FIELD_LEMMA , -1);
-		reader.pos    = map.getOrDefault(FIELD_POS   , -1);
-		reader.nament = map.getOrDefault(FIELD_NAMENT, -1);
-		reader.feats  = map.getOrDefault(FIELD_FEATS , -1);
-		reader.dhead  = map.getOrDefault(FIELD_DHEAD , -1);
-		reader.deprel = map.getOrDefault(FIELD_DEPREL, -1);
-		reader.sheads = map.getOrDefault(FIELD_SHEADS, -1);
-		
-		return reader;
-	}
-	
-	/** Called by {@link #getTSVReader()}. */
-	protected Object2IntMap<String> getFieldMap(Element eTSV)
-	{
+		Element eTSV = XMLUtils.getFirstElementByTagName(xml, TSV);
 		NodeList list = eTSV.getElementsByTagName(COLUMN);
 		int i, index, size = list.getLength();
 		Element element;

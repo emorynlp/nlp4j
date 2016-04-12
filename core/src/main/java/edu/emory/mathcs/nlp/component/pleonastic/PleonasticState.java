@@ -27,7 +27,7 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class PleonasticState extends NLPState
+public class PleonasticState extends NLPState<NLPNode>
 {
 	static public final String FEAT_KEY = "it"; 
 	private String[] oracle;

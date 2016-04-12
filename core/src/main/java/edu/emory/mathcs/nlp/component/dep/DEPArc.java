@@ -16,17 +16,17 @@
 package edu.emory.mathcs.nlp.component.dep;
 
 import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPArc extends AbstractArc<NLPNode>
+public class DEPArc<N extends AbstractNLPNode<N>> extends AbstractArc<N>
 {
 	private static final long serialVersionUID = -9099516205158258095L;
 	private double weight;
 	
-	public DEPArc(NLPNode node, String label)
+	public DEPArc(N node, String label)
 	{
 		super(node, label);
 	}
@@ -48,7 +48,7 @@ public class DEPArc extends AbstractArc<NLPNode>
 	}
 	
 	@Override
-	public int compareTo(AbstractArc<NLPNode> arc)
+	public int compareTo(AbstractArc<N> arc)
 	{
 		return node.compareTo(arc.getNode());
 	}

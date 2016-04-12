@@ -16,18 +16,22 @@
 package edu.emory.mathcs.nlp.component.doc;
 
 import java.io.InputStream;
+import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class DOCAnalyzer<S extends DOCState> extends OnlineComponent<S>
+public class DOCAnalyzer<N extends AbstractNLPNode<N>> extends OnlineComponent<N,DOCState<N>>
 {
 	private static final long serialVersionUID = 408764219381044191L;
+	public static final String FEAT_KEY = "doc_feat_key";
+	protected String feat_key;
 
 	public DOCAnalyzer() {super(true);}
 	
@@ -37,9 +41,24 @@ public abstract class DOCAnalyzer<S extends DOCState> extends OnlineComponent<S>
 	}
 	
 	@Override
+	public NLPConfig<N> setConfiguration(InputStream in)
+	{
+		NLPConfig<N> config = new NLPConfig<N>(in);
+		setConfiguration(config);
+		feat_key = config.getTextContent(FEAT_KEY);
+		return config;
+	}
+	
+	@Override
+	protected DOCState<N> initState(List<N[]> document)
+	{
+		return new DOCState<N>(document, feat_key);
+	}
+	
+	@Override
 	public void initFeatureTemplate()
 	{
-		feature_template = new DOCFeatureTemplate<S>(config.getFeatureTemplateElement(), getHyperParameter());
+		feature_template = new DOCFeatureTemplate<N,DOCState<N>>(config.getFeatureTemplateElement(), getHyperParameter());
 	}
 	
 	@Override
@@ -49,8 +68,8 @@ public abstract class DOCAnalyzer<S extends DOCState> extends OnlineComponent<S>
 	}
 
 	@Override
-	protected void postProcess(S state) {}
+	protected void postProcess(DOCState<N> state) {}
 
 	@Override
-	protected S initState(NLPNode[] nodes) {return null;}
+	protected DOCState<N> initState(N[] nodes) {return null;}
 }

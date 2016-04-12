@@ -28,6 +28,11 @@ public class FileUtils
 {
 	private FileUtils() {}
 	
+	static public long getNonFreeMemory()
+	{
+		return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+	}
+	
 	static public List<String> getFileList(String path, String extension)
 	{
 		return getFileList(path, extension, false);
