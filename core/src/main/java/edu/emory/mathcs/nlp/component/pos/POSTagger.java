@@ -21,12 +21,12 @@ import java.util.List;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTagger extends OnlineComponent<POSState>
+public class POSTagger<N extends AbstractNLPNode<N>> extends OnlineComponent<N,POSState<N>>
 {
 	private static final long serialVersionUID = -7926217238116337203L;
 	
@@ -38,9 +38,9 @@ public class POSTagger extends OnlineComponent<POSState>
 	}
 	
 	@Override
-	protected POSState initState(NLPNode[] nodes)
+	protected POSState<N> initState(N[] nodes)
 	{
-		return new POSState(nodes);
+		return new POSState<>(nodes);
 	}
 	
 	@Override
@@ -50,8 +50,8 @@ public class POSTagger extends OnlineComponent<POSState>
 	}
 	
 	@Override
-	protected POSState initState(List<NLPNode[]> document) {return null;}	
+	protected POSState<N> initState(List<N[]> document) {return null;}	
 	
 	@Override
-	protected void postProcess(POSState state) {}
+	protected void postProcess(POSState<N> state) {}
 }

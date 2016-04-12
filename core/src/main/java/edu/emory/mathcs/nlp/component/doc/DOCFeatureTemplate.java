@@ -25,11 +25,12 @@ import java.util.stream.Collectors;
 import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectFloatPair;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
@@ -38,7 +39,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DOCFeatureTemplate<S extends DOCState> extends FeatureTemplate<S>
+public class DOCFeatureTemplate<N extends AbstractNLPNode<N>, S extends DOCState<N>> extends FeatureTemplate<N,S>
 {
 	private static final long serialVersionUID = 8581842859392646419L;
 	private List<Field> feature_list_type;
@@ -125,8 +126,8 @@ public class DOCFeatureTemplate<S extends DOCState> extends FeatureTemplate<S>
 		case bag_of_clusters_norm:
 		case bag_of_words_stopwords_norm:
 		case bag_of_clusters_stopwords_norm:
-			float total = (float)map.entrySet().stream().mapToDouble(e -> e.getValue()).sum();
-			return map.entrySet().stream().map(e -> new ObjectFloatPair<>(e.getKey(), e.getValue()/total)).collect(Collectors.toList());
+//			float total = (float)map.entrySet().stream().mapToDouble(e -> e.getValue()).sum();
+			return map.entrySet().stream().map(e -> new ObjectFloatPair<>(e.getKey(), (float)MathUtils.sigmoid(e.getValue()))).collect(Collectors.toList());
 		default: return null;
 		}
 	}
@@ -134,11 +135,11 @@ public class DOCFeatureTemplate<S extends DOCState> extends FeatureTemplate<S>
 	protected Object2FloatMap<String> getBagOfWords(S state, FeatureItem[] items, boolean stopwords)
 	{
 		Object2FloatMap<String> map = new Object2FloatOpenHashMap<>();
-		NLPNode node;
+		N node;
 		int index;
 		String f;
 		
-		for (NLPNode[] nodes : state.getDocument(stopwords))
+		for (N[] nodes : state.getDocument(stopwords))
 		{
 			outer: for (int i=1; i<nodes.length; i++)
 			{
@@ -167,7 +168,7 @@ public class DOCFeatureTemplate<S extends DOCState> extends FeatureTemplate<S>
 		Object2FloatMap<String> map = new Object2FloatOpenHashMap<>();
 		Set<String> clusters;
 		
-		for (NLPNode[] nodes : state.getDocument(stopwords))
+		for (N[] nodes : state.getDocument(stopwords))
 		{
 			for (int i=1; i<nodes.length; i++)
 			{
@@ -186,5 +187,37 @@ public class DOCFeatureTemplate<S extends DOCState> extends FeatureTemplate<S>
 	public float[] createDenseVector(S state)
 	{
 		return null;
+//		return getEmbeddings(state, true);
+	}
+	
+	public float[] getEmbeddings(S state, boolean average)
+	{
+		float[] w, v = null;
+		int count = 0;
+		N node;
+		
+		for (N[] nodes : state.getDocument())
+		{
+			for (int i=1; i<nodes.length; i++)
+			{
+				node = nodes[i];
+				
+				if (!node.isStopWord() && node.hasWordEmbedding())
+				{
+					w = node.getWordEmbedding();
+					if (v == null) v = new float[w.length];
+					MathUtils.add(v, w);
+					count++;
+				}
+			}
+		}
+		
+		if (average && v != null)
+		{
+			for (int i=0; i<v.length; i++)
+				v[i] /= count;
+		}
+
+		return v;
 	}
 }

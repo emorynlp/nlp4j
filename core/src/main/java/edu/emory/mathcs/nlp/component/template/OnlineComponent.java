@@ -22,7 +22,7 @@ import java.util.List;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
@@ -34,17 +34,17 @@ import edu.emory.mathcs.nlp.learning.util.MLUtils;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class OnlineComponent<S extends NLPState> implements NLPComponent, Serializable
+public abstract class OnlineComponent<N extends AbstractNLPNode<N>, S extends NLPState<N>> implements NLPComponent<N>, Serializable
 {
 	private static final long serialVersionUID = 59819173578703335L;
-	protected FeatureTemplate<S> feature_template;
-	protected OnlineOptimizer    optimizer;
-	protected boolean            document_based;
+	protected FeatureTemplate<N,S>     feature_template;
+	protected OnlineOptimizer          optimizer;
+	protected boolean                  document_based;
 	
 	protected transient HyperParameter hyper_parameter;
-	protected transient NLPConfig      config;
-	protected transient NLPFlag        flag;
-	protected transient Eval           eval;
+	protected transient NLPConfig<N> config;
+	protected transient NLPFlag flag;
+	protected transient Eval    eval;
 
 //	============================== CONSTRUCTORS ==============================
 	
@@ -81,12 +81,12 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 		hyper_parameter = hyperparameter;
 	}
 	
-	public FeatureTemplate<S> getFeatureTemplate()
+	public FeatureTemplate<N,S> getFeatureTemplate()
 	{
 		return feature_template;
 	}
 
-	public void setFeatureTemplate(FeatureTemplate<S> template)
+	public void setFeatureTemplate(FeatureTemplate<N,S> template)
 	{
 		feature_template = template;
 	}
@@ -120,19 +120,19 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 			setEval(createEvaluator());
 	}
 	
-	public NLPConfig getConfiguration()
+	public NLPConfig<N> getConfiguration()
 	{
 		return config;
 	}
 	
-	public void setConfiguration(NLPConfig config)
+	public void setConfiguration(NLPConfig<N> config)
 	{
 		this.config = config;
 	}
 	
-	public NLPConfig setConfiguration(InputStream in)
+	public NLPConfig<N> setConfiguration(InputStream in)
 	{
-		NLPConfig config = new NLPConfig(in);
+		NLPConfig<N> config = new NLPConfig<N>(in);
 		setConfiguration(config);
 		return config;
 	}
@@ -167,16 +167,16 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 //	============================== PROCESS ==============================
 	
 	@Override
-	public void process(NLPNode[] nodes)
+	public void process(N[] nodes)
 	{
 		process(initState(nodes));
 	}
 	
 	@Override
-	public void process(List<NLPNode[]> document)
+	public void process(List<N[]> document)
 	{
 		if (document_based) process(initState(document));
-		else for (NLPNode[] nodes : document) process(nodes);
+		else for (N[] nodes : document) process(nodes);
 	}
 	
 	/** Process the sequence of the nodes given the state. */
@@ -230,10 +230,10 @@ public abstract class OnlineComponent<S extends NLPState> implements NLPComponen
 	protected void putLabel(String label, int index) {}
 	
 	/** @return the processing state for the input nodes. */
-	protected abstract S initState(NLPNode[] nodes);
+	protected abstract S initState(N[] nodes);
 	
 	/** @return the processing state for the input document. */
-	protected abstract S initState(List<NLPNode[]> document);
+	protected abstract S initState(List<N[]> document);
 	
 	public abstract Eval createEvaluator();
 	

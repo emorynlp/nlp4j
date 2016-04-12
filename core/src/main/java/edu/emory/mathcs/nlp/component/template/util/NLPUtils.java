@@ -17,16 +17,16 @@ package edu.emory.mathcs.nlp.component.template.util;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.state.NLPState;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -63,50 +63,20 @@ public class NLPUtils
 		return nodes;
 	}
 	
-	static public NLPComponent getComponent(InputStream in)
+	@SuppressWarnings("unchecked")
+	static public <N extends AbstractNLPNode<N>,S extends NLPState<N>>NLPComponent<N> getComponent(InputStream in)
 	{
 		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(in);
-		OnlineComponent<?> component = null;
+		OnlineComponent<N,S> component = null;
 		
 		try
 		{
-			component = (OnlineComponent<?>)oin.readObject();
+			component = (OnlineComponent<N,S>)oin.readObject();
 			component.setFlag(NLPFlag.DECODE);
 			oin.close();
 		}
 		catch (Exception e) {e.printStackTrace();}
 
 		return component;
-	}
-	
-	static public List<NLPNode[]> getNonStopWords(List<NLPNode[]> document)
-	{
-		List<NLPNode[]> nonstop = new ArrayList<>();
-		NLPNode node;
-		
-		for (NLPNode[] nodes : document)
-		{
-			List<NLPNode> sen = new ArrayList<>();
-			
-			for (int i=1; i<nodes.length; i++)
-			{
-				node = nodes[i];
-				if (!node.isStopWord() && !StringUtils.containsPunctuationOrDigitsOrWhiteSpacesOnly(node.getWordFormSimplified()))
-					sen.add(node);
-			}
-			
-			if (!sen.isEmpty())
-			{
-				NLPNode[] snodes = new NLPNode[sen.size()+1];
-				snodes[0] = nodes[0];
-				
-				for (int i=1; i<snodes.length; i++)
-					snodes[i] = sen.get(i-1);
-				
-				nonstop.add(snodes);
-			}
-		}
-		
-		return nonstop;
 	}
 }

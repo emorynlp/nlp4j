@@ -17,29 +17,28 @@ package edu.emory.mathcs.nlp.component.template.util;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import edu.emory.mathcs.nlp.common.collection.tree.PrefixTree;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
 import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
+import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class GlobalLexica implements NLPComponent
+public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<N>
 {
 	static final public String LEXICA = "lexica";
 	static final public String FIELD  = "field";
@@ -49,7 +48,6 @@ public class GlobalLexica implements NLPComponent
 	protected Pair<Map<String,float[]>,Field>            word_embeddings;
 	protected Pair<PrefixTree<String,Set<String>>,Field> named_entity_gazetteers;
 	protected Pair<Set<String>,Field>                    stop_words;
-	protected List<Pair<Object2FloatMap<String>,Field>>  sentiment_lexica;
 	
 //	=================================== CONSTRUCTOR ===================================
 	
@@ -64,23 +62,23 @@ public class GlobalLexica implements NLPComponent
 		Element eLexica = XMLUtils.getFirstElementByTagName(doc, LEXICA);
 		if (eLexica == null) return;
 		
-		setAmbiguityClasses     (getLexiconFieldPair(eLexica, "ambiguity_classes"      , "Loading ambiguity classes\n"));
-		setWordClusters         (getLexiconFieldPair(eLexica, "word_clusters"          , "Loading word clusters\n"));
-		setWordEmbeddings       (getLexiconFieldPair(eLexica, "word_embeddings"        , "Loading word embeddings\n"));
-		setNamedEntityGazetteers(getLexiconFieldPair(eLexica, "named_entity_gazetteers", "Loading named entity gazetteers\n"));
-		setStopWords            (getLexiconFieldPair(eLexica, "stop_words"             , "Loading stop words\n"));
-		setSentimentLexica      (getSentimentLexica (eLexica));
+		setAmbiguityClasses     (getLexiconFieldPair(eLexica, "ambiguity_classes"      , "Loading ambiguity classes: "));
+		setWordClusters         (getLexiconFieldPair(eLexica, "word_clusters"          , "Loading word clusters: "));
+		setWordEmbeddings       (getLexiconFieldPair(eLexica, "word_embeddings"        , "Loading word embeddings: "));
+		setNamedEntityGazetteers(getLexiconFieldPair(eLexica, "named_entity_gazetteers", "Loading named entity gazetteers: "));
+		setStopWords            (getLexiconFieldPair(eLexica, "stop_words"             , "Loading stop words: "));
 	}
 	
-	private <T>Pair<T,Field> getLexiconFieldPair(Element eLexica, String tag, String message)
+	protected <T>Pair<T,Field> getLexiconFieldPair(Element eLexica, String tag, String message)
 	{
 		return getLexiconFieldPair(XMLUtils.getFirstElementByTagName(eLexica, tag), message);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T>Pair<T,Field> getLexiconFieldPair(Element element, String message)
+	protected <T>Pair<T,Field> getLexiconFieldPair(Element element, String message)
 	{
 		if (element == null) return null;
+		long m1 = FileUtils.getNonFreeMemory();
 		BinUtils.LOG.info(message);
 		
 		String path = XMLUtils.getTrimmedTextContent(element);
@@ -95,18 +93,9 @@ public class GlobalLexica implements NLPComponent
 		}
 		catch (Exception e) {e.printStackTrace();}
 
+		long m2 = FileUtils.getNonFreeMemory();
+		BinUtils.LOG.info(String.format("%d MB\n", (int)MathUtils.divide(m2-m1, MathUtils.sq(1024))));
 		return new Pair<>(lexicon, field);
-	}
-	
-	private List<Pair<Object2FloatMap<String>,Field>> getSentimentLexica(Element eLexica) 
-	{
-		List<Pair<Object2FloatMap<String>,Field>> lexica = new ArrayList<>();
-		NodeList nodes = eLexica.getElementsByTagName("sentiment_lexicon");
-		
-		for (int i=0; i<nodes.getLength(); i++)
-			lexica.add(getLexiconFieldPair((Element)nodes.item(i), "Loading sentiment lexicon: "+i+"\n"));
-			
-		return lexica.isEmpty() ? null : lexica;
 	}
 	
 //	=================================== GETTERS/SETTERS ===================================
@@ -161,41 +150,30 @@ public class GlobalLexica implements NLPComponent
 		stop_words = stopwords;
 	}
 	
-	public List<Pair<Object2FloatMap<String>,Field>> getSentimentLexica()
-	{
-		return sentiment_lexica;
-	}
-	
-	public void setSentimentLexica(List<Pair<Object2FloatMap<String>,Field>> lexica)
-	{
-		sentiment_lexica = lexica;
-	}
-	
 //	=================================== PROCESS ===================================
 	
 	@Override
-	public void process(List<NLPNode[]> document)
+	public void process(List<N[]> document)
 	{
-		for (NLPNode[] nodes : document)
+		for (N[] nodes : document)
 			process(nodes);
 	}
 	
 	@Override
-	public void process(NLPNode[] nodes)
+	public void process(N[] nodes)
 	{
 		processAmbiguityClasses(nodes);
 		processWordClusters(nodes);
 		processWordEmbeddings(nodes);
 		processNamedEntityGazetteers(nodes);
 		processStopWords(nodes);
-		processSentimentScores(nodes);
 	}
 	
-	public void processAmbiguityClasses(NLPNode[] nodes)
+	public void processAmbiguityClasses(N[] nodes)
 	{
 		if (ambiguity_classes == null) return;
 		List<String> list;
-		NLPNode node;
+		N node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
@@ -205,11 +183,11 @@ public class GlobalLexica implements NLPComponent
 		}
 	}
 	
-	public void processWordClusters(NLPNode[] nodes)
+	public void processWordClusters(N[] nodes)
 	{
 		if (word_clusters == null) return;
 		Set<String> set;
-		NLPNode node;
+		N node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
@@ -219,11 +197,11 @@ public class GlobalLexica implements NLPComponent
 		}
 	}
 	
-	public void processWordEmbeddings(NLPNode[] nodes)
+	public void processWordEmbeddings(N[] nodes)
 	{
 		if (word_embeddings == null) return;
 		float[] embedding;
-		NLPNode node;
+		N node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
@@ -233,7 +211,7 @@ public class GlobalLexica implements NLPComponent
 		}
 	}
 	
-	public void processNamedEntityGazetteers(NLPNode[] nodes)
+	public void processNamedEntityGazetteers(N[] nodes)
 	{
 		if (named_entity_gazetteers == null) return;
 		List<ObjectIntIntTriple<Set<String>>> list = named_entity_gazetteers.o1.getAll(nodes, 1, n -> getKey(n, named_entity_gazetteers.o2), false, false);
@@ -256,10 +234,10 @@ public class GlobalLexica implements NLPComponent
 		}
 	}
 	
-	public void processStopWords(NLPNode[] nodes)
+	public void processStopWords(N[] nodes)
 	{
 		if (stop_words == null) return;
-		NLPNode node;
+		N node;
 		
 		for (int i=1; i<nodes.length; i++)
 		{
@@ -268,33 +246,7 @@ public class GlobalLexica implements NLPComponent
 		}
 	}
 	
-	public void processSentimentScores(NLPNode[] nodes)
-	{
-		if (sentiment_lexica == null) return;
-		NLPNode node;
-		
-		for (int i=1; i<nodes.length; i++)
-		{
-			node = nodes[i];
-			node.setSentimentScores(getSentimentScores(node));
-		}
-	}
-	
-	public float[] getSentimentScores(NLPNode node)
-	{
-		float[] scores = new float[sentiment_lexica.size()];
-		Pair<Object2FloatMap<String>,Field> p;
-		
-		for (int i=0; i<scores.length; i++)
-		{
-			p = sentiment_lexica.get(i);
-			scores[i] = p.o1.getOrDefault(getKey(node, p.o2), 0f);
-		}
-		
-		return scores;
-	}
-	
-	protected String getKey(NLPNode node, Field field)
+	protected String getKey(N node, Field field)
 	{
 		return node.getValue(field);
 	}

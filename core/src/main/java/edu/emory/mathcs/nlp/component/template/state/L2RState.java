@@ -20,18 +20,18 @@ import java.util.Arrays;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class L2RState extends NLPState
+public abstract class L2RState<N extends AbstractNLPNode<N>> extends NLPState<N>
 {
 	protected String[] oracle;
 	protected int input = 1;
 	
-	public L2RState(NLPNode[] nodes)
+	public L2RState(N[] nodes)
 	{
 		super(nodes);
 	}
@@ -58,8 +58,8 @@ public abstract class L2RState extends NLPState
 			setLabel(nodes[i], oracle[i]);
 	}
 	
-	protected abstract String setLabel(NLPNode node, String label);
-	protected abstract String getLabel(NLPNode node);
+	protected abstract String setLabel(N node, String label);
+	protected abstract String getLabel(N node);
 	
 //	============================== TRANSITION ==============================
 
@@ -76,13 +76,13 @@ public abstract class L2RState extends NLPState
 	}
 	
 	@Override
-	public NLPNode getNode(FeatureItem item)
+	public N getNode(FeatureItem item)
 	{
-		NLPNode node = getNode(input, item.window);
+		N node = getNode(input, item.window);
 		return getRelativeNode(item, node);
 	}
 	
-	public NLPNode getInput()
+	public N getInput()
 	{
 		return nodes[input];
 	}

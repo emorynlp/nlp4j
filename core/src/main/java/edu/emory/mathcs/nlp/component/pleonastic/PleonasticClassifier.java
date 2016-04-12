@@ -26,7 +26,7 @@ import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class PleonasticClassifier extends OnlineComponent<PleonasticState>
+public class PleonasticClassifier extends OnlineComponent<NLPNode,PleonasticState>
 {
 	private static final long serialVersionUID = 3585863417135590906L;
 

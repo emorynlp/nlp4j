@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.template;
+package edu.emory.mathcs.nlp.component.template.reader;
 
-import java.util.List;
-
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public interface NLPComponent<N extends AbstractNLPNode<N>>
+public class NLPReader extends TSVReader<NLPNode>
 {
-	/** Processes a sentence. */
-	void process(N[] nodes);
+	public NLPReader() {super();}
 	
-	/** Processes a document. */
-	void process(List<N[]> document);
+	public NLPReader(Object2IntMap<String> map)
+	{
+		super(map);
+	}
+	
+	@Override
+	protected NLPNode create()
+	{
+		return new NLPNode();
+	}
 }
