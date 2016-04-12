@@ -794,6 +794,5 @@ abstract public class Tokenizer
 		}
 
 		return true;
-
 	}
 }
