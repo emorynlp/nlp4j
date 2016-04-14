@@ -82,44 +82,9 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 	
 	public abstract N self();
 	
-	public AbstractNLPNode() {}
-
-	/** To set word_form,start and end offset of word_form. */
-    public AbstractNLPNode(int startOffset, int endOffset, String form)
-    {
-    	this(-1, form);
-    	setStartOffset(startOffset);
-        setEndOffset  (endOffset);
-    }
-    
-	public AbstractNLPNode(int id, String form)
+	public AbstractNLPNode()
 	{
-		this(id, form, null);
-	}
-	
-	public AbstractNLPNode(int id, String form, String posTag)
-	{
-		this(id, form, null, posTag, new FeatMap());
-	}
-	
-	public AbstractNLPNode(int id, String form, String lemma, String posTag, FeatMap feats)
-	{
-		this(id, form, lemma, posTag, null, feats);
-	}
-	
-	public AbstractNLPNode(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats)
-	{
-		this(id, form, lemma, posTag, namentTag, feats, null, null);
-	}
-	
-	public AbstractNLPNode(int id, String form, String lemma, String posTag, FeatMap feats, N dhead, String deprel)
-	{
-		this(id, form, lemma, posTag, null, feats, dhead, deprel);
-	}
-	
-	public AbstractNLPNode(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats, N dhead, String deprel)
-	{
-		set(id, form, lemma, posTag, namentTag, feats, dhead, deprel);
+		toRoot();
 	}
 	
 	public void set(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats, N dhead, String deprel)

@@ -82,7 +82,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		BinUtils.LOG.info(message);
 		
 		String path = XMLUtils.getTrimmedTextContent(element);
-		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(path);
+		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(IOUtils.getInputStream(path));
 		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, FIELD));
 		T lexicon = null;
 		

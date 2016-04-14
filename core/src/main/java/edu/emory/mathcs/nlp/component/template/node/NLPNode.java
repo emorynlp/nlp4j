@@ -22,45 +22,7 @@ public class NLPNode extends AbstractNLPNode<NLPNode>
 {
 	private static final long serialVersionUID = 5522467283393796925L;
 
-	public NLPNode() {}
-
-	/** To set word_form,start and end offset of word_form. */
-    public NLPNode(String form, int startOffset, int endOffset)
-    {
-    	this(-1, form);
-    	setStartOffset(startOffset);
-        setEndOffset  (endOffset);
-    }
-    
-	public NLPNode(int id, String form)
-	{
-		this(id, form, null);
-	}
-	
-	public NLPNode(int id, String form, String posTag)
-	{
-		this(id, form, null, posTag, new FeatMap());
-	}
-	
-	public NLPNode(int id, String form, String lemma, String posTag, FeatMap feats)
-	{
-		this(id, form, lemma, posTag, null, feats);
-	}
-	
-	public NLPNode(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats)
-	{
-		this(id, form, lemma, posTag, namentTag, feats, null, null);
-	}
-	
-	public NLPNode(int id, String form, String lemma, String posTag, FeatMap feats, NLPNode dhead, String deprel)
-	{
-		this(id, form, lemma, posTag, null, feats, dhead, deprel);
-	}
-	
-	public NLPNode(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats, NLPNode dhead, String deprel)
-	{
-		set(id, form, lemma, posTag, namentTag, feats, dhead, deprel);
-	}
+	public NLPNode() {super();}
 	
 	@Override
 	public NLPNode self()
