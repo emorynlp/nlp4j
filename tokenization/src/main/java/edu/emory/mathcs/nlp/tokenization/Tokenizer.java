@@ -180,7 +180,7 @@ abstract public class Tokenizer
 			int bIndex = ps[0], eIndex = ps[1], len = s.length();
 
 			if (0 < bIndex) tokenizeSymbols(tokens, s.substring(0, bIndex), bIndex3);
-            Token Token = new Token(bIndex3.getVal(), bIndex3.getVal() + eIndex - bIndex, s.substring(bIndex, eIndex));
+            Token Token = new Token(s.substring(bIndex, eIndex), bIndex3.getVal(), bIndex3.getVal() + eIndex - bIndex);
             tokens.add(Token);
             bIndex3.setVal(bIndex3.getVal() + eIndex - bIndex);
 			if (eIndex < len) tokenizeSymbols(tokens, s.substring(eIndex), bIndex3);
@@ -332,7 +332,7 @@ abstract public class Tokenizer
                     bIndex2.setVal(addSymbols(tokens, t, bIndex2));
                 else
                 {
-                    Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + t.length(), t);
+                    Token Token = new Token(t, bIndex2.getVal(), bIndex2.getVal() + t.length());
                     tokens.add(Token);
                     bIndex2.setVal(bIndex2.getVal() + t.length());
                 }
@@ -417,7 +417,7 @@ abstract public class Tokenizer
 	{
 		if (s.length() == 1)
 		{
-            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + 1, s);
+            Token Token = new Token(s, bIndex2.getVal(), bIndex2.getVal() + 1);
             tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + 1);
             return bIndex2.getVal();
@@ -435,12 +435,12 @@ abstract public class Tokenizer
 			{
 				if (bIndex < i)
 				{
-					Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + i - bIndex, s.substring(bIndex, i));
+					Token Token = new Token(s.substring(bIndex, i), bIndex2.getVal(), bIndex2.getVal() + i - bIndex);
 					tokens.add(Token);
 					bIndex2.setVal(bIndex2.getVal() + i - bIndex);
 				}
 
-				Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + j - i, s.substring(i, j));
+				Token Token = new Token(s.substring(i, j), bIndex2.getVal(), bIndex2.getVal() + j - i);
                 tokens.add(Token);
                 bIndex2.setVal(bIndex2.getVal() + j - i);
                 bIndex = j;
@@ -449,7 +449,7 @@ abstract public class Tokenizer
 
 		if (bIndex < len)
 		{
-			Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + len - bIndex, s.substring(bIndex));
+			Token Token = new Token(s.substring(bIndex), bIndex2.getVal(), bIndex2.getVal() + len - bIndex);
 			tokens.add(Token);
 			bIndex2.setVal(bIndex2.getVal() + len - bIndex);
     }
@@ -499,7 +499,7 @@ abstract public class Tokenizer
 	{
 		if (s.length() == 1)
 		{
-            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + 1, s);
+            Token Token = new Token(s, bIndex2.getVal(), bIndex2.getVal() + 1);
             tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + 1);
             return bIndex2.getVal();
@@ -510,7 +510,7 @@ abstract public class Tokenizer
 
 		if (!tokenize(tokens, s, lower, lcs, d_currency, bIndex2) && !tokenize(tokens, s, lower, lcs, d_unit, bIndex2) && !tokenizeDigit(tokens, s, lcs, bIndex2) && !tokenizeWordsMore(tokens, s, lower, lcs, bIndex2))
 		{
-            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + s.length(), s);
+            Token Token = new Token(s, bIndex2.getVal(), bIndex2.getVal() + s.length());
             tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + s.length());
             return bIndex2.getVal();
@@ -537,7 +537,7 @@ abstract public class Tokenizer
     {
         for (String item : array)
         {
-            Token interval = new Token(bIndex2, bIndex2 + item.length(), item);
+            Token interval = new Token(item, bIndex2, bIndex2 + item.length());
             tokens.add(interval);
             bIndex2 = bIndex2 + item.length();
         }
@@ -553,12 +553,12 @@ abstract public class Tokenizer
 
 		if (tokenizeDigitAux(lcs[0]) && CharUtils.containsDigitPunctuationOnly(lcs, 1, len))
 		{
-            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + 1,
-                    original.substring(0, 1));
+            Token Token = new Token(original.substring(0, 1), bIndex2.getVal(),
+                    bIndex2.getVal() + 1);
             tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + 1);
-            Token newinterval = new Token(bIndex2.getVal(), bIndex2.getVal()
-					        + original.length() - 1, original.substring(1));
+            Token newinterval = new Token(original.substring(1), bIndex2.getVal(), bIndex2.getVal()
+									        + original.length() - 1);
             tokens.add(newinterval);
             bIndex2.setVal(bIndex2.getVal() + original.length() - 1);
             return true;
@@ -568,12 +568,12 @@ abstract public class Tokenizer
 
 		if (tokenizeDigitAux(lcs[len]) && CharUtils.containsDigitPunctuationOnly(lcs, 0, len))
 		{
-            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + len,
-                    original.substring(0, len));
+            Token Token = new Token(original.substring(0, len), bIndex2.getVal(),
+                    bIndex2.getVal() + len);
             tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + len);
-            Token newinterval = new Token(bIndex2.getVal(), bIndex2.getVal()
-					        + original.length() - len, original.substring(len));
+            Token newinterval = new Token(original.substring(len), bIndex2.getVal(), bIndex2.getVal()
+									        + original.length() - len);
             tokens.add(newinterval);
             bIndex2.setVal(bIndex2.getVal() + original.length() - len);
             return true;
@@ -622,12 +622,12 @@ abstract public class Tokenizer
                 .get(index + 1).getWordForm().charAt(0))))
 		{
             Token currToken = tokens.get(index);
-            Token Token = new Token(currToken.getStartOffset(),
-                    currToken.getEndOffset() - 1, StringUtils.trim(
-					        currToken.getWordForm(), 1));
+            Token Token = new Token(StringUtils.trim(
+			        currToken.getWordForm(), 1),
+                    currToken.getStartOffset(), currToken.getEndOffset() - 1);
             tokens.set(index, Token);
-            Token nextInterval = new Token(currToken.getEndOffset() - 1,
-                    currToken.getEndOffset(), StringConst.PERIOD);
+            Token nextInterval = new Token(StringConst.PERIOD,
+                    currToken.getEndOffset() - 1, currToken.getEndOffset());
             tokens.add(index + 1, nextInterval);
             return 1;
         }
@@ -647,8 +647,8 @@ abstract public class Tokenizer
                 Token prevToken = tokens.get(index - 1);
 //             Token currToken = tokens.get(index);
                 Token nextToken = tokens.get(index + 1);
-                Token Token = new Token(prevToken.getStartOffset(),
-                        nextToken.getEndOffset(), input.substring(prevToken.getStartOffset(), nextToken.getEndOffset()));
+                Token Token = new Token(input.substring(prevToken.getStartOffset(), nextToken.getEndOffset()),
+                        prevToken.getStartOffset(), nextToken.getEndOffset());
                 tokens.set(index - 1, Token);
                 tokens.remove(index);
                 tokens.remove(index);
@@ -670,11 +670,11 @@ abstract public class Tokenizer
         if (1 < leng && ca[leng - 1] == CharConst.PERIOD
                 && !CharUtils.isFinalMark(ca[leng - 2]))
         {
-            Token Token = new Token(lastInterval.getStartOffset(),
-                    lastInterval.getEndOffset() - 1, StringUtils.trim(lastToken, 1));
+            Token Token = new Token(StringUtils.trim(lastToken, 1),
+                    lastInterval.getStartOffset(), lastInterval.getEndOffset() - 1);
             tokens.set(lastIndex, Token);
-            Token nextInterval = new Token(lastInterval.getEndOffset() - 1,
-                    lastInterval.getEndOffset(), StringConst.PERIOD);
+            Token nextInterval = new Token(StringConst.PERIOD,
+                    lastInterval.getEndOffset() - 1, lastInterval.getEndOffset());
             tokens.add(lastIndex + 1, nextInterval);
         }
 	}

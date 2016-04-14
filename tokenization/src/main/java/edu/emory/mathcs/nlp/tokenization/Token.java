@@ -24,7 +24,7 @@ public class Token
 	protected int    start_offset;
     protected int    end_offset;
     
-    public Token(int startOffset, int endOffset, String form)
+    public Token(String form, int startOffset, int endOffset)
     {
     	setStartOffset(startOffset);
     	setEndOffset(endOffset);
