@@ -31,7 +31,6 @@ import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.MetaUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
@@ -79,15 +78,6 @@ abstract public class Tokenizer
 		catch (IOException e) {e.printStackTrace();}
 
 		return set;
-	}
-
-	public static Tokenizer create(Language language)
-	{
-		switch (language)
-		{
-		case ENGLISH: return new EnglishTokenizer();
-		default: throw new IllegalArgumentException(language+" not supported.");
-		}
 	}
 
 //	============================== Public ==============================
