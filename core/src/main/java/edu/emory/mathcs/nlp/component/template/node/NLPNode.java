@@ -25,7 +25,7 @@ public class NLPNode extends AbstractNLPNode<NLPNode>
 	public NLPNode() {}
 
 	/** To set word_form,start and end offset of word_form. */
-    public NLPNode(int startOffset, int endOffset, String form)
+    public NLPNode(String form, int startOffset, int endOffset)
     {
     	this(-1, form);
     	setStartOffset(startOffset);
