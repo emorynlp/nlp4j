@@ -17,6 +17,7 @@ package edu.emory.mathcs.nlp.zzz;
 
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.decode.AbstractNLPDecoder;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
 
 /**
@@ -30,7 +31,7 @@ public class RadiologyDecode
 		final String inputDir     = "/Users/jdchoi/Desktop/radiology/Q2";
 		final String inputExt     = "txt";
 		final String outputExt    = "tsv";
-		final String outputFormat = NLPDecoder.FORMAT_LINE;
+		final String outputFormat = AbstractNLPDecoder.FORMAT_LINE;
 		
 		NLPDecoder nlp4j = new NLPDecoder(IOUtils.createFileInputStream(configFile));
 		

@@ -23,6 +23,7 @@ import org.kohsuke.args4j.Option;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.decode.AbstractNLPDecoder;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
 
 /**
@@ -39,7 +40,7 @@ public class NLPDecode
 	@Option(name="-oe", usage="output file extension (default: nlp)", required=false, metaVar="<string>")
 	public String output_ext = "nlp";
 	@Option(name="-format", usage="format of the input data (raw|line|tsv; default: raw)", required=false, metaVar="<string>")
-	private String format = NLPDecoder.FORMAT_RAW;
+	private String format = AbstractNLPDecoder.FORMAT_RAW;
 	@Option(name="-threads", usage="number of threads (default: 2)", required=false, metaVar="<integer>")
 	protected int threads = 2;
 	private NLPDecoder decoder;

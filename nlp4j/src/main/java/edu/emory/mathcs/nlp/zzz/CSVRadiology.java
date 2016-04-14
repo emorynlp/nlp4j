@@ -30,8 +30,8 @@ import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
+import edu.emory.mathcs.nlp.tokenization.Token;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
 /**
@@ -82,8 +82,8 @@ public class CSVRadiology
 		{
 			PrintStream fout = IOUtils.createBufferedPrintStream(getOuputFilename(inputPath, i+outputStart));
 			
-			for (NLPNode[] nodes : tokenizer.segmentize(records.get(i).get(0)))
-				print(fout, nodes);
+			for (List<Token> tokens : tokenizer.segmentize(records.get(i).get(0)))
+				print(fout, tokens);
 			
 			fout.close();
 		}
@@ -105,9 +105,9 @@ public class CSVRadiology
 		return build.toString();
 	}
 	
-	void print(PrintStream fout, NLPNode[] nodes)
+	void print(PrintStream fout, List<Token> tokens)
 	{
-		String s = Joiner.join(nodes, " ", 1, nodes.length, NLPNode::getWordForm);
+		String s = Joiner.join(tokens, " ");
 		
 		for (Pair<Pattern,String> p : P_BEFORE)
 		{

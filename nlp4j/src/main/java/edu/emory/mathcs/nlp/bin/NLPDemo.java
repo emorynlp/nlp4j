@@ -18,6 +18,7 @@ package edu.emory.mathcs.nlp.bin;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.decode.AbstractNLPDecoder;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
 
 /**
@@ -27,15 +28,15 @@ public class NLPDemo
 {
 	static public void main(String[] args) throws Exception
 	{
-		final String configFile = "/Users/jdchoi/Documents/EmoryNLP/nlp4j/src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml";
-		final String inputFile  = "/Users/jdchoi/Documents/EmoryNLP/nlp4j/src/test/resources/dat/nlp4j.txt";
+		final String configFile = "src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml";
+		final String inputFile  = "src/test/resources/dat/nlp4j.txt";
 		
 		NLPDecoder nlp4j = new NLPDecoder(IOUtils.createFileInputStream(configFile));
 		NLPNode[] nodes;
-		
+
 		String sentence = "John bought a car for Mary.";
 		nodes = nlp4j.decode(sentence);
-		System.out.println(Joiner.join(nodes, "\n", 1));
-		nlp4j.decode(IOUtils.createFileInputStream(inputFile), System.out, NLPDecoder.FORMAT_RAW);
+		System.out.println(Joiner.join(nodes, "\n", 1)+"\n");
+		nlp4j.decode(IOUtils.createFileInputStream(inputFile), System.out, AbstractNLPDecoder.FORMAT_RAW);
 	}
 }

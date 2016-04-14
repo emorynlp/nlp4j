@@ -9,6 +9,7 @@
 * The POS tagger gives the 2nd-best predictions when the best predictions have low confidence (`pos2` in the extra feats).
 * Global lexica are no longer static.
 * NLPNode is abstracted for components and states.
+* Tokeninzer morphologica analyzer has no dependency to core.
 
 ## Version 1.0.0 (02/24/2016)
 
