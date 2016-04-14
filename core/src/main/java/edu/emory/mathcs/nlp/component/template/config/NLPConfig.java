@@ -180,7 +180,7 @@ public class NLPConfig<N extends AbstractNLPNode<N>> implements ConfigXML
 		case ADAGRAD            : return new AdaGrad(w, hp.getLearningRate(), hp.getBias(), hp.getL1Regularizer());
 		case ADAGRAD_MINI_BATCH : return new AdaGradMiniBatch(w, hp.getLearningRate(), hp.getBias(), hp.getL1Regularizer());
 		case ADADELTA_MINI_BATCH: return new AdaDeltaMiniBatch(w, hp.getLearningRate(), hp.getDecayingRate(), hp.getBias(), hp.getL1Regularizer());
-		case FFNN_SOFTMAX       : new FeedForwardNeuralNetworkSoftmax(hp.getHiddenDimensions(), hp.getActivationFunctions(), hp.getLearningRate(), hp.getBias(), hp.getWeightGenerator());
+		case FFNN_SOFTMAX       : return new FeedForwardNeuralNetworkSoftmax(hp.getHiddenDimensions(), hp.getActivationFunctions(), hp.getLearningRate(), hp.getBias(), hp.getWeightGenerator());
 		default: throw new IllegalArgumentException(algorithm+" is not a valid algorithm name."); 
 		}
 	}

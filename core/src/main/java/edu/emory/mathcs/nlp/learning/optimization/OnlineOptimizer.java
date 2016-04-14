@@ -192,7 +192,7 @@ public abstract class OnlineOptimizer implements Serializable
 	{
 		if (augment) augment(instance);
 		expand(instance.getFeatureVector());
-		if (instance.hasScores()) addScores(instance.getFeatureVector(), instance.getScores());
+		if (instance.hasScores() && instance.getScores().length == getLabelSize()) addScores(instance.getFeatureVector(), instance.getScores());
 		else instance.setScores(scores(instance.getFeatureVector()));
 		int yhat = getPredictedLabel(instance);
 		instance.setPredictedLabel(yhat);
