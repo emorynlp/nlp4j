@@ -137,7 +137,6 @@
       <groupId>edu.emory.mathcs.nlp</groupId>
       <artifactId>nlp4j-common</artifactId>
       <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
