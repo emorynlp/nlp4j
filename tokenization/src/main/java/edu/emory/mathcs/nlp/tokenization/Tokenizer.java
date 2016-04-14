@@ -94,6 +94,12 @@ abstract public class Tokenizer
 
 //	----------------------------------- Public methods -----------------------------------
 
+	public String[] split(String s)
+	{
+		List<NLPNode> tokens = tokenize(s);
+		return tokens.stream().map(node -> node.getWordForm()).toArray(String[]::new);
+	}
+	
 	/** @return a list of tokens in the specific input stream. */
 	public List<NLPNode> tokenize(InputStream in)
 	{
