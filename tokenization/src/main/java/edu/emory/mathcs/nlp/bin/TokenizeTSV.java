@@ -54,7 +54,7 @@ public class TokenizeTSV
 		String[] t = Splitter.splitTabs(line);
 		
 		for (int i=0; i<t.length; i++)
-			t[i] = Joiner.join(tokenizer.split(t[i]), " ");
+			t[i] = Joiner.join(tokenizer.tokenize(t[i]), " ");
 		
 		return Joiner.join(t, "\t");
 	}

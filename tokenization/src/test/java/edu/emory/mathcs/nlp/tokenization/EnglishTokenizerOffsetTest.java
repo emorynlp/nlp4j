@@ -22,8 +22,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -34,7 +32,7 @@ public class EnglishTokenizerOffsetTest
 	{
 		Tokenizer t = new EnglishTokenizer();
 		String s, r;
-		List<NLPNode> tokens;
+		List<Token> tokens;
 		List<Integer> tokenStartEnd;
 		
 //		System.out.println(t.tokenize("This building included: 30 toilets."));
@@ -53,7 +51,7 @@ public class EnglishTokenizerOffsetTest
 		
 	}
 
-	List<String> getTokenStrings(List<NLPNode> tokens) {
+	List<String> getTokenStrings(List<Token> tokens) {
 		List<String> tokenStrings = new ArrayList<String>();
 		for(int index = 0; index < tokens.size(); index++){
 			tokenStrings.add(tokens.get(index).getWordForm());
@@ -61,7 +59,7 @@ public class EnglishTokenizerOffsetTest
 		return tokenStrings;
 	}
 	
-	List<Integer> getTokenStartEnd(List<NLPNode> tokens) {
+	List<Integer> getTokenStartEnd(List<Token> tokens) {
 		List<Integer> tokenStartEnd = new ArrayList<Integer>();
 		for(int index = 0; index < tokens.size(); index++){
 			tokenStartEnd.add(tokens.get(index).getStartOffset());
@@ -75,7 +73,7 @@ public class EnglishTokenizerOffsetTest
 	{
 		Tokenizer t = new EnglishTokenizer();
 		String s, r;
-		List<NLPNode> tokens;
+		List<Token> tokens;
 		List<Integer> tokenStartEnd;
 		
 		
@@ -280,7 +278,7 @@ public class EnglishTokenizerOffsetTest
 		assertWordFormsEquals(s, tokens);
 	}
 	
-	private void assertWordFormsEquals(final String tokenizedString, final List<NLPNode> tokens) {
+	private void assertWordFormsEquals(final String tokenizedString, final List<Token> tokens) {
 		tokens.forEach(token -> assertEquals(tokenizedString.substring(token.getStartOffset(), token.getEndOffset()), token.getWordForm()));
 	}
 }

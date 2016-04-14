@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.common.util.Joiner;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -34,11 +34,8 @@ public class TokenizerDemo
 		String inputFile = "src/test/resources/emorynlp-raw.txt";
 		InputStream in = IOUtils.createFileInputStream(inputFile);
 		
-		for (NLPNode[] tokens : tokenizer.segmentize(in))
-		{
-			for (NLPNode token : tokens)
-				System.out.println(token.getWordForm());
-		}
+		for (Token[] tokens : tokenizer.segmentize(in))
+			System.out.println(Joiner.join(tokens, " "));
 		
 		in.close();
 	}
@@ -49,15 +46,13 @@ public class TokenizerDemo
 		Tokenizer tokenizer = new EnglishTokenizer();
 		String inputFile = "src/test/resources/emorynlp-line.txt";
 		BufferedReader in = IOUtils.createBufferedReader(inputFile);
-		List<NLPNode> tokens;
+		List<Token> tokens;
 		String line;
 		
 		while ((line = in.readLine()) != null)
 		{
 			tokens = tokenizer.tokenize(line);
-			
-			for (NLPNode token : tokens)
-				System.out.println(token.getWordForm());
+			System.out.println(Joiner.join(tokens, " "));	
 		}
 		
 		in.close();

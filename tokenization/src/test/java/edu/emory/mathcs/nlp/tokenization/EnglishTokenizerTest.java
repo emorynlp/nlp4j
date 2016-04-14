@@ -22,10 +22,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
-import edu.emory.mathcs.nlp.tokenization.Tokenizer;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -36,10 +32,8 @@ public class EnglishTokenizerTest
 	{
 		Tokenizer t = new EnglishTokenizer();
 		String s, r;
-		List<NLPNode> tokens;
+		List<Token> tokens;
 		List<String> tokenStrings;
-		
-//		System.out.println(t.tokenize("This building included: 30 toilets."));
 		
 		s = "500 million of 1986.[11]";
 		r = "[500, million, of, 1986, ., [, 11, ]]";
@@ -54,7 +48,7 @@ public class EnglishTokenizerTest
 		assertEquals(r, tokenStrings.toString());
 	}
 
-	private List<String> getTokenStrings(List<NLPNode> tokens) {
+	private List<String> getTokenStrings(List<Token> tokens) {
 		List<String> tokenStrings = new ArrayList<String>();
 		for(int index = 0; index < tokens.size(); index++){
 			tokenStrings.add(tokens.get(index).getWordForm());
@@ -67,7 +61,7 @@ public class EnglishTokenizerTest
 	{
 		Tokenizer t = new EnglishTokenizer();
 		String s, r;
-		List<NLPNode> tokens;
+		List<Token> tokens;
 		List<String> tokenStrings;
 		
 		// white-spaces

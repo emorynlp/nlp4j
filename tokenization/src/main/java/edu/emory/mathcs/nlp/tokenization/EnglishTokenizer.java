@@ -22,8 +22,6 @@ import java.util.List;
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Compound;
 import edu.emory.mathcs.nlp.tokenization.dictionary.EnglishApostrophe;
@@ -52,7 +50,7 @@ public class EnglishTokenizer extends Tokenizer
 		d_hyphen       = new EnglishHyphen();
 	}
 	
-//	----------------------------------- Tokenize -----------------------------------
+//	============================== Abstract ==============================
 	
 	@Override
 	protected int adjustFirstNonSymbolGap(char[] cs, int beginIndex, String t)
@@ -81,17 +79,17 @@ public class EnglishTokenizer extends Tokenizer
 	}
 	
 	@Override
-	protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original, String lower, char[] lcs, TokenIndex bIndex2)
+	protected boolean tokenizeWordsMore(List<Token> tokens, String original, String lower, char[] lcs, TokenIndex bIndex2)
 	{
 		return tokenize(tokens, original, lower, lcs, d_apostrophe, bIndex2) || tokenize(tokens, original, lower, lcs, d_compound, bIndex2); 
 	}
 	
-//	----------------------------------- Segmentize -----------------------------------
+//	============================== Segmentize ==============================
 	
 	@Override
-	public List<NLPNode[]> segmentize(List<NLPNode> tokens)
+	public List<Token[]> segmentize(List<Token> tokens)
 	{
-		List<NLPNode[]> sentences = new ArrayList<>();
+		List<Token[]> sentences = new ArrayList<>();
 		int[] brackets = new int[R_BRACKETS.length];
 		int bIndex, i, size = tokens.size();
 		boolean isTerminal = false;
@@ -110,15 +108,25 @@ public class EnglishTokenizer extends Tokenizer
 					continue;
 				}
 				
-				sentences.add(NLPUtils.toNodeArray(tokens, bIndex, bIndex = i+1));
+				sentences.add(getSubArray(tokens, bIndex, bIndex = i+1));
 				isTerminal = false;
 			}
 		}
 		
 		if (bIndex < size)
-			sentences.add(NLPUtils.toNodeArray(tokens, bIndex, size));
+			sentences.add(getSubArray(tokens, bIndex, size));
 
 		return sentences;
+	}
+	
+	public Token[] getSubArray(List<Token> tokens, int beginIndex, int endIndex)
+	{
+		Token[] array = new Token[endIndex - beginIndex];
+		
+		for (int i=beginIndex,j=0; i<endIndex; i++,j++)
+			array[j] = tokens.get(i);
+		
+		return array;
 	}
 		
 	/** Called by {@link EnglishSegmenter#getSentencesRaw(BufferedReader)}. */

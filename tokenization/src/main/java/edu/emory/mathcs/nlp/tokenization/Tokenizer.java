@@ -30,13 +30,11 @@ import org.magicwerk.brownies.collections.GapList;
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
-import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.MetaUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Currency;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Dictionary;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Emoticon;
@@ -92,20 +90,14 @@ abstract public class Tokenizer
 		}
 	}
 
-//	----------------------------------- Public methods -----------------------------------
+//	============================== Public ==============================
 
-	public String[] split(String s)
-	{
-		List<NLPNode> tokens = tokenize(s);
-		return tokens.stream().map(node -> node.getWordForm()).toArray(String[]::new);
-	}
-	
 	/** @return a list of tokens in the specific input stream. */
-	public List<NLPNode> tokenize(InputStream in)
+	public List<Token> tokenize(InputStream in)
 	{
 		BufferedReader reader = IOUtils.createBufferedReader(in);
-		ArrayList<NLPNode> tokens = new ArrayList<>();
-		List<NLPNode> t;
+		ArrayList<Token> tokens = new ArrayList<>();
+		List<Token> t;
 		String line;
 		int start = 0;
         int end = 0;
@@ -137,44 +129,36 @@ abstract public class Tokenizer
 		catch (IOException e) {e.printStackTrace();}
 		tokens.trimToSize();
 
-//		for(int tIndex = 0; tIndex < tokens.size(); tIndex++)
-//			tokens.get(tIndex).setID(tIndex + 1);
-
 		return tokens;
 	}
 
 	/** @return a list of tokens in the specific string. */
-	public List<NLPNode> tokenize(String s)
+	public List<Token> tokenize(String s)
 	{
-//		List<NLPNode> tokens = tokenizeWhiteSpaces(s, 0);
-//
-//		for(int tIndex = 0; tIndex < tokens.size(); tIndex++)
-//			tokens.get(tIndex).setID(tIndex + 1);
-
         return tokenizeWhiteSpaces(s, 0);
     }
 
-	public List<NLPNode[]> segmentize(InputStream in)
+	public List<Token[]> segmentize(InputStream in)
 	{
 		return segmentize(tokenize(in));
 	}
 
-	public List<NLPNode[]> segmentize(String s)
+	public List<Token[]> segmentize(String s)
 	{
 		return segmentize(tokenize(s));
 	}
 
-	abstract public List<NLPNode[]> segmentize(List<NLPNode> tokens);
+	abstract public List<Token[]> segmentize(List<Token> tokens);
 
-//	----------------------------------- Tokenize -----------------------------------
+//	============================== Tokenize ==============================
 
 	/**
 	 * Tokenizes white spaces.
 	 * Called by {@link #tokenize(InputStream)} and {@link #tokenize(String)}.
 	 */
-	private List<NLPNode> tokenizeWhiteSpaces(String s, int start)
+	private List<Token> tokenizeWhiteSpaces(String s, int start)
 	{
-	    List<NLPNode> tokens = new GapList<>();
+	    List<Token> tokens = new GapList<>();
 	    int i, len = s.length(), bIndex = start;
 		char[] cs = s.toCharArray();
 
@@ -197,7 +181,7 @@ abstract public class Tokenizer
 	 * Tokenizes hyperlinks, emoticons.
 	 * Called by {@link #tokenizeAux(String)}.
 	 */
-	private void tokenizeMetaInfo(List<NLPNode> tokens, String s, int bIndex2, int i)
+	private void tokenizeMetaInfo(List<Token> tokens, String s, int bIndex2, int i)
 	{
 		int[] ps;
 		TokenIndex bIndex3 = new TokenIndex(bIndex2);
@@ -206,8 +190,8 @@ abstract public class Tokenizer
 			int bIndex = ps[0], eIndex = ps[1], len = s.length();
 
 			if (0 < bIndex) tokenizeSymbols(tokens, s.substring(0, bIndex), bIndex3);
-            NLPNode nlpNode = new NLPNode(bIndex3.getVal(), bIndex3.getVal() + eIndex - bIndex, s.substring(bIndex, eIndex));
-            tokens.add(nlpNode);
+            Token Token = new Token(bIndex3.getVal(), bIndex3.getVal() + eIndex - bIndex, s.substring(bIndex, eIndex));
+            tokens.add(Token);
             bIndex3.setVal(bIndex3.getVal() + eIndex - bIndex);
 			if (eIndex < len) tokenizeSymbols(tokens, s.substring(eIndex), bIndex3);
 		}
@@ -235,7 +219,7 @@ abstract public class Tokenizer
 	}
 
 	/** Called by {@link #tokenizeMetaInfo(List, String)}. */
-	private void tokenizeSymbols(List<NLPNode> tokens, String s, TokenIndex bIndex2)
+	private void tokenizeSymbols(List<Token> tokens, String s, TokenIndex bIndex2)
 	{
 		char[] cs = s.toCharArray();
 		int len = s.length();
@@ -314,7 +298,7 @@ abstract public class Tokenizer
 	}
 
 	/** Called by {@link #tokenizeSymbols(List, String)}. */
-	private void tokenizeSymbolsAux(List<NLPNode> tokens, String s, char[] cs, List<int[]> indices, TokenIndex bIndex2)
+	private void tokenizeSymbolsAux(List<Token> tokens, String s, char[] cs, List<int[]> indices, TokenIndex bIndex2)
 	{
 		int i, pg, ng, bIndex, eIndex, size = indices.size() - 1;
 		boolean pb, nb;
@@ -358,8 +342,8 @@ abstract public class Tokenizer
                     bIndex2.setVal(addSymbols(tokens, t, bIndex2));
                 else
                 {
-                    NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + t.length(), t);
-                    tokens.add(nlpNode);
+                    Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + t.length(), t);
+                    tokens.add(Token);
                     bIndex2.setVal(bIndex2.getVal() + t.length());
                 }
             }
@@ -439,12 +423,12 @@ abstract public class Tokenizer
 //	----------------------------------- Add symbols -----------------------------------
 
 	/** Called by {@link #tokenizeSymbols(List, String)}. */
-	private int addSymbols(List<NLPNode> tokens, String s, TokenIndex bIndex2)
+	private int addSymbols(List<Token> tokens, String s, TokenIndex bIndex2)
 	{
 		if (s.length() == 1)
 		{
-            NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + 1, s);
-            tokens.add(nlpNode);
+            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + 1, s);
+            tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + 1);
             return bIndex2.getVal();
         }
@@ -461,13 +445,13 @@ abstract public class Tokenizer
 			{
 				if (bIndex < i)
 				{
-					NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + i - bIndex, s.substring(bIndex, i));
-					tokens.add(nlpNode);
+					Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + i - bIndex, s.substring(bIndex, i));
+					tokens.add(Token);
 					bIndex2.setVal(bIndex2.getVal() + i - bIndex);
 				}
 
-				NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + j - i, s.substring(i, j));
-                tokens.add(nlpNode);
+				Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + j - i, s.substring(i, j));
+                tokens.add(Token);
                 bIndex2.setVal(bIndex2.getVal() + j - i);
                 bIndex = j;
 			}
@@ -475,8 +459,8 @@ abstract public class Tokenizer
 
 		if (bIndex < len)
 		{
-			NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + len - bIndex, s.substring(bIndex));
-			tokens.add(nlpNode);
+			Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + len - bIndex, s.substring(bIndex));
+			tokens.add(Token);
 			bIndex2.setVal(bIndex2.getVal() + len - bIndex);
     }
 		return bIndex2.getVal();
@@ -521,12 +505,12 @@ abstract public class Tokenizer
 //	----------------------------------- Add morphmes -----------------------------------
 
 	/** Called by {@link #tokenizeSymbols(List, String)}. */
-	private int addMorphemes(List<NLPNode> tokens, String s, TokenIndex bIndex2)
+	private int addMorphemes(List<Token> tokens, String s, TokenIndex bIndex2)
 	{
 		if (s.length() == 1)
 		{
-            NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + 1, s);
-            tokens.add(nlpNode);
+            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + 1, s);
+            tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + 1);
             return bIndex2.getVal();
         }
@@ -536,8 +520,8 @@ abstract public class Tokenizer
 
 		if (!tokenize(tokens, s, lower, lcs, d_currency, bIndex2) && !tokenize(tokens, s, lower, lcs, d_unit, bIndex2) && !tokenizeDigit(tokens, s, lcs, bIndex2) && !tokenizeWordsMore(tokens, s, lower, lcs, bIndex2))
 		{
-            NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + s.length(), s);
-            tokens.add(nlpNode);
+            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + s.length(), s);
+            tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + s.length());
             return bIndex2.getVal();
         }
@@ -546,33 +530,45 @@ abstract public class Tokenizer
 	}
 
 	/** Called by {@link #addMorphemes(List, String)}. */
-	protected boolean tokenize(List<NLPNode> tokens, String original, String lower, char[] lcs, Dictionary tokenizer, TokenIndex bIndex2)
+	protected boolean tokenize(List<Token> tokens, String original, String lower, char[] lcs, Dictionary tokenizer, TokenIndex bIndex2)
 	{
 		String[] t = tokenizer.tokenize(original, lower, lcs);
 
 		if (t != null)
 		{
-			bIndex2.setVal(DSUtils.addAll(tokens, t, bIndex2.getVal()));
+			bIndex2.setVal(addAll(tokens, t, bIndex2.getVal()));
 			return true;
 		}
 
 		return false;
 	}
+	
+	public int addAll(List<Token> tokens, String[] array, int bIndex2)
+    {
+        for (String item : array)
+        {
+            Token interval = new Token(bIndex2, bIndex2 + item.length(), item);
+            tokens.add(interval);
+            bIndex2 = bIndex2 + item.length();
+        }
+        
+        return bIndex2;
+    }
 
 	/** Called by {@link #addMorphemes(List, String)}. */
-	private boolean tokenizeDigit(List<NLPNode> tokens, String original, char[] lcs, TokenIndex bIndex2)
+	private boolean tokenizeDigit(List<Token> tokens, String original, char[] lcs, TokenIndex bIndex2)
 	{
 		int len = lcs.length;
 		if (len < 2) return false;
 
 		if (tokenizeDigitAux(lcs[0]) && CharUtils.containsDigitPunctuationOnly(lcs, 1, len))
 		{
-            NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + 1,
+            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + 1,
                     original.substring(0, 1));
-            tokens.add(nlpNode);
+            tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + 1);
-            NLPNode newinterval = new NLPNode(bIndex2.getVal(), bIndex2.getVal()
-                    + original.length() - 1, original.substring(1));
+            Token newinterval = new Token(bIndex2.getVal(), bIndex2.getVal()
+					        + original.length() - 1, original.substring(1));
             tokens.add(newinterval);
             bIndex2.setVal(bIndex2.getVal() + original.length() - 1);
             return true;
@@ -582,12 +578,12 @@ abstract public class Tokenizer
 
 		if (tokenizeDigitAux(lcs[len]) && CharUtils.containsDigitPunctuationOnly(lcs, 0, len))
 		{
-            NLPNode nlpNode = new NLPNode(bIndex2.getVal(), bIndex2.getVal() + len,
+            Token Token = new Token(bIndex2.getVal(), bIndex2.getVal() + len,
                     original.substring(0, len));
-            tokens.add(nlpNode);
+            tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + len);
-            NLPNode newinterval = new NLPNode(bIndex2.getVal(), bIndex2.getVal()
-                    + original.length() - len, original.substring(len));
+            Token newinterval = new Token(bIndex2.getVal(), bIndex2.getVal()
+					        + original.length() - len, original.substring(len));
             tokens.add(newinterval);
             bIndex2.setVal(bIndex2.getVal() + original.length() - len);
             return true;
@@ -604,12 +600,12 @@ abstract public class Tokenizer
 	}
 
 	/** Called by {@link #addMorphemes(List, String)}. */
-	abstract protected boolean tokenizeWordsMore(List<NLPNode> tokens, String original, String lower, char[] lcs, TokenIndex bIndex2);
+	abstract protected boolean tokenizeWordsMore(List<Token> tokens, String original, String lower, char[] lcs, TokenIndex bIndex2);
 
 //	----------------------------------- Finalize -----------------------------------
 
 	/** Called by {@link #tokenize(String)}. */
-	private void finalize(List<NLPNode> tokens, String input)
+	private void finalize(List<Token> tokens, String input)
 	{
 		int i, j, size = tokens.size();
 		String token, lower;
@@ -630,17 +626,17 @@ abstract public class Tokenizer
 	}
 
 	/** Called by {@link #finalize()}. */
-	private int tokenizeNo(List<NLPNode> tokens, String token, String lower, int index)
+	private int tokenizeNo(List<Token> tokens, String token, String lower, int index)
 	{
 		if (lower.equals("no.") && (index+1 == tokens.size() || !CharUtils.isDigit(tokens
                 .get(index + 1).getWordForm().charAt(0))))
 		{
-            NLPNode currToken = tokens.get(index);
-            NLPNode nlpNode = new NLPNode(currToken.getStartOffset(),
+            Token currToken = tokens.get(index);
+            Token Token = new Token(currToken.getStartOffset(),
                     currToken.getEndOffset() - 1, StringUtils.trim(
-                            currToken.getWordForm(), 1));
-            tokens.set(index, nlpNode);
-            NLPNode nextInterval = new NLPNode(currToken.getEndOffset() - 1,
+					        currToken.getWordForm(), 1));
+            tokens.set(index, Token);
+            Token nextInterval = new Token(currToken.getEndOffset() - 1,
                     currToken.getEndOffset(), StringConst.PERIOD);
             tokens.add(index + 1, nextInterval);
             return 1;
@@ -650,7 +646,7 @@ abstract public class Tokenizer
 	}
 
 	/** Called by {@link #finalize()}. */
-	private int mergeParenthesis(List<NLPNode> tokens, String token, int index, String input)
+	private int mergeParenthesis(List<Token> tokens, String token, int index, String input)
 	{
 		if (token.length() == 1 && 0 <= index-1 && index+1 < tokens.size())
 		{
@@ -658,12 +654,12 @@ abstract public class Tokenizer
             String next = tokens.get(index + 1).getWordForm();
             if (prev.equals(StringConst.LRB) && next.equals(StringConst.RRB))
             {
-                NLPNode prevToken = tokens.get(index - 1);
-//             NLPNode currToken = tokens.get(index);
-                NLPNode nextToken = tokens.get(index + 1);
-                NLPNode nlpNode = new NLPNode(prevToken.getStartOffset(),
+                Token prevToken = tokens.get(index - 1);
+//             Token currToken = tokens.get(index);
+                Token nextToken = tokens.get(index + 1);
+                Token Token = new Token(prevToken.getStartOffset(),
                         nextToken.getEndOffset(), input.substring(prevToken.getStartOffset(), nextToken.getEndOffset()));
-                tokens.set(index - 1, nlpNode);
+                tokens.set(index - 1, Token);
                 tokens.remove(index);
                 tokens.remove(index);
                 return -1;
@@ -674,20 +670,20 @@ abstract public class Tokenizer
 	}
 
 	/** Called by {@link #finalize()}. */
-	private void tokenizeLastPeriod(List<NLPNode> tokens)
+	private void tokenizeLastPeriod(List<Token> tokens)
 	{
 	    int lastIndex = tokens.size() - 1;
-        NLPNode lastInterval = tokens.get(lastIndex);
+        Token lastInterval = tokens.get(lastIndex);
         String lastToken = lastInterval.getWordForm();
         char[] ca = lastToken.toCharArray();
         int leng = lastToken.length();
         if (1 < leng && ca[leng - 1] == CharConst.PERIOD
                 && !CharUtils.isFinalMark(ca[leng - 2]))
         {
-            NLPNode nlpNode = new NLPNode(lastInterval.getStartOffset(),
+            Token Token = new Token(lastInterval.getStartOffset(),
                     lastInterval.getEndOffset() - 1, StringUtils.trim(lastToken, 1));
-            tokens.set(lastIndex, nlpNode);
-            NLPNode nextInterval = new NLPNode(lastInterval.getEndOffset() - 1,
+            tokens.set(lastIndex, Token);
+            Token nextInterval = new Token(lastInterval.getEndOffset() - 1,
                     lastInterval.getEndOffset(), StringConst.PERIOD);
             tokens.add(lastIndex + 1, nextInterval);
         }

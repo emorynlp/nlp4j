@@ -135,8 +135,8 @@
     </dependency>
     <dependency>
       <groupId>edu.emory.mathcs.nlp</groupId>
-      <artifactId>nlp4j-core</artifactId>
-      <version>RELEASE</version>
+      <artifactId>nlp4j-common</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -37,7 +36,7 @@ public class IssuesTest
 		// https://github.com/emorynlp/nlp4j-tokenization/pull/3
 		String s = "I did it my way. Definitely not worth stopping by.";
 		String r = "I did it my way . Definitely not worth stopping by .";
-		assertEquals(r, Joiner.join(t.tokenize(s), " ", NLPNode::getWordForm));
+		assertEquals(r, Joiner.join(t.tokenize(s), " ", Token::getWordForm));
 	}
 	
 //	@Test
@@ -46,7 +45,7 @@ public class IssuesTest
 		Tokenizer t = new EnglishTokenizer();
 		String s = "There 's Mother 's Day , there 's Father 's Day , there 's no . .. Lesbian Lover Day .";
 
-		for (NLPNode node : t.tokenize(s))
+		for (Token node : t.tokenize(s))
 			System.out.print(node.getWordForm()+" ");	
 	}
 	
@@ -56,7 +55,7 @@ public class IssuesTest
 		Tokenizer t = new EnglishTokenizer();
 		String s = "  !((a)).  dsjkds sdf;l s  ";
 		
-		for (NLPNode node : t.tokenize(s))
+		for (Token node : t.tokenize(s))
 			System.out.println(node.getWordForm()+" "+node.getStartOffset()+" "+node.getEndOffset());
 	}
 	
