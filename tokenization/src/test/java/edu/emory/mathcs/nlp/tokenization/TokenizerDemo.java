@@ -34,7 +34,7 @@ public class TokenizerDemo
 		String inputFile = "src/test/resources/emorynlp-raw.txt";
 		InputStream in = IOUtils.createFileInputStream(inputFile);
 		
-		for (Token[] tokens : tokenizer.segmentize(in))
+		for (List<Token> tokens : tokenizer.segmentize(in))
 			System.out.println(Joiner.join(tokens, " "));
 		
 		in.close();

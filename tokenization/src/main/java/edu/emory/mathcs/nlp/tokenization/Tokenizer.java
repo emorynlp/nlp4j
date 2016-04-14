@@ -128,17 +128,17 @@ abstract public class Tokenizer
         return tokenizeWhiteSpaces(s, 0);
     }
 
-	public List<Token[]> segmentize(InputStream in)
+	public List<List<Token>> segmentize(InputStream in)
 	{
 		return segmentize(tokenize(in));
 	}
 
-	public List<Token[]> segmentize(String s)
+	public List<List<Token>> segmentize(String s)
 	{
 		return segmentize(tokenize(s));
 	}
 
-	abstract public List<Token[]> segmentize(List<Token> tokens);
+	abstract public List<List<Token>> segmentize(List<Token> tokens);
 
 //	============================== Tokenize ==============================
 

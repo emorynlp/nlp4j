@@ -87,9 +87,9 @@ public class EnglishTokenizer extends Tokenizer
 //	============================== Segmentize ==============================
 	
 	@Override
-	public List<Token[]> segmentize(List<Token> tokens)
+	public List<List<Token>> segmentize(List<Token> tokens)
 	{
-		List<Token[]> sentences = new ArrayList<>();
+		List<List<Token>> sentences = new ArrayList<>();
 		int[] brackets = new int[R_BRACKETS.length];
 		int bIndex, i, size = tokens.size();
 		boolean isTerminal = false;
@@ -108,13 +108,13 @@ public class EnglishTokenizer extends Tokenizer
 					continue;
 				}
 				
-				sentences.add(getSubArray(tokens, bIndex, bIndex = i+1));
+				sentences.add(tokens.subList(bIndex, bIndex = i+1));
 				isTerminal = false;
 			}
 		}
 		
 		if (bIndex < size)
-			sentences.add(getSubArray(tokens, bIndex, size));
+			sentences.add(tokens.subList(bIndex, size));
 
 		return sentences;
 	}
