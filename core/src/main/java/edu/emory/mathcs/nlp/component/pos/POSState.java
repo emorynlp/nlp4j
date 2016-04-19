@@ -17,7 +17,7 @@ package edu.emory.mathcs.nlp.component.pos;
 
 import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.state.L2RState;
-import edu.emory.mathcs.nlp.component.template.util.NLPUtils;
+import edu.emory.mathcs.nlp.component.template.util.NLPLib;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 
 /**
@@ -48,7 +48,7 @@ public class POSState<N extends AbstractNLPNode<N>> extends L2RState<N>
 	public void next(LabelMap map, int[] top2, float[] scores)
 	{
 		if (0 <= top2[1] && scores[top2[0]] - scores[top2[1]] < 1)
-			getInput().putFeat(NLPUtils.FEAT_POS_2ND, map.getLabel(top2[1]));
+			getInput().putFeat(NLPLib.FEAT_POS_2ND, map.getLabel(top2[1]));
 
 		super.next(map, top2, scores);
 	}
