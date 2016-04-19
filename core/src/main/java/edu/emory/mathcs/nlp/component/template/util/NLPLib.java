@@ -13,30 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.common.collection.tuple;
-
-import java.io.Serializable;
+package edu.emory.mathcs.nlp.component.template.util;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class BooleanIntIntTriple implements Serializable
+public class NLPLib
 {
-	private static final long serialVersionUID = -5353827334306132865L;
-	
-	public boolean b;
-	public int i1;
-	public int i2;
-	
-	public BooleanIntIntTriple(boolean b, int i1, int i2)
-	{
-		set(b, i1, i2);
-	}
-	
-	public void set(boolean b, int i1, int i2)
-	{
-		this.b  = b;
-		this.i1 = i1;
-		this.i2 = i2;
-	}
+	static public String FEAT_POS_2ND   = "pos2";
+	static public String FEAT_PREDICATE = "pred";
 }

@@ -19,14 +19,13 @@ import java.io.InputStream;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class PleonasticClassifier extends OnlineComponent<NLPNode,PleonasticState>
+public class PleonasticClassifier<N extends AbstractNLPNode<N>> extends OnlineComponent<N,PleonasticState<N>>
 {
 	private static final long serialVersionUID = 3585863417135590906L;
 
@@ -36,25 +35,45 @@ public class PleonasticClassifier extends OnlineComponent<NLPNode,PleonasticStat
 	{
 		super(false, configuration);
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see edu.emory.mathcs.nlp.component.template.OnlineComponent#initState(edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode[])
+	 */
 	@Override
-	protected PleonasticState initState(NLPNode[] nodes)
+	protected PleonasticState<N> initState(N[] nodes)
 	{
-		return new PleonasticState(nodes);
-	}
-	
-	@Override
-	protected PleonasticState initState(List<NLPNode[]> document)
-	{
+		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.emory.mathcs.nlp.component.template.OnlineComponent#initState(java.util.List)
+	 */
+	@Override
+	protected PleonasticState<N> initState(List<N[]> document)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.emory.mathcs.nlp.component.template.OnlineComponent#createEvaluator()
+	 */
 	@Override
 	public Eval createEvaluator()
 	{
-		return new AccuracyEval();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.emory.mathcs.nlp.component.template.OnlineComponent#postProcess(edu.emory.mathcs.nlp.component.template.state.NLPState)
+	 */
 	@Override
-	protected void postProcess(PleonasticState state) {}
+	protected void postProcess(PleonasticState<N> state)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
