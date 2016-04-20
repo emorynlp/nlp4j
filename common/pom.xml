@@ -152,18 +152,18 @@
     <dependency>
       <groupId>it.unimi.dsi</groupId>
       <artifactId>fastutil</artifactId>
-      <version>7.0.7</version>
+      <version>7.0.12</version>
+    </dependency>
+	<dependency>
+      <groupId>org.magicwerk</groupId>
+      <artifactId>brownies-collections</artifactId>
+      <version>0.9.13</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-math3</artifactId>
       <version>3.5</version>
 	</dependency>
-	<dependency>
-      <groupId>org.magicwerk</groupId>
-      <artifactId>brownies-collections</artifactId>
-      <version>0.9.11</version>
-    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
