@@ -472,6 +472,12 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 		return getAverageEmbeddings(state);
 	}
 	
+	/**
+	 * this method is for creating dense vector (average of) out of selected word embeddings like <br>
+	 * WE(wi), WE(wj), WE(wi+1), WE(wi-1), etc
+	 * @param state
+	 * @return
+	 */
 	public float[] getAverageEmbeddings(S state)
 	{
 		if (word_embeddings == null || word_embeddings.isEmpty()) return null;

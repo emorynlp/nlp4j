@@ -61,6 +61,12 @@ public interface ConfigXML
 	String LOLS		= "lols";
 	String FIXED	= "fixed";
 	String DECAYING	= "decaying";
+
+//	========================== GRID SEARCH FUNCTIONS ==========================
+
+	String GRID_FUNCTIONS	= "grid_functions";
+	String EXP		= "exp";
+	String LINEAR	= "linear";
 	
 //	========================== ALGORITHMS ==========================
 
