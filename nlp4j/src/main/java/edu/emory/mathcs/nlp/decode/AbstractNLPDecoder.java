@@ -34,7 +34,6 @@ import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Language;
-import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.component.morph.MorphologicalAnalyzer;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
@@ -78,31 +77,28 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		
 		components.add(new GlobalLexica<>(decode_config.getDocumentElement()));
 		
-		BinUtils.LOG.info("Loading tokenizer: ");
-		long m1 = FileUtils.getNonFreeMemory();
+		BinUtils.LOG.info("Loading tokenizer\n");
 		setTokenizer(NLPUtils.createTokenizer(language));
-		long m2 = FileUtils.getNonFreeMemory();
-		BinUtils.LOG.info(String.format("%d MB\n", (int)MathUtils.divide(m2-m1, MathUtils.sq(1024))));
 		
 		if (decode_config.getPartOfSpeechTagging() != null)
 		{
-			BinUtils.LOG.info("Loading part-of-speech tagger: ");
-			m2 = add(components, NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getPartOfSpeechTagging())), m2);
+			BinUtils.LOG.info("Loading part-of-speech tagger\n");
+			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getPartOfSpeechTagging())));
 			
 			BinUtils.LOG.info("Loading morphological analyzer: ");
-			m2 = add(components, new MorphologicalAnalyzer<>(language), m2);
+			components.add(new MorphologicalAnalyzer<>(language));
 		}
 		
 		if (decode_config.getNamedEntityRecognition() != null)
 		{
 			BinUtils.LOG.info("Loading named entity recognizer: ");
-			m2 = add(components, NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getNamedEntityRecognition())), m2);
+			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getNamedEntityRecognition())));
 		}
 		
 		if (decode_config.getDependencyParsing() != null)
 		{
 			BinUtils.LOG.info("Loading dependency parser: ");
-			m2 = add(components, NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getDependencyParsing())), m2);
+			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getDependencyParsing())));
 		}
 		
 //		if (decode_config.getSemanticRoleLabeling() != null)
@@ -114,14 +110,6 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 
 		setComponents(components);
 		BinUtils.LOG.info("\n");
-	}
-	
-	protected long add(List<NLPComponent<N>> components, NLPComponent<N> component, long m1)
-	{
-		components.add(component);
-		long m2 = FileUtils.getNonFreeMemory();
-		BinUtils.LOG.info(String.format("%d MB\n", (int)MathUtils.divide(m2-m1, MathUtils.sq(1024))));
-		return m2;
 	}
 	
 //	======================================== GETTERS/SETTERS ========================================
