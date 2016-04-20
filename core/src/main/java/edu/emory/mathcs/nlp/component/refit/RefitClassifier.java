@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pleonastic;
+package edu.emory.mathcs.nlp.component.refit;
 
 import java.io.InputStream;
 import java.util.List;
@@ -25,13 +25,13 @@ import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class PleonasticClassifier<N extends AbstractNLPNode<N>> extends OnlineComponent<N,PleonasticState<N>>
+public class RefitClassifier<N extends AbstractNLPNode<N>> extends OnlineComponent<N,RefitState<N>>
 {
 	private static final long serialVersionUID = 3585863417135590906L;
 
-	public PleonasticClassifier() {super(false);}
+	public RefitClassifier() {super(false);}
 	
-	public PleonasticClassifier(InputStream configuration)
+	public RefitClassifier(InputStream configuration)
 	{
 		super(false, configuration);
 	}
@@ -40,7 +40,7 @@ public class PleonasticClassifier<N extends AbstractNLPNode<N>> extends OnlineCo
 	 * @see edu.emory.mathcs.nlp.component.template.OnlineComponent#initState(edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode[])
 	 */
 	@Override
-	protected PleonasticState<N> initState(N[] nodes)
+	protected RefitState<N> initState(N[] nodes)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -50,7 +50,7 @@ public class PleonasticClassifier<N extends AbstractNLPNode<N>> extends OnlineCo
 	 * @see edu.emory.mathcs.nlp.component.template.OnlineComponent#initState(java.util.List)
 	 */
 	@Override
-	protected PleonasticState<N> initState(List<N[]> document)
+	protected RefitState<N> initState(List<N[]> document)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -70,7 +70,7 @@ public class PleonasticClassifier<N extends AbstractNLPNode<N>> extends OnlineCo
 	 * @see edu.emory.mathcs.nlp.component.template.OnlineComponent#postProcess(edu.emory.mathcs.nlp.component.template.state.NLPState)
 	 */
 	@Override
-	protected void postProcess(PleonasticState<N> state)
+	protected void postProcess(RefitState<N> state)
 	{
 		// TODO Auto-generated method stub
 		

@@ -62,21 +62,20 @@ public class NLPTrain
 	protected boolean preserve_last = false;
 	
 	// model reduction
-	@Option(name="-reduce_start", usage="starting reduce rate (default: 0)", required=false, metaVar="<float>")
-	public float reduce_start = 0f;
-	@Option(name="-reduce_inc", usage="incremental reduce rate (default: 0.01)", required=false, metaVar="<float>")
-	public float reduce_inc = 0.01f;
+	@Option(name="-reduce_model_file", usage="reduction model file (optional)", required=false, metaVar="<filename>")
+	protected String reduce_model_file = null;
 	
-	public void train(String[] args)
+	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>void train(String[] args)
 	{
 		BinUtils.initArgs(args, this);
 		List<String> trainFiles    = FileUtils.getFileList(train_path  , train_ext);
 		List<String> developFiles  = FileUtils.getFileList(develop_path, develop_ext);
-		OnlineTrainer<?,?> trainer = createOnlineTrainer();
+		OnlineTrainer<N,S> trainer = createOnlineTrainer();
 		
 		Collections.sort(trainFiles);
 		Collections.sort(developFiles);
-		trainer.train(NLPMode.valueOf(mode), trainFiles, developFiles, configuration_file, model_file, previous_model_file, preserve_last, reduce_start, reduce_inc);
+		
+		trainer.train(NLPMode.valueOf(mode), trainFiles, developFiles, configuration_file, model_file, previous_model_file, reduce_model_file, preserve_last);
 	}
 	
 	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>OnlineTrainer<N,S> createOnlineTrainer()

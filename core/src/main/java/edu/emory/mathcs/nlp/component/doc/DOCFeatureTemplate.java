@@ -186,7 +186,6 @@ public class DOCFeatureTemplate<N extends AbstractNLPNode<N>, S extends DOCState
 	@Override
 	public float[] createDenseVector(S state)
 	{
-//		return null;
 		if (word_embeddings == null || word_embeddings.isEmpty()) return null;
 		return getEmbeddings(state, true);
 		

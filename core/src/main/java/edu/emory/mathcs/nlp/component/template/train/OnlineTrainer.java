@@ -24,11 +24,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.w3c.dom.Element;
+
 import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectDoublePair;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -96,36 +99,21 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	public abstract TSVReader<N> createTSVReader(Object2IntMap<String> map);
 	public abstract GlobalLexica<N> createGlobalLexica(InputStream config);
 	
-//	@SuppressWarnings("unchecked")
-//	protected OnlineComponent<S> createComponent(NLPMode mode, InputStream config)
-//	{
-//		switch (mode)
-//		{
-//		case pos: return (OnlineComponent<S>)new POSTagger(config);
-//		case ner: return (OnlineComponent<S>)new NERTagger(config);
-//		case dep: return (OnlineComponent<S>)new DEPParser(config);
-//		case srl: return (OnlineComponent<S>)new SRLParser(config);
-//		case pleonastic: return (OnlineComponent<S>)new PleonasticClassifier(config);
-//		default : throw new IllegalArgumentException("Unsupported mode: "+mode);
-//		}
-//	}
-	
 //	=================================== TRAIN ===================================
 	
-	public void train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile, boolean preserveLast, float reduceStart, float reduceInc)
+	public void train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile, String reduceModelFile, boolean preserveLast)
 	{
-		InputStream configStream = IOUtils.createFileInputStream(configurationFile);
 		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
 		GlobalLexica<N> lexica = createGlobalLexica(IOUtils.createFileInputStream(configurationFile));
-		OnlineComponent<N,S> component = initComponent(mode, configStream, previousModelStream);
+		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream);
 		TSVReader<N> reader = createTSVReader(component.getConfiguration().getReaderFieldMap());
-		ObjectDoublePair<OnlineComponent<N,S>> model;
+		ObjectDoublePair<OnlineComponent<N,S>> p;
 		
 		try
 		{
-			model = train(reader, trainFiles, developFiles, component, lexica, preserveLast);
-			if (modelFile != null) saveModel(model.o, IOUtils.createFileOutputStream(modelFile));
-			if (reduceStart > 0) reduceModel(reader, trainFiles, model.o, lexica, modelFile, model.d, reduceStart, reduceInc);
+			p = train(reader, trainFiles, developFiles, component, lexica, preserveLast);
+			if (modelFile != null) saveModel(p.o, IOUtils.createFileOutputStream(modelFile));
+			if (reduceModelFile != null) reduceModel(reader, trainFiles, component, lexica, modelFile, reduceModelFile, p.d);
 		}
 		catch (Exception e) {e.printStackTrace();}
 	}
@@ -180,7 +168,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		return new ObjectDoublePair<OnlineComponent<N,S>>(component, bestScore);
 	}
 	
-	protected DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<N,S> component, GlobalLexica<N> lexica, TSVReader<N> reader)
+	public DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<N,S> component, GlobalLexica<N> lexica, TSVReader<N> reader)
 	{
 		component.setFlag(NLPFlag.EVALUATE);
 		Eval eval = component.getEval();
@@ -254,6 +242,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	public void saveModel(OnlineComponent<N,S> component, OutputStream stream)
 	{
 		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(stream);
+		BinUtils.LOG.info("Saving the model\n");
 		
 		try
 		{
@@ -264,30 +253,45 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void reduceModel(TSVReader<N> reader, List<String> filenames, OnlineComponent<N,S> component, GlobalLexica<N> lexica, String modelFile, double lowerBound, float start, float inc)
+	public void reduceModel(TSVReader<N> reader, List<String> filenames, OnlineComponent<N,S> component, GlobalLexica<N> lexica, String modelFile, String reducedModelFile, double lowerBound)
 	{
-		BinUtils.LOG.info("\nReducing:\n");
-		BinUtils.LOG.info(String.format("%8.4f: %7d\n", 0d, component.getFeatureTemplate().getSparseFeatureSize()));
-		DoubleIntPair p;
-		float rate;
+		BinUtils.LOG.info("Reducing:\n");
+		float rate = 0f;
+		
+		DoubleIntPair p = evaluate(filenames, component, lexica, reader);
+		BinUtils.LOG.info(String.format("%8.4f: %7d -> %s\n", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString()));
+		
+		NLPConfig<N> config = component.getConfiguration();
+		Element eReduce = XMLUtils.getFirstElementByTagName(config.getDocumentElement(), "reducer");
+		float start = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eReduce, "start");
+		float inc   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eReduce, "increment");
+		float range = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eReduce, "range");
+		int   iter  = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eReduce, "iteration");
 		
 		for (rate=start; ; rate+=inc)
 		{
 			component.getFeatureTemplate().reduce(component.getOptimizer().getWeightVector(), rate);
 			p = evaluate(filenames, component, lexica, reader);
 			BinUtils.LOG.info(String.format("%8.4f: %7d -> %s\n", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString()));
-			if (p.d <= lowerBound) break;
+
+			if (iter <= 0 || Math.abs(lowerBound - p.d) <= range)
+			{
+				saveModel(component, IOUtils.createFileOutputStream(reducedModelFile));
+				return;
+			}
+			else if (p.d < lowerBound)
+			{
+				try
+				{
+					ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(modelFile);
+					component = (OnlineComponent<N,S>)in.readObject();
+					in.close();
+					rate -= inc;
+					inc /= 2;
+					iter--;
+				}
+				catch (Exception e) {e.printStackTrace();}
+			}
 		}
-		
-		try
-		{
-			ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(modelFile);
-			component = (OnlineComponent<N,S>)in.readObject();
-			in.close();
-			
-			component.getFeatureTemplate().reduce(component.getOptimizer().getWeightVector(), rate);
-			saveModel(component, IOUtils.createFileOutputStream(modelFile+".red"));
-		}
-		catch (Exception e) {e.printStackTrace();}
 	}
 }

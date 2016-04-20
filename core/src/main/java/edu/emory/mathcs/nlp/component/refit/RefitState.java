@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pleonastic;
+package edu.emory.mathcs.nlp.component.refit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +28,13 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class PleonasticState<N extends AbstractNLPNode<N>> extends NLPState<N>
+public class RefitState<N extends AbstractNLPNode<N>> extends NLPState<N>
 {
 	static public final String FEAT_KEY = "it"; 
 	private List<ObjectIntIntTriple<String>> oracle;
 	private int tree_id, node_id;
 	
-	public PleonasticState(List<N[]> document)
+	public RefitState(List<N[]> document)
 	{
 		super(document);
 		tree_id = node_id = 0;
