@@ -193,18 +193,18 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	
 	private void shift()
 	{
-		while (!inter.isEmpty()) stack.push(inter.pop());
+		while (!inter.isEmpty()) stack.push(inter.popInt());
 		stack.push(input++);
 	}
 	
 	private void reduce()
 	{
-		stack.pop();
+		stack.popInt();
 	}
 	
 	private void pass()
 	{
-		inter.push(stack.pop());
+		inter.push(stack.popInt());
 	}
 	
 //	====================================== NODE ======================================

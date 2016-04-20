@@ -15,9 +15,6 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,16 +36,14 @@ import edu.emory.mathcs.nlp.learning.util.WeightVector;
 public abstract class OnlineOptimizer implements Serializable
 {
 	private static final long serialVersionUID = -7750497048585331648L;
-	
-	// model to be saved
 	protected WeightVector weight_vector;
 	protected LabelMap     label_map;
 	protected float        bias;
 	
 	// for training
-	protected Regularizer  l1_regularizer;
-	protected float        learning_rate;
-	protected int          steps;
+	protected transient Regularizer l1_regularizer;
+	protected transient float       learning_rate;
+	protected transient int         steps;
 	
 //	=================================== CONSTRUCTORS ===================================
 	
@@ -72,22 +67,6 @@ public abstract class OnlineOptimizer implements Serializable
 	{
 		setL1Regularizer(hp.getL1Regularizer());
 		setLearningRate(hp.getLearningRate());
-	}
-	
-//	=================================== SERIALIZATION ===================================
-	
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-	{
-		weight_vector = (WeightVector)in.readObject();
-		label_map     = (LabelMap)in.readObject();
-		bias          = in.readFloat();
-	}
-	
-	private void writeObject(ObjectOutputStream out) throws IOException
-	{
-		out.writeObject(weight_vector);
-		out.writeObject(label_map);
-		out.writeFloat(bias);
 	}
 	
 //	=================================== GETTERS & SETTERS ===================================

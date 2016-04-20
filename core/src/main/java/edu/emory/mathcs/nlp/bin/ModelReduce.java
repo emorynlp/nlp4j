@@ -38,6 +38,8 @@ public class ModelReduce extends NLPTrain
 {
 	@Option(name="-lower_bound", usage="reduction lower bound (required)", required=true, metaVar="<double>")
 	protected double lower_bound;
+	@Option(name="-r", usage="reduced model file (optional)", required=false, metaVar="<filename>")
+	protected String reduce_model_file = null;
 	
 	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>void reduce(String[] args)
 	{

@@ -15,21 +15,31 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
-import java.util.regex.Pattern;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.state.NLPState;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Tmp
 {
+	@SuppressWarnings("unchecked")
 	public Tmp(String[] args) throws Exception
 	{
-		final Pattern DEPREL = Pattern.compile("^(nsubj|nsubjpass|dobj)$");
-		System.out.println(DEPREL.matcher("nsubj").find());
-		System.out.println(DEPREL.matcher("nsubjpass").find());
-		System.out.println(DEPREL.matcher("dobj").find());
-		System.out.println(DEPREL.matcher("csubj").find());
-		System.out.println(DEPREL.matcher("iobj").find());
+		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(args[0]);
+		OnlineComponent<NLPNode,NLPState<NLPNode>> component = (OnlineComponent<NLPNode, NLPState<NLPNode>>)in.readObject();
+		in.close();
+
+		byte[] bo = IOUtils.toByteArray(component);
+		System.out.println(bo.length);
+		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(args[1]);
+		out.writeObject(bo);
+		out.close();
 	}
 	
 	boolean skip(String form)

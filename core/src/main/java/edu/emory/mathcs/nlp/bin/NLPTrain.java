@@ -58,12 +58,8 @@ public class NLPTrain
 	protected String develop_ext = "*";
 	@Option(name="-mode", usage="mode (required: pos|ner|dep)", required=true, metaVar="<string>")
 	protected String mode = null;
-	@Option(name="-preserve_last", usage="if set, preserve the last model", required=false, metaVar="<boolean>")
-	protected boolean preserve_last = false;
-	
-	// model reduction
-	@Option(name="-reduce_model_file", usage="reduction model file (optional)", required=false, metaVar="<filename>")
-	protected String reduce_model_file = null;
+	@Option(name="-cv", usage="# of cross-validation folds (default: 0)", required=false, metaVar="<int>")
+	protected int cv = 0;
 	
 	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>void train(String[] args)
 	{
@@ -74,8 +70,10 @@ public class NLPTrain
 		
 		Collections.sort(trainFiles);
 		Collections.sort(developFiles);
+		NLPMode m = NLPMode.valueOf(mode);
 		
-		trainer.train(NLPMode.valueOf(mode), trainFiles, developFiles, configuration_file, model_file, previous_model_file, reduce_model_file, preserve_last);
+		if (cv > 1) trainer.crossValidate(m, trainFiles, configuration_file, model_file, previous_model_file, cv);
+		else		trainer.train(m, trainFiles, developFiles, configuration_file, model_file, previous_model_file);
 	}
 	
 	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>OnlineTrainer<N,S> createOnlineTrainer()
