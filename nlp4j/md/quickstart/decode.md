@@ -27,23 +27,23 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 The following command takes [`nlp4j.txt`](../../src/test/resources/dat/nlp4j.txt) and generates [`nlp4j.txt.nlp`](../../src/test/resources/dat/nlp4j.txt.nlp) using [`config-decode-en.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml).
 
 ```bash
-$ java -Xmx8g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config-decode-general.xml -i emorynlp.txt
-Loading ambiguity classes: 408397
-Loading word clusters: 594491
-Loading word embeddings: 1067831
+$ java -Xmx4g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config-decode-general.xml -i emorynlp.txt
+
+Loading ambiguity classes
+Loading word clusters
+Loading word embeddings
 Loading named entity gazetteers
 Loading tokenizer
 Loading part-of-speech tagger
 Loading morphological analyzer
 Loading named entity recognizer
 Loading dependency parser
-Loading semantic role labeler
 
-emorynlp.txt
+nlp4j.txt
 ```
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* The `-Dlog4j.configuration` option specifies the configuration file for [log4j](http://logging.apache.org/log4j/) (e.g., [`log4j.properties`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/log4j.properties)).
+* Use [`log4j.properties`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/log4j.properties) for the [log4j](http://logging.apache.org/log4j/) configuration.
 * The output file is generated in the `tsv` format (see [data format](../supplements/data-format.md#tab-separated-values-format)).
 
 ## Configuration
@@ -67,7 +67,6 @@ Sample configuration files for decoding can be found here: [`config-decode-*`](.
     	<pos>en-pos.xz</pos>
     	<ner>en-ner.xz</ner>
     	<dep>en-dep.xz</dep>
-    	<srl>en-srl.xz</srl>
     </models>
 </configuration>
 ```

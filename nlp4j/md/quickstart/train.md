@@ -14,6 +14,7 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 -d  <filepath> : development path (optional)
 -te   <string> : training file extension (default: *)
 -de   <string> : development file extension (default: *)
+-cv      <int> : # of cross-validation folds (default: 0)
 -mode <string> : component mode (required: pos|ner|dep|srl|sent)
 ```
 
@@ -22,14 +23,15 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 * `-p` specifies the previously trained model file. If this option is set, a new model is trained on top of the previous model.
 * `-t|d` specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension `-te|de` under the specific directory are trained. It is possible to train a model without using a development set by not setting the `-d` option (see the example below).
 * `-te|de` specifies the training or development file extension. The default value `*` implies files with any extension. This option is used only when the training or development path `-t|d` points to a directory.
+* `-cv` specifies the number of cross-validation folds. If this number is greater than `1`, it performs cross-validation on the training data.
 * `-mode` specifies the NLP component to be trained (see [`NLPMode`](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/NLPMode.java)).
 
 ## Example
 
-The following command takes [`sample-trn.tsv`](../../src/test/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../src/test/resources/dat/sample-dev.tsv), and trains a dependency parsing model using [`config-train-sample.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample.xml). Note that no model is saved after training because `-m` is not set.
+The following command takes [`sample-trn.tsv`](../../src/test/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../src/test/resources/dat/sample-dev.tsv), trains a dependency parsing model using [`config-train-sample.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample.xml), and saves the best model to `sample-dep.xz`.
 
 ```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC -Dlog4j.configuration=edu/emory/mathcs/nlp/configuration/log4j.properties java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample.xml -t sample-trn.tsv -d sample-dev.tsv
+$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample.xml -t sample-trn.tsv -d sample-dev.tsv -m sample-dep.xz
 
 AdaGrad Mini-batch
 - Max epoch: 5
@@ -37,42 +39,23 @@ AdaGrad Mini-batch
 - Learning rate: 0.02
 - LOLS: fixed = 0, decaying rate = 0.95
 - RDA: 1.0E-5
-
-Training:
-    1: LAS = 22.22, UAS = 26.98, L = 34, SF = 1300, NZW = 1867, N/S = 15750
-    2: LAS = 34.92, UAS = 40.48, L = 34, SF = 1423, NZW = 4613, N/S = 42000
-    3: LAS = 41.27, UAS = 46.03, L = 34, SF = 1449, NZW = 6297, N/S = 31500
-    4: LAS = 38.10, UAS = 42.06, L = 34, SF = 1540, NZW = 7788, N/S = 31500
-    5: LAS = 40.48, UAS = 45.24, L = 34, SF = 1597, NZW = 9087, N/S = 63000
- Best: 41.27, epoch = 3
+Training: 0
+ 0:    1: LAS = 22.22, UAS = 26.98, L =  34, SF =    1300, NZW =     1867, N/S =  15750
+ 0:    2: LAS = 34.92, UAS = 39.68, L =  34, SF =    1410, NZW =     4578, N/S =  18000
+ 0:    3: LAS = 38.89, UAS = 44.44, L =  34, SF =    1454, NZW =     6191, N/S =  21000
+ 0:    4: LAS = 37.30, UAS = 41.27, L =  34, SF =    1550, NZW =     7751, N/S =  42000
+ 0:    5: LAS = 37.30, UAS = 41.27, L =  34, SF =    1583, NZW =     8997, N/S =  63000
+ 0: Best: 38.89, epoch = 3
+Saving the model
 ```
 
 * Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
-* The `-Dlog4j.configuration` option specifies the configuration file for [log4j](http://logging.apache.org/log4j/) (e.g., [`log4j.properties`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/log4j.properties)).
+* Use [`log4j.properties`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/log4j.properties) for the [log4j](http://logging.apache.org/log4j/) configuration.
+* Once the training is done, `sample-dep.xz` should be created, which can be specified in the configuration file for dependency parsing (see [how to decode](decode.md)).
  * `L`: number of labels.
  * `SF`: number of sparse features.
  * `NZW`: number of non-zero weights.
  * `N/S`: number of nodes processed per second. 
-
-Once you figure out the optimized set of hyper-parameters, modify the values in the configuration file. In this case, we would modify the max epoch to `3` (see [`config-train-sample-optimized.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample-optimized.xml#L18)). The following command takes [`sample-trn.tsv`](../../src/test/resources/dat/sample-trn.tsv), trains a dependency parsing model, and saves the final model to `dep.xz`. Note that the development set is not used for this training because `-d` is not set.
-
-```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC -Dlog4j.configuration=edu/emory/mathcs/nlp/configuration/log4j.properties java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample-optimized.xml -t sample-trn.tsv -m dep.xz
-
-AdaGrad Mini-batch
-- Max epoch: 3
-- Mini-batch: 1
-- Learning rate: 0.02
-- LOLS: fixed = 0, decaying rate = 0.95
-- RDA: 1.0E-5
-
-Training:
-    1: L = 34, SF = 1300, NZW = 1867
-    2: L = 34, SF = 1423, NZW = 4613
-    3: L = 34, SF = 1449, NZW = 6297
-```
-
-You should see the new file `dep.xz` created, which can be specified in the configuration file for dependency parsing (see [how to decode](decode.md)).
 
 ## Configuration
 

@@ -1,15 +1,15 @@
 # Release Notes
 
-## Version 1.1.0
+## Version 1.1.0 (04/20/2016)
 
-* The sentiment analyzer for twits is added.
-* The morphological analyzer lemmatizes `'s` into `be` and `have` now.
-* Thanks to [Anatoly Vostryakov](https://github.com/avostryakov). [`adjective.exc`](https://github.com/emorynlp/nlp4j-morphology/blob/master/src/main/resources/edu/emory/mathcs/nlp/component/morph/english/adjective.exc) and [`averb.base`](https://github.com/emorynlp/nlp4j-morphology/blob/master/src/main/resources/edu/emory/mathcs/nlp/component/morph/english/adverb.base) are cleaned up.
-* Thanks to [spraynasal](https://github.com/spraynasal). Some bugs in tokenization are fixed [5](https://github.com/emorynlp/nlp4j-tokenization/pull/5).
-* The POS tagger gives the 2nd-best predictions when the best predictions have low confidence (`pos2` in the extra feats).
-* Global lexica are no longer static.
-* NLPNode is abstracted for components and states.
-* Tokeninzer morphologica analyzer has no dependency to core.
+* All the statistical models are about twice smaller than the previous ones without compromising accuracy. The whole pipeline can be run in 4GB of RAM now.
+* [Training](train.md) automatically saves the best model in a single pass (no need to run training twice any more to save the best model).
+* The [nlp4j-common](https://github.com/emorynlp/nlp4j-common) project is separated out from the [nlp4j-core](https://github.com/emorynlp/nlp4j-core) project.
+* [GlobalLexica](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/util/GlobalLexica.java) is no longer static, so it does not get conflicted by another process.
+* [NLPNode](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java) extends [AbstractNLPNode](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/AbstractNLPNode.java), which allows to create your own custom node. Generics are added all over for this change (e.g., [NLPState](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/state/NLPState.java), [OnlineComponent](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/OnlineComponent.java)).
+* The part-of-speech tagger gives the 2nd-best predictions when the best predictions have low confidence (`pos2` in the extra feats).
+* Thanks to [Anatoly Vostryakov](https://github.com/avostryakov): [`adjective.exc`](https://github.com/emorynlp/nlp4j-morphology/blob/master/src/main/resources/edu/emory/mathcs/nlp/component/morph/english/adjective.exc) and [`adverb.base`](https://github.com/emorynlp/nlp4j-morphology/blob/master/src/main/resources/edu/emory/mathcs/nlp/component/morph/english/adverb.base) are cleaned up.
+* Thanks to [spraynasal](https://github.com/spraynasal): some bugs in tokenization are fixed [5](https://github.com/emorynlp/nlp4j-tokenization/pull/5).
 
 ## Version 1.0.0 (02/24/2016)
 

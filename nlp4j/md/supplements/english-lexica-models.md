@@ -19,7 +19,6 @@ All models can be found [here](https://bitbucket.org/emorynlp/nlp4j-english/src)
 * `en-pos.xz`: part-of-speech tagging.
 * `en-ner.xz`: named entity recognition.
 * `en-dep.xz`: dependency parsing.
-* `en-srl.xz`: semantic role labeling.
 
 Models are trained on the following corpora.
 

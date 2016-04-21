@@ -2,7 +2,7 @@
 
 The NLP4J project provides a NLP toolkit for JVM languages. This project is under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0) license and is currently developed by the [NLP Research Group](http://nlp.mathcs.emory.edu) at [Emory University](http://emory.edu). Please join our [forum](https://groups.google.com/forum/#!forum/emorynlp) to get notifications about new releases and give your feedback about this project.
 
-* Latest release: [1.0](http://search.maven.org/#artifactdetails%7Cedu.emory.mathcs.nlp%7Cnlp4j%7C1.0%7Cjar) (02/24/2016).
+* Latest release: [1.1.0](http://search.maven.org/#artifactdetails%7Cedu.emory.mathcs.nlp%7Cnlp4j%7C1.1.0%7Cjar) (04/20/2016).
 * [Release notes](md/quickstart/release.md).
 * [Google groups](https://groups.google.com/forum/#!forum/emorynlp).
 
@@ -19,10 +19,9 @@ The NLP4J project provides a NLP toolkit for JVM languages. This project is unde
 * [Part-of-speech tagging](md/components/part_of_speech_tagging.md).
 * [Named entity recognition](md/components/named_entity_recognition.md).
 * [Dependency parsing](md/components/dependency_parsing.md).
-* Semantic role labeling (coming in 03/2016).
-* Sentiment analysis (coming in 03/2016).
-* Word2Vec & Struct2Vec (coming in 04/2016).
-* Coreference resolution (coming in 04/2016).
+* Semantic role labeling (coming soon).
+* Sentiment analysis (coming soon).
+* Word2Vec & Struct2Vec (coming soon).
 
 ## Supplements
 
