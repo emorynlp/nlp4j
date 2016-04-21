@@ -11,6 +11,7 @@ The NLP4J project provides a NLP toolkit for JVM languages. This project is unde
 * [How to install](md/quickstart/install.md).
 * [How to train](md/quickstart/train.md).
 * [How to decode](md/quickstart/decode.md).
+* [See NLP demo](nlp.mathcs.emory.edu:8080/nlp4j).
 
 ## Components
 
