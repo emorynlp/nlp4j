@@ -251,7 +251,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		if (bestComponent != null)
 			component = (OnlineComponent<N,S>)IOUtils.fromByteArray(bestComponent);
 		
-		BinUtils.LOG.info(String.format("%2d- Best: %5.2f, epoch = %d\n", index, bestScore, bestEpoch));
+		BinUtils.LOG.info(String.format("%2d: Best: %5.2f, epoch = %d\n", index, bestScore, bestEpoch));
 		return new ObjectDoublePair<OnlineComponent<N,S>>(component, bestScore);
 	}
 	
