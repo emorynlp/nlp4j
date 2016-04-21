@@ -85,19 +85,19 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 			BinUtils.LOG.info("Loading part-of-speech tagger\n");
 			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getPartOfSpeechTagging())));
 			
-			BinUtils.LOG.info("Loading morphological analyzer: ");
+			BinUtils.LOG.info("Loading morphological analyzer\n");
 			components.add(new MorphologicalAnalyzer<>(language));
 		}
 		
 		if (decode_config.getNamedEntityRecognition() != null)
 		{
-			BinUtils.LOG.info("Loading named entity recognizer: ");
+			BinUtils.LOG.info("Loading named entity recognizer\n");
 			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getNamedEntityRecognition())));
 		}
 		
 		if (decode_config.getDependencyParsing() != null)
 		{
-			BinUtils.LOG.info("Loading dependency parser: ");
+			BinUtils.LOG.info("Loading dependency parser\n");
 			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getDependencyParsing())));
 		}
 		

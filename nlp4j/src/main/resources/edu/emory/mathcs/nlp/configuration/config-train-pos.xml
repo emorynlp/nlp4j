@@ -1,3 +1,4 @@
+<!-- part-of-speech tagging -->
 <configuration>
     <tsv>
         <column index="1" field="form"/>
@@ -19,6 +20,14 @@
         <max_epoch>40</max_epoch>
         <bias>0</bias>
     </optimizer>
+
+    <reducer>
+        <lower_bound>97.48</lower_bound>
+        <increment>0.01</increment>
+        <iteration>2</iteration>
+        <start>0.05</start>
+        <range>0.005</range>
+    </reducer>
 
     <feature_template>
         <!-- 1-gram features -->
