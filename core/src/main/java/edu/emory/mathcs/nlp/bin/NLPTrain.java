@@ -25,6 +25,7 @@ import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.component.dep.DEPParser;
 import edu.emory.mathcs.nlp.component.doc.DOCAnalyzer;
+import edu.emory.mathcs.nlp.component.it.ItClassifier;
 import edu.emory.mathcs.nlp.component.ner.NERTagger;
 import edu.emory.mathcs.nlp.component.pos.POSTagger;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
@@ -90,6 +91,7 @@ public class NLPTrain
 				case ner: return (OnlineComponent<N,S>)new NERTagger<>(config);
 				case dep: return (OnlineComponent<N,S>)new DEPParser<>(config);
 				case doc: return (OnlineComponent<N,S>)new DOCAnalyzer<>(config);
+				case  it: return (OnlineComponent<N,S>)new ItClassifier<>(config);
 //				case srl: return (OnlineComponent<N,S>)new SRLParser(config);
 				default : throw new IllegalArgumentException("Unsupported mode: "+mode);
 				}
