@@ -237,7 +237,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 			p = evaluate(developFiles, component, lexica, reader);
 			score = p.d;
 			eval = component.getEval().toString();
-			BinUtils.LOG.info(String.format("%2d-%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %6d\n", index, epoch, eval, L, SF, NZW, p.i));
+			BinUtils.LOG.info(String.format("%2d:%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %6d\n", index, epoch, eval, L, SF, NZW, p.i));
 			
 			if (bestScore < score || (bestScore == score && NZW < bestNZW))
 			{
@@ -340,7 +340,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void reduceModel(TSVReader<N> reader, List<String> filenames, OnlineComponent<N,S> component, GlobalLexica<N> lexica, String modelFile, String reducedModelFile, double lowerBound)
+	public void reduceModel(TSVReader<N> reader, List<String> filenames, OnlineComponent<N,S> component, GlobalLexica<N> lexica, String modelFile, String reducedModelFile)
 	{
 		BinUtils.LOG.info("Reducing:\n");
 		float rate = 0f;
@@ -350,6 +350,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		
 		NLPConfig<N> config = component.getConfiguration();
 		Element eReduce = XMLUtils.getFirstElementByTagName(config.getDocumentElement(), "reducer");
+		double lowerBound = XMLUtils.getDoubleTextContentFromFirstElementByTagName(eReduce, "lower_bound");
 		float start = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eReduce, "start");
 		float inc   = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eReduce, "increment");
 		float range = XMLUtils.getFloatTextContentFromFirstElementByTagName  (eReduce, "range");
@@ -362,7 +363,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 			backup = IOUtils.toByteArray(component);
 			component.getFeatureTemplate().reduce(component.getOptimizer().getWeightVector(), rate);
 			p = evaluate(filenames, component, lexica, reader);
-			BinUtils.LOG.info(String.format("%8.4f: %7d -> %s\n", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString()));
+			BinUtils.LOG.info(String.format("%8.4f: %7d -> %s, N/S = %6d\n", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString(), p.i));
 
 			if (iter <= 0 || Math.abs(lowerBound - p.d) <= range)
 			{

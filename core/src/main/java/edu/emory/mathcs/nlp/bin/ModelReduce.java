@@ -19,8 +19,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.List;
 
-import org.kohsuke.args4j.Option;
-
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
@@ -36,11 +34,6 @@ import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
  */
 public class ModelReduce extends NLPTrain
 {
-	@Option(name="-lower_bound", usage="reduction lower bound (required)", required=true, metaVar="<double>")
-	protected double lower_bound;
-	@Option(name="-r", usage="reduced model file (optional)", required=false, metaVar="<filename>")
-	protected String reduce_model_file = null;
-	
 	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>void reduce(String[] args)
 	{
 		BinUtils.initArgs(args, this);
@@ -50,9 +43,9 @@ public class ModelReduce extends NLPTrain
 		GlobalLexica<N> lexica = trainer.createGlobalLexica(IOUtils.createFileInputStream(configuration_file));
 		
 		BinUtils.LOG.info("Loading the model\n");
-		OnlineComponent<N,S> component = readComponent(IOUtils.createFileInputStream(model_file), IOUtils.createFileInputStream(configuration_file));
+		OnlineComponent<N,S> component = readComponent(IOUtils.createFileInputStream(previous_model_file), IOUtils.createFileInputStream(configuration_file));
 		TSVReader<N> reader = trainer.createTSVReader(component.getConfiguration().getReaderFieldMap());
-		trainer.reduceModel(reader, developFiles, component, lexica, model_file, reduce_model_file, lower_bound);
+		trainer.reduceModel(reader, developFiles, component, lexica, previous_model_file, model_file);
 	}
 	
 	@SuppressWarnings("unchecked")
