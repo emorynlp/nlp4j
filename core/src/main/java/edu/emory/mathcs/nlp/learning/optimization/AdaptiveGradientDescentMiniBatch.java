@@ -29,10 +29,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public abstract class AdaptiveGradientDescentMiniBatch extends AdaptiveGradientDescent
 {
 	private static final long serialVersionUID = -9070887527388228842L;
-	protected WeightVector gradients;
-	protected IntSet       sparse_updated_indices;
-	protected IntSet       dense_updated_indices;
-	protected int          batch_steps;
+	protected transient WeightVector gradients;
+	protected transient IntSet       sparse_updated_indices;
+	protected transient IntSet       dense_updated_indices;
+	protected transient int          batch_steps;
 	
 	public AdaptiveGradientDescentMiniBatch(WeightVector vector, float learningRate, float bias)
 	{

@@ -15,8 +15,6 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
-import java.util.regex.Pattern;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -24,12 +22,18 @@ public class Tmp
 {
 	public Tmp(String[] args) throws Exception
 	{
-		final Pattern DEPREL = Pattern.compile("^(nsubj|nsubjpass|dobj)$");
-		System.out.println(DEPREL.matcher("nsubj").find());
-		System.out.println(DEPREL.matcher("nsubjpass").find());
-		System.out.println(DEPREL.matcher("dobj").find());
-		System.out.println(DEPREL.matcher("csubj").find());
-		System.out.println(DEPREL.matcher("iobj").find());
+		boolean b = false;
+		
+		for (int i=0; i<10; i++)
+			b |= get();
+		
+		System.out.println(b);
+	}
+	
+	boolean get()
+	{
+		System.out.println("HELLO");
+		return true;
 	}
 	
 	boolean skip(String form)

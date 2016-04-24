@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 public class DOCFeatureTemplate<N extends AbstractNLPNode<N>, S extends DOCState<N>> extends FeatureTemplate<N,S>
 {
 	private static final long serialVersionUID = 8581842859392646419L;
-	private List<Field> feature_list_type;
+	protected List<Field> feature_list_type;
 	
 	public DOCFeatureTemplate(Element eFeatures, HyperParameter hp)
 	{
@@ -186,7 +186,6 @@ public class DOCFeatureTemplate<N extends AbstractNLPNode<N>, S extends DOCState
 	@Override
 	public float[] createDenseVector(S state)
 	{
-//		return null;
 		if (word_embeddings == null || word_embeddings.isEmpty()) return null;
 		return getEmbeddings(state, true);
 		

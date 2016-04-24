@@ -27,7 +27,7 @@ public abstract class AdaptiveGradientDescent extends StochasticGradientDescent
 {
 	private static final long serialVersionUID = 9194316873258304736L;
 	protected final float EPSILON = 0.00001f;
-	protected WeightVector diagonals;
+	public transient WeightVector diagonals;
 	
 	public AdaptiveGradientDescent(WeightVector vector, float learningRate, float bias)
 	{

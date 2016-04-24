@@ -37,14 +37,15 @@ import edu.emory.mathcs.nlp.learning.util.MLUtils;
 public abstract class OnlineComponent<N extends AbstractNLPNode<N>, S extends NLPState<N>> implements NLPComponent<N>, Serializable
 {
 	private static final long serialVersionUID = 59819173578703335L;
-	protected FeatureTemplate<N,S>     feature_template;
-	protected OnlineOptimizer          optimizer;
-	protected boolean                  document_based;
+	protected FeatureTemplate<N,S> feature_template;
+	protected boolean              document_based;
+	protected OnlineOptimizer      optimizer;
 	
+	// for training and development
 	protected transient HyperParameter hyper_parameter;
-	protected transient NLPConfig<N> config;
-	protected transient NLPFlag flag;
-	protected transient Eval    eval;
+	protected transient NLPConfig<N>   config;
+	protected transient NLPFlag        flag;
+	protected transient Eval           eval;
 
 //	============================== CONSTRUCTORS ==============================
 	

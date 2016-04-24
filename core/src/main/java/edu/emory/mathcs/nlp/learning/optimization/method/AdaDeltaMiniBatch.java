@@ -26,8 +26,8 @@ import edu.emory.mathcs.nlp.learning.util.WeightVector;
 public class AdaDeltaMiniBatch extends AdaGradMiniBatch
 {
 	private static final long serialVersionUID = 5279829195668367962L;
-	private float decaying_rate; 
-	private float growth_rate; 
+	private transient float decaying_rate; 
+	private transient float growth_rate; 
 	
 	public AdaDeltaMiniBatch(WeightVector vector, float learningRate, float decayingRate, float bias)
 	{

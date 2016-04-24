@@ -25,6 +25,7 @@ import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.component.dep.DEPParser;
 import edu.emory.mathcs.nlp.component.doc.DOCAnalyzer;
+import edu.emory.mathcs.nlp.component.it.ItClassifier;
 import edu.emory.mathcs.nlp.component.ner.NERTagger;
 import edu.emory.mathcs.nlp.component.pos.POSTagger;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
@@ -58,25 +59,22 @@ public class NLPTrain
 	protected String develop_ext = "*";
 	@Option(name="-mode", usage="mode (required: pos|ner|dep)", required=true, metaVar="<string>")
 	protected String mode = null;
-	@Option(name="-preserve_last", usage="if set, preserve the last model", required=false, metaVar="<boolean>")
-	protected boolean preserve_last = false;
+	@Option(name="-cv", usage="# of cross-validation folds (default: 0)", required=false, metaVar="<int>")
+	protected int cv = 0;
 	
-	// model reduction
-	@Option(name="-reduce_start", usage="starting reduce rate (default: 0)", required=false, metaVar="<float>")
-	public float reduce_start = 0f;
-	@Option(name="-reduce_inc", usage="incremental reduce rate (default: 0.01)", required=false, metaVar="<float>")
-	public float reduce_inc = 0.01f;
-	
-	public void train(String[] args)
+	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>void train(String[] args)
 	{
 		BinUtils.initArgs(args, this);
 		List<String> trainFiles    = FileUtils.getFileList(train_path  , train_ext);
 		List<String> developFiles  = FileUtils.getFileList(develop_path, develop_ext);
-		OnlineTrainer<?,?> trainer = createOnlineTrainer();
+		OnlineTrainer<N,S> trainer = createOnlineTrainer();
 		
 		Collections.sort(trainFiles);
 		Collections.sort(developFiles);
-		trainer.train(NLPMode.valueOf(mode), trainFiles, developFiles, configuration_file, model_file, previous_model_file, preserve_last, reduce_start, reduce_inc);
+		NLPMode m = NLPMode.valueOf(mode);
+		
+		if (cv > 1) trainer.crossValidate(m, trainFiles, configuration_file, model_file, previous_model_file, cv);
+		else		trainer.train(m, trainFiles, developFiles, configuration_file, model_file, previous_model_file);
 	}
 	
 	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>OnlineTrainer<N,S> createOnlineTrainer()
@@ -93,6 +91,7 @@ public class NLPTrain
 				case ner: return (OnlineComponent<N,S>)new NERTagger<>(config);
 				case dep: return (OnlineComponent<N,S>)new DEPParser<>(config);
 				case doc: return (OnlineComponent<N,S>)new DOCAnalyzer<>(config);
+				case  it: return (OnlineComponent<N,S>)new ItClassifier<>(config);
 //				case srl: return (OnlineComponent<N,S>)new SRLParser(config);
 				default : throw new IllegalArgumentException("Unsupported mode: "+mode);
 				}

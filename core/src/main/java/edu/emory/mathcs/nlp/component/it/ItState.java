@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.pleonastic;
+package edu.emory.mathcs.nlp.component.it;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
+import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
@@ -28,13 +29,13 @@ import edu.emory.mathcs.nlp.learning.util.LabelMap;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class PleonasticState<N extends AbstractNLPNode<N>> extends NLPState<N>
+public class ItState<N extends AbstractNLPNode<N>> extends NLPState<N>
 {
 	static public final String FEAT_KEY = "it"; 
-	private List<ObjectIntIntTriple<String>> oracle;
+	private List<String[]> oracle;
 	private int tree_id, node_id;
 	
-	public PleonasticState(List<N[]> document)
+	public ItState(List<N[]> document)
 	{
 		super(document);
 		tree_id = node_id = 0;
@@ -47,46 +48,49 @@ public class PleonasticState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	public boolean saveOracle()
 	{
 		oracle = new ArrayList<>();
-		N[] nodes;
-		String o;
+		boolean exist = false;
 		
-		for (int i=0; i<document.size(); i++)
+		for (N[] nodes : document)
 		{
-			nodes = document.get(i);
-			
-			for (int j=1; j<nodes.length; j++)
-			{
-				o = nodes[j].removeFeat(FEAT_KEY);
-				if (o != null) oracle.add(new ObjectIntIntTriple<>(o, i, j));
-			}
+			String[] o = Arrays.stream(nodes).map(n -> n.removeFeat(FEAT_KEY)).toArray(String[]::new);
+			oracle.add(o);
+			if (!exist) exist = Arrays.stream(o).filter(s -> s != null).findAny().isPresent();
 		}
 
-		return !oracle.isEmpty();
+		return exist;
 	}
 
 	@Override
 	public String getOracle()
 	{
-		return null;
-//		return oracle.get(tree_id)[node_id];
+		return oracle.get(tree_id)[node_id];
 	}
 	
 	public void resetOracle()
 	{
-//		N[] nodes;
-//		String[] o;
-//		
-//		for (int i=0; i<oracle.size(); i++)
-//		{
-//			nodes = document.get(i);
-//			o = oracle.get(i);
-//
-//			for (int j=1; j<o.length; j++)
-//			{
-//				if (o[j] != null)
-//					nodes[j].putFeat(FEAT_KEY, o[j]);
-//			}
-//		}
+		for (int i=0; i<oracle.size(); i++)
+		{
+			N[] nodes = document.get(i);
+			String[] o = oracle.get(i);
+
+			for (int j=1; j<o.length; j++)
+			{
+				if (o[j] != null)
+					nodes[j].putFeat(FEAT_KEY, o[j]);
+			}
+		}
+	}
+
+//	====================================== GETTERS/SETTERS ======================================
+	
+	public int getTreeID()
+	{
+		return tree_id;
+	}
+	
+	public int getNodeID()
+	{
+		return node_id;
 	}
 
 //	====================================== TRANSITION ======================================
@@ -107,38 +111,47 @@ public class PleonasticState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	
 	private void shift()
 	{
-//		for (input++; input<nodes.length; input++)
-//		{
-//			NLPNode node = nodes[input];
-//			if (node.isLemma("it")) break;
-//		}
+		for (; tree_id < document.size(); tree_id++)
+		{
+			nodes = document.get(tree_id);
+			
+			for (node_id++; node_id < nodes.length; node_id++)
+			{
+				N node = nodes[node_id];
+				if (node.isLemma("it") || node.isLemma("its")) return;
+			}
+			
+			node_id = 0;
+		}
 	}
 
 	@Override
 	public N getNode(FeatureItem item)
 	{
-//		NLPNode node = getNode(input, item.window);
-//		return getRelativeNode(item, node);
-		return null;
+		N node = getNode(node_id, item.window);
+		return getRelativeNode(item, node);
 	}
 
 	@Override
 	public void evaluate(Eval eval)
 	{
-//		int correct = 0, total = 0;
-//		
-//		for (int i=1; i<oracle.length; i++)
-//		{
-//			NLPNode n = nodes[i];
-//			String o = oracle[i];
-//			
-//			if (o != null)
-//			{
-//				if (o.equals(n.getFeat(FEAT_KEY))) correct++;
-//				total++;
-//			}
-//		}
-//
-//		((AccuracyEval)eval).add(correct, total);
+		int correct = 0, total = 0;
+		
+		for (int i=0; i<oracle.size(); i++)
+		{
+			N[] nodes = document.get(i);
+			String[] o = oracle.get(i);
+
+			for (int j=1; j<o.length; j++)
+			{
+				if (o[j] != null)
+				{
+					if (o[j].equals(nodes[j].getFeat(FEAT_KEY))) correct++;
+					total++;
+				}
+			}
+		}
+
+		((AccuracyEval)eval).add(correct, total);
 	}
 }

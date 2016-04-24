@@ -460,7 +460,7 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 		Set<StringPrediction> set = new HashSet<>();
 		
 		for (Entry<String> e : map.object2IntEntrySet())
-			set.add(new StringPrediction(e.getKey(), e.getValue()));
+			set.add(new StringPrediction(e.getKey(), e.getIntValue()));
 		
 		return set;
 	}
@@ -563,7 +563,7 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 			while (it.hasNext())
 			{
 				e = it.next();
-				oldIndex = e.getValue();
+				oldIndex = e.getIntValue();
 				newIndex = (oldIndex < indexMap.length) ? indexMap[oldIndex] : -1;
 				
 				if (newIndex > 0)

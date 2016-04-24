@@ -15,13 +15,16 @@
  */
 package edu.emory.mathcs.nlp.learning.optimization.reguralization;
 
+import java.io.Serializable;
+
 import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class Regularizer
+public abstract class Regularizer implements Serializable
 {
+	private static final long serialVersionUID = 608089379202097302L;
 	protected float rate;
 
 	public Regularizer(float rate)

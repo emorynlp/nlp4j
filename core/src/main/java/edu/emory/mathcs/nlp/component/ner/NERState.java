@@ -69,7 +69,7 @@ public class NERState<N extends AbstractNLPNode<N>> extends L2RState<N>
 		
 		for (Entry<ObjectIntIntTriple<String>> p1 : map1.int2ObjectEntrySet())
 		{
-			s2 = map2.get(p1.getKey());
+			s2 = map2.get(p1.getIntKey());
 			if (s2 != null && s2.o.equals(p1.getValue().o)) count++; 
 		}
 		

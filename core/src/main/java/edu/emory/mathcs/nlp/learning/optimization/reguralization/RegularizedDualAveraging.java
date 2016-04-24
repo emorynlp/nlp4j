@@ -23,12 +23,23 @@ import edu.emory.mathcs.nlp.learning.util.WeightVector;
  */
 public class RegularizedDualAveraging extends Regularizer
 {
+	private static final long serialVersionUID = 743778452022307338L;
 	private WeightVector weight_vector;
 	private WeightVector cumulative_penalty;
 	
 	public RegularizedDualAveraging(float rate)
 	{
 		super(rate);
+	}
+	
+	public WeightVector getWeightVector()
+	{
+		return weight_vector;
+	}
+	
+	public WeightVector getCumulativePenaltyVector()
+	{
+		return cumulative_penalty;
 	}
 	
 	@Override

@@ -27,9 +27,7 @@ import edu.emory.mathcs.nlp.common.collection.tree.PrefixTree;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
 import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
-import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
@@ -62,11 +60,11 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		Element eLexica = XMLUtils.getFirstElementByTagName(doc, LEXICA);
 		if (eLexica == null) return;
 		
-		setAmbiguityClasses     (getLexiconFieldPair(eLexica, "ambiguity_classes"      , "Loading ambiguity classes: "));
-		setWordClusters         (getLexiconFieldPair(eLexica, "word_clusters"          , "Loading word clusters: "));
-		setWordEmbeddings       (getLexiconFieldPair(eLexica, "word_embeddings"        , "Loading word embeddings: "));
-		setNamedEntityGazetteers(getLexiconFieldPair(eLexica, "named_entity_gazetteers", "Loading named entity gazetteers: "));
-		setStopWords            (getLexiconFieldPair(eLexica, "stop_words"             , "Loading stop words: "));
+		setAmbiguityClasses     (getLexiconFieldPair(eLexica, "ambiguity_classes"      , "Loading ambiguity classes"));
+		setWordClusters         (getLexiconFieldPair(eLexica, "word_clusters"          , "Loading word clusters"));
+		setWordEmbeddings       (getLexiconFieldPair(eLexica, "word_embeddings"        , "Loading word embeddings"));
+		setNamedEntityGazetteers(getLexiconFieldPair(eLexica, "named_entity_gazetteers", "Loading named entity gazetteers"));
+		setStopWords            (getLexiconFieldPair(eLexica, "stop_words"             , "Loading stop words"));
 	}
 	
 	protected <T>Pair<T,Field> getLexiconFieldPair(Element eLexica, String tag, String message)
@@ -78,8 +76,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 	protected <T>Pair<T,Field> getLexiconFieldPair(Element element, String message)
 	{
 		if (element == null) return null;
-		long m1 = FileUtils.getNonFreeMemory();
-		BinUtils.LOG.info(message);
+		BinUtils.LOG.info(message+"\n");
 		
 		String path = XMLUtils.getTrimmedTextContent(element);
 		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(IOUtils.getInputStream(path));
@@ -93,8 +90,6 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		}
 		catch (Exception e) {e.printStackTrace();}
 
-		long m2 = FileUtils.getNonFreeMemory();
-		BinUtils.LOG.info(String.format("%d MB\n", (int)MathUtils.divide(m2-m1, MathUtils.sq(1024))));
 		return new Pair<>(lexicon, field);
 	}
 	
