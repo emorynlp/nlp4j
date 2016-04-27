@@ -1,5 +1,9 @@
 # Release Notes
 
+## Version 1.1.1 (TBA)
+
+* [NLPNode](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java) comes with several constructors.
+
 ## Version 1.1.0 (04/20/2016)
 
 * All the statistical models are about twice smaller than the previous ones without compromising accuracy. The whole pipeline can be run in 4GB of RAM now.

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
@@ -278,19 +279,19 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 	
 	public N[] toNodeArray(List<Token> tokens)
 	{
-		return toNodeArray(tokens, 0, tokens.size());
+		return toNodeArray(tokens, t -> create(t));
 	}
 	
 	@SuppressWarnings("unchecked")
-	public N[] toNodeArray(List<Token> tokens, int beginIndex, int endIndex)
+	public <T extends Token>N[] toNodeArray(List<T> tokens, Function<T,N> f)
 	{
 		N node = create(); node.toRoot();
-		N[] nodes = (N[])Array.newInstance(node.getClass(), endIndex - beginIndex + 1);
+		N[] nodes = (N[])Array.newInstance(node.getClass(), tokens.size() + 1);
 		nodes[0] = node;	// root
 		
-		for (int i=beginIndex,j=1; i<endIndex; i++,j++)
+		for (int i=0,j=1; i<tokens.size(); i++,j++)
 		{
-			nodes[j] = create(tokens.get(i));
+			nodes[j] = f.apply(tokens.get(i));
 			nodes[j].setID(j);
 		}
 			
