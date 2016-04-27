@@ -118,7 +118,7 @@ public class MLUtils
 		if (labels.size() < 2) return new int[]{it.nextInt(),-1};
 		int[] max = {it.nextInt(), it.nextInt()};
 		
-		if (scores[0] < scores[1])
+		if (scores[max[0]] < scores[max[1]])
 			DSUtils.swap(max, 0, 1);
 		
 		while (it.hasNext())
