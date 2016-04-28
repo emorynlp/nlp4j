@@ -51,14 +51,14 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 	static final String ROOT_TAG = "@#r$%";
 	
 	// core fields
-	protected int     id;
-	protected String  word_form;
-	protected String  lemma;
-	protected String  pos_tag;
-	protected String  nament_tag;
-	protected FeatMap feat_map;
-	protected String  dependency_label;
-	protected N       dependency_head;
+	protected int             id;
+	protected String          word_form;
+	protected String          lemma;
+	protected String          pos_tag;
+	protected String          nament_tag;
+	protected FeatMap         feat_map;
+	protected String          dependency_label;
+	protected N               dependency_head;
 	protected List<DEPArc<N>> semantic_heads;
     
 	// offsets
@@ -85,6 +85,36 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 	public AbstractNLPNode()
 	{
 		toRoot();
+	}
+	
+	public AbstractNLPNode(int id, String form)
+	{
+		this(id, form, null);
+	}
+	
+	public AbstractNLPNode(int id, String form, String posTag)
+	{
+		this(id, form, null, posTag, new FeatMap());
+	}
+	
+	public AbstractNLPNode(int id, String form, String lemma, String posTag, FeatMap feats)
+	{
+		this(id, form, lemma, posTag, null, feats);
+	}
+	
+	public AbstractNLPNode(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats)
+	{
+		set(id, form, lemma, posTag, namentTag, feats, null, null);
+	}
+	
+	public AbstractNLPNode(int id, String form, String lemma, String posTag, FeatMap feats, N dhead, String deprel)
+	{
+		set(id, form, lemma, posTag, null, feats, dhead, deprel);
+	}
+	
+	public AbstractNLPNode(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats, N dhead, String deprel)
+	{
+		set(id, form, lemma, posTag, namentTag, feats, dhead, deprel);
 	}
 	
 	public void set(int id, String form, String lemma, String posTag, String namentTag, FeatMap feats, N dhead, String deprel)
@@ -403,10 +433,116 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 	}
 	
 	/** @return the dependency grand-head of the node if exists; otherwise, null. */
+	public N getDependencyGrandHead()
+	{
+		N head = getDependencyHead();
+		return (head == null) ? null : head.getDependencyHead();
+	}
+
 	public N getGrandDependencyHead()
 	{
 		N head = getDependencyHead();
 		return (head == null) ? null : head.getDependencyHead();
+	}
+	
+	/** 
+	 * Get the left nearest dependency node.
+	 * Calls {@link #getLeftNearestDependent(int)}, where {@code order=0}.
+	 * @return the left nearest dependency node
+	 */
+	public N getLeftNearestDependent()
+	{
+		return getLeftNearestDependent(0);
+	}
+	
+	/**
+	 * Get the left nearest dependency node with input displacement (0 - left-nearest, 1 - second left-nearest, etc.).
+	 * The left nearest dependent must be on the left-hand side of this node.
+	 * @param order left displacement
+	 * @return the left-nearest dependent of this node if exists; otherwise, {@code null}
+	 */
+	public N getLeftNearestDependent(int order)
+	{
+		int index = dependent_list.getInsertIndex(self()) - order - 1;
+		return (index >= 0) ? getDependent(index) : null;
+	}
+	
+	/**
+	 * Get the right nearest dependency node.
+	 * Calls {@link #getRightNearestDependent(int)}, where {@code order=0}. 
+	 * @return the right nearest dependency node
+	 */
+	public N getRightNearestDependent()
+	{
+		return getRightNearestDependent(0);
+	}
+	
+	/**
+	 * Get the right nearest dependency node with input displacement (0 - right-nearest, 1 - second right-nearest, etc.).
+	 * The right-nearest dependent must be on the right-hand side of this node.
+	 * @param order right displacement
+	 * @return the right-nearest dependent of this node if exists; otherwise, {@code null}
+	 */
+	public N getRightNearestDependent(int order)
+	{
+		int index = dependent_list.getInsertIndex(self()) + order;
+		return (index < getDependentSize()) ? getDependent(index) : null;
+	}
+	
+	/**
+	 * Get the left most dependency node of the node.
+	 * Calls {@link #getLeftMostDependent(int)}, where {@code order=0}
+	 * @return the left most dependency node of the node
+	 */
+	public N getLeftMostDependent()
+	{
+		return getLeftMostDependent(0);
+	}
+	
+	/**
+	 * Get the left dependency node with input displacement (0 - leftmost, 1 - second leftmost, etc.).
+	 * The leftmost dependent must be on the left-hand side of this node.
+	 * @param order left displacement
+	 * @return the leftmost dependent of this node if exists; otherwise, {@code null}
+	 */
+	public N getLeftMostDependent(int order)
+	{
+		if (DSUtils.isRange(dependent_list, order))
+		{
+			N dep = getDependent(order);
+			if (dep.id < id) return dep;
+		}
+
+		return null;
+	}
+	
+	/** 
+	 * Get the right most dependency node of the node.
+	 * Calls {@link #getRightMostDependent(int)}, where {@code order=0}. 
+	 * @return the right most dependency node of the node
+	 */
+	public N getRightMostDependent()
+	{
+		return getRightMostDependent(0);
+	}
+	
+	/**
+	 * Get the right dependency node with input displacement (0 - rightmost, 1 - second rightmost, etc.).
+	 * The rightmost dependent must be on the right-hand side of this node.
+	 * @param order right displacement
+	 * @return the rightmost dependent of this node if exists; otherwise, {@code null}
+	 */
+	public N getRightMostDependent(int order)
+	{
+		order = getDependentSize() - 1 - order;
+		
+		if (DSUtils.isRange(dependent_list, order))
+		{
+			N dep = getDependent(order);
+			if (dep.id > id) return dep;
+		}
+
+		return null;
 	}
 	
 	/** Calls {@link #getLeftNearestSibling(int)}, where {@code order=0}. */
@@ -489,105 +625,11 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 		return null;
 	}
 	
-	/**
-	 * Get the left most dependency node of the node.
-	 * Calls {@link #getLeftMostDependent(int)}, where {@code order=0}
-	 * @return the left most dependency node of the node
-	 */
-	public N getLeftMostDependent()
-	{
-		return getLeftMostDependent(0);
-	}
 	
-	/**
-	 * Get the left dependency node with input displacement (0 - leftmost, 1 - second leftmost, etc.).
-	 * The leftmost dependent must be on the left-hand side of this node.
-	 * @param order left displacement
-	 * @return the leftmost dependent of this node if exists; otherwise, {@code null}
-	 */
-	public N getLeftMostDependent(int order)
-	{
-		if (DSUtils.isRange(dependent_list, order))
-		{
-			N dep = getDependent(order);
-			if (dep.id < id) return dep;
-		}
-
-		return null;
-	}
 	
-	/** 
-	 * Get the right most dependency node of the node.
-	 * Calls {@link #getRightMostDependent(int)}, where {@code order=0}. 
-	 * @return the right most dependency node of the node
-	 */
-	public N getRightMostDependent()
-	{
-		return getRightMostDependent(0);
-	}
 	
-	/**
-	 * Get the right dependency node with input displacement (0 - rightmost, 1 - second rightmost, etc.).
-	 * The rightmost dependent must be on the right-hand side of this node.
-	 * @param order right displacement
-	 * @return the rightmost dependent of this node if exists; otherwise, {@code null}
-	 */
-	public N getRightMostDependent(int order)
-	{
-		order = getDependentSize() - 1 - order;
-		
-		if (DSUtils.isRange(dependent_list, order))
-		{
-			N dep = getDependent(order);
-			if (dep.id > id) return dep;
-		}
-
-		return null;
-	}
 	
-	/** 
-	 * Get the left nearest dependency node.
-	 * Calls {@link #getLeftNearestDependent(int)}, where {@code order=0}.
-	 * @return the left nearest dependency node
-	 */
-	public N getLeftNearestDependent()
-	{
-		return getLeftNearestDependent(0);
-	}
 	
-	/**
-	 * Get the left nearest dependency node with input displacement (0 - left-nearest, 1 - second left-nearest, etc.).
-	 * The left nearest dependent must be on the left-hand side of this node.
-	 * @param order left displacement
-	 * @return the left-nearest dependent of this node if exists; otherwise, {@code null}
-	 */
-	public N getLeftNearestDependent(int order)
-	{
-		int index = dependent_list.getInsertIndex(self()) - order - 1;
-		return (index >= 0) ? getDependent(index) : null;
-	}
-	
-	/**
-	 * Get the right nearest dependency node.
-	 * Calls {@link #getRightNearestDependent(int)}, where {@code order=0}. 
-	 * @return the right nearest dependency node
-	 */
-	public N getRightNearestDependent()
-	{
-		return getRightNearestDependent(0);
-	}
-	
-	/**
-	 * Get the right nearest dependency node with input displacement (0 - right-nearest, 1 - second right-nearest, etc.).
-	 * The right-nearest dependent must be on the right-hand side of this node.
-	 * @param order right displacement
-	 * @return the right-nearest dependent of this node if exists; otherwise, {@code null}
-	 */
-	public N getRightNearestDependent(int order)
-	{
-		int index = dependent_list.getInsertIndex(self()) + order;
-		return (index < getDependentSize()) ? getDependent(index) : null;
-	}
 
 	/**
 	 * @param predicate takes a dependency node and compares the specific tag with the referenced function.
@@ -962,6 +1004,16 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 		}
 		
 		return build.toString();
+	}
+
+	public Set<String> getDependentValueSet(Field field)
+	{
+		Set<String> s = new HashSet<>();
+		
+		for (N dep : getDependentList())
+			s.add(dep.getValue(field));
+		
+		return s;
 	}
 	
 	/**

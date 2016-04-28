@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 
@@ -30,11 +29,11 @@ public class ItClassifier<N extends AbstractNLPNode<N>> extends OnlineComponent<
 {
 	private static final long serialVersionUID = 3585863417135590906L;
 
-	public ItClassifier() {super(false);}
+	public ItClassifier() {super(true);}
 	
 	public ItClassifier(InputStream configuration)
 	{
-		super(false, configuration);
+		super(true, configuration);
 	}
 
 	@Override
@@ -42,11 +41,17 @@ public class ItClassifier<N extends AbstractNLPNode<N>> extends OnlineComponent<
 	{
 		return new ItState<>(document);
 	}
+	
+	@Override
+	public void initFeatureTemplate()
+	{
+		feature_template = new ItFeatureTemplate<>(config.getFeatureTemplateElement(), getHyperParameter());
+	}
 
 	@Override
 	public Eval createEvaluator()
 	{
-		return new AccuracyEval();
+		return new ItEval(4);
 	}
 
 	@Override
