@@ -138,7 +138,7 @@ abstract public class Tokenizer
 		return segmentize(tokenize(s));
 	}
 
-	abstract public List<List<Token>> segmentize(List<Token> tokens);
+	abstract public <T extends Token>List<List<T>> segmentize(List<T> tokens);
 
 //	============================== Tokenize ==============================
 
