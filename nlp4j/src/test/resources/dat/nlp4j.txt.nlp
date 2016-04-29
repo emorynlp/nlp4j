@@ -31,4 +31,3 @@
 19	Emory	emory	NNP	_	20	compound	_	B-ORG
 20	University	university	NNP	_	18	pobj	_	L-ORG
 21	.	.	.	_	3	punct	_	O
-
