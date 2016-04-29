@@ -1,11 +1,11 @@
 # Release Notes
 
-## Version 1.1.1 (TBA)
+## Version 1.1.1 (04/29/2016)
 
+* Bugfixes: [pull-7](https://github.com/emorynlp/nlp4j-core/pull/7).
+* Features: [issue-3](https://github.com/emorynlp/nlp4j/issues/3/), [issue-6](https://github.com/emorynlp/nlp4j/issues/6).
 * [NLPNode](https://github.com/emorynlp/nlp4j-core/blob/master/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java) comes with several useful constructors.
 * The `segmentize` method in [Tokenizer](https://github.com/emorynlp/nlp4j-tokenization/blob/master/src/main/java/edu/emory/mathcs/nlp/tokenization/Tokenizer.java) takes the generic type of [Token](https://github.com/emorynlp/nlp4j-tokenization/blob/master/src/main/java/edu/emory/mathcs/nlp/tokenization/Token.java).
-* Bugfixes: [issue-3](https://github.com/emorynlp/nlp4j/issues/3/).
-* Features: [pull-7](https://github.com/emorynlp/nlp4j-core/pull/7).
 
 ## Version 1.1.0 (04/20/2016)
 
