@@ -144,20 +144,31 @@ public class StringUtils
 		if (MetaUtils.endsWithFileExtension(s) || MetaUtils.containsHyperlink(s))
 			return MetaConst.HYPERLINK;
 		
-		if (s.length() == 1)
-		{
-			char c = s.charAt(0);
-			if (CharUtils.isCurrency(c)) return StringConst.DOLLAR;
-			if (CharUtils.isSingleQuotationMark(c)) return StringConst.SINGLE_QUOTE;
-			if (CharUtils.isDoubleQuotationMark(c)) return StringConst.DOUBLE_QUOTE;
-			if (CharUtils.isListMark(c) || CharUtils.isHyphen(c)) return StringConst.HYPHEN;
-		}
-		
+//		if (s.length() == 1)
+//		{
+//			char c = s.charAt(0);
+//			if (CharUtils.isCurrency(c)) return StringConst.DOLLAR;
+//			if (CharUtils.isSingleQuotationMark(c)) return StringConst.SINGLE_QUOTE;
+//			if (CharUtils.isDoubleQuotationMark(c)) return StringConst.DOUBLE_QUOTE;
+//			if (CharUtils.isListMark(c) || CharUtils.isHyphen(c)) return StringConst.HYPHEN;
+//		}
+
+		s = generalizeSymbols(s);
 		s = collapseDigits(s);
 		s = collapsePunctuation(s);
 		if (uncapitalize) s = toLowerCase(s);
 		
 		return s;
+	}
+	
+	static public String generalizeSymbols(String s)
+	{
+		char[] cs = s.toCharArray();
+		
+		for (int i=0; i<cs.length; i++)
+			cs[i] = CharUtils.generalizeSymbol(cs[i]);
+		
+		return new String(cs);
 	}
 	
 	/** Calls {@link #toSimplifiedForm(String, boolean)}, where {@code lower = false}. */

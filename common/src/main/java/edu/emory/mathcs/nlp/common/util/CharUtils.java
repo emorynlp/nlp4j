@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.common.util;
 
-
+import edu.emory.mathcs.nlp.common.constant.CharConst;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -244,6 +244,16 @@ public class CharUtils
 	public static boolean isDoubleQuotationMark(char c)
 	{
 		return c == '"' || isRange(c, '\u201C', '\u201F');
+	}
+	
+	public static char generalizeSymbol(char c)
+	{
+		if (CharUtils.isCurrency(c)) return CharConst.DOLLAR;
+		if (CharUtils.isSingleQuotationMark(c)) return CharConst.SINGLE_QUOTE;
+		if (CharUtils.isDoubleQuotationMark(c)) return CharConst.DOUBLE_QUOTE;
+		if (CharUtils.isApostrophe(c)) return '\'';
+		if (CharUtils.isListMark(c) || CharUtils.isHyphen(c)) return CharConst.HYPHEN;
+		return c;
 	}
 	
 //	----------------------------------- Bracket -----------------------------------
