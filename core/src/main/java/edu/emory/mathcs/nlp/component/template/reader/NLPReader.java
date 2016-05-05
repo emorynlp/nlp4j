@@ -30,6 +30,11 @@ public class NLPReader extends TSVReader<NLPNode>
 		super(map);
 	}
 	
+	public NLPReader(int form, int lemma, int pos, int feats, int dhead, int deprel, int sheads, int nament)
+	{
+		super(form, lemma, pos, feats, dhead, deprel, sheads, nament);
+	}
+	
 	@Override
 	protected NLPNode create()
 	{

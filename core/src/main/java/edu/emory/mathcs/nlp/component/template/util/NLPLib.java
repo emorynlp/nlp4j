@@ -15,6 +15,11 @@
  */
 package edu.emory.mathcs.nlp.component.template.util;
 
+import java.util.function.Function;
+
+import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -22,4 +27,9 @@ public class NLPLib
 {
 	static public String FEAT_POS_2ND   = "pos2";
 	static public String FEAT_PREDICATE = "pred";
+	
+	static public <N extends AbstractNLPNode<N>>String join(N[] nodes, String delim, Function<N,String> f)
+	{
+		return Joiner.join(nodes, delim, 1, nodes.length, f);
+	}
 }
