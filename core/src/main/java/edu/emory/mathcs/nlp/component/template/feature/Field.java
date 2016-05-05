@@ -45,6 +45,7 @@ public enum Field
 	
 	// dependency parsing features
 	dependency_label,
+	dependent_set,
 	distance,
 	valency,
 	

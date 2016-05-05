@@ -48,16 +48,28 @@ public abstract class TSVReader<N extends AbstractNLPNode<N>>
 	
 	public TSVReader() {}
 	
+	public TSVReader(int form, int lemma, int pos, int feats, int dhead, int deprel, int sheads, int nament)
+	{
+		this.form   = form;
+		this.lemma  = lemma;
+		this.pos    = pos;
+		this.feats  = feats;
+		this.dhead  = dhead;
+		this.deprel = deprel;
+		this.sheads = sheads;
+		this.nament = nament;
+	}
+	
 	public TSVReader(Object2IntMap<String> map)
 	{
 		form   = map.getOrDefault("form"  , -1);
 		lemma  = map.getOrDefault("lemma" , -1);
 		pos    = map.getOrDefault("pos"   , -1);
-		nament = map.getOrDefault("nament", -1);
 		feats  = map.getOrDefault("feats" , -1);
 		dhead  = map.getOrDefault("dhead" , -1);
 		deprel = map.getOrDefault("deprel", -1);
 		sheads = map.getOrDefault("sheads", -1);
+		nament = map.getOrDefault("nament", -1);
 	}
 	
 	public void open(InputStream in)

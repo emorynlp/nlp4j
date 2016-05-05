@@ -52,6 +52,12 @@ public class ItState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		
 		for (N[] nodes : document)
 		{
+			for (int i=1; i<nodes.length; i++)
+			{
+				String s = nodes[i].getFeat(FEAT_KEY);
+				if (s != null && s.equals("4")) nodes[i].removeFeat(FEAT_KEY);
+			}
+			
 			String[] o = Arrays.stream(nodes).map(n -> n.removeFeat(FEAT_KEY)).toArray(String[]::new);
 			oracle.add(o);
 			if (!exist) exist = Arrays.stream(o).filter(s -> s != null).findAny().isPresent();
@@ -99,7 +105,7 @@ public class ItState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	public void next(LabelMap map, int[] top2, float[] scores)
 	{
 		String label = map.getLabel(top2[0]);
-		document.get(tree_id)[node_id].putFeat(FEAT_KEY, label);
+		getInput().putFeat(FEAT_KEY, label);
 		shift();
 	}
 	
@@ -118,11 +124,21 @@ public class ItState<N extends AbstractNLPNode<N>> extends NLPState<N>
 			for (node_id++; node_id < nodes.length; node_id++)
 			{
 				N node = nodes[node_id];
-				if (node.isLemma("it") || node.isLemma("its")) return;
+				if (isIt(node)) return;
 			}
 			
 			node_id = 0;
 		}
+	}
+	
+	public boolean isIt(N node)
+	{
+		return node.isLemma("it") || node.isLemma("its");
+	}
+	
+	public N getInput()
+	{
+		return document.get(tree_id)[node_id];
 	}
 
 	@Override
@@ -146,8 +162,13 @@ public class ItState<N extends AbstractNLPNode<N>> extends NLPState<N>
 			{
 				if (o[j] != null)
 				{
-					if (o[j].equals(nodes[j].getFeat(FEAT_KEY))) correct++;
+					String a = nodes[j].getFeat(FEAT_KEY);
+//					if (o[j].equals("3")) o[j] = "1";
+//					if (a.equals("3")) a = "1";
+					
+					if (o[j].equals(a)) correct++;
 					total++;
+					((ItEval)eval).add(a, o[j]);
 				}
 			}
 		}

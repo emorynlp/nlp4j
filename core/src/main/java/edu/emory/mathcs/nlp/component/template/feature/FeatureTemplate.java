@@ -77,6 +77,21 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 		init(eFeatures);
 	}
 	
+	public List<FeatureItem[]> getFeatureList()
+	{
+		return feature_list;
+	}
+	
+	public List<FeatureItem> getSetFeatureList()
+	{
+		return feature_set;
+	}
+	
+	public List<FeatureItem> getEmbeddingFeatureList()
+	{
+		return word_embeddings;
+	} 
+	
 //	============================== IINTIALIZATION ==============================
 	
 	protected void init(Element eFeatures)
@@ -162,6 +177,7 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 		case suffix : return new Integer(Integer.parseInt(attribute));
 		case feats  : return attribute;
 		case valency: return Direction.valueOf(attribute);
+		case dependent_set: return Field.valueOf(attribute);
 		}
 		
 		return null;
@@ -335,6 +351,7 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 		case ambiguity_classes: return node.getAmbiguityClasseList();
 		case named_entity_gazetteers: return node.getNamedEntityGazetteerSet();
 		case word_clusters: return node.getWordClusters();
+		case dependent_set: return node.getDependentValueSet((Field)item.attribute);
 		default: return null;
 		}
 	}
@@ -469,16 +486,10 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 
 	public float[] createDenseVector(S state)
 	{
-		return getAverageEmbeddings(state);
+		return getEmbeddings(state);
 	}
 	
-	/**
-	 * this method is for creating dense vector (average of) out of selected word embeddings like <br>
-	 * WE(wi), WE(wj), WE(wi+1), WE(wi-1), etc
-	 * @param state
-	 * @return
-	 */
-	public float[] getAverageEmbeddings(S state)
+	public float[] getEmbeddings(S state)
 	{
 		if (word_embeddings == null || word_embeddings.isEmpty()) return null;
 		float[] w, v = null;
