@@ -34,9 +34,10 @@ public class HyperParameter
 	private LOLS        lols;
 	
 	// neural networks
-	private int[] hidden_dimensions;
-	private ActivationFunction[]  activation_functions;
-	private WeightGenerator weightGenerator;
+	private int[] 					hidden_dimensions;
+	private ActivationFunction[]  	activation_functions;
+	private float[] 				dropout_prob;
+	private WeightGenerator 		weightGenerator;
 
 //	========================== FEATURE CUTOFF ==========================
 
@@ -192,5 +193,17 @@ public class HyperParameter
 		if (l1_regularizer != null) build.append(String.format("%s%s", prefix, l1_regularizer.toString()));
 		
 		return build.toString();
+	}
+	
+// 	========================== Dropout ==========================
+
+	public float[] getDropoutProb() {
+		return dropout_prob;
+	}
+	
+	public void setDropoutProb(float[] prob) {
+		if(prob != null){
+			dropout_prob = prob.clone();
+		}
 	}
 }
