@@ -60,47 +60,6 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	public OnlineTrainer() {};
 	
 //	=================================== COMPONENT ===================================
-
-	@SuppressWarnings("unchecked")
-	public OnlineComponent<N,S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream)
-	{
-		OnlineComponent<N,S> component = null;
-		NLPConfig<N> configuration = null;
-		
-		if (previousModelStream != null)
-		{
-			BinUtils.LOG.info("Loading the previous model\n");
-			ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(previousModelStream);
-			
-			try
-			{
-				component = (OnlineComponent<N,S>)oin.readObject();
-				configuration = component.setConfiguration(configStream);
-				oin.close();
-			}
-			catch (Exception e) {e.printStackTrace();}
-		}
-		else
-		{
-			component = createComponent(mode, configStream);
-			configuration = component.getConfiguration();
-		}
-		
-		HyperParameter hp = configuration.getHyperParameter();
-		component.setHyperParameter(hp);
-		
-		if (component.getOptimizer() != null)
-		{
-			component.getOptimizer().adapt(hp);			
-		}
-		else
-		{
-			component.setOptimizer(configuration.getOnlineOptimizer(hp));
-			component.initFeatureTemplate();
-		}
-
-		return component;
-	}
 	
 	@SuppressWarnings("unchecked")
 	public OnlineComponent<N,S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream, String name)
@@ -143,9 +102,13 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		return component;
 	}
 	
+	public OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config, String name)
+	{
+		if (name != null) BinUtils.LOG.warn("Name not implemented for OnlineComponent. Input name - " + name + " will be ignored.");
+		return createComponent(mode, config);
+	}
+	
 	public abstract OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config);
-	public abstract OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config, String name);
-
 	public abstract TSVReader<N> createTSVReader(Object2IntMap<String> map);
 	public abstract GlobalLexica<N> createGlobalLexica(InputStream config);
 	
@@ -235,8 +198,8 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	{
 		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
 		GlobalLexica<N> lexica = createGlobalLexica(IOUtils.createFileInputStream(configurationFile));
-		String modelName = FileUtils.getBaseName(modelFile);
-		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream, modelName);
+		String name = (modelFile != null) ? FileUtils.getBaseName(modelFile) : null;
+		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream, name);
 		TSVReader<N> reader = createTSVReader(component.getConfiguration().getReaderFieldMap());
 		ObjectDoublePair<OnlineComponent<N,S>> p = null;
 		

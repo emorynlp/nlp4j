@@ -21,8 +21,6 @@ import java.util.List;
 
 import org.kohsuke.args4j.Option;
 
-import com.sun.istack.internal.logging.Logger;
-
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.component.dep.DEPParser;
@@ -99,22 +97,6 @@ public class NLPTrain
 				}
 			}
 
-			@Override
-			@SuppressWarnings("unchecked")
-			public OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config, String name)
-			{
-				BinUtils.LOG.warn("Name not implemented for OnlineComponent. Input name-" + name + "will be ignored.");
-				switch (mode)
-				{
-				case pos: return (OnlineComponent<N,S>)new POSTagger<>(config);
-				case ner: return (OnlineComponent<N,S>)new NERTagger<>(config);
-				case dep: return (OnlineComponent<N,S>)new DEPParser<>(config);
-				case doc: return (OnlineComponent<N,S>)new DOCAnalyzer<>(config);
-				case  it: return (OnlineComponent<N,S>)new ItClassifier<>(config);
-//				case srl: return (OnlineComponent<N,S>)new SRLParser(config);
-				default : throw new IllegalArgumentException("Unsupported mode: "+mode);
-				}
-			}
 			@Override
 			@SuppressWarnings("unchecked")
 			public TSVReader<N> createTSVReader(Object2IntMap<String> map)
