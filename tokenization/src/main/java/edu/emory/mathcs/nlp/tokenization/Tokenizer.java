@@ -50,6 +50,7 @@ abstract public class Tokenizer
 	protected final CharSet S_SYMBOL_IN_BETWEEN = new CharOpenHashSet(new char[]{CharConst.SEMICOLON, CharConst.COMMA, CharConst.TILDA, CharConst.EQUAL, CharConst.PLUS, CharConst.AMPERSAND, CharConst.PIPE, CharConst.FW_SLASH});
 	protected final Pattern P_ABBREVIATION = PatternUtils.createClosedPattern("\\p{Alnum}([\\.|-]\\p{Alnum})*");
 	protected final Pattern P_YEAR = PatternUtils.createClosedPattern("\\d\\d['\u2019]?[sS]?");
+	protected final Pattern P_YEAR_YEAR = PatternUtils.createClosedPattern("(\\d{2}|\\d{4})(-)(\\d{2}|\\d{4}|\\d{2}[sS])");
 
 	protected Emoticon    d_emoticon;
 	protected Currency    d_currency;
@@ -599,13 +600,13 @@ abstract public class Tokenizer
 	{
 		int i, j, size = tokens.size();
 		String token, lower;
-
+		
 		for (i=0; i<size; i++)
 		{
 		    token = tokens.get(i).getWordForm();
 			lower = StringUtils.toLowerCase(token);
 
-			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeParenthesis(tokens, token, i, input)) != 0)
+			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeParenthesis(tokens, token, i, input)) != 0 || (j = tokenizeYears(tokens, token, i)) != 0)
 			{
 				size = tokens.size();
 				i += j;
@@ -640,22 +641,49 @@ abstract public class Tokenizer
 	{
 		if (token.length() == 1 && 0 <= index-1 && index+1 < tokens.size())
 		{
-            String prev = tokens.get(index - 1).getWordForm();
-            String next = tokens.get(index + 1).getWordForm();
-            if (prev.equals(StringConst.LRB) && next.equals(StringConst.RRB))
-            {
-                Token prevToken = tokens.get(index - 1);
-//             Token currToken = tokens.get(index);
-                Token nextToken = tokens.get(index + 1);
-                Token Token = new Token(input.substring(prevToken.getStartOffset(), nextToken.getEndOffset()),
-                        prevToken.getStartOffset(), nextToken.getEndOffset());
-                tokens.set(index - 1, Token);
-                tokens.remove(index);
-                tokens.remove(index);
-                return -1;
-            }
-        }
+			String prev = tokens.get(index - 1).getWordForm();
+			String next = tokens.get(index + 1).getWordForm();
+			
+			if (prev.equals(StringConst.LRB) && next.equals(StringConst.RRB))
+			{
+				Token prevToken = tokens.get(index - 1);
+//				Token currToken = tokens.get(index);
+				Token nextToken = tokens.get(index + 1);
+				Token Token = new Token(input.substring(prevToken.getStartOffset(), nextToken.getEndOffset()), prevToken.getStartOffset(), nextToken.getEndOffset());
+				tokens.set(index - 1, Token);
+				tokens.remove(index);
+				tokens.remove(index);
+				return -1;
+			}
+		}
+		
+		return 0;
+	}
+	
+	private int tokenizeYears(List<Token> tokens, String token, int index)
+	{
+		Matcher m;
+		
+		if ((m = P_YEAR_YEAR.matcher(token)).find())
+		{
+			Token year1 = tokens.get(index);
+			year1.setWordForm(m.group(2));
+			year1.setEndOffset(year1.getStartOffset()+year1.getWordForm().length());
+			
+			Token hyphen = new Token(m.group(3));
+			hyphen.setStartOffset(year1.getEndOffset());
+			hyphen.setEndOffset(hyphen.getStartOffset()+hyphen.getWordForm().length());
 
+			Token year2  = new Token(m.group(4));
+			year2.setStartOffset(hyphen.getEndOffset());
+			year2.setEndOffset(year2.getStartOffset()+year2.getWordForm().length());
+			
+			tokens.add(index+1, hyphen);
+			tokens.add(index+2, year2);
+			
+			return 2;
+		}
+		
 		return 0;
 	}
 
@@ -667,14 +695,11 @@ abstract public class Tokenizer
         String lastToken = lastInterval.getWordForm();
         char[] ca = lastToken.toCharArray();
         int leng = lastToken.length();
-        if (1 < leng && ca[leng - 1] == CharConst.PERIOD
-                && !CharUtils.isFinalMark(ca[leng - 2]))
+        if (1 < leng && ca[leng - 1] == CharConst.PERIOD && !CharUtils.isFinalMark(ca[leng - 2]))
         {
-            Token Token = new Token(StringUtils.trim(lastToken, 1),
-                    lastInterval.getStartOffset(), lastInterval.getEndOffset() - 1);
+            Token Token = new Token(StringUtils.trim(lastToken, 1), lastInterval.getStartOffset(), lastInterval.getEndOffset() - 1);
             tokens.set(lastIndex, Token);
-            Token nextInterval = new Token(StringConst.PERIOD,
-                    lastInterval.getEndOffset() - 1, lastInterval.getEndOffset());
+            Token nextInterval = new Token(StringConst.PERIOD, lastInterval.getEndOffset() - 1, lastInterval.getEndOffset());
             tokens.add(lastIndex + 1, nextInterval);
         }
 	}
@@ -698,7 +723,7 @@ abstract public class Tokenizer
 
 		return false;
 	}
-
+	
 	/** Called by {@link #addMorphemes(List, String)}. */
 	private boolean preserveSymbolInAlphabets(char[] cs, int index)
 	{

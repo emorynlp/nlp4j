@@ -24,6 +24,11 @@ public class Token
 	protected int    start_offset;
     protected int    end_offset;
     
+    public Token(String form)
+    {
+    	this(form, -1, -1);
+    }
+    
     public Token(String form, int startOffset, int endOffset)
     {
     	setStartOffset(startOffset);
