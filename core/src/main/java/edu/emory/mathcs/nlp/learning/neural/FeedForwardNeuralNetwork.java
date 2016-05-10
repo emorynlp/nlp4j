@@ -17,6 +17,7 @@ package edu.emory.mathcs.nlp.learning.neural;
 
 import java.util.Arrays;
 
+import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
 import edu.emory.mathcs.nlp.learning.initialization.WeightGenerator;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
@@ -24,25 +25,41 @@ import edu.emory.mathcs.nlp.learning.optimization.reguralization.Regularizer;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.Instance;
 import edu.emory.mathcs.nlp.learning.util.MajorVector;
+import edu.emory.mathcs.nlp.learning.util.SparseItem;
+import edu.emory.mathcs.nlp.learning.util.SparseVector;
 import edu.emory.mathcs.nlp.learning.util.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
+ * @author amit-deshmane ({@code amitad87@gmail.com})
  */
 public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 {
 	private static final long serialVersionUID = -6902794736542104875L;
 	
 	protected int[]           hidden_dimensions;
+	/**
+	 * it is actually the probability with which a unit is retained.<br>
+	 */
+	protected float[]		  dropout_prob;
+	/**
+	 * while training on an instance or mini_batch, a thinned network is sampled for dropout<br>
+	 */
+	protected boolean[][]	  sampled_thinned_network;
 	protected WeightVector    w_h2o;
 	protected WeightVector[]  w_h2h;
 	protected WeightGenerator generator;
 	
 //	============================== CONSTRUCTORS ==============================
 	
+	public FeedForwardNeuralNetwork(int[] hiddenDimensions, ActivationFunction[] functions, float learningRate, float bias, WeightGenerator generator, float[] dropout_prob)
+	{
+		this(hiddenDimensions, functions, learningRate, bias, generator, null, dropout_prob);
+	}
+	
 	public FeedForwardNeuralNetwork(int[] hiddenDimensions, ActivationFunction[] functions, float learningRate, float bias, WeightGenerator generator)
 	{
-		this(hiddenDimensions, functions, learningRate, bias, generator, null);
+		this(hiddenDimensions, functions, learningRate, bias, generator, null, null);
 	}
 	
 	/**
@@ -51,14 +68,17 @@ public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 	 * @param learningRate     learning rate used to train all layers.
 	 * @param bias             bias used to train all layers.
 	 * @param initializer      initializes the weights between the input and the first hidden layers.
+	 * @param dropout_prob	   dropout: unit retain probabilities for each layer including input layer.
 	 */
-	public FeedForwardNeuralNetwork(int[] hiddenDimensions, ActivationFunction[] functions, float learningRate, float bias, WeightGenerator generator, Regularizer l1)
+	public FeedForwardNeuralNetwork(int[] hiddenDimensions, ActivationFunction[] functions, float learningRate, float bias, WeightGenerator generator, Regularizer l1, float[] dropout_prob)
 	{
 		super(new WeightVector(functions[0]), learningRate, bias, l1);
 		
 		// dimensions
 		hidden_dimensions = hiddenDimensions;
 	
+		// dropout: unit retain probabilities for each layer, including input
+		this.dropout_prob = dropout_prob;
 		// weights
 		w_h2h = new WeightVector[hiddenDimensions.length - 1];
 		
@@ -84,8 +104,9 @@ public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 	public void train(Instance instance)
 	{
 		augment(instance);
+		sampleThinnedNetwork(instance);
 		expand(instance.getFeatureVector());
-		float[][] layers = forwardPropagation(instance.getFeatureVector());
+		float[][] layers = forwardPropagation(instance.getFeatureVector(), NLPFlag.TRAIN);
 		instance.setScores(layers[layers.length-1]);
 		int yhat = getPredictedLabel(instance);
 		instance.setPredictedLabel(yhat);
@@ -118,30 +139,58 @@ public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 	@Override
 	public float[] scores(FeatureVector x)
 	{
-		return forwardPropagation(x)[hidden_dimensions.length];
+		return forwardPropagation(x, NLPFlag.EVALUATE)[hidden_dimensions.length];
 	}
 
 //	============================== PROPAGATION ==============================
 	
-	/** @return [1st hidden layer(, next hidden layer)*, output_layer] from forward propagation. */
-	public float[][] forwardPropagation(FeatureVector x)
+	/** @param flag 
+	 * @return [1st hidden layer(, next hidden layer)*, output_layer] from forward propagation. */
+	public float[][] forwardPropagation(FeatureVector x, NLPFlag flag)
 	{
 		float[][] layers = new float[hidden_dimensions.length+1][];
 		int i;
 		
-		// input -> hidden
-		layers[0] = weight_vector.scores(x);
-		
-		// hidden -> hidden
-		for (i=1; i<hidden_dimensions.length; i++){
-			FeatureVector local_input = new FeatureVector(layers[i-1]);
+		switch (flag) {
+		case TRAIN:
+			// input -> hidden
+			FeatureVector r_x = applyDropout(x, 0, flag);
+			layers[0] = weight_vector.scores(r_x);
+			
+			// hidden -> hidden
+			for (i=1; i<hidden_dimensions.length; i++){
+				FeatureVector local_input = new FeatureVector(layers[i-1]);
+				augment(local_input);
+				FeatureVector r_local_input = applyDropout(local_input, i, flag);
+				layers[i] = w_h2h[i-1].scores(r_local_input);
+			}	
+			// hidden -> output
+			FeatureVector local_input = new FeatureVector(layers[hidden_dimensions.length-1]);
 			augment(local_input);
-			layers[i] = w_h2h[i-1].scores(local_input);
-		}	
-		// hidden -> output
-		FeatureVector local_input = new FeatureVector(layers[i-1]);
-		augment(local_input);
-		layers[i] = w_h2o.scores(local_input);
+			FeatureVector r_local_input = applyDropout(local_input, hidden_dimensions.length, flag);
+			layers[hidden_dimensions.length] = w_h2o.scores(r_local_input);
+			
+			break;
+		case EVALUATE:
+			
+		default:
+			// input -> hidden
+			layers[0] = weight_vector.scores(x);
+			
+			// hidden -> hidden
+			for (i=1; i<hidden_dimensions.length; i++){
+				FeatureVector local_input3 = new FeatureVector(layers[i-1]);
+				augment(local_input3);
+				layers[i] = w_h2h[i-1].scores(local_input3);
+			}	
+			// hidden -> output
+			FeatureVector local_input3 = new FeatureVector(layers[i-1]);
+			augment(local_input3);
+			layers[i] = w_h2o.scores(local_input3);
+			break;
+		}
+		
+		
 		return layers;
 	}
 
@@ -170,5 +219,78 @@ public abstract class FeedForwardNeuralNetwork extends OnlineOptimizer
 	public String toString()
 	{
 		return toString("FeedForward-Softmax", "hidden = "+Arrays.toString(hidden_dimensions));
+	}
+	
+	// dropout: sampling a thinned network
+	public void sampleThinnedNetwork(Instance instance){
+		sampled_thinned_network = new boolean[hidden_dimensions.length + 1][];
+		sampled_thinned_network[0] = new boolean[instance.getFeatureVector().getSparseVector().maxIndex() + 1 + instance.getFeatureVector().getDenseVector().length];
+		for(int index = 0; index < hidden_dimensions.length; index++){
+			sampled_thinned_network[index + 1] = new boolean[1 + hidden_dimensions[index]];
+		}
+		for(int index = 0; index < hidden_dimensions.length + 1; index++){
+			for(int unitIndex = 0; unitIndex < sampled_thinned_network[index].length; unitIndex++){
+				if(dropout_prob == null || index >= dropout_prob.length || Math.random() <= dropout_prob[index]){
+					sampled_thinned_network[index][unitIndex] = true;
+				}
+				else{
+					sampled_thinned_network[index][unitIndex] = false;
+				}
+				
+			}
+		}
+	}
+	
+	// dropout: applying the thinned network to input at each layer
+	private FeatureVector applyDropout(FeatureVector x, int layerIndex, NLPFlag flag) {
+		SparseVector srx = new SparseVector(x.getSparseVector());
+		float[] drx = x.getDenseVector().clone();
+		FeatureVector rx = new FeatureVector(srx, drx);
+		int index;
+		float[] denseVector;
+		switch (flag) {
+		case TRAIN:// considering inputs only from sampled thinned network
+			for(SparseItem si : rx.getSparseVector().getVector()){
+				int itemIndex = si.getIndex();
+				if(!sampled_thinned_network[layerIndex][itemIndex]){
+					si.setValue(0f);
+				}
+			}
+			index = rx.getSparseVector().maxIndex() + 1;
+			denseVector = rx.getDenseVector();
+			for(int subIndex = 0; subIndex < denseVector.length; subIndex++){
+				if(!sampled_thinned_network[layerIndex][index]){
+					denseVector[subIndex] = 0f;
+				}
+				index++;
+			}
+			break;
+		case EVALUATE:// average over all thinned networks by simply considering all units and multiplying the input with the dropout probability
+			for(SparseItem si : rx.getSparseVector().getVector()){
+				si.setValue(dropout_prob[layerIndex] * si.getValue());
+			}
+			index = rx.getSparseVector().maxIndex() + 1;
+			denseVector = rx.getDenseVector();
+			for(int subIndex = 0; subIndex < denseVector.length; subIndex++){
+				denseVector[subIndex] = dropout_prob[layerIndex] * denseVector[subIndex];
+				index++;
+			}
+			break;
+
+		default: // same as evaluate in case you want to change anything ***
+			for(SparseItem si : rx.getSparseVector().getVector()){
+				si.setValue(dropout_prob[layerIndex] * si.getValue());
+			}
+			index = rx.getSparseVector().maxIndex() + 1;
+			denseVector = rx.getDenseVector();
+			for(int subIndex = 0; subIndex < denseVector.length; subIndex++){
+				denseVector[subIndex] = dropout_prob[layerIndex] * denseVector[subIndex];
+				index++;
+			}
+			break;
+		}
+		
+		
+		return rx;
 	}
 }

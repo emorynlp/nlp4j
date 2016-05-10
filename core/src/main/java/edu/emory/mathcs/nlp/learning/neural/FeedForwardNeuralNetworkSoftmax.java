@@ -27,6 +27,7 @@ import edu.emory.mathcs.nlp.learning.util.SparseItem;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
+ * @author amit-deshmane ({@code amitad87@gmail.com})
  */
 public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 {
@@ -35,6 +36,11 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 	public FeedForwardNeuralNetworkSoftmax(int[] hiddenDimensions, ActivationFunction[] functions, float learningRate, float bias, WeightGenerator initializer)
 	{
 		super(hiddenDimensions, functions, learningRate, bias, initializer);
+	}
+	
+	public FeedForwardNeuralNetworkSoftmax(int[] hiddenDimensions, ActivationFunction[] functions, float learningRate, float bias, WeightGenerator initializer, float [] dropout_prob)
+	{
+		super(hiddenDimensions, functions, learningRate, bias, initializer, dropout_prob);
 	}
 	
 //	============================== OVERRIDE ==============================
@@ -61,6 +67,10 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 	public void updateMiniBatch() {}
 	
 //	============================== BACKWARD PROPAGATION ==============================
+	/**
+	 * Found a minor bug:<br>
+	 * Need to check if the weights of the connections from bias units get updated in back propagation or not.<br>
+	 */
 
 	@Override
 	protected float[] backwardPropagationO2H(Instance instance, float[] input)
@@ -79,9 +89,12 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 		{
 			for (int xi=0; xi<input.length; xi++)
 			{
-				index = weights.indexOf(y, xi);
-				errors[xi] += gradients[y] * output[y] * weights.get(index);
-				weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * input[xi]);
+				// notice the index is [1 + xi], 1 is for bias unit which is in sparce vector
+				if(sampled_thinned_network[sampled_thinned_network.length -1][1 + xi]){
+					index = weights.indexOf(y, xi);
+					errors[xi] += gradients[y] * output[y] * weights.get(index);
+					weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * input[xi]);
+				}
 			}
 		}
 
@@ -98,9 +111,11 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 		{
 			for (int xi=0; xi<input.length; xi++)
 			{
-				index = weights.indexOf(y, xi);
-				errors[xi] += gradients[y] * weights.get(index);
-				weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * input[xi]);
+				if(sampled_thinned_network[layer + 1][1 + xi] && sampled_thinned_network[layer + 2][1 + y]){
+					index = weights.indexOf(y, xi);
+					errors[xi] += gradients[y] * weights.get(index);
+					weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * input[xi]);
+				}
 			}
 		}
 		
@@ -122,8 +137,10 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 			{
 				for (int y=0; y<gradients.length; y++)
 				{
-					index = weights.indexOf(y, p.getIndex());
-					weights.add(index, gradients[y] * p.getValue());
+					if(sampled_thinned_network[0][p.getIndex()] && sampled_thinned_network[1][1 + y]){
+						index = weights.indexOf(y, p.getIndex());
+						weights.add(index, gradients[y] * p.getValue());
+					}
 				}
 			}
 		}
@@ -137,8 +154,10 @@ public class FeedForwardNeuralNetworkSoftmax extends FeedForwardNeuralNetwork
 			{
 				for (int xi=0; xi<x.length; xi++)
 				{
-					index = weights.indexOf(y, xi);
-					weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * x[xi]);
+					if(sampled_thinned_network[0][input.getSparseVector().maxIndex() + 1 + xi] && sampled_thinned_network[1][1 + y]){
+						index = weights.indexOf(y, xi);
+						weights.add(index, -1 * getLearningRate(index, false) * gradients[y] * x[xi]);
+					}
 				}
 			}
 		}

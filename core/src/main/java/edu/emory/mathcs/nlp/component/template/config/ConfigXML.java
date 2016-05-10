@@ -85,7 +85,12 @@ public interface ConfigXML
 	String ACTIVATION_FUNCTIONS	= "activation_functions";
 	String SOFTMAX				= "softmax";
 	String SIGMOID				= "sigmoid";
+	String TANH					= "tanh";
+	String IDENTITY				= "identity";
+	String RELU					= "relu";
+	String SOFTPLUS				= "softplus";
 	String WEIGHT_GENERATOR		= "weight_generator";
+	String DROPOUT_PROB			= "dropout_prob";
 
 //	========================== FEATURE TEMPLATE ==========================
 	

@@ -28,8 +28,12 @@ import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.train.LOLS;
 import edu.emory.mathcs.nlp.learning.activation.ActivationFunction;
+import edu.emory.mathcs.nlp.learning.activation.HyperbolicTanFunction;
+import edu.emory.mathcs.nlp.learning.activation.IdentityFunction;
+import edu.emory.mathcs.nlp.learning.activation.RectifiedLinearUnitFunction;
 import edu.emory.mathcs.nlp.learning.activation.SigmoidFunction;
 import edu.emory.mathcs.nlp.learning.activation.SoftmaxFunction;
+import edu.emory.mathcs.nlp.learning.activation.SoftplusFunction;
 import edu.emory.mathcs.nlp.learning.initialization.RandomWeightGenerator;
 import edu.emory.mathcs.nlp.learning.initialization.WeightGenerator;
 import edu.emory.mathcs.nlp.learning.neural.FeedForwardNeuralNetworkSoftmax;
@@ -161,6 +165,7 @@ public class NLPConfig<N extends AbstractNLPNode<N>> implements ConfigXML
 		// neural network
 		hp.setHiddenDimensions(getHiddenDimensions(eOptimizer));
 		hp.setActivationFunctions(getActivationFunction(eOptimizer));
+		hp.setDropoutProb(getDropoutProb(eOptimizer));
 		hp.setWeightGenerator(getWeightGenerator(eOptimizer));
 		
 		return hp;
@@ -180,7 +185,7 @@ public class NLPConfig<N extends AbstractNLPNode<N>> implements ConfigXML
 		case ADAGRAD            : return new AdaGrad(w, hp.getLearningRate(), hp.getBias(), hp.getL1Regularizer());
 		case ADAGRAD_MINI_BATCH : return new AdaGradMiniBatch(w, hp.getLearningRate(), hp.getBias(), hp.getL1Regularizer());
 		case ADADELTA_MINI_BATCH: return new AdaDeltaMiniBatch(w, hp.getLearningRate(), hp.getDecayingRate(), hp.getBias(), hp.getL1Regularizer());
-		case FFNN_SOFTMAX       : return new FeedForwardNeuralNetworkSoftmax(hp.getHiddenDimensions(), hp.getActivationFunctions(), hp.getLearningRate(), hp.getBias(), hp.getWeightGenerator());
+		case FFNN_SOFTMAX       : return new FeedForwardNeuralNetworkSoftmax(hp.getHiddenDimensions(), hp.getActivationFunctions(), hp.getLearningRate(), hp.getBias(), hp.getWeightGenerator(), hp.getDropoutProb());
 		default: throw new IllegalArgumentException(algorithm+" is not a valid algorithm name."); 
 		}
 	}
@@ -206,10 +211,28 @@ public class NLPConfig<N extends AbstractNLPNode<N>> implements ConfigXML
 			{
 			case SIGMOID: functions[i] = new SigmoidFunction(); break;
 			case SOFTMAX: functions[i] = new SoftmaxFunction(); break;
+			case IDENTITY:functions[i] = new IdentityFunction(); break;
+			case RELU	: functions[i] = new RectifiedLinearUnitFunction(); break;
+			case TANH	: functions[i] = new HyperbolicTanFunction(); break;
+			case SOFTPLUS:functions[i] = new SoftplusFunction(); break;
 			}
 		}
 		
 		return functions;
+	}
+	
+	private float[] getDropoutProb(Element eOptimizer){
+		String prob = XMLUtils.getTextContentFromFirstElementByTagName(eOptimizer, DROPOUT_PROB);
+		if (prob == null || prob.isEmpty()) return null;
+		String[] t = Splitter.splitCommas(prob);
+		float[] dropout_prob = new float[t.length];
+		
+		for (int i=0; i<t.length; i++)
+		{
+			dropout_prob[i] = Float.parseFloat(t[i]);
+		}
+		
+		return dropout_prob;
 	}
 	
 	private WeightGenerator getWeightGenerator(Element eOptimizer)
