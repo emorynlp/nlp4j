@@ -36,6 +36,7 @@ import edu.emory.mathcs.nlp.common.collection.tuple.ObjectDoublePair;
 import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
+import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
@@ -101,7 +102,50 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		return component;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public OnlineComponent<N,S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream, String name)
+	{
+		OnlineComponent<N,S> component = null;
+		NLPConfig<N> configuration = null;
+		
+		if (previousModelStream != null)
+		{
+			BinUtils.LOG.info("Loading the previous model\n");
+			ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(previousModelStream);
+			
+			try
+			{
+				component = (OnlineComponent<N,S>)oin.readObject();
+				configuration = component.setConfiguration(configStream);
+				oin.close();
+			}
+			catch (Exception e) {e.printStackTrace();}
+		}
+		else
+		{
+			component = createComponent(mode, configStream, name);
+			configuration = component.getConfiguration();
+		}
+		
+		HyperParameter hp = configuration.getHyperParameter();
+		component.setHyperParameter(hp);
+		
+		if (component.getOptimizer() != null)
+		{
+			component.getOptimizer().adapt(hp);			
+		}
+		else
+		{
+			component.setOptimizer(configuration.getOnlineOptimizer(hp));
+			component.initFeatureTemplate();
+		}
+
+		return component;
+	}
+	
 	public abstract OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config);
+	public abstract OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config, String name);
+
 	public abstract TSVReader<N> createTSVReader(Object2IntMap<String> map);
 	public abstract GlobalLexica<N> createGlobalLexica(InputStream config);
 	
@@ -191,7 +235,8 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	{
 		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
 		GlobalLexica<N> lexica = createGlobalLexica(IOUtils.createFileInputStream(configurationFile));
-		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream);
+		String modelName = FileUtils.getBaseName(modelFile);
+		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream, modelName);
 		TSVReader<N> reader = createTSVReader(component.getConfiguration().getReaderFieldMap());
 		ObjectDoublePair<OnlineComponent<N,S>> p = null;
 		
