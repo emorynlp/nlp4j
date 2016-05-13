@@ -36,6 +36,7 @@ import edu.emory.mathcs.nlp.common.collection.tuple.ObjectDoublePair;
 import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
+import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
@@ -59,9 +60,9 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	public OnlineTrainer() {};
 	
 //	=================================== COMPONENT ===================================
-
+	
 	@SuppressWarnings("unchecked")
-	public OnlineComponent<N,S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream)
+	public OnlineComponent<N,S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream, String name)
 	{
 		OnlineComponent<N,S> component = null;
 		NLPConfig<N> configuration = null;
@@ -81,7 +82,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		}
 		else
 		{
-			component = createComponent(mode, configStream);
+			component = createComponent(mode, configStream, name);
 			configuration = component.getConfiguration();
 		}
 		
@@ -99,6 +100,12 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		}
 
 		return component;
+	}
+	
+	public OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config, String name)
+	{
+		if (name != null) BinUtils.LOG.warn("Name not implemented for OnlineComponent. Input name - " + name + " will be ignored.");
+		return createComponent(mode, config);
 	}
 	
 	public abstract OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config);
@@ -191,7 +198,8 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	{
 		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
 		GlobalLexica<N> lexica = createGlobalLexica(IOUtils.createFileInputStream(configurationFile));
-		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream);
+		String name = (modelFile != null) ? FileUtils.getBaseName(modelFile) : null;
+		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream, name);
 		TSVReader<N> reader = createTSVReader(component.getConfiguration().getReaderFieldMap());
 		ObjectDoublePair<OnlineComponent<N,S>> p = null;
 		
