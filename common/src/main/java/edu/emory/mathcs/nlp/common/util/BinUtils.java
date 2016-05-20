@@ -15,7 +15,8 @@
  */
 package edu.emory.mathcs.nlp.common.util;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
@@ -29,7 +30,7 @@ public class BinUtils
 {
 	private BinUtils() {}
 	
-	public static final Logger LOG = Logger.getLogger(BinUtils.class);
+	public static final Logger LOG = LoggerFactory.getLogger(BinUtils.class);
 	
 	/** Initializes arguments using args4j. */
 	static public void initArgs(String[] args, Object bean)
