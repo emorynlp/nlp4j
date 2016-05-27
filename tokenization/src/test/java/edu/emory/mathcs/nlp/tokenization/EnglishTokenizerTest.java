@@ -28,17 +28,25 @@ import org.junit.Test;
 public class EnglishTokenizerTest
 {
 	@Test
-	public void testYears()
+	public void testPostProcessing()
 	{
 		Tokenizer t = new EnglishTokenizer();
 		String s, r;
 		
 		s = "1234-56 12-3456 12-34 12-34s 123-4567 1234-567";
 		r = "[1234, -, 56, 12, -, 3456, 12, -, 34, 12, -, 34s, 123-4567, 1234-567]";
+		test(t, s, r, new int[]{0, 4, 4, 5, 5, 7, 8, 10, 10, 11, 11, 15, 16, 18, 18, 19, 19, 21, 22, 24, 24, 25, 25, 28, 29, 37, 38, 46});
+		
+		s = "A.B.C";
+		r = "[A.B.C]";
 		test(t, s, r);
+		
+		s = "Mbaaah!hello prize.Please";
+		r = "[Mbaaah, !, hello, prize, ., Please]";
+		test(t, s, r, new int[]{0, 6, 6, 7, 7, 12, 13, 18, 18, 19, 19, 25});
 	}
 	
-//	@Test
+	@Test
 	public void testPeriods()
 	{
 		Tokenizer t = new EnglishTokenizer();
@@ -53,7 +61,7 @@ public class EnglishTokenizerTest
 		test(t, s, r);
 	}
 
-//	@Test
+	@Test
 	public void test()
 	{
 		Tokenizer t = new EnglishTokenizer();
@@ -180,10 +188,25 @@ public class EnglishTokenizerTest
 		return tokenStrings;
 	}
 	
-	private void test(Tokenizer t, String s, String r)
+	private List<Token> test(Tokenizer t, String s, String r)
 	{
 		List<Token> tokens = t.tokenize(s);
 		List<String> tokenStrings = getTokenStrings(tokens);
 		assertEquals(r, tokenStrings.toString());
+		return tokens;
+	}
+	
+	private void test(Tokenizer t, String s, String r, int[] offsets)
+	{
+		List<Token> tokens = test(t, s, r);
+		Token token;
+		
+		for (int i=0; i<tokens.size(); i++)
+		{
+			token = tokens.get(i);
+//			System.out.println(token.getWordForm()+" "+token.getStartOffset()+" "+token.getEndOffset());
+			assertEquals(offsets[i*2], token.getStartOffset());
+			assertEquals(offsets[i*2+1], token.getEndOffset());
+		}
 	}
 }

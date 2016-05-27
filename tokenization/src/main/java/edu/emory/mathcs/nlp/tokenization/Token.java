@@ -66,6 +66,11 @@ public class Token
 		this.end_offset = offset;
 	}
     
+    public void resetEndOffset()
+    {
+    	setEndOffset(start_offset+word_form.length());
+    }
+    
     @Override
     public String toString()
     {

@@ -18,9 +18,12 @@ package edu.emory.mathcs.nlp.tokenization;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.util.Language;
+import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.tokenization.dictionary.Compound;
@@ -36,7 +39,7 @@ public class EnglishTokenizer extends Tokenizer
 {
 	private final String[] L_BRACKETS = {"\"","(","{","["};
 	private final String[] R_BRACKETS = {"\"",")","}","]"};
-	
+	private final Pattern  P_MID_SYM  = PatternUtils.createClosedPattern("(\\p{Alpha}{2,}+)([\\.\\!\\?]+)(\\p{Alpha}{2,}+)");	
 	private EnglishApostrophe d_apostrophe;
 	private Abbreviation      d_abbreviation;
 	private Compound          d_compound;
@@ -82,6 +85,13 @@ public class EnglishTokenizer extends Tokenizer
 	protected boolean tokenizeWordsMore(List<Token> tokens, String original, String lower, char[] lcs, TokenIndex bIndex2)
 	{
 		return tokenize(tokens, original, lower, lcs, d_apostrophe, bIndex2) || tokenize(tokens, original, lower, lcs, d_compound, bIndex2); 
+	}
+	
+	@Override
+	protected int tokenizeMiddleSymbol(List<Token> tokens, String token, String lower, int index)
+	{
+		Matcher m = P_MID_SYM.matcher(token);
+		return m.find() ? addTokens(m, tokens, index, 2, 3, 4) : 0;
 	}
 	
 //	============================== Segmentize ==============================

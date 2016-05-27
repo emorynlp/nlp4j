@@ -18,6 +18,7 @@ package edu.emory.mathcs.nlp.tokenization;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.MetaUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
@@ -137,6 +139,30 @@ abstract public class Tokenizer
 	public List<List<Token>> segmentize(String s)
 	{
 		return segmentize(tokenize(s));
+	}
+	
+	/** @param flag 0: word-form, 1: simplified word-form, 2: decapitalized simplified word-form. */
+	public void tokenizeLine(InputStream in, PrintStream out, String delim, int flag)
+	{
+		BufferedReader reader = IOUtils.createBufferedReader(in);
+		String line;
+		
+		try
+		{
+			while ((line = reader.readLine()) != null)
+			{
+				line = Joiner.join(tokenize(line), delim);
+				
+				switch (flag)
+				{
+				case 1: line = StringUtils.toSimplifiedForm(line, false);
+				case 2: line = StringUtils.toSimplifiedForm(line, true);
+				}
+				
+				out.println(line);
+			}
+		}
+		catch (IOException e) {e.printStackTrace();}
 	}
 
 	abstract public <T extends Token>List<List<T>> segmentize(List<T> tokens);
@@ -606,7 +632,7 @@ abstract public class Tokenizer
 		    token = tokens.get(i).getWordForm();
 			lower = StringUtils.toLowerCase(token);
 
-			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeParenthesis(tokens, token, i, input)) != 0 || (j = tokenizeYears(tokens, token, i)) != 0)
+			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeParenthesis(tokens, token, i, input)) != 0 || (j = tokenizeYears(tokens, token, i)) != 0 || (j = tokenizeMiddleSymbol(tokens, token, lower, i)) != 0)
 			{
 				size = tokens.size();
 				i += j;
@@ -619,8 +645,7 @@ abstract public class Tokenizer
 	/** Called by {@link #finalize()}. */
 	private int tokenizeNo(List<Token> tokens, String token, String lower, int index)
 	{
-		if (lower.equals("no.") && (index+1 == tokens.size() || !CharUtils.isDigit(tokens
-                .get(index + 1).getWordForm().charAt(0))))
+		if (lower.equals("no.") && (index+1 == tokens.size() || !CharUtils.isDigit(tokens.get(index + 1).getWordForm().charAt(0))))
 		{
             Token currToken = tokens.get(index);
             Token Token = new Token(StringUtils.trim(
@@ -662,30 +687,30 @@ abstract public class Tokenizer
 	
 	private int tokenizeYears(List<Token> tokens, String token, int index)
 	{
-		Matcher m;
+		Matcher m = P_YEAR_YEAR.matcher(token);
+		return m.find() ? addTokens(m, tokens, index, 2, 3, 4) : 0;
+	}
+	
+	protected int addTokens(Matcher m, List<Token> tokens, int index, int... ids)
+	{
+		Token prev, curr;
+		curr = tokens.get(index);
+		curr.setWordForm(m.group(ids[0]));
+		curr.resetEndOffset();
 		
-		if ((m = P_YEAR_YEAR.matcher(token)).find())
+		for (int i=1; i<ids.length; i++)
 		{
-			Token year1 = tokens.get(index);
-			year1.setWordForm(m.group(2));
-			year1.setEndOffset(year1.getStartOffset()+year1.getWordForm().length());
-			
-			Token hyphen = new Token(m.group(3));
-			hyphen.setStartOffset(year1.getEndOffset());
-			hyphen.setEndOffset(hyphen.getStartOffset()+hyphen.getWordForm().length());
-
-			Token year2  = new Token(m.group(4));
-			year2.setStartOffset(hyphen.getEndOffset());
-			year2.setEndOffset(year2.getStartOffset()+year2.getWordForm().length());
-			
-			tokens.add(index+1, hyphen);
-			tokens.add(index+2, year2);
-			
-			return 2;
+			prev = curr;
+			curr = new Token(m.group(ids[i]));
+			curr.setStartOffset(prev.getEndOffset());
+			curr.resetEndOffset();
+			tokens.add(index+i, curr);
 		}
 		
-		return 0;
+		return ids.length-1;
 	}
+	
+	protected abstract int tokenizeMiddleSymbol(List<Token> tokens, String token, String lower, int index);
 
 	/** Called by {@link #finalize()}. */
 	private void tokenizeLastPeriod(List<Token> tokens)
