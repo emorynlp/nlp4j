@@ -27,7 +27,7 @@ import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DOCAnalyzer<N extends AbstractNLPNode<N>> extends OnlineComponent<N,DOCState<N>>
+public class DOCAnalyzer<N extends AbstractNLPNode<N>,S extends DOCState<N>> extends OnlineComponent<N,S>
 {
 	private static final long serialVersionUID = 408764219381044191L;
 	public static final String FEAT_KEY = "doc_feat_key";
@@ -50,15 +50,16 @@ public class DOCAnalyzer<N extends AbstractNLPNode<N>> extends OnlineComponent<N
 	}
 	
 	@Override
-	protected DOCState<N> initState(List<N[]> document)
+	@SuppressWarnings("unchecked")
+	protected S initState(List<N[]> document)
 	{
-		return new DOCState<N>(document, feat_key);
+		return (S)new DOCState<N>(document, feat_key);
 	}
 	
 	@Override
 	public void initFeatureTemplate()
 	{
-		feature_template = new DOCFeatureTemplate<N,DOCState<N>>(config.getFeatureTemplateElement(), getHyperParameter());
+		feature_template = new DOCFeatureTemplate<N,S>(config.getFeatureTemplateElement(), getHyperParameter());
 	}
 	
 	@Override
@@ -68,8 +69,8 @@ public class DOCAnalyzer<N extends AbstractNLPNode<N>> extends OnlineComponent<N
 	}
 
 	@Override
-	protected void postProcess(DOCState<N> state) {}
+	protected void postProcess(S state) {}
 
 	@Override
-	protected DOCState<N> initState(N[] nodes) {return null;}
+	protected S  initState(N[] nodes) {return null;}
 }

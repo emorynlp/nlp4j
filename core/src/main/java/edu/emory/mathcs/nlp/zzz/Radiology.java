@@ -155,7 +155,7 @@ public class Radiology
 				build.append(c);
 		}
 		
-		return StringUtils.toLowerCaseSimplifiedForm(build.toString());
+		return StringUtils.toSimplifiedForm(build.toString(), true);
 	}
 	
 	static public void main(String[] args) throws Exception

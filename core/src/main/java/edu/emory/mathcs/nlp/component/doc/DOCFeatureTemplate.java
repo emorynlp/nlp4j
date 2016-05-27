@@ -59,6 +59,7 @@ public class DOCFeatureTemplate<N extends AbstractNLPNode<N>, S extends DOCState
 			addWordEmbedding(items[0]);
 		else
 			add(items);
+		
 		feature_list_type.add(Field.valueOf(XMLUtils.getTrimmedAttribute(element, "t")));
 	}
 	
@@ -188,7 +189,6 @@ public class DOCFeatureTemplate<N extends AbstractNLPNode<N>, S extends DOCState
 	{
 		if (word_embeddings == null || word_embeddings.isEmpty()) return null;
 		return getEmbeddings(state, true);
-		
 	}
 	
 	public float[] getEmbeddings(S state, boolean average)
