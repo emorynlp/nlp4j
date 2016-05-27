@@ -43,7 +43,7 @@ import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixMatcher;
  */
 public class EnglishMorphAnalyzer extends MorphAnalyzer
 {
-	final String ROOT = "edu/emory/mathcs/nlp/component/morph/english/";
+	static public final String ROOT = "edu/emory/mathcs/nlp/component/morph/english/";
 	
 	final String INFLECTION_SUFFIX		= ROOT + "inflection_suffix.xml";
 	final String ABBREVIATOIN_RULE		= ROOT + "abbreviation.rule";
