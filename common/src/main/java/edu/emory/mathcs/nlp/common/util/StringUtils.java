@@ -201,6 +201,8 @@ public class StringUtils
 		return b || uncapitalize ? new String(cs) : s;
 	}
 	
+	/** @deprecated use {@link #toSimplifiedForm(String, boolean)} instead. */
+	@Deprecated
 	static public String toLowerCaseSimplifiedForm(String s)
 	{
 		return toLowerCase(toSimplifiedForm(s));
