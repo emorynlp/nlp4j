@@ -29,12 +29,12 @@ import edu.emory.mathcs.nlp.component.it.ItClassifier;
 import edu.emory.mathcs.nlp.component.ner.NERTagger;
 import edu.emory.mathcs.nlp.component.pos.POSTagger;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.NLPReader;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
-import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.util.NLPMode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 

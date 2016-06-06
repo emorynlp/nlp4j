@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.template.util;
+package edu.emory.mathcs.nlp.component.template.lexicon;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -25,13 +25,13 @@ import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.collection.tree.PrefixTree;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
-import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
+import edu.emory.mathcs.nlp.component.template.util.BILOU;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -40,12 +40,19 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 {
 	static final public String LEXICA = "lexica";
 	static final public String FIELD  = "field";
+	static final public String NAME   = "name";
 	
-	protected Pair<Map<String,List<String>>,Field>       ambiguity_classes;
-	protected Pair<Map<String,Set<String>>,Field>        word_clusters;	
-	protected Pair<Map<String,float[]>,Field>            word_embeddings;
-	protected Pair<PrefixTree<String,Set<String>>,Field> named_entity_gazetteers;
-	protected Pair<Set<String>,Field>                    stop_words;
+//	protected Pair<Map<String,List<String>>,Field>       ambiguity_classes;
+//	protected Pair<Map<String,Set<String>>,Field>        word_clusters;	
+//	protected Pair<Map<String,float[]>,Field>            word_embeddings;
+//	protected Pair<PrefixTree<String,Set<String>>,Field> named_entity_gazetteers;
+//	protected Pair<Set<String>,Field>                    stop_words;
+	
+	protected GlobalLexicon<Map<String,List<String>>>       ambiguity_classes;
+	protected GlobalLexicon<Map<String,Set<String>>>        word_clusters;	
+	protected GlobalLexicon<Map<String,float[]>>            word_embeddings;
+	protected GlobalLexicon<PrefixTree<String,Set<String>>> named_entity_gazetteers;
+	protected GlobalLexicon<Set<String>>                    stop_words;
 	
 //	=================================== CONSTRUCTOR ===================================
 	
@@ -60,20 +67,20 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		Element eLexica = XMLUtils.getFirstElementByTagName(doc, LEXICA);
 		if (eLexica == null) return;
 		
-		setAmbiguityClasses     (getLexiconFieldPair(eLexica, "ambiguity_classes"      , "Loading ambiguity classes"));
-		setWordClusters         (getLexiconFieldPair(eLexica, "word_clusters"          , "Loading word clusters"));
-		setWordEmbeddings       (getLexiconFieldPair(eLexica, "word_embeddings"        , "Loading word embeddings"));
-		setNamedEntityGazetteers(getLexiconFieldPair(eLexica, "named_entity_gazetteers", "Loading named entity gazetteers"));
-		setStopWords            (getLexiconFieldPair(eLexica, "stop_words"             , "Loading stop words"));
+		setAmbiguityClasses     (getGlobalLexicon(eLexica, "ambiguity_classes"      , "Loading ambiguity classes"));
+		setWordClusters         (getGlobalLexicon(eLexica, "word_clusters"          , "Loading word clusters"));
+		setWordEmbeddings       (getGlobalLexicon(eLexica, "word_embeddings"        , "Loading word embeddings"));
+		setNamedEntityGazetteers(getGlobalLexicon(eLexica, "named_entity_gazetteers", "Loading named entity gazetteers"));
+		setStopWords            (getGlobalLexicon(eLexica, "stop_words"             , "Loading stop words"));
 	}
 	
-	protected <T>Pair<T,Field> getLexiconFieldPair(Element eLexica, String tag, String message)
+	protected <T>GlobalLexicon<T> getGlobalLexicon(Element eLexica, String tag, String message)
 	{
-		return getLexiconFieldPair(XMLUtils.getFirstElementByTagName(eLexica, tag), message);
+		return getGlobalLexicon(XMLUtils.getFirstElementByTagName(eLexica, tag), message);
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected <T>Pair<T,Field> getLexiconFieldPair(Element element, String message)
+	protected <T>GlobalLexicon<T> getGlobalLexicon(Element element, String message)
 	{
 		if (element == null) return null;
 		BinUtils.LOG.info(message+"\n");
@@ -81,6 +88,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		String path = XMLUtils.getTrimmedTextContent(element);
 		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(IOUtils.getInputStream(path));
 		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, FIELD));
+		String name = XMLUtils.getTrimmedAttribute(element, NAME);
 		T lexicon = null;
 		
 		try
@@ -90,57 +98,57 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		}
 		catch (Exception e) {e.printStackTrace();}
 
-		return new Pair<>(lexicon, field);
+		return new GlobalLexicon<>(lexicon, field, name);
 	}
 	
 //	=================================== GETTERS/SETTERS ===================================
 	
-	public Pair<Map<String,List<String>>,Field> getAmbiguityClasses()
+	public GlobalLexicon<Map<String,List<String>>> getAmbiguityClasses()
 	{
 		return ambiguity_classes;
 	}
 	
-	public void setAmbiguityClasses(Pair<Map<String,List<String>>,Field> classes)
+	public void setAmbiguityClasses(GlobalLexicon<Map<String,List<String>>> classes)
 	{
 		ambiguity_classes = classes;
 	}
 	
-	public Pair<Map<String,Set<String>>,Field> getWordClusters()
+	public GlobalLexicon<Map<String,Set<String>>> getWordClusters()
 	{
 		return word_clusters;
 	}
 	
-	public void setWordClusters(Pair<Map<String,Set<String>>,Field> p)
+	public void setWordClusters(GlobalLexicon<Map<String,Set<String>>> p)
 	{
 		word_clusters = p;
 	}
 	
-	public Pair<Map<String,float[]>,Field> getWordEmbeddings() 
+	public GlobalLexicon<Map<String,float[]>> getWordEmbeddings() 
 	{
 		return word_embeddings;
 	}
 	
-	public void setWordEmbeddings(Pair<Map<String,float[]>,Field> embeddings) 
+	public void setWordEmbeddings(GlobalLexicon<Map<String,float[]>> embeddings) 
 	{
 		word_embeddings = embeddings;
 	}
 	
-	public Pair<PrefixTree<String,Set<String>>,Field> getNamedEntityGazetteers()
+	public GlobalLexicon<PrefixTree<String,Set<String>>> getNamedEntityGazetteers()
 	{
 		return named_entity_gazetteers;
 	}
 	
-	public void setNamedEntityGazetteers(Pair<PrefixTree<String,Set<String>>,Field> gazetteers)
+	public void setNamedEntityGazetteers(GlobalLexicon<PrefixTree<String,Set<String>>> gazetteers)
 	{
 		named_entity_gazetteers = gazetteers;
 	}
 	
-	public Pair<Set<String>,Field> getStopWords()
+	public GlobalLexicon<Set<String>> getStopWords()
 	{
 		return stop_words;
 	}
 	
-	public void setStopWords(Pair<Set<String>,Field> stopwords)
+	public void setStopWords(GlobalLexicon<Set<String>> stopwords)
 	{
 		stop_words = stopwords;
 	}
@@ -173,7 +181,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			list = ambiguity_classes.o1.get(getKey(node, ambiguity_classes.o2));
+			list = ambiguity_classes.getLexicon().get(getKey(node, ambiguity_classes.getField()));
 			node.setAmbiguityClasses(list);
 		}
 	}
@@ -187,7 +195,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			set  = word_clusters.o1.get(getKey(node, word_clusters.o2));
+			set  = word_clusters.getLexicon().get(getKey(node, word_clusters.getField()));
 			node.setWordClusters(set);
 		}
 	}
@@ -201,7 +209,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			embedding = word_embeddings.o1.get(getKey(node, word_embeddings.o2));
+			embedding = word_embeddings.getLexicon().get(getKey(node, word_embeddings.getField()));
 			node.setWordEmbedding(embedding);
 		}
 	}
@@ -209,7 +217,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 	public void processNamedEntityGazetteers(N[] nodes)
 	{
 		if (named_entity_gazetteers == null) return;
-		List<ObjectIntIntTriple<Set<String>>> list = named_entity_gazetteers.o1.getAll(nodes, 1, n -> getKey(n, named_entity_gazetteers.o2), false, false);
+		List<ObjectIntIntTriple<Set<String>>> list = named_entity_gazetteers.getLexicon().getAll(nodes, 1, n -> getKey(n, named_entity_gazetteers.getField()), false, false);
 		
 		for (ObjectIntIntTriple<Set<String>> t : list)
 		{
@@ -237,7 +245,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			node.setStopWord(stop_words.o1.contains(getKey(node, stop_words.o2)));
+			node.setStopWord(stop_words.getLexicon().contains(getKey(node, stop_words.getField())));
 		}
 	}
 	
