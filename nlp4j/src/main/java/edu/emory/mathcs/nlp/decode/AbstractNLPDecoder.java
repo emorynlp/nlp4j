@@ -37,9 +37,9 @@ import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.component.morph.MorphologicalAnalyzer;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
+import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
-import edu.emory.mathcs.nlp.component.template.util.GlobalLexica;
 import edu.emory.mathcs.nlp.tokenization.Token;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
 
