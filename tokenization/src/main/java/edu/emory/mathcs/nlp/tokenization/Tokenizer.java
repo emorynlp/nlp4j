@@ -151,14 +151,25 @@ abstract public class Tokenizer
 		{
 			while ((line = reader.readLine()) != null)
 			{
-				line = Joiner.join(tokenize(line), delim);
+				List<Token> tokens = tokenize(line);
 				
-				switch (flag)
+				if (flag > 0)
 				{
-				case 1: line = StringUtils.toSimplifiedForm(line, false);
-				case 2: line = StringUtils.toSimplifiedForm(line, true);
+					for (Token token : tokens)
+					{
+						String s = token.getWordForm();
+						
+						switch (flag)
+						{
+						case 1: s = StringUtils.toSimplifiedForm(s, false); break;
+						case 2: s = StringUtils.toSimplifiedForm(s, true);  break;
+						}
+						
+						token.setWordForm(s);
+					}	
 				}
 				
+				line = Joiner.join(tokens, delim);
 				out.println(line);
 			}
 		}
