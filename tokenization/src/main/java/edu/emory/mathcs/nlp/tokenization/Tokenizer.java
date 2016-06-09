@@ -643,7 +643,7 @@ abstract public class Tokenizer
 		    token = tokens.get(i).getWordForm();
 			lower = StringUtils.toLowerCase(token);
 
-			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeParenthesis(tokens, token, i, input)) != 0 || (j = tokenizeYears(tokens, token, i)) != 0 || (j = tokenizeMiddleSymbol(tokens, token, lower, i)) != 0)
+			if ((j = tokenizeNo(tokens, token, lower, i)) != 0 || (mergeBrackets(tokens, token, i, input)) != 0 || (j = tokenizeYears(tokens, token, i)) != 0 || (j = tokenizeMiddleSymbol(tokens, token, lower, i)) != 0)
 			{
 				size = tokens.size();
 				i += j;
@@ -673,16 +673,16 @@ abstract public class Tokenizer
 	}
 
 	/** Called by {@link #finalize()}. */
-	private int mergeParenthesis(List<Token> tokens, String token, int index, String input)
+	private int mergeBrackets(List<Token> tokens, String token, int index, String input)
 	{
-		if (token.length() == 1 && 0 <= index-1 && index+1 < tokens.size())
+		if ((token.length() == 1 || StringUtils.containsDigitOnly(token)) && 0 <= index-1 && index+1 < tokens.size())
 		{
 			Token prevToken = tokens.get(index - 1);
-			Token currToken = tokens.get(index);
 			Token nextToken = tokens.get(index + 1);
 			
-			if (prevToken.isWordForm(StringConst.LRB) && nextToken.isWordForm(StringConst.RRB))
+			if (CharUtils.isLeftBracket(prevToken.getWordForm().charAt(0)) && CharUtils.isRightgBracket(nextToken.getWordForm().charAt(0)))
 			{
+				Token currToken = tokens.get(index);
 				Token Token = new Token(prevToken.getWordForm()+currToken.getWordForm()+nextToken.getWordForm(), prevToken.getStartOffset(), nextToken.getEndOffset());
 				tokens.set(index - 1, Token);
 				tokens.remove(index);

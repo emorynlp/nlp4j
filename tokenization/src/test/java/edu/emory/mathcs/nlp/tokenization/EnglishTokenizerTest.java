@@ -53,11 +53,11 @@ public class EnglishTokenizerTest
 		String s, r;
 		
 		s = "500 million of 1986.[11]";
-		r = "[500, million, of, 1986, ., [, 11, ]]";
+		r = "[500, million, of, 1986, ., [11]]";
 		test(t, s, r);
 		
 		s = "injury-related deaths worldwide.[6]";
-		r = "[injury, -, related, deaths, worldwide, ., [, 6, ]]";
+		r = "[injury, -, related, deaths, worldwide, ., [6]]";
 		test(t, s, r);
 	}
 
@@ -97,8 +97,8 @@ public class EnglishTokenizerTest
 		test(t, s, r);
 
 		// brackets
-		s = "(1){2}[3]<4>";
-		r = "[(1), {, 2, }, [, 3, ], <, 4, >]";
+		s = "(a){2}[33]<b>";
+		r = "[(a), {2}, [33], <b>]";
 		test(t, s, r);
 		
 		// twitter tags

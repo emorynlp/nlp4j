@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import edu.emory.mathcs.nlp.common.util.StringUtils;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -38,13 +40,13 @@ public class EnglishTokenizerOffsetTest
 //		System.out.println(t.tokenize("This building included: 30 toilets."));
 		
 		s = "500 million of 1986.[11]";
-		r = "[0, 3, 4, 11, 12, 14, 15, 19, 19, 20, 20, 21, 21, 23, 23, 24]";
+		r = "[0, 3, 4, 11, 12, 14, 15, 19, 19, 20, 20, 24]";
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
 		
 		s = "injury-related deaths worldwide.[6]";
-		r = "[0, 6, 6, 7, 7, 14, 15, 21, 22, 31, 31, 32, 32, 33, 33, 34, 34, 35]";
+		r = "[0, 6, 6, 7, 7, 14, 15, 21, 22, 31, 31, 32, 32, 35]";
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
@@ -126,7 +128,7 @@ public class EnglishTokenizerOffsetTest
 		
 		// brackets
 		s = "(1){2}[3]<4>";
-		r = "[0, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12]";
+		r = "[0, 3, 3, 6, 6, 9, 9, 12]";
 		tokens = t.tokenize(s);
 		tokenStartEnd = getTokenStartEnd(tokens);
 		assertEquals(r, tokenStartEnd.toString());
@@ -279,6 +281,6 @@ public class EnglishTokenizerOffsetTest
 	}
 	
 	private void assertWordFormsEquals(final String tokenizedString, final List<Token> tokens) {
-		tokens.forEach(token -> assertEquals(tokenizedString.substring(token.getStartOffset(), token.getEndOffset()), token.getWordForm()));
+		tokens.forEach(token -> assertEquals(StringUtils.removeAll(tokenizedString.substring(token.getStartOffset(), token.getEndOffset()), ' '), token.getWordForm()));
 	}
 }
