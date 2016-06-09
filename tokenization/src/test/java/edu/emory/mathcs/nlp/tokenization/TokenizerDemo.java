@@ -19,6 +19,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.List;
 
+import org.junit.Test;
+
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 
@@ -27,11 +29,11 @@ import edu.emory.mathcs.nlp.common.util.Joiner;
  */
 public class TokenizerDemo
 {
-//	@Test
+	@Test
 	public void tokenizeRaw() throws Exception
 	{
 		Tokenizer tokenizer = new EnglishTokenizer();
-		String inputFile = "src/test/resources/emorynlp-raw.txt";
+		String inputFile = "/Users/jdchoi/Desktop/Unearthly-2_5.txt";
 		InputStream in = IOUtils.createFileInputStream(inputFile);
 		
 		for (List<Token> tokens : tokenizer.segmentize(in))

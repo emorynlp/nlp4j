@@ -677,15 +677,13 @@ abstract public class Tokenizer
 	{
 		if (token.length() == 1 && 0 <= index-1 && index+1 < tokens.size())
 		{
-			String prev = tokens.get(index - 1).getWordForm();
-			String next = tokens.get(index + 1).getWordForm();
+			Token prevToken = tokens.get(index - 1);
+			Token currToken = tokens.get(index);
+			Token nextToken = tokens.get(index + 1);
 			
-			if (prev.equals(StringConst.LRB) && next.equals(StringConst.RRB))
+			if (prevToken.isWordForm(StringConst.LRB) && nextToken.isWordForm(StringConst.RRB))
 			{
-				Token prevToken = tokens.get(index - 1);
-//				Token currToken = tokens.get(index);
-				Token nextToken = tokens.get(index + 1);
-				Token Token = new Token(input.substring(prevToken.getStartOffset(), nextToken.getEndOffset()), prevToken.getStartOffset(), nextToken.getEndOffset());
+				Token Token = new Token(prevToken.getWordForm()+currToken.getWordForm()+nextToken.getWordForm(), prevToken.getStartOffset(), nextToken.getEndOffset());
 				tokens.set(index - 1, Token);
 				tokens.remove(index);
 				tokens.remove(index);

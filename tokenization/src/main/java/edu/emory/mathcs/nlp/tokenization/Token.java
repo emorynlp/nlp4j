@@ -71,6 +71,11 @@ public class Token
     	setEndOffset(start_offset+word_form.length());
     }
     
+    public boolean isWordForm(String form)
+    {
+    	return word_form.equals(form);
+    }
+    
     @Override
     public String toString()
     {
