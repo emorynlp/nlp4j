@@ -1,8 +1,10 @@
 # Release Notes
 
-## Version 1.1.2 (TBA)
+## Version 1.1.2 (06/29/2016)
 
+* Bugfixes: [tokenization-issue-7](https://github.com/emorynlp/nlp4j-tokenization/issues/7)
 * Features: [tokenization-issue-6](https://github.com/emorynlp/nlp4j-tokenization/issues/6)
+* The tokenizer does not tokenize left/right brackets where the content inside is a single character or all numbers (e.g., `(a)`,`[12]`).
 
 ## Version 1.1.1 (04/29/2016)
 

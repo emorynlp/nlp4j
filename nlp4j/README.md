@@ -2,7 +2,7 @@
 
 The NLP4J project provides a NLP toolkit for JVM languages. This project is under the [Apache 2](http://www.apache.org/licenses/LICENSE-2.0) license and is currently developed by the [NLP Research Group](http://nlp.mathcs.emory.edu) at [Emory University](http://emory.edu). Please join our [forum](https://groups.google.com/forum/#!forum/emorynlp) to get notifications about new releases and give your feedback about this project.
 
-* Latest release: [1.1.1](http://search.maven.org/#search%7Cga%7C1%7Cnlp4j) (04/29/2016).
+* Latest release: [1.1.2](http://search.maven.org/#search%7Cga%7C1%7Cnlp4j) (06/29/2016).
 * [Release notes](md/quickstart/release.md).
 * [Google groups](https://groups.google.com/forum/#!forum/emorynlp).
 

@@ -23,9 +23,9 @@ public class Version
 	public static void main(String[] args)
 	{
 		System.out.println("====================================");
-		System.out.println("NLP4J Version 1.1.1");
+		System.out.println("NLP4J Version 1.1.2");
 		System.out.println("Webpage: http://nlp.mathcs.emory.edu");
-		System.out.println("Contact: jinho.choi@emory.edu");
+		System.out.println("Contact: choi@mathcs.emory.edu");
 		System.out.println("====================================");
 	}
 }
