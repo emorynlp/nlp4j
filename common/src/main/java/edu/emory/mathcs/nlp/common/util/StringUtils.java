@@ -44,6 +44,21 @@ public class StringUtils
 		return counts[M][N];
 	}
 	
+	static public String removeAll(String original, char remove)
+	{
+		char[] cs = original.toCharArray();
+		char[] ns = new char[cs.length];
+		int i, j;
+		
+		for (i=0,j=0; i<cs.length; i++)
+		{
+			if (cs[i] != remove)
+				ns[j++] = cs[i];
+		}
+		
+		return i == j ? original : new String(ns, 0, j);
+	}
+	
 	/** @return the specific number of spaces. */
 	static public String spaces(int length)
 	{
