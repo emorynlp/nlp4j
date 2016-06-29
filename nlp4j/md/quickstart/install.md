@@ -68,7 +68,7 @@
 	export CLASSPATH=nlp4j-x.x.x.jar:.
 	```
 
-* For English models, download [`nlp4j-english.jar`](http://search.maven.org/remotecontent?filepath=edu/emory/mathcs/nlp/nlp4j-english/1.1.1/nlp4j-english-1.1.1.jar), and add it to your classpath:
+* For English models, download [`nlp4j-english.jar`](http://search.maven.org/remotecontent?filepath=edu/emory/mathcs/nlp/nlp4j-english/1.1.2/nlp4j-english-1.1.2.jar), and add it to your classpath:
 
 	```bash
 	export CLASSPATH=nlp4j-x.x.x.jar:nlp4j-english-x.x.x.jar:.
