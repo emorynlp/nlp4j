@@ -314,7 +314,7 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		return new TSVReader<N>(decode_config.getReaderFieldMap())
 		{
 			@Override
-			protected N create() {return create();}
+			protected N create() {return AbstractNLPDecoder.this.create();}
 		};
 	}
 	
