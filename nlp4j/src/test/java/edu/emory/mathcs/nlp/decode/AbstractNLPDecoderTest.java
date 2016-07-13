@@ -12,18 +12,17 @@
  ** 7-104.9(a).
  ******************************************************************************/
 
-package edu.emory.matchcs.nlp.decode;
-
-import com.google.common.io.Resources;
-import edu.emory.mathcs.nlp.bin.NLPDecode;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
-import edu.emory.mathcs.nlp.decode.DecodeConfig;
-import edu.emory.mathcs.nlp.decode.NLPDecoder;
-import org.junit.Test;
+package edu.emory.mathcs.nlp.decode;
 
 import java.io.InputStream;
 import java.net.URL;
+
+import org.junit.Test;
+
+import com.google.common.io.Resources;
+
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 
 /**
  *
