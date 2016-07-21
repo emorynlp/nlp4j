@@ -28,12 +28,15 @@ import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class ModelReduce extends NLPTrain
 {
+	private static final Logger LOG = LoggerFactory.getLogger(ModelReduce.class);
 	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>void reduce(String[] args)
 	{
 		BinUtils.initArgs(args, this);
@@ -42,7 +45,7 @@ public class ModelReduce extends NLPTrain
 		List<String> developFiles  = FileUtils.getFileList(develop_path, develop_ext);
 		GlobalLexica<N> lexica = trainer.createGlobalLexica(IOUtils.createFileInputStream(configuration_file));
 		
-		BinUtils.LOG.info("Loading the model\n");
+		LOG.info("Loading the model");
 		OnlineComponent<N,S> component = readComponent(IOUtils.createFileInputStream(previous_model_file), IOUtils.createFileInputStream(configuration_file));
 		TSVReader<N> reader = trainer.createTSVReader(component.getConfiguration().getReaderFieldMap());
 		trainer.reduceModel(reader, developFiles, component, lexica, previous_model_file, model_file);

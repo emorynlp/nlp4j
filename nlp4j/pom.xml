@@ -46,10 +46,63 @@
         <dependency>
             <groupId>edu.emory.mathcs.nlp</groupId>
             <artifactId>nlp4j-english</artifactId>
-                 <!-- Don't leak into users' dependencies, but be available in
+            <!-- Don't leak into users' dependencies, but be available in
            tests and appassembler. -->
             <optional>true</optional>
             <version>1.1.2</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
+                    <execution>
+                        <id>appassembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                    <programs>
+                        <program>
+                            <mainClass>edu.emory.mathcs.nlp.bin.NLPTrain</mainClass>
+                            <jvmSettings>
+                                <maxMemorySize>10g</maxMemorySize>
+                                <extraArguments>
+                                    <extraArgument>-XX:+UseConcMarkSweepGC</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
+                            <id>nlptrain</id>
+                        </program>
+                        <program>
+                            <mainClass>edu.emory.mathcs.nlp.bin.NLPDecode</mainClass>
+                            <jvmSettings>
+                                <maxMemorySize>8g</maxMemorySize>
+                                <extraArguments>
+                                    <extraArgument>-XX:+UseConcMarkSweepGC</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
+                            <id>nlpdecode</id>
+                        </program>
+                        <program>
+                            <mainClass>edu.emory.mathcs.nlp.bin.DEPEvaluate</mainClass>
+                            <jvmSettings>
+                                <maxMemorySize>8g</maxMemorySize>
+                                <extraArguments>
+                                    <extraArgument>-XX:+UseConcMarkSweepGC</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
+                            <id>depeval</id>
+                        </program>
+                    </programs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
