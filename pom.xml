@@ -44,6 +44,7 @@
       <module>common</module>
       <module>core</module>
       <module>tokenization</module>
+      <module>morphology</module>
     </modules>
     <build>
         <pluginManagement>
