@@ -35,7 +35,7 @@ import java.util.List;
  * By default, it allows NLP4J to predict the part of speech tags. Optionally,
  * it will use POS tags from the input TSV.
  */
-public class NLPEvalDepParse {
+public class DEPEvaluate {
 
     @Option(name="-c", usage="configuration filename (required)", required=true, metaVar="<filename>")
     public String configuration_file;
@@ -44,7 +44,7 @@ public class NLPEvalDepParse {
     @Option(name="-goldPos", usage = "use gold pos tags")
     public boolean useGoldPos;
 
-    private NLPEvalDepParse(String[] args) throws Exception {
+    private DEPEvaluate(String[] args) throws Exception {
         BinUtils.initArgs(args, this);
         List<String> filelist = FileUtils.getFileList(input_path, "*", false);
         Collections.sort(filelist);
@@ -118,6 +118,6 @@ public class NLPEvalDepParse {
     }
 
     public static void main(String args[]) throws Exception {
-        new NLPEvalDepParse(args);
+        new DEPEvaluate(args);
     }
 }
