@@ -1,0 +1,18 @@
+<configuration>
+	<tsv>
+        <column index="1" field="form"/>
+    </tsv>
+
+    <lexica>
+        <ambiguity_classes field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-ambiguity-classes-simplified-lowercase.xz</ambiguity_classes>
+        <word_clusters field="word_form_simplified_lowercase">edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz</word_clusters>
+        <word_embeddings field="word_form_undigitalized">edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz</word_embeddings>
+        <named_entity_gazetteers field="word_form_simplified">edu/emory/mathcs/nlp/lexica/en-named-entity-gazetteers-simplified.xz</named_entity_gazetteers>
+    </lexica>
+
+    <models>
+    	<pos>edu/emory/mathcs/nlp/models/en-pos.xz</pos>
+    	<ner>edu/emory/mathcs/nlp/models/en-ner.xz</ner>
+    	<dep>edu/emory/mathcs/nlp/models/en-dep.xz</dep>
+    </models>
+</configuration>
