@@ -17,6 +17,8 @@ package edu.emory.mathcs.nlp.learning.util;
 
 import edu.emory.mathcs.nlp.learning.initialization.WeightGenerator;
 
+import java.util.List;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
@@ -45,18 +47,15 @@ public class ColumnMajorVector extends MajorVector
 	@Override
 	public void addScores(SparseVector x, float[] scores)
 	{
-		int i, index;
-		
-		for (SparseItem p : x)
-		{
-			if (p.getIndex() < getFeatureSize())
-			{
-				index = p.getIndex() * label_size;
-				
-				for (i=0; i<scores.length; i++)
-					scores[i] += get(index++) * p.getValue();	
-			}
-		}
+		List<SparseItem> itemVector = x.getVector();
+		int featureSize = getFeatureSize();
+		itemVector.stream().filter(p -> p.getIndex() < featureSize)
+				.forEach(p -> {
+					int index = p.getIndex() * label_size;
+					for (int i = 0; i < scores.length; i++) {
+						scores[i] += get(index++) * p.getValue();
+					}
+				});
 	}
 
 	@Override
