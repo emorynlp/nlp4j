@@ -111,6 +111,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	}
 	
 	public OnlineComponent<N,S> createComponent(NLPMode mode, String configPathname, String name) throws IOException {
+		LOG.info("Reading configuration " + configPathname);
 		if (name != null) {
 			LOG.warn("Name not implemented for OnlineComponent. Input name - " + name + " will be ignored.");
 		}

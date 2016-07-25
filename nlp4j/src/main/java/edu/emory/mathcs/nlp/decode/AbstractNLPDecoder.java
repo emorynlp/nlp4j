@@ -82,27 +82,27 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 			throw new RuntimeException("Failed to initialize lexica due to problems reading something", e);
 		}
 
-		LOG.info("Loading tokenizer");
+		LOG.info("Loading tokenizer {}", language);
 		setTokenizer(NLPUtils.createTokenizer(language));
 		
 		if (decode_config.getPartOfSpeechTagging() != null)
 		{
-			LOG.info("Loading part-of-speech tagger");
+			LOG.info("Loading part-of-speech tagger {}", decode_config.getPartOfSpeechTagging());
 			components.add(NLPUtils.getComponent(decode_config.getPartOfSpeechTagging()));
 			
-			LOG.info("Loading morphological analyzer");
+			LOG.info("Loading morphological analyzer {}", language);
 			components.add(new MorphologicalAnalyzer<>(language));
 		}
 		
 		if (decode_config.getNamedEntityRecognition() != null)
 		{
-			LOG.info("Loading named entity recognizer");
+			LOG.info("Loading named entity recognizer {}", decode_config.getNamedEntityRecognition());
 			components.add(NLPUtils.getComponent(decode_config.getNamedEntityRecognition()));
 		}
 		
 		if (decode_config.getDependencyParsing() != null)
 		{
-			LOG.info("Loading dependency parser");
+			LOG.info("Loading dependency parser {}", decode_config.getDependencyParsing());
 			components.add(NLPUtils.getComponent(decode_config.getDependencyParsing()));
 		}
 		

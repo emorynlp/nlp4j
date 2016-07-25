@@ -85,19 +85,19 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 	@SuppressWarnings("unchecked")
 	protected <T>GlobalLexicon<T> getGlobalLexicon(Element element, String message) throws IOException
 	{
-		if (element == null) return null;
-		LOG.info(message);
-		
+		if (element == null) {
+			return null;
+		}
 		String path = XMLUtils.getTrimmedTextContent(element);
-		ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(path);
-		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, FIELD));
-		String name = XMLUtils.getTrimmedAttribute(element, NAME);
-		T lexicon = null;
-		
-		try
-		{
-			lexicon = (T)oin.readObject();
-			oin.close();
+		T lexicon;
+		Field field;
+		String name;
+		try (ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(path)) {
+			field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, FIELD));
+			name = XMLUtils.getTrimmedAttribute(element, NAME);
+			LOG.info("{} {} {}", message, name, path);
+
+			lexicon = (T) oin.readObject();
 		}
 		catch (IOException e) {
 			throw e;
