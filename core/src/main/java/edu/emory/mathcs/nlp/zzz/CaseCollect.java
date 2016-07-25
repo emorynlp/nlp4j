@@ -104,7 +104,7 @@ public class CaseCollect
 		final String INPUT_FILE  = args[0];
 		final String OUTPUT_FILE = args[0]+"."+args[1]+"."+args[2]+".xz";
 		
-		ObjectInputStream  in  = IOUtils.createObjectXZBufferedInputStream (INPUT_FILE);
+		ObjectInputStream  in  = IOUtils.createArtifactObjectInputStream(INPUT_FILE);
 		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(OUTPUT_FILE);
 		int cutoff = Integer.parseInt(args[1]);
 		double threshold = Double.parseDouble(args[2]);

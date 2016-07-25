@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,8 +53,12 @@ public class NLPDecode
 		BinUtils.initArgs(args, this);
 		List<String> filelist = FileUtils.getFileList(input_path, input_ext, false);
 		Collections.sort(filelist);
-		
-		decoder = new NLPDecoder(IOUtils.createFileInputStream(configuration_file));
+
+		try {
+			decoder = new NLPDecoder(IOUtils.createFileInputStream(configuration_file));
+		} catch (IOException e) {
+			throw new RuntimeException("Error opening data file", e);
+		}
 		decoder.decode(filelist, output_ext, format, threads);
 	}
 	

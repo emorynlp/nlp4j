@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.template.lexicon;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.List;
@@ -27,7 +28,6 @@ import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.collection.tree.PrefixTree;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
-import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
@@ -60,12 +60,12 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 //	=================================== CONSTRUCTOR ===================================
 	
 	/** @param in configuration xml. */
-	public GlobalLexica(InputStream in)
+	public GlobalLexica(InputStream in) throws IOException
 	{
 		this(XMLUtils.getDocumentElement(in));
 	}
 	
-	public GlobalLexica(Element doc)
+	public GlobalLexica(Element doc) throws IOException
 	{
 		Element eLexica = XMLUtils.getFirstElementByTagName(doc, LEXICA);
 		if (eLexica == null) return;
@@ -77,19 +77,19 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		setStopWords            (getGlobalLexicon(eLexica, "stop_words"             , "Loading stop words"));
 	}
 	
-	protected <T>GlobalLexicon<T> getGlobalLexicon(Element eLexica, String tag, String message)
+	protected <T>GlobalLexicon<T> getGlobalLexicon(Element eLexica, String tag, String message) throws IOException
 	{
 		return getGlobalLexicon(XMLUtils.getFirstElementByTagName(eLexica, tag), message);
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected <T>GlobalLexicon<T> getGlobalLexicon(Element element, String message)
+	protected <T>GlobalLexicon<T> getGlobalLexicon(Element element, String message) throws IOException
 	{
 		if (element == null) return null;
 		LOG.info(message);
 		
 		String path = XMLUtils.getTrimmedTextContent(element);
-		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(IOUtils.getInputStream(path));
+		ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(path);
 		Field field = Field.valueOf(XMLUtils.getTrimmedAttribute(element, FIELD));
 		String name = XMLUtils.getTrimmedAttribute(element, NAME);
 		T lexicon = null;
@@ -99,7 +99,12 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 			lexicon = (T)oin.readObject();
 			oin.close();
 		}
-		catch (Exception e) {e.printStackTrace();}
+		catch (IOException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Exception reading " + path, e);
+		}
 
 		return new GlobalLexicon<>(lexicon, field, name);
 	}

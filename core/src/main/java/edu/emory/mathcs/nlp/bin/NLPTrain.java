@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -74,7 +75,11 @@ public class NLPTrain
 		NLPMode m = NLPMode.valueOf(mode);
 		
 		if (cv > 1) trainer.crossValidate(m, trainFiles, configuration_file, model_file, previous_model_file, cv);
-		else		trainer.train(m, trainFiles, developFiles, configuration_file, model_file, previous_model_file);
+		else try {
+			trainer.train(m, trainFiles, developFiles, configuration_file, model_file, previous_model_file);
+		} catch (IOException e) {
+			throw new RuntimeException("IOException setting up components", e);
+		}
 	}
 	
 	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>OnlineTrainer<N,S> createOnlineTrainer()
@@ -107,7 +112,11 @@ public class NLPTrain
 			@Override
 			public GlobalLexica<N> createGlobalLexica(InputStream config)
 			{
-				return new GlobalLexica<>(config);
+				try {
+					return new GlobalLexica<>(config);
+				} catch (IOException e) {
+					throw new RuntimeException("Failed to create lexica due to problem reading something", e);
+				}
 			}
 		};
 	}
