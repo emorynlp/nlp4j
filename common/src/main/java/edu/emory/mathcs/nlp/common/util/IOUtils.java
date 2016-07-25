@@ -31,11 +31,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
@@ -47,6 +56,7 @@ import edu.emory.mathcs.nlp.common.constant.StringConst;
  */
 public class IOUtils
 {
+	private static final Logger LOG = LoggerFactory.getLogger(IOUtils.class);
 	private IOUtils() {}
 	
 	public static Object fromByteArray(byte[] array)
@@ -127,7 +137,6 @@ public class IOUtils
 		return createBufferedReader(createFileInputStream(filename));
 	}
 	
-	/** @param in internally wrapped by {@code new PrintStream(new BufferedOutputStream(out))}. */
 	static public PrintStream createBufferedPrintStream(OutputStream out)
 	{
 		return new PrintStream(new BufferedOutputStream(out));
@@ -211,57 +220,83 @@ public class IOUtils
 		return zout;
 	}
 	
-	static public XZInputStream createXZBufferedInputStream(InputStream in)
+//	static public InputStream createArtifactInputStream(InputStream in) throws IOException
+//	{
+//		return new XZInputStream(new BufferedInputStream(in));
+//	}
+
+
+	/**
+	 * Open an input stream to a file.
+	 * The file can be in the classpath, or named by a URI. The rules are as follows:
+	 * <br>
+	 * If the pathname contains a colon, we attempt to parse it into a URI and ask the URI for a
+	 * {@link java.nio.file.Path}. If that fails, we treat the string as if it has no colon.
+	 * In the no-colon case, we try for the classpath first (prepending a '/'),
+	 * using the thread context classloader.
+	 * If that fails, we look in the standard file system.
+	 * @param pathname the name of the file.
+	 * @return the stream.
+	 * @throws IOException something went wrong.
+	 */
+	static public InputStream createArtifactInputStream(String pathname) throws IOException
 	{
-		XZInputStream zin = null;
-		
-		try
-		{
-			zin = new XZInputStream(new BufferedInputStream(in));
+		Path path;
+		InputStream baseStream = null;
+		if (pathname.contains(":")) {
+			try {
+				path = Paths.get(new URI(pathname));
+				baseStream = Files.newInputStream(path, StandardOpenOption.READ);
+			} catch (URISyntaxException e) {
+				LOG.debug("Failed to treat {} as a URI/path, falling back.", pathname);
+				// leave
+			}
 		}
-		catch (IOException e) {e.printStackTrace();}
-		
-		return zin;
+
+		if (baseStream == null) {
+			baseStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathname);
+			if (baseStream == null) {
+				LOG.debug("{} not found in classpath, falling back to file system.", pathname);
+				baseStream = Files.newInputStream(Paths.get(pathname));
+			}
+		}
+		return wrapStream(baseStream, pathname);
+	}
+
+	static public InputStream createArtifactInputStream(Path path) throws IOException
+	{
+		String name = path.getFileName().toString();
+		InputStream baseStream = Files.newInputStream(path, StandardOpenOption.READ);
+		return wrapStream(baseStream, name);
+	}
+
+	private static InputStream wrapStream(InputStream baseStream, String filename) throws IOException
+	{
+		baseStream = new BufferedInputStream(baseStream);
+		if (filename.endsWith(".xz")) {
+			baseStream = new XZInputStream(baseStream);
+		} else if (filename.endsWith(".gz")) {
+			baseStream = new GZIPInputStream(baseStream);
+		}
+		return baseStream;
+	}
+
+	/**
+	 * Open an input stream that reads a file in Serialized java format.
+	 * @param pathname the pathname, which can be a classpath, or a URI.
+	 * @return the stream.
+	 * @throws IOException if something goes wrong.
+	 * @see #createArtifactInputStream(String)
+	 */
+	static public ObjectInputStream createArtifactObjectInputStream(String pathname) throws IOException
+	{
+		return new ObjectInputStream(createArtifactInputStream(pathname));
 	}
 	
-	static public XZInputStream createXZBufferedInputStream(String filename)
-	{
-		XZInputStream zin = null;
-		
-		try
-		{
-			zin = new XZInputStream(new BufferedInputStream(new FileInputStream(filename)));
-		}
-		catch (IOException e) {e.printStackTrace();}
-		
-		return zin;
-	}
-	
-	static public ObjectInputStream createObjectXZBufferedInputStream(String filename)
-	{
-		ObjectInputStream oin = null;
-		
-		try
-		{
-			oin = new ObjectInputStream(createXZBufferedInputStream(filename));
-		}
-		catch (IOException e) {e.printStackTrace();}
-		
-		return oin;
-	}
-	
-	static public ObjectInputStream createObjectXZBufferedInputStream(InputStream in)
-	{
-		ObjectInputStream oin = null;
-		
-		try
-		{
-			oin = new ObjectInputStream(createXZBufferedInputStream(in));
-		}
-		catch (IOException e) {e.printStackTrace();}
-		
-		return oin;
-	}
+//	static public ObjectInputStream createArtifactObjectInputStream(InputStream in) throws IOException
+//	{
+//		return new ObjectInputStream(createArtifactInputStream(in));
+//	}
 	
 	static public ObjectOutputStream createObjectXZBufferedOutputStream(String filename)
 	{
@@ -299,20 +334,8 @@ public class IOUtils
 		return oout;
 	}
 	
-	/** @param in internally wrapped by {@code new ByteArrayInputStream(str.getBytes())}. */
-	static public ByteArrayInputStream createByteArrayInputStream(String s)
-	{
-		return new ByteArrayInputStream(s.getBytes());
-	}
-	
 	public static InputStream getInputStreamsFromResource(String path)
 	{
 		return IOUtils.class.getResourceAsStream(StringConst.FW_SLASH+path);
-	}
-	
-	public static InputStream getInputStream(String path)
-	{
-		InputStream in = IOUtils.getInputStreamsFromResource(path);
-		return (in != null) ? in : IOUtils.createFileInputStream(path);
 	}
 }

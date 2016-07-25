@@ -37,7 +37,6 @@ import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectDoublePair;
 import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
-import edu.emory.mathcs.nlp.common.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
@@ -65,27 +64,33 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 //	=================================== COMPONENT ===================================
 	
 	@SuppressWarnings("unchecked")
-	public OnlineComponent<N,S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream, String name)
-	{
-		OnlineComponent<N,S> component = null;
-		NLPConfig<N> configuration = null;
+	public OnlineComponent<N,S> initComponent(NLPMode mode, String configPathname, String previousModelPathname, String name) throws IOException {
+		OnlineComponent<N,S> component;
+		NLPConfig<N> configuration;
 		
-		if (previousModelStream != null)
+		if (previousModelPathname != null)
 		{
 			LOG.info("Loading the previous model");
-			ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(previousModelStream);
-			
-			try
-			{
+			ObjectInputStream oin;
+			try {
+				oin = IOUtils.createArtifactObjectInputStream(previousModelPathname);
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to open previous model " + previousModelPathname, e);
+			}
+
+			try (InputStream configStream = IOUtils.createArtifactObjectInputStream(configPathname)) {
 				component = (OnlineComponent<N,S>)oin.readObject();
 				configuration = component.setConfiguration(configStream);
 				oin.close();
+			} catch (IOException | ClassNotFoundException e) {
+				throw new RuntimeException("Failed to setup component " + name, e);
 			}
-			catch (Exception e) {e.printStackTrace();}
+
+
 		}
 		else
 		{
-			component = createComponent(mode, configStream, name);
+			component = createComponent(mode, configPathname, name);
 			configuration = component.getConfiguration();
 		}
 		
@@ -105,15 +110,17 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		return component;
 	}
 	
-	public OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config, String name)
-	{
+	public OnlineComponent<N,S> createComponent(NLPMode mode, String configPathname, String name) throws IOException {
+		LOG.info("Reading configuration " + configPathname);
 		if (name != null) {
 			LOG.warn("Name not implemented for OnlineComponent. Input name - " + name + " will be ignored.");
 		}
-		return createComponent(mode, config);
+		try (InputStream configStream = IOUtils.createArtifactInputStream(configPathname)) {
+			return createComponent(mode, configStream);
+		}
 	}
 	
-	public abstract OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config);
+	public abstract OnlineComponent<N,S> createComponent(NLPMode mode, InputStream configStream);
 	public abstract TSVReader<N> createTSVReader(Object2IntMap<String> map);
 	public abstract GlobalLexica<N> createGlobalLexica(InputStream config);
 	
@@ -190,21 +197,27 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		@Override
 		public Double call()
 		{
-			return train(mode, trainFiles, developFiles, configurationFile, modelFile, previousModelFile);
+			try {
+				return train(mode, trainFiles, developFiles, configurationFile, modelFile, previousModelFile);
+			} catch (IOException e) {
+				LOG.error("IO exception setting up components", e);
+				throw new RuntimeException("IO exception setting up components", e);
+			}
 		}
 	}
 	
-	public double train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile)
-	{
+	public double train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile) throws IOException {
 		return train(mode, trainFiles, developFiles, configurationFile, modelFile, previousModelFile, 0);
 	}
 	
-	public double train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile, int index)
-	{
-		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
-		GlobalLexica<N> lexica = createGlobalLexica(IOUtils.createFileInputStream(configurationFile));
+	public double train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile, int index) throws IOException {
+		GlobalLexica<N> lexica;
+		try (InputStream configStream = IOUtils.createFileInputStream(configurationFile)) {
+			lexica = createGlobalLexica(configStream);
+		}
+
 		String name = (modelFile != null) ? FileUtils.getBaseName(modelFile) : null;
-		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream, name);
+		OnlineComponent<N,S> component = initComponent(mode, configurationFile, previousModelFile, name);
 		TSVReader<N> reader = createTSVReader(component.getConfiguration().getReaderFieldMap());
 		ObjectDoublePair<OnlineComponent<N,S>> p = null;
 		

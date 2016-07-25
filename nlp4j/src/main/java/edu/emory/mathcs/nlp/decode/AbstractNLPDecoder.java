@@ -63,46 +63,47 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 	
 	public AbstractNLPDecoder() {}
 	
-	public AbstractNLPDecoder(DecodeConfig config)
-	{
+	public AbstractNLPDecoder(DecodeConfig config) throws IOException {
 		init(config);
 	}
 	
-	public AbstractNLPDecoder(InputStream configuration)
-	{
+	public AbstractNLPDecoder(InputStream configuration) throws IOException {
 		init(new DecodeConfig(configuration));
 	}
 	
-	public void init(DecodeConfig config)
-	{
+	public void init(DecodeConfig config) throws IOException {
 		List<NLPComponent<N>> components = new ArrayList<>();
 		Language language = config.getLanguage();
 		decode_config = config;
-		
-		components.add(new GlobalLexica<>(decode_config.getDocumentElement()));
-		
-		LOG.info("Loading tokenizer");
+
+		try {
+			components.add(new GlobalLexica<>(decode_config.getDocumentElement()));
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to initialize lexica due to problems reading something", e);
+		}
+
+		LOG.info("Loading tokenizer {}", language);
 		setTokenizer(NLPUtils.createTokenizer(language));
 		
 		if (decode_config.getPartOfSpeechTagging() != null)
 		{
-			LOG.info("Loading part-of-speech tagger");
-			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getPartOfSpeechTagging())));
+			LOG.info("Loading part-of-speech tagger {}", decode_config.getPartOfSpeechTagging());
+			components.add(NLPUtils.getComponent(decode_config.getPartOfSpeechTagging()));
 			
-			LOG.info("Loading morphological analyzer");
+			LOG.info("Loading morphological analyzer {}", language);
 			components.add(new MorphologicalAnalyzer<>(language));
 		}
 		
 		if (decode_config.getNamedEntityRecognition() != null)
 		{
-			LOG.info("Loading named entity recognizer");
-			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getNamedEntityRecognition())));
+			LOG.info("Loading named entity recognizer {}", decode_config.getNamedEntityRecognition());
+			components.add(NLPUtils.getComponent(decode_config.getNamedEntityRecognition()));
 		}
 		
 		if (decode_config.getDependencyParsing() != null)
 		{
-			LOG.info("Loading dependency parser");
-			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getDependencyParsing())));
+			LOG.info("Loading dependency parser {}", decode_config.getDependencyParsing());
+			components.add(NLPUtils.getComponent(decode_config.getDependencyParsing()));
 		}
 		
 //		if (decode_config.getSemanticRoleLabeling() != null)

@@ -96,7 +96,7 @@ public class Radiology
 	@SuppressWarnings("unchecked")
 	Set<String> getStopWordSet(String filename) throws Exception
 	{
-		ObjectInputStream in = IOUtils.createObjectXZBufferedInputStream(filename);
+		ObjectInputStream in = IOUtils.createArtifactObjectInputStream(filename);
 		Set<String> set = (Set<String>)in.readObject();
 		return set;
 	}

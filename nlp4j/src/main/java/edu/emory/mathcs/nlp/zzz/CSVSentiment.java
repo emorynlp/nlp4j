@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
@@ -46,7 +47,11 @@ public class CSVSentiment
 	
 	public CSVSentiment(String configurationFile)
 	{
-		decode = new NLPDecoder(IOUtils.createFileInputStream(configurationFile));		
+		try {
+			decode = new NLPDecoder(IOUtils.createFileInputStream(configurationFile));
+		} catch (IOException e) {
+			throw new RuntimeException("Error opening data file", e);
+		}
 	}
 	
 	public void categorize(String inputFile) throws Exception

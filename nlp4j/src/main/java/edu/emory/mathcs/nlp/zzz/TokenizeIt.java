@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.zzz;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -42,7 +43,11 @@ public class TokenizeIt
 	
 	public TokenizeIt(String configFile)
 	{
-		decoder   = new NLPDecoder(IOUtils.createFileInputStream(configFile));
+		try {
+			decoder   = new NLPDecoder(IOUtils.createFileInputStream(configFile));
+		} catch (IOException e) {
+			throw new RuntimeException("Error opening data file", e);
+		}
 		tokenizer = new EnglishTokenizer();
 	}
 	

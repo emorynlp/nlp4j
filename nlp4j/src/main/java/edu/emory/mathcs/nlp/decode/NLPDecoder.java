@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.decode;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
@@ -26,13 +27,11 @@ public class NLPDecoder extends AbstractNLPDecoder<NLPNode>
 {
 	public NLPDecoder() {super();}
 	
-	public NLPDecoder(DecodeConfig config)
-	{
+	public NLPDecoder(DecodeConfig config) throws IOException {
 		super(config);
 	}
 	
-	public NLPDecoder(InputStream configuration)
-	{
+	public NLPDecoder(InputStream configuration) throws IOException {
 		super(new DecodeConfig(configuration));
 	}
 	

@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.decode;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
@@ -30,12 +31,15 @@ import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class NLPUtils
 {
+	static private final Logger LOG = LoggerFactory.getLogger(NLPUtils.class);
 	static public String FEAT_POS_2ND   = "pos2";
 	static public String FEAT_PREDICATE = "pred";
 
@@ -50,9 +54,8 @@ public class NLPUtils
 	}
 	
 	@SuppressWarnings("unchecked")
-	static public <N extends AbstractNLPNode<N>,S extends NLPState<N>>NLPComponent<N> getComponent(InputStream in)
-	{
-		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(in);
+	static public <N extends AbstractNLPNode<N>,S extends NLPState<N>>NLPComponent<N> getComponent(String inPath) throws IOException {
+		ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(inPath);
 		OnlineComponent<N,S> component = null;
 		
 		try
@@ -61,7 +64,10 @@ public class NLPUtils
 			component.setFlag(NLPFlag.DECODE);
 			oin.close();
 		}
-		catch (Exception e) {e.printStackTrace();}
+		catch (Exception e) {
+			LOG.error("Failed to read " + inPath, e);
+			throw new RuntimeException("Failed to read " + inPath, e);
+		}
 
 		return component;
 	}
