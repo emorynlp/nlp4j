@@ -42,12 +42,15 @@ import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.tokenization.Token;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 {
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractNLPDecoder.class);
 	static final public String FORMAT_RAW  = "raw";
 	static final public String FORMAT_LINE = "line";
 	static final public String FORMAT_TSV  = "tsv";
@@ -78,27 +81,27 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		
 		components.add(new GlobalLexica<>(decode_config.getDocumentElement()));
 		
-		BinUtils.LOG.info("Loading tokenizer\n");
+		LOG.info("Loading tokenizer");
 		setTokenizer(NLPUtils.createTokenizer(language));
 		
 		if (decode_config.getPartOfSpeechTagging() != null)
 		{
-			BinUtils.LOG.info("Loading part-of-speech tagger\n");
+			LOG.info("Loading part-of-speech tagger");
 			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getPartOfSpeechTagging())));
 			
-			BinUtils.LOG.info("Loading morphological analyzer\n");
+			LOG.info("Loading morphological analyzer");
 			components.add(new MorphologicalAnalyzer<>(language));
 		}
 		
 		if (decode_config.getNamedEntityRecognition() != null)
 		{
-			BinUtils.LOG.info("Loading named entity recognizer\n");
+			LOG.info("Loading named entity recognizer");
 			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getNamedEntityRecognition())));
 		}
 		
 		if (decode_config.getDependencyParsing() != null)
 		{
-			BinUtils.LOG.info("Loading dependency parser\n");
+			LOG.info("Loading dependency parser");
 			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getDependencyParsing())));
 		}
 		
@@ -110,7 +113,6 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 //		}
 
 		setComponents(components);
-		BinUtils.LOG.info("\n");
 	}
 	
 //	======================================== GETTERS/SETTERS ========================================
@@ -339,7 +341,7 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		@Override
 		public void run()
 		{
-			BinUtils.LOG.info(FileUtils.getBaseName(input_file)+"\n");
+			LOG.info(FileUtils.getBaseName(input_file));
 			InputStream  in  = IOUtils.createFileInputStream (input_file);
 			OutputStream out = IOUtils.createFileOutputStream(output_file);
 			decode(in, out, format);

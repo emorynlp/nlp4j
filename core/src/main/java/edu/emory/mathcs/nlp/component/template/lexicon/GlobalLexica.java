@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.collection.tree.PrefixTree;
@@ -38,6 +40,7 @@ import edu.emory.mathcs.nlp.component.template.util.BILOU;
  */
 public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<N>
 {
+	private static final Logger LOG = LoggerFactory.getLogger(GlobalLexica.class);
 	static final public String LEXICA = "lexica";
 	static final public String FIELD  = "field";
 	static final public String NAME   = "name";
@@ -83,7 +86,7 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 	protected <T>GlobalLexicon<T> getGlobalLexicon(Element element, String message)
 	{
 		if (element == null) return null;
-		BinUtils.LOG.info(message+"\n");
+		LOG.info(message);
 		
 		String path = XMLUtils.getTrimmedTextContent(element);
 		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(IOUtils.getInputStream(path));

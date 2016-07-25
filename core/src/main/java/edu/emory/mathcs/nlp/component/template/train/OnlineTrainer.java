@@ -29,6 +29,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 import edu.emory.mathcs.nlp.common.collection.tuple.DoubleIntPair;
@@ -57,6 +59,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
  */
 public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPState<N>>
 {
+	private static final Logger LOG = LoggerFactory.getLogger(OnlineTrainer.class);
 	public OnlineTrainer() {};
 	
 //	=================================== COMPONENT ===================================
@@ -69,7 +72,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		
 		if (previousModelStream != null)
 		{
-			BinUtils.LOG.info("Loading the previous model\n");
+			LOG.info("Loading the previous model");
 			ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(previousModelStream);
 			
 			try
@@ -104,7 +107,9 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	
 	public OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config, String name)
 	{
-		if (name != null) BinUtils.LOG.warn("Name not implemented for OnlineComponent. Input name - " + name + " will be ignored.");
+		if (name != null) {
+			LOG.warn("Name not implemented for OnlineComponent. Input name - " + name + " will be ignored.");
+		}
 		return createComponent(mode, config);
 	}
 	
@@ -139,7 +144,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		catch (Exception e) {e.printStackTrace();}
 		
 		avg /= k;
-		BinUtils.LOG.info(String.format("Cross-validation score: %5.2f\n", avg));
+		LOG.info(String.format("Cross-validation score: %5.2f\n", avg));
 		return avg;
 	}
 	
@@ -225,8 +230,8 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		DoubleIntPair p;
 		String eval;
 		
-		BinUtils.LOG.info(optimizer.toString()+"\n"+hp.toString("- ")+"\n");
-		BinUtils.LOG.info("Training: "+index+"\n");
+		LOG.info(optimizer.toString()+"\n"+hp.toString("- "));
+		LOG.info("Training: "+index);
 		
 		for (int epoch=1; epoch<=hp.getMaxEpochs(); epoch++)
 		{
@@ -245,7 +250,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 			p = evaluate(developFiles, component, lexica, reader);
 			score = p.d;
 			eval = component.getEval().toString();
-			BinUtils.LOG.info(String.format("%2d:%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %6d\n", index, epoch, eval, L, SF, NZW, p.i));
+			LOG.info(String.format("%2d:%5d: %s, L = %3d, SF = %7d, NZW = %8d, N/S = %6d", index, epoch, eval, L, SF, NZW, p.i));
 			
 			if (bestScore < score || (bestScore == score && NZW < bestNZW))
 			{
@@ -259,7 +264,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		if (bestComponent != null)
 			component = (OnlineComponent<N,S>)IOUtils.fromByteArray(bestComponent);
 		
-		BinUtils.LOG.info(String.format("%2d: Best: %5.2f, epoch = %d\n", index, bestScore, bestEpoch));
+		LOG.info(String.format("%2d: Best: %5.2f, epoch = %d", index, bestScore, bestEpoch));
 		return new ObjectDoublePair<OnlineComponent<N,S>>(component, bestScore);
 	}
 	
@@ -337,7 +342,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	public void saveModel(OnlineComponent<N,S> component, OutputStream stream)
 	{
 		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(stream);
-		BinUtils.LOG.info("Saving the model\n");
+		LOG.info("Saving the model");
 		
 		try
 		{
@@ -350,11 +355,11 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	@SuppressWarnings("unchecked")
 	public void reduceModel(TSVReader<N> reader, List<String> filenames, OnlineComponent<N,S> component, GlobalLexica<N> lexica, String modelFile, String reducedModelFile)
 	{
-		BinUtils.LOG.info("Reducing:\n");
+		LOG.info("Reducing:");
 		float rate = 0f;
 		
-		DoubleIntPair p = evaluate(filenames, component, lexica, reader);
-		BinUtils.LOG.info(String.format("%8.4f: %7d -> %s\n", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString()));
+		DoubleIntPair p;
+		LOG.info(String.format("%8.4f: %7d -> %s", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString()));
 		
 		NLPConfig<N> config = component.getConfiguration();
 		Element eReduce = XMLUtils.getFirstElementByTagName(config.getDocumentElement(), "reducer");
@@ -371,7 +376,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 			backup = IOUtils.toByteArray(component);
 			component.getFeatureTemplate().reduce(component.getOptimizer().getWeightVector(), rate);
 			p = evaluate(filenames, component, lexica, reader);
-			BinUtils.LOG.info(String.format("%8.4f: %7d -> %s, N/S = %6d\n", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString(), p.i));
+			LOG.info(String.format("%8.4f: %7d -> %s, N/S = %6d", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString(), p.i));
 
 			if (iter <= 0 || Math.abs(lowerBound - p.d) <= range)
 			{
