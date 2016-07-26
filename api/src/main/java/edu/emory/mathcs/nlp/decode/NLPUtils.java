@@ -27,7 +27,10 @@ import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
@@ -36,6 +39,7 @@ import java.io.ObjectInputStream;
  */
 public class NLPUtils
 {
+	private static final Logger LOG = LoggerFactory.getLogger(NLPUtils.class);
 	static public String FEAT_POS_2ND   = "pos2";
 	static public String FEAT_PREDICATE = "pred";
 
@@ -64,5 +68,19 @@ public class NLPUtils
 		catch (Exception e) {e.printStackTrace();}
 
 		return component;
+	}
+
+	@SuppressWarnings("unchecked")
+	static public <N extends AbstractNLPNode<N>,S extends NLPState<N>>NLPComponent<N> getComponent(String pathname)
+	{
+		try (ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(pathname)) {
+			OnlineComponent<N,S> component;
+			component = (OnlineComponent<N,S>)oin.readObject();
+			component.setFlag(NLPFlag.DECODE);
+			return component;
+		} catch (Exception e) {
+			LOG.error("Failed to read component " + pathname, e);
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -86,7 +86,7 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		if (decode_config.getPartOfSpeechTagging() != null)
 		{
 			LOG.info("Loading part-of-speech tagger");
-			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getPartOfSpeechTagging())));
+			components.add(NLPUtils.getComponent(decode_config.getPartOfSpeechTagging()));
 			
 			LOG.info("Loading morphological analyzer");
 			components.add(new MorphologicalAnalyzer<>(language));
@@ -95,13 +95,13 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		if (decode_config.getNamedEntityRecognition() != null)
 		{
 			LOG.info("Loading named entity recognizer");
-			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getNamedEntityRecognition())));
+			components.add(NLPUtils.getComponent(decode_config.getNamedEntityRecognition()));
 		}
 		
 		if (decode_config.getDependencyParsing() != null)
 		{
 			LOG.info("Loading dependency parser");
-			components.add(NLPUtils.getComponent(IOUtils.getInputStream(decode_config.getDependencyParsing())));
+			components.add(NLPUtils.getComponent(decode_config.getDependencyParsing()));
 		}
 		
 //		if (decode_config.getSemanticRoleLabeling() != null)
