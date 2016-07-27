@@ -15,6 +15,12 @@
  */
 package edu.emory.mathcs.nlp.decode;
 
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Language;
@@ -27,12 +33,6 @@ import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
 import edu.emory.mathcs.nlp.tokenization.Tokenizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

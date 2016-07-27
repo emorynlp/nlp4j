@@ -35,6 +35,6 @@ public class FastUtils
 	
 	static public void add(FloatArrayList list, int index, float inc)
 	{
-		list.set(index, list.get(index)+inc);
+		list.set(index, list.getFloat(index)+inc);
 	}
 }

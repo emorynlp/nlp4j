@@ -96,8 +96,8 @@ public class Unigram<T> implements Serializable
 		
 		for (Entry<T> p : count_map.object2IntEntrySet())
 		{
-			if (p.getValue() > cutoff)
-				list.add(new ObjectIntPair<>(p.getKey(), p.getValue()));
+			if (p.getIntValue()  > cutoff)
+				list.add(new ObjectIntPair<>(p.getKey(), p.getIntValue()));
 		}
 		
 		return list;
@@ -110,7 +110,7 @@ public class Unigram<T> implements Serializable
 		
 		for (Entry<T> p : count_map.object2IntEntrySet())
 		{
-			d = MathUtils.divide(p.getValue(), total_count);
+			d = MathUtils.divide(p.getIntValue(), total_count);
 			if (d > threshold) list.add(new ObjectDoublePair<T>(p.getKey(), d));
 		}
 		
@@ -129,7 +129,7 @@ public class Unigram<T> implements Serializable
 		
 		for (Entry<T> p : count_map.object2IntEntrySet())
 		{
-			if (p.getValue() > cutoff) set.add(p.getKey());
+			if (p.getIntValue() > cutoff) set.add(p.getKey());
 		}
 		
 		return set;
@@ -142,7 +142,7 @@ public class Unigram<T> implements Serializable
 		
 		for (Entry<T> p : count_map.object2IntEntrySet())
 		{
-			d = MathUtils.divide(p.getValue(), total_count);
+			d = MathUtils.divide(p.getIntValue(), total_count);
 			if (d > threshold) set.add(p.getKey());
 		}
 		
