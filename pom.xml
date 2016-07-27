@@ -42,7 +42,7 @@
     </properties>
     <modules>
         <module>api</module>
-        <module>commands</module>
+        <module>cli</module>
     </modules>
     <build>
         <pluginManagement>
