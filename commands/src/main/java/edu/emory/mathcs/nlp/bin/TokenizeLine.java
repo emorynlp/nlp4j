@@ -17,8 +17,8 @@ package edu.emory.mathcs.nlp.bin;
 
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.tokenization.EnglishTokenizer;
-import edu.emory.mathcs.nlp.tokenization.Tokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 
 import java.io.IOException;
 import java.io.InputStream;

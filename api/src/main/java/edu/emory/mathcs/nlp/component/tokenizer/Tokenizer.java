@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.tokenization;
+package edu.emory.mathcs.nlp.component.tokenizer;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
@@ -23,11 +23,11 @@ import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.MetaUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.tokenization.dictionary.Currency;
-import edu.emory.mathcs.nlp.tokenization.dictionary.Dictionary;
-import edu.emory.mathcs.nlp.tokenization.dictionary.Emoticon;
-import edu.emory.mathcs.nlp.tokenization.dictionary.Unit;
-import edu.emory.mathcs.nlp.tokenization.util.TokenIndex;
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Currency;
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Dictionary;
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Emoticon;
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Unit;
+import edu.emory.mathcs.nlp.component.tokenizer.util.TokenIndex;
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 import org.magicwerk.brownies.collections.GapList;

@@ -17,6 +17,10 @@ package edu.emory.mathcs.nlp.tokenization;
 
 import org.junit.Test;
 
+import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.Token;
+import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+
 import java.util.ArrayList;
 import java.util.List;
 

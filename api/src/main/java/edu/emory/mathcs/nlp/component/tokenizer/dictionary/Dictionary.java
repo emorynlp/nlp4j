@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.tokenization.dictionary;
+package edu.emory.mathcs.nlp.component.tokenizer.dictionary;
 
 import edu.emory.mathcs.nlp.common.util.CharUtils;
 
@@ -22,7 +22,7 @@ import edu.emory.mathcs.nlp.common.util.CharUtils;
  */
 public abstract class Dictionary
 {
-	static public String ROOT = "edu/emory/mathcs/nlp/tokenization/dictionary/";
+	static public String ROOT = "edu/emory/mathcs/nlp/component/tokenizer/dictionary/";
 	
 	public String[] tokenize(String s)
 	{

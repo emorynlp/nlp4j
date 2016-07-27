@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.tokenization;
+package edu.emory.mathcs.nlp.component.tokenizer;
 
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.tokenization.dictionary.Abbreviation;
-import edu.emory.mathcs.nlp.tokenization.dictionary.Compound;
-import edu.emory.mathcs.nlp.tokenization.dictionary.EnglishApostrophe;
-import edu.emory.mathcs.nlp.tokenization.dictionary.EnglishHyphen;
-import edu.emory.mathcs.nlp.tokenization.util.TokenIndex;
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Abbreviation;
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Compound;
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.EnglishApostrophe;
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.EnglishHyphen;
+import edu.emory.mathcs.nlp.component.tokenizer.util.TokenIndex;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;

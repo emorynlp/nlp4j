@@ -17,6 +17,8 @@ package edu.emory.mathcs.nlp.tokenization.dictionary;
 
 import org.junit.Test;
 
+import edu.emory.mathcs.nlp.component.tokenizer.dictionary.EnglishApostrophe;
+
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
