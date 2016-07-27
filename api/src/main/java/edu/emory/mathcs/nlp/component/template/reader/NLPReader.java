@@ -34,7 +34,7 @@ public class NLPReader extends TSVReader<NLPNode>
 	{
 		super(form, lemma, pos, feats, dhead, deprel, sheads, nament);
 	}
-	
+
 	@Override
 	protected NLPNode create()
 	{

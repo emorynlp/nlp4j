@@ -34,6 +34,11 @@ public class NLPNode extends AbstractNLPNode<NLPNode>
 		super(id, form, posTag);
 	}
 	
+	public NLPNode(int id, String form, String posTag, FeatMap feats)
+	{
+		
+	}
+	
 	public NLPNode(int id, String form, String lemma, String posTag, FeatMap feats)
 	{
 		super(id, form, lemma, posTag, feats);
@@ -60,8 +65,5 @@ public class NLPNode extends AbstractNLPNode<NLPNode>
 	}
 	
 	@Override
-	public NLPNode self()
-	{
-		return this;
-	}
+	public NLPNode self() {return this;}
 }

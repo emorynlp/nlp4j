@@ -126,8 +126,7 @@ public abstract class TSVReader<N extends AbstractNLPNode<N>>
 		N node = create();
 		N[] nodes = (N[])Array.newInstance(node.getClass(), size+1);
 		
-		node.toRoot();
-		nodes[0] = node;
+		nodes[0] = node.toRoot();
 		
 		for (i=1; i<=size; i++)
 			nodes[i] = create(i, list.get(i-1));

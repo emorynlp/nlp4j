@@ -30,6 +30,7 @@ import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.propbank.PBLocation;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.conversion.C2DInfo;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -63,6 +64,7 @@ public class CTNode implements Comparable<CTNode>
 	
 	// conversion
 	private String named_entity_tag = null;
+	private C2DInfo c2d_info = null;
 	
 //	======================== Constructors ========================
 	
@@ -1010,5 +1012,22 @@ public class CTNode implements Comparable<CTNode>
 	public void setPBRolesetID(String rolesetID)
 	{
 		pb_rolesetID = rolesetID;
+	}
+	
+//	======================== Constituent to dependency conversion ========================
+	
+	public C2DInfo getC2DInfo()
+	{
+		return c2d_info;
+	}
+	
+	public void setC2DInfo(C2DInfo info)
+	{
+		c2d_info = info;
+	}
+	
+	public boolean hasC2DInfo()
+	{
+		return c2d_info != null;
 	}
 }

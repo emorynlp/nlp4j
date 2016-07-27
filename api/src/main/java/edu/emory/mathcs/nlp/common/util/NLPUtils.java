@@ -1,0 +1,214 @@
+/**
+ * Copyright 2015, Emory University
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package edu.emory.mathcs.nlp.common.util;
+
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.emory.mathcs.nlp.component.dep.DEPArc;
+import edu.emory.mathcs.nlp.component.template.NLPComponent;
+import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.feature.Field;
+import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
+import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.component.template.state.NLPState;
+import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+
+/**
+ * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
+ */
+public class NLPUtils
+{
+	public static final Logger LOG = LoggerFactory.getLogger(NLPUtils.class);
+	static public String FEAT_POS_2ND   = "pos2";
+	static public String FEAT_PREDICATE = "pred";
+	
+	/** The feat-key of semantic function tags. */
+	static public final String FEAT_SEM	= "sem";
+	/** The feat-key of syntactic function tags. */
+	static public final String FEAT_SYN	= "syn";
+	/** The feat-key of sentence types. */
+	static public final String FEAT_SNT	= "snt";
+	/** The feat-key of PropBank rolesets. */
+	static public final String FEAT_PB	= "pb";
+	/** The feat-key of VerbNet classes. */
+	static public final String FEAT_VN	= "vn";
+	/** The feat-key of word senses. */
+	static public final String FEAT_WS	= "ws";
+	/** The feat-key of 2nd pos tag. */
+	static public final String FEAT_POS2 = "p2";
+	/** The feat-key of 2nd ner tag. */
+	static public final String FEAT_NER2 = "n2";
+	/** The feat-key of sentiments (for root). */
+	static public final String FEAT_FUTURE = "fut";
+	
+	static public <N extends AbstractNLPNode<N>>String join(N[] nodes, String delim, Function<N,String> f)
+	{
+		return Joiner.join(nodes, delim, 1, nodes.length, f);
+	}
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+	@SuppressWarnings("unchecked")
+	static public <N extends AbstractNLPNode<N>,S extends NLPState<N>>NLPComponent<N> getComponent(String pathname)
+	{
+		try (ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(pathname)) {
+			OnlineComponent<N,S> component;
+			component = (OnlineComponent<N,S>)oin.readObject();
+			component.setFlag(NLPFlag.DECODE);
+			return component;
+		} catch (Exception e) {
+			NLPUtils.LOG.error("Failed to read component " + pathname, e);
+			throw new RuntimeException(e);
+		}
+	}
+
+
+
+
+
+
+	@SuppressWarnings("unchecked")
+	static public <N extends AbstractNLPNode<N>,S extends NLPState<N>>NLPComponent<N> getComponent(InputStream in)
+	{
+		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(in);
+		OnlineComponent<N,S> component = null;
+		
+		try
+		{
+			component = (OnlineComponent<N,S>)oin.readObject();
+			component.setFlag(NLPFlag.DECODE);
+			oin.close();
+		}
+		catch (Exception e) {e.printStackTrace();}
+	
+		return component;
+	}
+
+
+
+
+
+
+	static public Tokenizer createTokenizer(Language language)
+	{
+		return new EnglishTokenizer();
+	}
+
+
+
+
+
+
+	static public String toStringLine(NLPNode[] nodes, String delim, Field field)
+	{
+		return Joiner.join(nodes, delim, 1, nodes.length, n -> n.getValue(field));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+//	================================= Dependency Graph =================================
+	
+	/**
+	 * @return the list of semantic arguments in the dependency graph (e.g., list.get(1) = semantic arguments of nodes[1]).
+	 * @param nodes dependency graph.
+	 */
+	static public <N extends AbstractNLPNode<N>>List<List<DEPArc<N>>> getSemanticArgumentList(N[] nodes)
+	{
+		List<List<DEPArc<N>>> list = new ArrayList<>();
+		List<DEPArc<N>> args;
+		
+		for (int i=0; i<nodes.length; i++)
+			list.add(new ArrayList<>());
+		
+		for (int i=1; i<nodes.length; i++)
+		{
+			N node = nodes[i];
+			
+			for (DEPArc<N> arc : node.getSemanticHeadList())
+			{
+				args = list.get(arc.getNode().getID());
+				args.add(new DEPArc<>(node, arc.getLabel()));
+			}
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * @return {@code true} if the dependency graph contains a cycle.
+	 * @param tree dependency graph.
+	 */
+	static public <N extends AbstractNLPNode<N>>boolean containsCycle(N[] tree)
+	{
+		for (int i=1; i<tree.length; i++)
+		{
+			N node = tree[i];
+			
+			if (node.hasDependencyHead() && node.getDependencyHead().isDescendantOf(node))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * @return the dependency graph whose 1st node is the root, and the rest is filled with the input nodes.
+	 * @param sup returns an empty node of type {@code N}.
+	 */
+	@SuppressWarnings("unchecked")
+	static public <N extends AbstractNLPNode<N>>N[] toDependencyTree(List<N> nodes, Supplier<N> sup)
+	{
+		N[] graph = (N[])Array.newInstance(nodes.get(0).getClass(), nodes.size()+1);
+		graph[0] = sup.get().toRoot();
+		
+		for (int i=1; i<graph.length; i++)
+			graph[i] = nodes.get(i-1);
+		
+		return graph;
+	}
+}

@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.constant.PatternConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.treebank.CTLibEn;
 import edu.emory.mathcs.nlp.common.treebank.CTTree;
+import edu.emory.mathcs.nlp.common.treebank.POSLibEn;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 
@@ -275,7 +275,7 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 			
 			for (PBLocation loc : rel.getLocationList())
 			{
-				if (lang == Language.ENGLISH && CTLibEn.isVerb(tree.getNode(loc)))
+				if (lang == Language.ENGLISH && POSLibEn.isVerb(tree.getNode(loc).getConstituentTag()))
 					return true;
 			}			
 		}

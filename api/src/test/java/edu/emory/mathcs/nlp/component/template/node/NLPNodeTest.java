@@ -18,8 +18,9 @@ package edu.emory.mathcs.nlp.component.template.node;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.NLPUtils;
 import edu.emory.mathcs.nlp.component.template.reader.NLPReader;
-import edu.emory.mathcs.nlp.component.template.util.NLPLib;
+
 import org.junit.Assert;
 
 /**
@@ -80,7 +81,7 @@ public class NLPNodeTest
 		Assert.assertEquals(nodes[15], nodes[11].getRightNearestSibling(1));
 		Assert.assertNull(nodes[11].getLeftNearestSibling(2));
 		
-		System.out.println(NLPLib.join(nodes, " ", AbstractNLPNode::getWordForm));
+		System.out.println(NLPUtils.join(nodes, " ", AbstractNLPNode::getWordForm));
 	}
 
 }

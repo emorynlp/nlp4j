@@ -325,7 +325,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 		
 		for (CTNode term : terminals)
 		{
-			if (isRelativizer(term))
+			if (POSLibEn.isRelativizer(term.getConstituentTag()))
 				return term;
 		}
 		
@@ -379,8 +379,8 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 		{
 			child = children.get(i);
 			
-			if (isPunctuation(child))	continue;
-			if (isEtc(child))			return true;
+			if (POSLibEn.isPunctuation(child.getConstituentTag()))	continue;
+			if (isEtc(child)) return true;
 			break;
 		}
 		
@@ -489,37 +489,5 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 			return getNode(node.getFirstChild(), matcher, recursive);
 		
 		return null;
-	}
-	
-//	======================== Part-of-speech ========================
-	
-	static public boolean isNoun(CTNode node)
-	{
-		return POSLibEn.isNoun(node.getConstituentTag());
-	}
-	
-	static public boolean isVerb(CTNode node)
-	{
-		return POSLibEn.isVerb(node.getConstituentTag());
-	}
-	
-	static public boolean isAdjective(CTNode node)
-	{
-		return POSLibEn.isAdjective(node.getConstituentTag());
-	}
-	
-	static public boolean isAdverb(CTNode node)
-	{
-		return POSLibEn.isAdverb(node.getConstituentTag());
-	}
-	
-	static public boolean isRelativizer(CTNode node)
-	{
-		return POSLibEn.isRelativizer(node.getConstituentTag());
-	}
-	
-	static public boolean isPunctuation(CTNode node)
-	{
-		return POSLibEn.isPunctuation(node.getConstituentTag());
 	}
 }

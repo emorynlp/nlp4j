@@ -82,12 +82,12 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		components.add(new GlobalLexica<>(decode_config.getDocumentElement()));
 		
 		LOG.info("Loading tokenizer");
-		setTokenizer(NLPUtils.createTokenizer(language));
+		setTokenizer(edu.emory.mathcs.nlp.common.util.NLPUtils.createTokenizer(language));
 		
 		if (decode_config.getPartOfSpeechTagging() != null)
 		{
 			LOG.info("Loading part-of-speech tagger");
-			components.add(NLPUtils.getComponent(decode_config.getPartOfSpeechTagging()));
+			components.add(edu.emory.mathcs.nlp.common.util.NLPUtils.getComponent(decode_config.getPartOfSpeechTagging()));
 			
 			LOG.info("Loading morphological analyzer");
 			components.add(new MorphologicalAnalyzer<>(language));
@@ -96,13 +96,13 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		if (decode_config.getNamedEntityRecognition() != null)
 		{
 			LOG.info("Loading named entity recognizer");
-			components.add(NLPUtils.getComponent(decode_config.getNamedEntityRecognition()));
+			components.add(edu.emory.mathcs.nlp.common.util.NLPUtils.getComponent(decode_config.getNamedEntityRecognition()));
 		}
 		
 		if (decode_config.getDependencyParsing() != null)
 		{
 			LOG.info("Loading dependency parser");
-			components.add(NLPUtils.getComponent(decode_config.getDependencyParsing()));
+			components.add(edu.emory.mathcs.nlp.common.util.NLPUtils.getComponent(decode_config.getDependencyParsing()));
 		}
 		
 //		if (decode_config.getSemanticRoleLabeling() != null)

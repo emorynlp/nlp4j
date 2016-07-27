@@ -15,6 +15,19 @@
  */
 package edu.emory.mathcs.nlp.component.template.node;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.TreeSet;
+import java.util.function.BiPredicate;
+import java.util.regex.Pattern;
+
 import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
 import edu.emory.mathcs.nlp.common.collection.list.SortedArrayList;
 import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
@@ -28,19 +41,6 @@ import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.TreeSet;
-import java.util.function.BiPredicate;
-import java.util.regex.Pattern;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -60,6 +60,7 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 	protected String          dependency_label;
 	protected N               dependency_head;
 	protected List<DEPArc<N>> semantic_heads;
+	protected List<DEPArc<N>> secondary_heads;
     
 	// offsets
 	protected int start_offset;
@@ -94,7 +95,12 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 	
 	public AbstractNLPNode(int id, String form, String posTag)
 	{
-		this(id, form, null, posTag, new FeatMap());
+		this(id, form, posTag, new FeatMap());
+	}
+	
+	public AbstractNLPNode(int id, String form, String posTag, FeatMap feats)
+	{
+		this(id, form, null, posTag, feats);
 	}
 	
 	public AbstractNLPNode(int id, String form, String lemma, String posTag, FeatMap feats)
@@ -132,9 +138,10 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 		semantic_heads = new ArrayList<>();
 	}
 	
-	public void toRoot()
+	public N toRoot()
 	{
 		set(0, ROOT_TAG, ROOT_TAG, ROOT_TAG, ROOT_TAG, new FeatMap(), null, null);
+		return self();
 	}
 	
 //	============================== GETTERS ==============================
@@ -277,11 +284,6 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
         return end_offset;
     }
 	
-	public boolean isStopWord()
-	{
-		return stop_word;
-	}
-	
 //	============================== SETTERS ==============================
 	
 	public void setID(int id)
@@ -406,6 +408,11 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 	public boolean isNamedEntityTag(String tag)
 	{
 		return tag.equals(nament_tag);
+	}
+	
+	public boolean isStopWord()
+	{
+		return stop_word;
 	}
 	
 	public boolean hasWordClusters()
@@ -624,12 +631,6 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 		
 		return null;
 	}
-	
-	
-	
-	
-	
-	
 
 	/**
 	 * @param predicate takes a dependency node and compares the specific tag with the referenced function.
@@ -1320,7 +1321,14 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 		return getFirstDependentByLabel(pattern) != null;
 	}
 	
-	
+	/**
+	 * @return true if this node has a dependent with the specific label.
+	 * @see #getFirstDependent(String, BiPredicate).
+	 */
+	public boolean containsDependentByLabel(String label)
+	{
+		return getFirstDependent(label, (n,l) -> n.isDependencyLabel(l)) != null;
+	}
 	
 	/** @return true if the node is a descendant of the specific node. */
 	public boolean isDescendantOf(N node)
@@ -1625,5 +1633,27 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 		
 		Collections.sort(arcs);
 		return Joiner.join(arcs, AbstractArc.ARC_DELIM);
+	}
+
+//	============================== HELPERS ==============================
+	
+	public List<DEPArc<N>> getSecondaryHeadList()
+	{
+		return secondary_heads;
+	}
+	
+	public void setSecondaryHeads(List<DEPArc<N>> heads)
+	{
+		secondary_heads = heads;
+	}
+	
+	public void addSecondaryHead(DEPArc<N> head)
+	{
+		secondary_heads.add(head);
+	}
+	
+	public void addSecondaryHead(N head, String label)
+	{
+		addSecondaryHead(new DEPArc<>(head, label));
 	}
 }
