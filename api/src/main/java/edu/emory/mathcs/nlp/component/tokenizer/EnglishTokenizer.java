@@ -23,7 +23,8 @@ import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Abbreviation;
 import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Compound;
 import edu.emory.mathcs.nlp.component.tokenizer.dictionary.EnglishApostrophe;
 import edu.emory.mathcs.nlp.component.tokenizer.dictionary.EnglishHyphen;
-import edu.emory.mathcs.nlp.component.tokenizer.util.TokenIndex;
+import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
+import edu.emory.mathcs.nlp.component.tokenizer.token.TokenIndex;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;

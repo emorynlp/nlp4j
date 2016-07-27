@@ -25,8 +25,8 @@ import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
-import edu.emory.mathcs.nlp.component.tokenizer.Token;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

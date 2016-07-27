@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.tokenizer;
+package edu.emory.mathcs.nlp.component.tokenizer.token;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

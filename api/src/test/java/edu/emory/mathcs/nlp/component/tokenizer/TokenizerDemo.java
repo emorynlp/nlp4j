@@ -18,8 +18,8 @@ package edu.emory.mathcs.nlp.component.tokenizer;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
-import edu.emory.mathcs.nlp.component.tokenizer.Token;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

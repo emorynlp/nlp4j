@@ -21,8 +21,8 @@ import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.component.template.node.FeatMap;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
-import edu.emory.mathcs.nlp.component.tokenizer.Token;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
 
 import java.io.BufferedReader;
