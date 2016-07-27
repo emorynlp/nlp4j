@@ -2,3 +2,6 @@ target
 *~
 *.iml
 .idea
+/bin/
+.settings
+*/.settings
