@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.common.treebank.CTNode;
-import edu.emory.mathcs.nlp.common.treebank.CTTagEn;
-import edu.emory.mathcs.nlp.common.treebank.CTTree;
+import edu.emory.mathcs.nlp.common.constituent.CTNode;
+import edu.emory.mathcs.nlp.common.constituent.CTTagEn;
+import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.conversion.headrule.HeadRule;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.common.treebank;
+package edu.emory.mathcs.nlp.common.constituent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +25,7 @@ import edu.emory.mathcs.nlp.common.propbank.PBArgument;
 import edu.emory.mathcs.nlp.common.propbank.PBInstance;
 import edu.emory.mathcs.nlp.common.propbank.PBLib;
 import edu.emory.mathcs.nlp.common.propbank.PBLocation;
+import edu.emory.mathcs.nlp.common.treebank.PBArc;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;

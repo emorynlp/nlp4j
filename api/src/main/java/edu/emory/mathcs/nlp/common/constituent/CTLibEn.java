@@ -1,4 +1,4 @@
-package edu.emory.mathcs.nlp.common.treebank;
+package edu.emory.mathcs.nlp.common.constituent;
 /**
  * Copyright 2015, Emory University
  * 
@@ -21,6 +21,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.treebank.POSLibEn;
+import edu.emory.mathcs.nlp.common.treebank.POSTagEn;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.ENUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;

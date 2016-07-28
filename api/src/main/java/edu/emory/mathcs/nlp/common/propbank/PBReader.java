@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.treebank.CTReader;
-import edu.emory.mathcs.nlp.common.treebank.CTTree;
+import edu.emory.mathcs.nlp.common.constituent.CTReader;
+import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

@@ -13,43 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion.headrule;
+package edu.emory.mathcs.nlp.component.tokenizer.dictionary;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-import edu.emory.mathcs.nlp.common.constituent.CTNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class HeadTagSetTest
+public class HtmlTest
 {
 	@Test
-	public void testHeadTagSet()
+	public void test()
 	{
-		String tags = "NN.*|NP|-SBJ|-TPC";
-		HeadTagSet set = new HeadTagSet(tags);
-		CTNode node;
+		Html html = new Html();
+		StringBuilder build;
+		String s;
 		
-		node = new CTNode("NN", null);
-		assertTrue(set.matches(node));
+		s = "&quot;&amp;&lt;&gt;";
+		assertEquals("\"&<>", html.replace(s));
 		
-		node.setConstituentTag("NNS");
-		assertTrue(set.matches(node));
+		s = "&cent;&pound;&curren;&yen;&sect;&copy;&reg;&euro;";
+		build = new StringBuilder();
 		
-		node.setConstituentTag("NP");
-		assertTrue(set.matches(node));
+		build.append((char)162);
+		build.append((char)163);
+		build.append((char)164);
+		build.append((char)165);
+		build.append((char)167);
+		build.append((char)169);
+		build.append((char)174);
+		build.append((char)8364);
+
+		assertEquals(build.toString(), html.replace(s));
 		
-		node.setConstituentTag("S");
-		assertFalse(set.matches(node));
-		
-		node.addFunctionTag("SBJ");
-		assertTrue(set.matches(node));
-		
-		assertEquals(tags, "NN.*|NP|-SBJ|-TPC");
+		s = "&#33;&lt;&rand;&gt;&#123;";
+		assertEquals("!<&rand;>{", html.replace(s));
 	}
 }

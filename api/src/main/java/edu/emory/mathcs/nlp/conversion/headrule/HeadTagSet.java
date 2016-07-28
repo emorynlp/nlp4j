@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.treebank.CTNode;
+import edu.emory.mathcs.nlp.common.constituent.CTNode;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 
 

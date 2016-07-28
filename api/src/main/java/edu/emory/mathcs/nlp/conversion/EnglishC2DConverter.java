@@ -29,12 +29,12 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
+import edu.emory.mathcs.nlp.common.constituent.CTLib;
+import edu.emory.mathcs.nlp.common.constituent.CTLibEn;
+import edu.emory.mathcs.nlp.common.constituent.CTNode;
+import edu.emory.mathcs.nlp.common.constituent.CTTagEn;
+import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.propbank.PBLib;
-import edu.emory.mathcs.nlp.common.treebank.CTLib;
-import edu.emory.mathcs.nlp.common.treebank.CTLibEn;
-import edu.emory.mathcs.nlp.common.treebank.CTNode;
-import edu.emory.mathcs.nlp.common.treebank.CTTagEn;
-import edu.emory.mathcs.nlp.common.treebank.CTTree;
 import edu.emory.mathcs.nlp.common.treebank.DEPLibEn;
 import edu.emory.mathcs.nlp.common.treebank.DEPTagEn;
 import edu.emory.mathcs.nlp.common.treebank.PBArc;

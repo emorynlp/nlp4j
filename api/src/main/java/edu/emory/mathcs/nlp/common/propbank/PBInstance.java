@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.constant.PatternConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.treebank.CTTree;
+import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.treebank.POSLibEn;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;

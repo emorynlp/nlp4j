@@ -13,43 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion.headrule;
+package edu.emory.mathcs.nlp.component.tokenizer.dictionary;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.nlp.common.constituent.CTNode;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class HeadTagSetTest
+public class DTHyphenTest
 {
 	@Test
-	public void testHeadTagSet()
+	public void test()
 	{
-		String tags = "NN.*|NP|-SBJ|-TPC";
-		HeadTagSet set = new HeadTagSet(tags);
-		CTNode node;
+		EnglishHyphen dt = new EnglishHyphen();
 		
-		node = new CTNode("NN", null);
-		assertTrue(set.matches(node));
+		assertTrue(dt.isPrefix("inter"));
+		assertTrue(dt.isSuffix("ful"));
+		assertTrue(dt.preserveHyphen("inter-connect".toCharArray(), 5));
+		assertTrue(dt.preserveHyphen("beauti-ful".toCharArray(), 6));
+		assertTrue(dt.preserveHyphen("b-a-d".toCharArray(), 1));
+		assertTrue(dt.preserveHyphen("b-a-d".toCharArray(), 3));
 		
-		node.setConstituentTag("NNS");
-		assertTrue(set.matches(node));
-		
-		node.setConstituentTag("NP");
-		assertTrue(set.matches(node));
-		
-		node.setConstituentTag("S");
-		assertFalse(set.matches(node));
-		
-		node.addFunctionTag("SBJ");
-		assertTrue(set.matches(node));
-		
-		assertEquals(tags, "NN.*|NP|-SBJ|-TPC");
+		assertFalse(dt.preserveHyphen("inte-connect".toCharArray(), 4));
+		assertFalse(dt.preserveHyphen("beauti-fu".toCharArray(), 6));
+		assertFalse(dt.preserveHyphen("b-c-d".toCharArray(), 1));
+		assertFalse(dt.preserveHyphen("b-c-d".toCharArray(), 3));
 	}
 }

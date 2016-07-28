@@ -1,0 +1,9 @@
+propbank/wsj_0003.parse 0 11 gold enter-v enter.01 ----- 10:1-ARG0 11:0-rel 12:1-ARG1
+propbank/wsj_0003.parse 0 21 gold cause-v cause.01 ----- 16:2-ARG0 21:0-rel 22:2-ARG1
+propbank/wsj_0003.parse 0 25 gold show-v show.02 ----- 22:1*23:1*24:1-ARG1 25:0,26:1-rel 27:2-ARGM-TMP 22:1*23:1-LINK-SLC
+propbank/wsj_0003.parse 0 31 gold say-v say.01 ----- 0:3*33:1-ARG1 30:1-ARG0 31:0-rel
+propbank/wsj_0003.parse 1 18 gold appear-v appear.02 ----- 0:2,19:2-ARG1 18:0-rel
+propbank/wsj_0003.parse 1 21 gold be-v be.01 ----- 0:2*19:1-ARG1 21:0-rel 22:2-ARG2
+propbank/wsj_0003.parse 1 28 gold study-v study.01 ----- 25:1*29:1-ARG1 28:0-rel 30:1-ARGM-LOC 25:1*29:1-LINK-PSV
+propbank/wsj_0003.parse 1 32 gold industrialize-v industrialize.01 ----- 32:0-rel 33:0-ARG1
+propbank/wsj_0003.parse 1 36 gold say-v say.01 ----- 0:3*38:1-ARG1 35:1-ARG0 36:0-rel

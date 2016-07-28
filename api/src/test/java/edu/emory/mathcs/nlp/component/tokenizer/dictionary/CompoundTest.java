@@ -13,43 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion.headrule;
+package edu.emory.mathcs.nlp.component.tokenizer.dictionary;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.nlp.common.constituent.CTNode;
+import edu.emory.mathcs.nlp.common.util.Language;
 
 /**
+ * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class HeadTagSetTest
+public class CompoundTest
 {
 	@Test
-	public void testHeadTagSet()
+	public void test()
 	{
-		String tags = "NN.*|NP|-SBJ|-TPC";
-		HeadTagSet set = new HeadTagSet(tags);
-		CTNode node;
+		Compound dt = new Compound(Language.ENGLISH);
 		
-		node = new CTNode("NN", null);
-		assertTrue(set.matches(node));
+		assertEquals("[I, 'mmm]"   , Arrays.toString(dt.tokenize("I'mmm")));
+		assertEquals("[wha, d, ya]", Arrays.toString(dt.tokenize("whadya")));
 		
-		node.setConstituentTag("NNS");
-		assertTrue(set.matches(node));
-		
-		node.setConstituentTag("NP");
-		assertTrue(set.matches(node));
-		
-		node.setConstituentTag("S");
-		assertFalse(set.matches(node));
-		
-		node.addFunctionTag("SBJ");
-		assertTrue(set.matches(node));
-		
-		assertEquals(tags, "NN.*|NP|-SBJ|-TPC");
+		assertTrue(dt.tokenize("I'm") == null);
 	}
 }

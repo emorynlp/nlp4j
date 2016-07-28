@@ -15,8 +15,8 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
-import edu.emory.mathcs.nlp.common.treebank.CTReader;
-import edu.emory.mathcs.nlp.common.treebank.CTTree;
+import edu.emory.mathcs.nlp.common.constituent.CTReader;
+import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.util.CharTokenizer;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;

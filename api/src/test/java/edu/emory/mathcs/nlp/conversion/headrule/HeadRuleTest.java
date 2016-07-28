@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.nlp.common.treebank.CTNode;
+import edu.emory.mathcs.nlp.common.constituent.CTNode;
 
 
 /** @author Jinho D. Choi ({@code jinho.choi@emory.edu}) */

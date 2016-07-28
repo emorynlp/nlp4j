@@ -13,43 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion.headrule;
+package edu.emory.mathcs.nlp.component.tokenizer.dictionary;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
+import java.util.Arrays;
 
-import edu.emory.mathcs.nlp.common.constituent.CTNode;
+import org.junit.Test;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class HeadTagSetTest
+public class EmoticonTest
 {
 	@Test
-	public void testHeadTagSet()
+	public void test()
 	{
-		String tags = "NN.*|NP|-SBJ|-TPC";
-		HeadTagSet set = new HeadTagSet(tags);
-		CTNode node;
+		Emoticon dt = new Emoticon();
+		String s;
 		
-		node = new CTNode("NN", null);
-		assertTrue(set.matches(node));
+		s = ":";
+		assertTrue(dt.getEmoticonRange(s) == null);
 		
-		node.setConstituentTag("NNS");
-		assertTrue(set.matches(node));
+		s = ":-)";
+		assertEquals("[0, 3]", Arrays.toString(dt.getEmoticonRange(s)));
 		
-		node.setConstituentTag("NP");
-		assertTrue(set.matches(node));
+		s = "Hi:-)";
+		assertEquals("[2, 5]", Arrays.toString(dt.getEmoticonRange(s)));
 		
-		node.setConstituentTag("S");
-		assertFalse(set.matches(node));
-		
-		node.addFunctionTag("SBJ");
-		assertTrue(set.matches(node));
-		
-		assertEquals(tags, "NN.*|NP|-SBJ|-TPC");
+		s = ":-)..";
+		assertEquals("[0, 3]", Arrays.toString(dt.getEmoticonRange(s)));
 	}
 }

@@ -1,0 +1,4 @@
+propbank/wsj_0001.parse 0 8 gold join-v join.01 ----- 0:2-ARG0 7:0-ARGM-MOD 8:0-rel 9:1-ARG1 11:1-ARGM-PRD 15:1-ARGM-TMP
+propbank/wsj_0001.parse 1 2 gold be-v be.01 ----- 0:1-ARG1 2:0-rel 3:2-ARG2
+propbank/wsj_0001.parse 1 10 gold publish-v publish.01 ----- 10:0-rel 11:0-ARG0
+propbank/wsj_0002.parse 0 16 gold name-v name.01 ----- 0:2*17:1-ARG1 16:0-rel 18:2-ARG2

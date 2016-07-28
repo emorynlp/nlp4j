@@ -1,5 +1,5 @@
 /**
- * Copyright 2015, Emory University
+ * Copyright 2014, Emory University
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.common.treebank;
+package edu.emory.mathcs.nlp.common.verbnet;
 
-import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
-import edu.emory.mathcs.nlp.common.constituent.CTNode;
-import edu.emory.mathcs.nlp.common.propbank.PBArgument;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class PBArc extends AbstractArc<CTNode>
+public class VNTagTest
 {
-	private static final long serialVersionUID = 8603308004980285093L;
-
-	public PBArc(CTNode node, String label)
+	@Test
+	public void test()
 	{
-		super(node, label);
-	}
-
-	@Override
-	public String toString()
-	{
-		return node.getTerminalID() + PBArgument.DELIM + label;
-	}
-	
-	@Override
-	public int compareTo(AbstractArc<CTNode> arc)
-	{
-		return node.compareTo(arc.getNode());
+		assertTrue(VNTag.contains(VNTag.VN_AGENT));
+		assertFalse(VNTag.contains("Hello"));
 	}
 }

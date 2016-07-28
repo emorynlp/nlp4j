@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.conversion;
 
-import edu.emory.mathcs.nlp.common.treebank.CTNode;
+import edu.emory.mathcs.nlp.common.constituent.CTNode;
 import edu.emory.mathcs.nlp.component.template.node.FeatMap;
 
 /**
