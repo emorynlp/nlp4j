@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion.headrule;
+package edu.emory.mathcs.nlp.conversion.util;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.conversion.util.HeadRuleMap;
 
 
 /** @author Jinho D. Choi ({@code jinho.choi@emory.edu}) */

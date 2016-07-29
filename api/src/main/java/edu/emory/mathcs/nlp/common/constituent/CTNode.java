@@ -31,7 +31,7 @@ import edu.emory.mathcs.nlp.common.propbank.PBLocation;
 import edu.emory.mathcs.nlp.common.treebank.PBArc;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.conversion.C2DInfo;
+import edu.emory.mathcs.nlp.conversion.util.C2DInfo;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

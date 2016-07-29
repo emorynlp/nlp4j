@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion;
+package edu.emory.mathcs.nlp.conversion.util;
 
 import edu.emory.mathcs.nlp.common.constituent.CTNode;
 import edu.emory.mathcs.nlp.component.template.node.FeatMap;

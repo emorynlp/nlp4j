@@ -51,8 +51,9 @@ import edu.emory.mathcs.nlp.component.dep.DEPArc;
 import edu.emory.mathcs.nlp.component.template.node.FeatMap;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Emoticon;
-import edu.emory.mathcs.nlp.conversion.headrule.HeadRule;
-import edu.emory.mathcs.nlp.conversion.headrule.HeadRuleMap;
+import edu.emory.mathcs.nlp.conversion.util.C2DInfo;
+import edu.emory.mathcs.nlp.conversion.util.HeadRule;
+import edu.emory.mathcs.nlp.conversion.util.HeadRuleMap;
 
 
 /**
@@ -122,7 +123,7 @@ public class EnglishC2DConverter extends C2DConverter
 	}
 	
 	@Override
-	public NLPNode[] toDEPTree(CTTree cTree)
+	public NLPNode[] toDependencyGraph(CTTree cTree)
 	{
 		NLPNode[] tree = null;
 		

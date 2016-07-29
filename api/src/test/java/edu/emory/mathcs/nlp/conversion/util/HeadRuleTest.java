@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion.headrule;
+package edu.emory.mathcs.nlp.conversion.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,34 +22,33 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.constituent.CTNode;
+import edu.emory.mathcs.nlp.conversion.util.HeadRule;
+import edu.emory.mathcs.nlp.conversion.util.HeadTagSet;
 
-/**
- * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
- */
-public class HeadTagSetTest
+
+/** @author Jinho D. Choi ({@code jinho.choi@emory.edu}) */
+public class HeadRuleTest
 {
 	@Test
-	public void testHeadTagSet()
+	public void testHeadRule()
 	{
-		String tags = "NN.*|NP|-SBJ|-TPC";
-		HeadTagSet set = new HeadTagSet(tags);
-		CTNode node;
+		String tags = "NN.*|NP;VB.*|VP"; 
+		HeadRule rule = new HeadRule(HeadRule.DIR_LEFT_TO_RIGHT, tags);
+		CTNode  node1 = new CTNode("NNS", null);
+		CTNode  node2 = new CTNode("VBN", null);
 		
-		node = new CTNode("NN", null);
-		assertTrue(set.matches(node));
+		assertFalse(rule.isRightToLeft());
+
+		HeadTagSet[] headTags = rule.getHeadTags();
 		
-		node.setConstituentTag("NNS");
-		assertTrue(set.matches(node));
+		HeadTagSet headTag = headTags[0];
+		assertTrue(headTag.matches(node1));
+		assertFalse(headTag.matches(node2));
 		
-		node.setConstituentTag("NP");
-		assertTrue(set.matches(node));
+		headTag = headTags[1];
+		assertFalse(headTag.matches(node1));
+		assertTrue(headTag.matches(node2));
 		
-		node.setConstituentTag("S");
-		assertFalse(set.matches(node));
-		
-		node.addFunctionTag("SBJ");
-		assertTrue(set.matches(node));
-		
-		assertEquals(tags, "NN.*|NP|-SBJ|-TPC");
+		assertEquals(tags, rule.toString());
 	}
 }

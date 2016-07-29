@@ -24,9 +24,10 @@ import edu.emory.mathcs.nlp.common.constituent.CTTagEn;
 import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.conversion.headrule.HeadRule;
-import edu.emory.mathcs.nlp.conversion.headrule.HeadRuleMap;
-import edu.emory.mathcs.nlp.conversion.headrule.HeadTagSet;
+import edu.emory.mathcs.nlp.conversion.util.C2DInfo;
+import edu.emory.mathcs.nlp.conversion.util.HeadRule;
+import edu.emory.mathcs.nlp.conversion.util.HeadRuleMap;
+import edu.emory.mathcs.nlp.conversion.util.HeadTagSet;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -224,5 +225,5 @@ abstract public class C2DConverter
 	 * @param cTree the constituent tree to convert.
 	 * @return the dependency tree converted from the specific constituent tree.
 	 */
-	abstract public NLPNode[] toDEPTree(CTTree cTree);
+	abstract public NLPNode[] toDependencyGraph(CTTree cTree);
 }

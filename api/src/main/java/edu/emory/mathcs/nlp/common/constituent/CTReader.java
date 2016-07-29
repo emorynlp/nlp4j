@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -31,7 +32,6 @@ import edu.emory.mathcs.nlp.common.constant.StringConst;
 /**
  * Constituent tree reader.
  * @see CTTree 
- * @since 3.0.0
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class CTReader
@@ -50,8 +50,17 @@ public class CTReader
 	/** @param in internally wrapped by {@code new LineNumberReader(new InputStreamReader(new BufferedInputStream(in)))}}. */
 	public void open(InputStream in)
 	{
-		f_reader = new LineNumberReader(new InputStreamReader(new BufferedInputStream(in)));
-		d_tokens = new ArrayDeque<String>();
+		open(in, "UTF-8");
+	}
+	
+	public void open(InputStream in, String charsetName)
+	{
+		try
+		{
+			f_reader = new LineNumberReader(new InputStreamReader(new BufferedInputStream(in), charsetName));
+			d_tokens = new ArrayDeque<String>();
+		}
+		catch (UnsupportedEncodingException e) {e.printStackTrace();}
 	}
 	
 	/** Closes the current reader. */

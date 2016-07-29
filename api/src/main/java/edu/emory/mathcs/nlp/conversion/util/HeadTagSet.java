@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion.headrule;
+package edu.emory.mathcs.nlp.conversion.util;
 
 import java.util.HashSet;
 import java.util.Set;
