@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
-import edu.emory.mathcs.nlp.common.util.BinUtils;
+import edu.emory.mathcs.nlp.bin.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.decode.AbstractNLPDecoder;
