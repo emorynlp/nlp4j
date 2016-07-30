@@ -5,7 +5,7 @@
 The following command trains an NLP component:
 
 ```
-java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath> -d <filepath> [-f <integer> -m <filename> -p <filename> -te <string> -de <string>]
+cli/target/appassembler/bin/nlptrain -mode <string> -c <filename> -t <filepath> -d <filepath> [-f <integer> -m <filename> -p <filename> -te <string> -de <string>]
 
 -c  <filename> : configuration file (required)
 -m  <filename> : output model file (optional)
@@ -28,10 +28,10 @@ java edu.emory.mathcs.nlp.bin.NLPTrain -mode <string> -c <filename> -t <filepath
 
 ## Example
 
-The following command takes [`sample-trn.tsv`](../../src/test/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../src/test/resources/dat/sample-dev.tsv), trains a dependency parsing model using [`config-train-sample.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample.xml), and saves the best model to `sample-dep.xz`.
+The following command takes [`sample-trn.tsv`](../../api/src/test/resources/dat/sample-trn.tsv) and [`sample-dev.tsv`](../../api/src/test/resources/dat/sample-dev.tsv), trains a dependency parsing model using [`config-train-sample.xml`](../../api/src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample.xml), and saves the best model to `sample-dep.xz`.
 
 ```
-$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample.xml -t sample-trn.tsv -d sample-dev.tsv -m sample-dep.xz
+$ cli/target/appassembler/bin/nlptrain -mode dep -c api/src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample.xml -t api/src/test/resources/dat/sample-trn.tsv -d api/src/test/resources/dat/sample-dev.tsv -m sample-dep.xz
 
 AdaGrad Mini-batch
 - Max epoch: 5
