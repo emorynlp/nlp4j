@@ -17,8 +17,6 @@ package edu.emory.mathcs.nlp.zzz;
 
 import java.util.Map.Entry;
 
-import org.junit.Test;
-
 import edu.emory.mathcs.nlp.common.constituent.CTNode;
 import edu.emory.mathcs.nlp.common.constituent.CTReader;
 import edu.emory.mathcs.nlp.common.constituent.CTTree;
@@ -34,8 +32,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  */
 public class KoreanTreebank
 {
-	@Test
-	public void run()
+	public KoreanTreebank(String[] args)
 	{
 		String path = "/Users/jdchoi/Documents/Data/penn/korean/parse/newswire";
 		CTReader reader = new CTReader();
@@ -102,5 +99,10 @@ public class KoreanTreebank
 			for (CTNode child : node.getChildrenList())
 				count(child, phraseTags, posTags, functionTags, emptyCategories);
 		}
+	}
+	
+	static public void main(String[] args)
+	{
+		new KoreanTreebank(args);
 	}
 }
