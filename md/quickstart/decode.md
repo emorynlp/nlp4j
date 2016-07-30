@@ -24,10 +24,10 @@ java edu.emory.mathcs.nlp.bin.NLPDecode -c <filename> -i <filepath> [-ie <string
 
 ## Example
 
-The following command takes [`nlp4j.txt`](../../src/test/resources/dat/nlp4j.txt) and generates [`nlp4j.txt.nlp`](../../src/test/resources/dat/nlp4j.txt.nlp) using [`config-decode-en.xml`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml).
+The following command takes [`emorynlp-raw.txt`](../../api/src/test/resources/emorynlp-raw.txt) and generates [`emorynlp-raw.txt.nlp`](../../api/src/test/resources/emorynlp-raw.txt.nlp) using [`config-decode-en.xml`](../../api/src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml).
 
 ```bash
-$ java -Xmx4g -XX:+UseConcMarkSweepGC edu.emory.mathcs.nlp.bin.NLPDecode -c config-decode-general.xml -i emorynlp.txt
+$ cli/target/appassembler/bin/nlpdecode -c api/src/main/resources/edu/emory/mathcs/nlp/configuration/config-decode-en.xml -i api/src/test/resources/emorynlp-raw.txt
 
 Loading ambiguity classes
 Loading word clusters
@@ -39,10 +39,10 @@ Loading morphological analyzer
 Loading named entity recognizer
 Loading dependency parser
 
-nlp4j.txt
+emorynlp-raw.txt
 ```
 
-* Use the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
+* The command wrapper uses the [`-XX:+UseConcMarkSweepGC`](http://www.oracle.com/technetwork/java/tuning-139912.html) option for JVM, which reduces the memory usage into a half.
 * Use [`log4j.properties`](../../src/main/resources/edu/emory/mathcs/nlp/configuration/log4j.properties) for the [log4j](http://logging.apache.org/log4j/) configuration.
 * The output file is generated in the `tsv` format (see [data format](../supplements/data-format.md#tab-separated-values-format)).
 
