@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<assembly>
+    <id>bin</id>
+    <formats>
+        <format>tar.gz</format>
+        <!-- handy for testing -->
+        <format>dir</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/appassembler/bin</directory>
+        </fileSet>
+        <fileSet>
+            <directory>../api/src/main/resources/edu/emory/mathcs/nlp/configuration</directory>
+            <outputDirectory>etc/config</outputDirectory>
+            <includes>
+                <include>**/*.xml</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
