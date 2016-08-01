@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>NLP4J by emorynlp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/normalize.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">NLP4J</h1>
+      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
+      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
+      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
+      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+    </section>
+
+    <section class="main-content">
+      <h2 id="toc_0">Data Format</h2>
+
+      <h3>Raw Format</h3>
+
+      <p>The <code>raw</code> format accepts texts in any formatL</p>
+      <pre><code class="language-none">I'd like to meet Dr. Choi. He's a professor at Emory University.</code></pre>
+
+      <h3>Sentence Format</h3>
+
+      <p>The <code>sen</code> format expects a sentence per lineL</p>
+      <pre><code class="language-none">I'd like to meet Dr. Choi.
+He's a professor at Emory University.</code></pre>
+
+      <h3>Tab Separated Values Format</h3>
+
+      <p>The <code>tsv</code> format expects columns delimited by <code>\t</code> and sentences separated by <code>\n</code>.</p>
+
+      <div><pre><code class="language-tsv">1  I           I           PRP  _  3  nsubj     3:A0;5:A0  O
+      2  'd          would       MD   _  3  aux       3:AM-MOD   O
+      3  like        like        VB   _  0  root      _          O
+      4  to          to          TO   _  5  aux       _          O
+      5  meet        meet        VB   _  3  xcomp     3:A1       O
+      6  Dr.         dr.         NNP  _  7  compound  _          O
+      7  Choi        choi        NNP  _  5  dobj      5:A1       U-PERSON
+      8  .           .           .    _  3  punct     _          O
+
+      1  He          he          PRP  _  2  nsubj     2:A1       O
+      2  's          's          VBZ  _  0  root      _          O
+      3  a           a           DT   _  4  det       _          O
+      4  professor   professor   NN   _  2  attr      2:A2       O
+      5  at          at          IN   _  4  prep      _          O
+      6  Emory       emory       NNP  _  7  compound  _          B-ORG
+      7  University  university  NNP  _  5  pobj      _          L-ORG
+      8  .           .           .    _  2  punct     _          O</code></pre></div>
+
+      <p>The column fields are specified in the <a href="https://github.com/emorynlp/nlp4j/tree/master/api/src/main/resources/edu/emory/mathcs/nlp/configuration">configuration files</a> as follows:</p>
+
+      <div><pre><code class="language-markup">&lt;configuration&gt;
+    &lt;tsv&gt;
+        &lt;column index=&quot;1&quot; field=&quot;form&quot;/&gt;
+        &lt;column index=&quot;2&quot; field=&quot;lemma&quot;/&gt;
+        &lt;column index=&quot;3&quot; field=&quot;pos&quot;/&gt;
+        &lt;column index=&quot;4&quot; field=&quot;feats&quot;/&gt;
+        &lt;column index=&quot;5&quot; field=&quot;dhead&quot;/&gt;
+        &lt;column index=&quot;6&quot; field=&quot;deprel&quot;/&gt;
+        &lt;column index=&quot;7&quot; field=&quot;sheads&quot;/&gt;
+        &lt;column index=&quot;8&quot; field=&quot;nament&quot;/&gt;
+    &lt;/tsv&gt;
+&lt;/configuration&gt;</code></pre></div>
+
+      <ul>
+      <li><code>form</code>: word form.</li>
+      <li><code>lemma</code>: lemma.</li>
+      <li><code>pos</code>: part-of-speech tag.</li>
+      <li><code>feats</code>: extra features; features are delimited by <code>|</code>, and keys and values are delimited by <code>=</code> (e.g., <code>k1=v1|k2=v2</code>).</li>
+      <li><code>dhead</code>: dependency head token ID.</li>
+      <li><code>deprel</code>: dependency label.</li>
+      <li><code>sheads</code>: semantic heads; head IDs and labels are delimited by <code>:</code>.</li>
+      <li><code>nament</code>: named entity tags in the BILOU notaiton.</li>
+      </ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+      </footer>
+    </section>
+  </body>
+</html>

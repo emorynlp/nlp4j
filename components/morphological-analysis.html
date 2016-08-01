@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>NLP4J by emorynlp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/normalize.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">NLP4J</h1>
+      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
+      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
+      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
+      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+    </section>
+
+    <section class="main-content">
+      <h2>Morphological Analysis</h2>
+
+      <p>Our morphological analyzer generates root forms (lemmas) of word tokens. It is a rule-based analyzer inspired by the <a href="http://wordnet.princeton.edu/man/morphy.7WN.html" target="_blank">WordNet morphy</a> although it uses a larger dictionary gathered from various sources and more advanced heuristics. It also normalizes numbers, redundant punctuation, hyperlinks, etc (see the examples below), which is found to be useful for several NLP tasks (see <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/common/util/StringUtils.java#L157">toSimplifiedForm</a>).</p>
+
+      <h3>Normalization</h3>
+
+      <p>Ordinals and cardinals are normalized to <code>#ord#</code> and <code>#crd#</code>, respectively:</p>
+      <pre><code class="language-none">1st         CD    #ord#
+12nd        CD    #ord#
+23rd        CD    #ord#
+34th        CD    #ord#
+first       CD    #ord#
+third       CD    #ord#
+fourth      CD    #ord#
+zero        CD    #crd#
+ten         CD    #crd#
+eleven      CD    #crd#
+fourteen    CD    #crd#</code></pre>
+
+      <p>Numeric expressions are normalized to 0:</p>
+      <pre><code class="language-none">10%                    XX    0
+$10                    XX    0
+A.01                   XX    a.0
+A:01                   XX    a:0
+A/01                   XX    a/0
+.01                    XX    0
+12.34                  XX    0
+12,34,56               XX    0
+12-34-56               XX    0
+12/34/46               XX    0
+$10.23,45:67-89/10%    XX    0</code></pre>
+
+      <p>Redundant punctuation characters are collapsed:</p>
+      <pre><code class="language-none">.!?-*=~,                                                    XX    .!?-*=~,
+..!!??--**==~~,,                                            XX    ..!!??--**==~~,,
+...!!!???---***===[[user:jdchoi77]],,,                      XX    ..!!??--**==~~,,
+....!!!!????----****====[[user:jdchoi77|1384441338]],,,,    XX    ..!!??--**==~~,,</code></pre>
+
+      <p>Hyperlinks are normalized to <code>#hlink#</code>:</p>
+      <pre><code class="language-none">http://www.google.com         XX    #hlink#
+www.google.com                XX    #hlink#
+mailto:somebody@google.com    XX    #hlink#
+some-body@google+.com         XX    #hlink#</code></pre>
+
+      <h3>API</h3>
+
+      <p><a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/test/java/edu/emory/mathcs/nlp/component/morph/english/EnglishMorphAnalyzerTest.java">EnglishLemmatizerTest</a> shows how the anlayzer can be used in APIs.</p>
+      
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+      </footer>
+    </section>
+  </body>
+</html>

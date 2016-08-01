@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>NLP4J by emorynlp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/normalize.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">NLP4J</h1>
+      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
+      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
+      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
+      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+    </section>
+
+    <section class="main-content">
+        <h2>Train</h2>
+
+        <h3>Command</h3>
+        <p>The following command trains an NLP component:</p>
+
+        <pre><code class="language-bash">java edu.emory.mathcs.nlp.bin.NLPTrain -mode &lt;string&gt; -c &lt;filename&gt; -t &lt;filepath&gt; -d &lt;filepath&gt; [-f &lt;integer&gt; -m &lt;filename&gt; -p &lt;filename&gt; -te &lt;string&gt; -de &lt;string&gt;]
+
+-c  &lt;filename&gt; : configuration file (required)
+-m  &lt;filename&gt; : output model file (optional)
+-p  &lt;filename&gt; : previously trained model file (optional)
+-t  &lt;filepath&gt; : training path (required)
+-d  &lt;filepath&gt; : development path (optional)
+-te   &lt;string&gt; : training file extension (default: *)
+-de   &lt;string&gt; : development file extension (default: *)
+-cv      &lt;int&gt; : # of cross-validation folds (default: 0)
+-mode &lt;string&gt; : component mode (required: pos|ner|dep)</code></pre>
+
+        <ul>
+        <li><code>-c</code> specifies the configuration file (see <a href="#configuration">configuration</a>).</li>
+        <li><code>-m</code> specifies the output model file (saved in the <a href="http://tukaani.org" target="_blank">xz</a> format). The model is not saved unless this option is set.</li>
+        <li><code>-p</code> specifies the previously trained model file. If this option is set, a new model is trained on top of the previous model.</li>
+        <li><code>-t|d</code> specifies the training or development path pointing to either a file or a directory. When the path points to a file, only the specific file is trained. When the path points to a directory, all files with the file extension <code>-te|de</code> under the specific directory are trained. It is possible to train a model without using a development set by not setting the <code>-d</code> option (see the example below).</li>
+        <li><code>-te|de</code> specifies the training or development file extension. The default value <code>*</code> implies files with any extension. This option is used only when the training or development path <code>-t|d</code> points to a directory.</li>
+        <li><code>-cv</code> specifies the number of cross-validation folds. If this number is greater than <code>1</code>, it performs cross-validation on the training data.</li>
+        <li><code>-mode</code> specifies the NLP component to be trained (see <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/util/NLPMode.java">NLPMode</a>).</li>
+        </ul>
+
+        <h3>Example</h3>
+
+        <p>The following command takes <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/test/resources/dat/sample-trn.tsv">sample-trn.tsv</a> and <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/test/resources/dat/sample-dev.tsv">sample-dev.tsv</a>, trains a dependency parsing model using <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/resources/edu/emory/mathcs/nlp/configuration/config-train-sample.xml">config-train-sample.xml</a>, and saves the best model to <code>sample-dep.xz</code>.</p>
+
+        <pre><code class="language-none">$ java -Xmx1g -XX:+UseConcMarkSweepGC java edu.emory.mathcs.nlp.bin.NLPTrain -mode dep -c config-train-sample.xml -t sample-trn.tsv -d sample-dev.tsv -m sample-dep.xz
+
+AdaGrad Mini-batch
+- Max epoch: 5
+- Mini-batch: 1
+- Learning rate: 0.02
+- LOLS: fixed = 0, decaying rate = 0.95
+- RDA: 1.0E-5
+Training: 0
+  0:    1: LAS = 22.22, UAS = 26.98, L =  34, SF =    1300, NZW =     1867, N/S =  15750
+  0:    2: LAS = 34.92, UAS = 39.68, L =  34, SF =    1410, NZW =     4578, N/S =  18000
+  0:    3: LAS = 38.89, UAS = 44.44, L =  34, SF =    1454, NZW =     6191, N/S =  21000
+  0:    4: LAS = 37.30, UAS = 41.27, L =  34, SF =    1550, NZW =     7751, N/S =  42000
+  0:    5: LAS = 37.30, UAS = 41.27, L =  34, SF =    1583, NZW =     8997, N/S =  63000
+  0: Best: 38.89, epoch = 3
+Saving the model</code></pre>
+
+        <ul>
+        <li>Use the <a href="http://www.oracle.com/technetwork/java/tuning-139912.html" target="_blank">-XX:+UseConcMarkSweepGC</a> option for JVM, which reduces the memory usage into a half.</li>
+        <li>Use <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/resources/edu/emory/mathcs/nlp/configuration/log4j.properties">log4j.properties</a> for the <a href="http://logging.apache.org/log4j/" target="_blank">log4j</a> configuration.</li>
+        <li>Once the training is done, <code>sample-dep.xz</code> should be created, which can be specified in the configuration file for dependency parsing (see <a href="decode.html">how to decode</a>).
+
+        <ul>
+        <li><code>L</code>: number of labels.</li>
+        <li><code>SF</code>: number of sparse features.</li>
+        <li><code>NZW</code>: number of non-zero weights.</li>
+        <li><code>N/S</code>: number of nodes processed per second. </li>
+        </ul></li>
+        </ul>
+
+        <h3 id="configuration">Configuration</h3>
+
+        <p>Sample configuration files for training can be found here: <a href="https://github.com/emorynlp/nlp4j/tree/master/api/src/main/resources/edu/emory/mathcs/nlp/configuration/">config-train-*</a>.</p>
+
+        <div><pre><code class="language-markup">&lt;configuration&gt;
+            &lt;tsv&gt;
+                &lt;column index=&quot;1&quot; field=&quot;form&quot;/&gt;
+                &lt;column index=&quot;2&quot; field=&quot;lemma&quot;/&gt;
+                &lt;column index=&quot;3&quot; field=&quot;pos&quot;/&gt;
+                &lt;column index=&quot;4&quot; field=&quot;feats&quot;/&gt;
+                &lt;column index=&quot;5&quot; field=&quot;dhead&quot;/&gt;
+                &lt;column index=&quot;6&quot; field=&quot;deprel&quot;/&gt;
+                &lt;column index=&quot;7&quot; field=&quot;sheads&quot;/&gt;
+                &lt;column index=&quot;8&quot; field=&quot;nament&quot;/&gt;
+            &lt;/tsv&gt;
+
+            &lt;lexica&gt;
+                &lt;ambiguity_classes field=&quot;word_form_simplified_lowercase&quot;&gt;en-ambiguity-classes-simplified-lowercase.xz&lt;/ambiguity_classes&gt;
+                &lt;word_clusters field=&quot;word_form_simplified_lowercase&quot;&gt;en-brown-clusters-simplified-lowercase.xz&lt;/word_clusters&gt;
+                &lt;word_embeddings field=&quot;word_form_undigitalized&quot;&gt;en-word-embeddings-undigitalized.xz&lt;/word_embeddings&gt;
+                &lt;named_entity_gazetteers field=&quot;word_form_simplified&quot;&gt;en-named-entity-gazetteers-simplified.xz&lt;/named_entity_gazetteers&gt;
+            &lt;/lexica&gt;
+
+            &lt;optimizer&gt;
+                &lt;algorithm&gt;adagrad-mini-batch&lt;/algorithm&gt;
+                &lt;l1_regularization&gt;0.00001&lt;/l1_regularization&gt;
+                &lt;learning_rate&gt;0.02&lt;/learning_rate&gt;
+                &lt;feature_cutoff&gt;2&lt;/feature_cutoff&gt;
+                &lt;lols fixed=&quot;0&quot; decaying=&quot;0.95&quot;/&gt;
+                &lt;max_epochs&gt;40&lt;/max_epochs&gt;
+                &lt;batch_size&gt;5&lt;/batch_size&gt;
+                &lt;bias&gt;0&lt;/bias&gt;
+            &lt;/optimizer&gt;
+
+            &lt;feature_template&gt;
+                &lt;feature f0=&quot;i:word_form&quot;/&gt;
+                &lt;feature f0=&quot;i+1:lemma&quot;/&gt;
+                &lt;feature f0=&quot;i-1:part_of_speech_tag&quot;/&gt;
+                &lt;feature f0=&quot;i_lmd:part_of_speech_tag&quot;/&gt;
+                &lt;feature f0=&quot;i-1:lemma&quot; f1=&quot;i:lemma&quot; f2=&quot;i+1:lemma&quot;/&gt;
+            &lt;/feature_template&gt;
+        &lt;/configuration&gt;</code></pre></div>
+
+        <ul>
+        <li><p><code>&lt;tsv&gt;</code> specifies the configuration for <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/reader/TSVReader.java">TSVReader</a>. <code>index</code> specifies the index of the field, starting at 0. <code>field</code> specifies the name of the field (e.g., <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/test/resources/dat/sample-trn.tsv">sample-trn.tsv</a>):</p>
+
+        <ul>
+        <li><code>form</code>&nbsp;&nbsp;&nbsp;&nbsp;: word form.</li>
+        <li><code>lemma</code>&nbsp;&nbsp;: lemma.</li>
+        <li><code>pos</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: part-of-speech tag.</li>
+        <li><code>feats</code>&nbsp;&nbsp;: extra features.</li>
+        <li><code>dhead</code>&nbsp;&nbsp;: dependency head ID.</li>
+        <li><code>deprel</code>: dependency label.</li>
+        <li><code>sheads</code>: semantic heads.</li>
+        <li><code>nament</code>: named entity tag.</li>
+        </ul></li>
+        <li><p><code>&lt;lexica&gt;</code> specifies the lexica used globally across multiple components (e.g., <a href="../supplements/english-lexica-models.html#lexica">english lexica</a>). <code>field</code> specifies the type of word forms used to generate these lexica (see <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java#L205">NLPNode::getValue</a>).</p>
+
+        <ul>
+        <li><code>ambiguity_classes</code>: ambiguity classes for part-of-speech tagging.</li>
+        <li><code>word_clusters</code>: word clusters (e.g., brown clusters).</li>
+        <li><code>word_embeddings</code>: word embeddings (e.g., <a href="http://word2vec.googlecode.com" target="_blank">word2vec</a>).</li>
+        <li><code>named_entity_gazetteers</code>: gazetteers for named entity recognition.</li>
+        </ul></li>
+        <li><p><code>&lt;optimizer&gt;</code>specifies the optimizer to train a statistical model.</p>
+
+        <ul>
+        <li><code>algorithm</code>: perceptron, softmax, adagrad, agagrad-mini-batch, agadelta-mini-batch, agagrad-regression.</li>
+        <li><code>l1_regularization</code>: the <a href="http://www.jmlr.org/papers/volume11/xiao10a/xiao10a.pdf" target="_blank">RDA</a> regularization parameter used for <code>adagrad-*</code>.</li>
+        <li><code>learning_rate</code>: the learning rate.</li>
+        <li><code>feature_cutoff</code>: features appearing less than or equal to this cutoff are discarded from training.</li>
+        <li><code>lols</code>: <a href="http://jmlr.org/proceedings/papers/v37/changb15.pdf" target="_blank">locally optimal learning to search</a>. <br>- <code>fixed</code>: use only gold labels for the specific number of epochs. <br>- <code>decaying</code>: decay the use of gold labels by the specific rate for every epoch.</li>
+        <li><code>max_epochs</code>: the maximum number of epochs to be used for training.</li>
+        <li><code>batch_size</code>: the number of sentences used to train <code>*-mini-batch</code>.</li>
+        <li><code>bias</code>: the bias value.</li>
+        </ul></li>
+        <li><p><code>&lt;feature_template&gt;</code> specifies the features used during training.</p>
+
+        <div><pre><code class="language-markup">&lt;feature( f#=&quot;source(±window)?(_relation)?:field(:value)?&quot;)+/&gt;</code></pre></div>
+
+        <ul>
+        <li><code>f#</code>: <code>#</code> must start with 0. When multiple features are joined, they must be in a consecutive order.</li>
+        <li><code>source</code>: see <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src//main/java/edu/emory/mathcs/nlp/component/template/feature/Source.java">Source.java</a>.</li>
+        <li><code>window</code>: the context window with respect to the source.</li>
+        <li><code>relation</code>: see <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/feature/Relation.java">Relation.java</a>.</li>
+        <li><code>field</code>: see <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src//main/java/edu/emory/mathcs/nlp/component/template/feature/Field.java">Field.java</a>.</li>
+        <li><code>value</code>: specifies the extra value of the field.</li>
+        </ul></li>
+        </ul>
+
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+      </footer>
+    </section>
+  </body>
+</html>

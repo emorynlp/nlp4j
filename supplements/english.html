@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>NLP4J by emorynlp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/normalize.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">NLP4J</h1>
+      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
+      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
+      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
+      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+    </section>
+
+    <section class="main-content">
+      <h2>English</h2>
+
+      <h3 id="lexica">Lexica</h3>
+
+      <p>All lexica can be found <a href="https://bitbucket.org/emorynlp/nlp4j-english/src" target="_blank">here</a>:</p>
+
+      <ul>
+      <li><code>en-ambiguity-classes-simplified.xz</code><br>: ambiguity classes for part-of-speech tagging with simplified word forms.</li>
+      <li><code>en-ambiguity-classes-simplified-lowercase.xz</code><br>: ambiguity classes for part-of-speech tagging with simplified lowercase word forms.</li>
+      <li><code>en-brown-clusters-simplified-lowercase.xz</code><br>: brown clusters with simplified lowercase word forms. </li>
+      <li><code>en-named-entity-gazetteers-simplified.xz</code><br>: gazetteers for named entity recognition with simplified word forms.</li>
+      <li><code>en-named-entity-gazetteers-simplified-lowercase.xz</code><br>: gazetteers for named entity recognition with simplified lowercase word forms.</li>
+      <li><code>en-stop-words-simplified-lowercase.xz</code><br>: stop words with simplified lowercase word forms.</li>
+      <li><code>en-word-embeddings-undigitalized.xz</code><br>: word embeddings with undigitalized word forms.</li>
+      </ul>
+
+      <h3 id="models">Models</h3>
+
+      <p>All models can be found <a href="https://bitbucket.org/emorynlp/nlp4j-english/src" target="_blank">here</a>:</p>
+
+      <ul>
+      <li><code>en-pos.xz</code>: part-of-speech tagging.</li>
+      <li><code>en-ner.xz</code>: named entity recognition.</li>
+      <li><code>en-dep.xz</code>: dependency parsing.</li>
+      </ul>
+
+      <p>Models are trained on the following corpora.</p>
+
+      <table>
+      <thead>
+      <tr>
+      <th width="250"><a href="https://catalog.ldc.upenn.edu/LDC2013T19" target="_blank">OntoNotes 5.0</a></th>
+      <th width="100" style="text-align: right">Sentences</th>
+      <th width="100" style="text-align: right">Tokens</th>
+      <th width="100" style="text-align: right">Names</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+      <td>Broadcasting conversations</td>
+      <td style="text-align: right">10,822</td>
+      <td style="text-align: right">171,101</td>
+      <td style="text-align: right">9,771</td>
+      </tr>
+      <tr>
+      <td>Broadcasting news</td>
+      <td style="text-align: right">10,344</td>
+      <td style="text-align: right">206,029</td>
+      <td style="text-align: right">19,670</td>
+      </tr>
+      <tr>
+      <td>News magazines</td>
+      <td style="text-align: right">6,672</td>
+      <td style="text-align: right">163,627</td>
+      <td style="text-align: right">10,736</td>
+      </tr>
+      <tr>
+      <td>Newswires</td>
+      <td style="text-align: right">34,438</td>
+      <td style="text-align: right">875,800</td>
+      <td style="text-align: right">77,496</td>
+      </tr>
+      <tr>
+      <td>Religious texts</td>
+      <td style="text-align: right">21,418</td>
+      <td style="text-align: right">296,432</td>
+      <td style="text-align: right">0</td>
+      </tr>
+      <tr>
+      <td>Telephone conversations</td>
+      <td style="text-align: right">8,963</td>
+      <td style="text-align: right">85,444</td>
+      <td style="text-align: right">2,021</td>
+      </tr>
+      <tr>
+      <td>Web texts</td>
+      <td style="text-align: right">12,448</td>
+      <td style="text-align: right">284,951</td>
+      <td style="text-align: right">8,170</td>
+      </tr>
+      </tbody>
+      </table>
+
+      <table>
+      <thead>
+      <tr>
+      <th width="250"><a href="https://catalog.ldc.upenn.edu/LDC2012T13" target="_blank">English Web Treebank</a></th>
+      <th width="100" style="text-align: right">Sentences</th>
+      <th width="100" style="text-align: right">Tokens</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+      <td>Answers</td>
+      <td style="text-align: right">2,699</td>
+      <td style="text-align: right">43,916</td>
+      </tr>
+      <tr>
+      <td>Email</td>
+      <td style="text-align: right">2,983</td>
+      <td style="text-align: right">44,168</td>
+      </tr>
+      <tr>
+      <td>Newsgroup</td>
+      <td style="text-align: right">1,996</td>
+      <td style="text-align: right">37,816</td>
+      </tr>
+      <tr>
+      <td>Reviews</td>
+      <td style="text-align: right">2,915</td>
+      <td style="text-align: right">44,337</td>
+      </tr>
+      <tr>
+      <td>Weblog</td>
+      <td style="text-align: right">1,753</td>
+      <td style="text-align: right">38,770</td>
+      </tr>
+      </tbody>
+      </table>
+
+      <table>
+      <thead>
+      <tr>
+      <th width="250"><a href="http://www.computing.dcu.ie/%7Ejjudge/qtreebank/" target="_blank">QuestionBank</a></th>
+      <th width="100" style="text-align: right">Sentences</th>
+      <th width="100" style="text-align: right">Tokens</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+      <td>Questions</td>
+      <td style="text-align: right">3,198</td>
+      <td style="text-align: right">29,704</td>
+      </tr>
+      </tbody>
+      </table>
+
+      <table>
+      <thead>
+      <tr>
+      <th width="250"><a href="http://clear.colorado.edu/compsem/index.php?page=endendsystems&amp;sub=mipacq" target="_blank">MiPACQ</a></th>
+      <th width="100" style="text-align: right">Sentences</th>
+      <th width="100" style="text-align: right">Tokens</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+      <td>Clinical questions</td>
+      <td style="text-align: right">1,600</td>
+      <td style="text-align: right">30,138</td>
+      </tr>
+      <tr>
+      <td>Medpedia articles</td>
+      <td style="text-align: right">2,796</td>
+      <td style="text-align: right">49,922</td>
+      </tr>
+      <tr>
+      <td>Clinical notes</td>
+      <td style="text-align: right">8,383</td>
+      <td style="text-align: right">113,164</td>
+      </tr>
+      <tr>
+      <td>Pathological notes</td>
+      <td style="text-align: right">1,205</td>
+      <td style="text-align: right">21,353</td>
+      </tr>
+      </tbody>
+      </table>
+
+      <table>
+      <thead>
+      <tr>
+      <th width="250"><a href="http://informatics.mayo.edu/sharp/index.php/Main_Page" target="_blank">SHARP</a></th>
+      <th width="100" style="text-align: right">Sentences</th>
+      <th width="100" style="text-align: right">Tokens</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+      <td>Seattle group health notes</td>
+      <td style="text-align: right">7,204</td>
+      <td style="text-align: right">94,450</td>
+      </tr>
+      <tr>
+      <td>Clinical notes</td>
+      <td style="text-align: right">6,807</td>
+      <td style="text-align: right">93,914</td>
+      </tr>
+      <tr>
+      <td>Stratified</td>
+      <td style="text-align: right">4,320</td>
+      <td style="text-align: right">43,536</td>
+      </tr>
+      <tr>
+      <td>Stratified SGH</td>
+      <td style="text-align: right">13,662</td>
+      <td style="text-align: right">139,403</td>
+      </tr>
+      </tbody>
+      </table>
+
+      <table>
+      <thead>
+      <tr>
+      <th width="250"><a href="http://clear.colorado.edu/compsem/index.php?page=endendsystems&amp;sub=temporal" target="_blank">THYME</a></th>
+      <th width="100" style="text-align: right">Sentences</th>
+      <th width="100" style="text-align: right">Tokens</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+      <td>Clinical / pathological notes</td>
+      <td style="text-align: right">26,661</td>
+      <td style="text-align: right">387,943</td>
+      </tr>
+      <tr>
+      <td>Brain cancer</td>
+      <td style="text-align: right">18,722</td>
+      <td style="text-align: right">225,899</td>
+      </tr>
+      </tbody>
+      </table>
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+      </footer>
+    </section>
+  </body>
+</html>

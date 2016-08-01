@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>NLP4J by emorynlp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/normalize.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">NLP4J</h1>
+      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
+      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
+      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
+      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+    </section>
+
+    <section class="main-content">
+      <h2>Tokenization</h2>
+
+      <p>Our tokenizer takes a raw text and splits tokens by their morphological aspects. It also groups tokens into sentences. Our tokenizer is based on the <a href="https://www.ldc.upenn.edu/" target="_blank">LDC</a> tokenizer used for creating English Treebanks although it uses more robust heuristics. Here are some key features about our tokenizer.</p>
+
+      <ul>
+      <li>Emoticons are recognized as one unit (e.g., <code>:-)</code>, <code>^_^</code>).</li>
+      <li>Hyperlinks are recognized as one unit (<code>emory.edu</code>, <code>jinho@emory.edu</code>, <code>index.html</code>).</li>
+      <li>Numbers consisting of punctuation are recognized as one unit (e.g., <code>0.1</code>, <code>2/3</code>).</li>
+      <li>Repeated punctuation are grouped together (e.g., <code>---</code>, <code>...</code>).</li>
+      <li>Abbreviations are recognized as one unit (e.g., <code>Prof.</code>, <code>Ph.D</code>).</li>
+      <li>File extensions are not tokenized (e.g., <code>clearnlp.zip</code>, <code>tokenizer.doc</code>).</li>
+      <li>Units are tokenized (e.g., <code>1 kg</code>, <code>2 cm</code>).</li>
+      <li>Usernames including periods are recognized as one unit (e.g., <code>jinho.choi</code>).</li>
+      </ul>
+
+      <h2 id="toc_1">API</h2>
+
+      <p><a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/test/java/edu/emory/mathcs/nlp/component/tokenizer/TokenizerDemo.java">TokenizerDemo</a> shows how the tokenizer can be used in APIs.</p>
+      
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+      </footer>
+    </section>
+  </body>
+</html>

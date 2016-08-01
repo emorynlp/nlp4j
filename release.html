@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>NLP4J by emorynlp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">NLP4J</h1>
+      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
+      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
+      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
+      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+    </section>
+
+    <section class="main-content">
+      <h2>Release Notes</h3>
+
+      <h3>Version 1.1.3 (07/31/2016)</h3>
+
+      <ul>
+      <li>Features: <a href="https://github.com/emorynlp/nlp4j-old/pull/31">dependency evaluator</a>, <a href="https://github.com/emorynlp/nlp4j-old/issues/35">scorer speed-up</a></li>
+      </ul>
+
+      <h3>Version 1.1.2 (06/29/2016)</h3>
+
+      <ul>
+      <li>Bugfixes: <a href="https://github.com/emorynlp/nlp4j-tokenization/issues/7">tokenization-issue-7</a></li>
+      <li>Features: <a href="https://github.com/emorynlp/nlp4j-tokenization/issues/6">tokenization-issue-6</a></li>
+      <li>The tokenizer does not tokenize left/right brackets where the content inside is a single character or all numbers (e.g., <code>(a)</code>,<code>[12]</code>).</li>
+      </ul>
+
+      <h3>Version 1.1.1 (04/29/2016)</h3>
+
+      <ul>
+      <li>Bugfixes: <a href="https://github.com/emorynlp/nlp4j-core/pull/7">core-pull-7</a>.</li>
+      <li>Features: <a href="https://github.com/emorynlp/nlp4j/issues/3/">issue-3</a>, <a href="https://github.com/emorynlp/nlp4j/issues/6">issue-6</a>.</li>
+      <li><a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java">NLPNode</a> comes with several useful constructors.</li>
+      <li>The <code>segmentize</code> method in <a href="https://github.com/emorynlp/nlp4j-tokenization/blob/master/src/main/java/edu/emory/mathcs/nlp/tokenization/Tokenizer.java">Tokenizer</a> takes the generic type of <a href="https://github.com/emorynlp/nlp4j-tokenization/blob/master/src/main/java/edu/emory/mathcs/nlp/tokenization/Token.java">Token</a>.</li>
+      </ul>
+
+      <h3>Version 1.1.0 (04/20/2016)</h3>
+
+      <ul>
+      <li>Bugfixes: <a href="https://github.com/emorynlp/nlp4j-tokenization/pull/5">tokenization-pull-5</a>.</li>
+      <li>Features: <a href="https://github.com/emorynlp/nlp4j-morphology/issues/4">morphology-issue-4</a>.</li>
+      <li>All the statistical models are about twice smaller than the previous ones without compromising accuracy. The whole pipeline can be run in 4GB of RAM now.</li>
+      <li><a href="train.html">Training</a> automatically saves the best model in a single pass (no need to run training twice any more to save the best model).</li>
+      <li>The <a href="https://github.com/emorynlp/nlp4j-common">nlp4j-common</a> project is separated out from the <a href="https://github.com/emorynlp/nlp4j-core">nlp4j-core</a> project.</li>
+      <li><a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/lexicon/GlobalLexica.java">GlobalLexica</a> is no longer static, so it does not get conflicted by another process.</li>
+      <li><a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/node/NLPNode.java">NLPNode</a> extends <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/node/AbstractNLPNode.java">AbstractNLPNode</a>, which allows to create your own custom node. Generics are added all over for this change (e.g., <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/state/NLPState.java">NLPState</a>, <a href="https://github.com/emorynlp/nlp4j/blob/master/api/src/main/java/edu/emory/mathcs/nlp/component/template/OnlineComponent.java">OnlineComponent</a>).</li>
+      <li>The part-of-speech tagger gives the 2nd-best predictions when the best predictions have low confidence (<code>pos2</code> in the extra feats).</li>
+      </ul>
+
+      <h3>Version 1.0.0 (02/24/2016)</h3>
+
+      <ul>
+      <li>NLP4J is the successor of the widely used toolkit, <a href="https://github.com/clir/clearnlp">ClearNLP</a>, developed by the <a href="http://nlp.mathcs.emory.edu">Emory NLP</a> research group.</li>
+      <li>This version supports tokenization, part-of-speech tagging, morphological analysis, named entity recognition, and dependency parsing. The next release (March, 2016) will include supports for semantic role labeling and sentiment analysis, and the following release (April, 2016) will include supports for coreference resolution.</li>
+      <li>NLP4J makes it easy to train your own model. Please see <a href="train.html">how to train</a> for more details about the training process.</li>
+      <li>Calling the decoding API is easier than ever. See the <a href="https://github.com/emorynlp/nlp4j-example">examples</a> for more details.</li>
+      <li>The biggest difference between NLP4J and ClearNLP is in machine learning. NLP4J is capable of updating existing models with new training data, which is useful for domain adaptation. We also started implementing a deep learning package although we realized that the GPU support for Java is pretty limited and without a good GPU support, deep learning would make everything much slower. Please let us know if you&#39;d like to contribute for this project.</li>
+      <li>One could consider the NLP4J project is a more stabilized version of ClearNLP. I have been using this package for the NLP course I teach, and my students (including undergrads) were able to develop new NLP components without much effort using the built-in APIs in NLP4J. We are preparing a tutorial for developing NLP components using NLP4J.</li>
+      <li>We do not expect our tools would work perfectly out of box. We now have a good team working on this project. Please let us know if you&#39;d like to collaborate so we can make this project more robust for you.</li>
+      <li>Please visit our <a href="http://nlp.mathcs.emory.edu:8080/nlp4j">online demo</a>. It parses 10K tokens with a couple of seconds and visualizes the dependency trees.</li>
+      </ul>
+      <footer class="site-footer">
+        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+      </footer>
+    </section>
+  </body>
+</html>

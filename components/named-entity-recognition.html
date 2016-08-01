@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>NLP4J by emorynlp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/normalize.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">NLP4J</h1>
+      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
+      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
+      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
+      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+    </section>
+
+    <section class="main-content">
+      <h2>Named Entity Recognition</h2>
+
+      <p>Our named entity recognizer uses both sparse and dense features extracted from named entity gazetteers, word clusters, and word embeddings. It processes over 47K tokens per second on an Intel Xeon 2.30GHz machine and shows the state-of-the-art accuracy (91.0% on the CoNLL&#39;03 corpus).</p>
+
+      <ul>
+      <li><a href="https://aclweb.org/anthology/N16-1031.pdf" target="_blank">Dynamic Feature Induction: The Last Gist to the State-of-the-Art</a>, Jinho D. Choi, Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (NAACL&#39;16), San Diego, CA, 2016.</li>
+      <li><a href="http://www.aaai.org/Conferences/AAAI/2016/aaai16accepted-papers.pdf" target="_blank">Intrinsic and Extrinsic Evaluations of Word Embeddings</a>, Michael Zhai, Johnny Tan, Jinho D. Choi, Proceedings of the AAAI 2015 Student Program, Phoenix, AZ, 2015.</li>
+      </ul>
+
+      <h3 style="margin:0 0 10px 0">English Tags</h3>
+
+      <table>
+      <thead>
+      <tr>
+      <th>Tag</th>
+      <th>Description</th>
+      <th>Version</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+      <td><code>PERSON</code></td>
+      <td>People, including fictional</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>NORP</code></td>
+      <td>Nationalities or religious or political groups</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td>￼<code>FAC</code></td>
+      <td>Buildings, airports, highways, bridges, etc.</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>ORG</code></td>
+      <td>Companies, agencies, institutions, etc.</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>GPE</code></td>
+      <td>Countries, cities, states</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>LOC</code></td>
+      <td>Non-GPE locations, mountain ranges, bodies of water</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>PRODUCT</code></td>
+      <td>Vehicles, weapons, foods, etc. (not services)</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td>￼<code>EVENT</code></td>
+      <td>Named hurricanes, battles, wars, sports events, etc.</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>WORK OF ART</code></td>
+      <td>Titles of books, songs, etc.</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>LAW</code></td>
+      <td>Named documents made into laws</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>LANGUAGE</code></td>
+      <td>Any named language</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>DATE</code></td>
+      <td>Absolute or relative dates or periods</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>TIME</code></td>
+      <td>Times smaller than a day</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>PERCENT</code></td>
+      <td>Percentage (including &quot;%&quot;)</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>MONEY</code></td>
+      <td>Monetary values, including unit</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>QUANTITY</code></td>
+      <td>Measurements, as of weight or distance</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>ORDINAL</code></td>
+      <td>Ordinals (e.g., &quot;first&quot;, &quot;1st&quot;)</td>
+      <td>1.0.0</td>
+      </tr>
+      <tr>
+      <td><code>CARDINAL</code></td>
+      <td>Numerals that do not fall under another type</td>
+      <td>1.0.0</td>
+      </tr>
+      </tbody>
+      </table>
+      
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+      </footer>
+    </section>
+  </body>
+</html>
