@@ -50,6 +50,16 @@
                 <configuration>
                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                     <programs>
+                    	<program>
+                            <mainClass>edu.emory.mathcs.nlp.bin.Version</mainClass>
+                            <jvmSettings>
+                                <maxMemorySize>10g</maxMemorySize>
+                                <extraArguments>
+                                    <extraArgument>-XX:+UseConcMarkSweepGC</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
+                            <id>version</id>
+                        </program>
                         <program>
                             <mainClass>edu.emory.mathcs.nlp.bin.NLPTrain</mainClass>
                             <jvmSettings>

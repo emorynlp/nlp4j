@@ -17,6 +17,8 @@ package edu.emory.mathcs.nlp.decode;
 import com.google.common.io.Resources;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -27,6 +29,7 @@ import java.net.URL;
  */
 public class AbstractNLPDecoderTest {
 
+	@Ignore
     @Test
     public void createTsv() throws Exception {
         URL configUrl = Resources.getResource("decoder-test-config.xml");

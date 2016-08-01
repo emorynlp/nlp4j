@@ -22,10 +22,10 @@ public class Version
 {
 	public static void main(String[] args)
 	{
-		System.out.println("====================================");
-		System.out.println("NLP4J Version 1.1.2");
-		System.out.println("Webpage: http://nlp.mathcs.emory.edu");
+		System.out.println("========================================");
+		System.out.println("NLP4J Version 1.1.3");
 		System.out.println("Contact: choi@mathcs.emory.edu");
-		System.out.println("====================================");
+		System.out.println("Webpage: http://emorynlp.github.io/nlp4j");
+		System.out.println("========================================");
 	}
 }
