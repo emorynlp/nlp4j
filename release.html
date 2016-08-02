@@ -8,23 +8,22 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <script type="text/javascript" src="constant.js"></script>
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">NLP4J</h1>
-      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
-      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
-      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
-      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+      <script>document.write(HEADER2)</script>
     </section>
 
     <section class="main-content">
       <h2>Release Notes</h3>
 
-      <h3 style="margin: 0 0 10px 0">Version 1.1.3 (07/31/2016)</h3>
+      <h3 style="margin: 0 0 10px 0">Version 1.1.3 (08/01/2016)</h3>
 
       <ul>
-      <li>Features: <a href="https://github.com/emorynlp/nlp4j-old/pull/31">dependency evaluator</a>, <a href="https://github.com/emorynlp/nlp4j-old/issues/35">scorer speed-up</a></li>
+      <li>All NLP4J projects (except for the english-models) are united into two projects: <code>api</code> and <code>cli</code>. Now, instead of adding <code>nlp4j</code>, you should add <code>nlp4j-api</code> and <code>nlp4j-cli</code> to the maven dependecies (see the <a href="quickstart/install.html">installation</a> instruction).</li>
+      <li>If you are interested in running only the command-line tools, you can now simply download the assembler and run executable files (see the <a href="quickstart/install.html">installation</a> instruction).</li>
+      <li>Features: <a href="https://github.com/emorynlp/nlp4j-old/pull/31">dependency evaluator</a>, <a href="https://github.com/emorynlp/nlp4j-old/issues/35">scorer speed-up</a>.</li>
       </ul>
 
       <h3 style="margin: 0 0 10px 0">Version 1.1.2 (06/29/2016)</h3>
@@ -70,7 +69,7 @@
       <li>Please visit our <a href="http://nlp.mathcs.emory.edu:8080/nlp4j">online demo</a>. It parses 10K tokens with a couple of seconds and visualizes the dependency trees.</li>
       </ul>
       <footer class="site-footer">
-        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+        <script>document.write(FOOTER)</script>
       </footer>
     </section>
   </body>

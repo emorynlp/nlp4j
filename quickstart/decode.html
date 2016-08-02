@@ -8,14 +8,11 @@
     <link rel="stylesheet" type="text/css" href="../stylesheets/normalize.css" media="screen">
     <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
+    <script type="text/javascript" src="../constant.js"></script>
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">NLP4J</h1>
-      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
-      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
-      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
-      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+      <script>document.write(HEADER2)</script>
     </section>
 
     <section class="main-content">
@@ -35,6 +32,7 @@
 -threads &lt;integer&gt;  : number of threads (default: 2)</code></pre>
 
       <ul>
+      <li>For command-line tools, replace <code>java edu.emory.mathcs.nlp.bin.NLPDecode</code> with <code>bin/nlpdecode</code>.</li>
       <li><code>-c</code> specifies the configuration file (see <a href="#configuration">configuration</a>).</li>
       <li><code>-i</code> specifies the input path pointing to either a file or a directory. When the path points to a file, only the specific file is processed. When the path points to a directory, all files with the file extension <code>-ie</code> under the specific directory are processed.</li>
       <li><code>-ie</code> specifies the input file extension. The default value <code>*</code> implies files with any extension. This option is used only when the input path <code>-i</code> points to a directory.</li>
@@ -98,7 +96,7 @@ nlp4j.txt</code></pre>
 
 
       <footer class="site-footer">
-        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+        <script>document.write(FOOTER)</script>
       </footer>
     </section>
   </body>

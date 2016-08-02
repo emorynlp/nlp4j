@@ -8,19 +8,11 @@
     <link rel="stylesheet" type="text/css" href="../stylesheets/normalize.css" media="screen">
     <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
-
-    <script>
-      version = "1.1.3";
-    </script>
-
+    <script type="text/javascript" src="../constant.js"></script>
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">NLP4J</h1>
-      <h2 class="project-tagline"><b>NLP Toolkit for JVM Languages</b></h3>
-      <a href="https://github.com/emorynlp/nlp4j" target="_blank" class="btn">View on GitHub</a>
-      <a href="http://search.maven.org/#search%7Cga%7C1%7Cnlp4j" target="_blank" class="btn">View on Maven</a>
-      <a href="nlp.mathcs.emory.edu:8080/nlp4j" target="_blank" class="btn">View our Demo</a>
+      <script>document.write(HEADER2)</script>
     </section>
 
     <section class="main-content">
@@ -36,21 +28,21 @@
       <pre><code class="language-markup">&lt;dependency&gt;
     &lt;groupId&gt;edu.emory.mathcs.nlp&lt;/groupId&gt;
     &lt;artifactId&gt;nlp4j-api&lt;/artifactId&gt;
-    &lt;version&gt;<script>document.write(version)</script>&lt;/version&gt;
+    &lt;version&gt;<script>document.write(VERSION)</script>&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 
       <p>For command-line interface (CLI), add the following dependency to <code>pom.xml</code>:</p>
       <pre><code class="language-markup">&lt;dependency&gt;
     &lt;groupId&gt;edu.emory.mathcs.nlp&lt;/groupId&gt;
     &lt;artifactId&gt;nlp4j-cli&lt;/artifactId&gt;
-    &lt;version&gt;<script>document.write(version)</script>&lt;/version&gt;
+    &lt;version&gt;<script>document.write(VERSION)</script>&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 
       <p>For English models, add the following dependency to <code>pom.xml</code>.</p>
       <pre><code class="language-markup">&lt;dependency&gt;
     &lt;groupId&gt;edu.emory.mathcs.nlp&lt;/groupId&gt;
     &lt;artifactId&gt;nlp4j-english&lt;/artifactId&gt;
-    &lt;version&gt;<script>document.write(version)</script>&lt;/version&gt;
+    &lt;version&gt;<script>document.write(VERSION)</script>&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 
       <p>Install the maven project:</p>
@@ -60,7 +52,7 @@
       <pre><code class="language-bash">mvn exec:java -Dexec.mainClass=&quot;edu.emory.mathcs.nlp.bin.Version&quot;</code></pre>
       <p>If you see the following message, it is properly installed:</p>
       <pre><code class="language-none">=========================================
-NLP4J Version <script>document.write(version)</script>
+NLP4J Version <script>document.write(VERSION)</script>
 Contact: choi@mathcs.emory.edu
 Webpage: https://emorynlp.github.io/nlp4j
 =========================================</code></pre>
@@ -68,20 +60,19 @@ Webpage: https://emorynlp.github.io/nlp4j
 
       <h3>Command-line Tools</h3>
 
-      <p>Download <a href="http://nlp.mathcs.emory.edu/nlp4j/nlp4j-appassembler.jar">nlp4j-appassembler.jar</a>, and uncompress it. All the command-line tools can be found in the <code>bin/</code> directory.
-
-      <p>Run the following command:</p>
-      <pre><code class="language-bash">java edu.emory.mathcs.nlp.bin.Version</code></pre>
+      <p>Download <script>document.write(URL_ASSEMBLER)</script>nlp4j-appassembler-<script>document.write(VERSION)</script>.tgz</a>, and uncompress it. This assembler includes all necessary class files as well as the english models. All the command-line tools can be found in the <code>bin/</code> directory. Run the following command for testing:
+      
+      <pre><code class="language-bash">bin/version</code></pre>
 
       <p>If you see the following message, it is properly installed:</p>
       <pre><code class="language-none">=========================================
-NLP4J Version <script>document.write(version)</script>
+NLP4J Version <script>document.write(VERSION)</script>
 Contact: choi@mathcs.emory.edu
 Webpage: https://emorynlp.github.io/nlp4j
 =========================================</code></pre>
 
       <footer class="site-footer">
-        <span class="site-footer-credits">&copy;2016 by <a href="http://nlp.mathcs.emory.edu">Emory NLP</a>. All Rights Reserved.</span>
+        <script>document.write(FOOTER)</script>
       </footer>
     </section>
   </body>
