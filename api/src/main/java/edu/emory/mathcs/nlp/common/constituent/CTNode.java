@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.propbank.PBLocation;
+import edu.emory.mathcs.nlp.common.treebank.CTTag;
 import edu.emory.mathcs.nlp.common.treebank.PBArc;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
@@ -723,6 +724,12 @@ public class CTNode implements Comparable<CTNode>
 		return pattern.matcher(s_constituentTag).find();
 	}
 	
+	/** @return {@code true} if this node has any function tag. */
+	public boolean hasFunctionTag()
+	{
+		return !s_constituentTag.isEmpty();
+	}
+	
 	/** @return {@code true} if this node has the specific function tag. */
 	public boolean hasFunctionTag(String tag)
 	{
@@ -768,7 +775,7 @@ public class CTNode implements Comparable<CTNode>
 	/** @return {@code true} if this node is an empty category. */
 	public boolean isEmptyCategory()
 	{
-		return isConstituentTag(CTTagEn.NONE);
+		return isConstituentTag(CTTag.NONE);
 	}
 	
 	/** @return {@code true} if this node is single branched and its terminal node is an empty category. */

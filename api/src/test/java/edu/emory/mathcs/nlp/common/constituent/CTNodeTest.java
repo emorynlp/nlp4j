@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import edu.emory.mathcs.nlp.common.treebank.CTTag;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 
 /**
@@ -276,7 +277,7 @@ public class CTNodeTest
 	public void testBooleans()
 	{
 		CTNode node = new CTNode("NP1");
-		CTNode none = new CTNode(CTTagEn.NONE);
+		CTNode none = new CTNode(CTTag.NONE);
 		CTNode np2  = new CTNode("NP2");
 		
 		node.addChild(none);
@@ -287,7 +288,7 @@ public class CTNodeTest
 		assertFalse(np2.isEmptyCategory());
 		assertFalse(np2.isEmptyCategoryTerminal());
 		
-		np2.addChild(new CTNode(CTTagEn.NONE));
+		np2.addChild(new CTNode(CTTag.NONE));
 		assertTrue(np2.isEmptyCategoryTerminal());
 	}
 }

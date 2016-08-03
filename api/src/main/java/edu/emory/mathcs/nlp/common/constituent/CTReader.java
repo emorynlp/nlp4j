@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.treebank.CTTag;
 
 /**
  * Constituent tree reader.
@@ -107,12 +108,12 @@ public class CTReader
 		}
 		
 		int nBrackets = 1, startLine = f_reader.getLineNumber();
-		CTNode root = new CTNode(CTTagEn.TOP, null);
+		CTNode root = new CTNode(CTTag.TOP, null);
 		CTNode curr = root, node;
 		
 		while ((token = nextToken()) != null)
 		{
-			if (nBrackets == 1 && token.equals(CTTagEn.TOP))
+			if (nBrackets == 1 && token.equals(CTTag.TOP))
 				continue;
 			
 			if (token.equals(StringConst.LRB))

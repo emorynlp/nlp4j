@@ -1,4 +1,4 @@
-package edu.emory.mathcs.nlp.common.constituent;
+package edu.emory.mathcs.nlp.common.treebank;
 /**
  * Copyright 2015, Emory University
  * 
@@ -21,8 +21,9 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.treebank.POSLibEn;
-import edu.emory.mathcs.nlp.common.treebank.POSTagEn;
+import edu.emory.mathcs.nlp.common.constituent.CTLib;
+import edu.emory.mathcs.nlp.common.constituent.CTNode;
+import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.ENUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
@@ -31,43 +32,47 @@ import edu.emory.mathcs.nlp.common.util.StringUtils;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
+public class PTBLib extends CTLib implements PTBTag
 {
 	static final public Pattern P_PASSIVE_NULL = PatternUtils.createClosedORPattern("\\*","\\*-\\d+");
 	
-	static final public Predicate<CTNode> M_NP			= CTLib.matchC(C_NP);
-	static final public Predicate<CTNode> M_VP			= CTLib.matchC(C_VP);
-	static final public Predicate<CTNode> M_QP			= CTLib.matchC(C_QP);
-	static final public Predicate<CTNode> M_ADVP		= CTLib.matchC(C_ADVP);
-	static final public Predicate<CTNode> M_SBAR		= CTLib.matchC(C_SBAR);
-	static final public Predicate<CTNode> M_EDITED		= CTLib.matchC(C_EDITED);
+	static final public Predicate<CTNode> M_NP			= matchC(C_NP);
+	static final public Predicate<CTNode> M_VP			= matchC(C_VP);
+	static final public Predicate<CTNode> M_QP			= matchC(C_QP);
+	static final public Predicate<CTNode> M_ADVP		= matchC(C_ADVP);
+	static final public Predicate<CTNode> M_SBAR		= matchC(C_SBAR);
+	static final public Predicate<CTNode> M_EDITED		= matchC(C_EDITED);
 	
-	static final public Predicate<CTNode> M_SBJ			= CTLib.matchF(F_SBJ);
-	static final public Predicate<CTNode> M_NOM			= CTLib.matchF(F_NOM);
-	static final public Predicate<CTNode> M_PRD			= CTLib.matchF(F_PRD);
+	static final public Predicate<CTNode> M_SBJ			= matchF(F_SBJ);
+	static final public Predicate<CTNode> M_NOM			= matchF(F_NOM);
+	static final public Predicate<CTNode> M_PRD			= matchF(F_PRD);
 	
-	static final public Predicate<CTNode> M_NP_SBJ		= CTLib.matchCF(C_NP, F_SBJ);
+	static final public Predicate<CTNode> M_NP_SBJ		= matchCF(C_NP, F_SBJ);
 	
-	static final public Predicate<CTNode> M_NNx			= CTLib.matchCp(POS_NN);
-	static final public Predicate<CTNode> M_VBx			= CTLib.matchCp(POS_VB);
-	static final public Predicate<CTNode> M_WHx			= CTLib.matchCp("WH");
-	static final public Predicate<CTNode> M_Sx			= CTLib.matchCp(C_S);
-	static final public Predicate<CTNode> M_SBARx		= CTLib.matchCp(C_SBAR);
+	static final public Predicate<CTNode> M_NNx			= matchCp(P_NN);
+	static final public Predicate<CTNode> M_VBx			= matchCp(P_VB);
+	static final public Predicate<CTNode> M_WHx			= matchCp("WH");
+	static final public Predicate<CTNode> M_Sx			= matchCp(C_S);
+	static final public Predicate<CTNode> M_SBARx		= matchCp(C_SBAR);
 	
-	static final public Predicate<CTNode> M_S_SBAR		= CTLib.matchCo(DSUtils.toHashSet(C_S, C_SBAR));
-	static final public Predicate<CTNode> M_NP_NML		= CTLib.matchCo(DSUtils.toHashSet(C_NP, C_NML));
-	static final public Predicate<CTNode> M_VBD_VBN		= CTLib.matchCo(DSUtils.toHashSet(POS_VBD, POS_VBN));
-	static final public Predicate<CTNode> M_VP_RRC_UCP	= CTLib.matchCo(DSUtils.toHashSet(C_VP, C_RRC, C_UCP));
+	static final public Predicate<CTNode> M_S_SBAR		= matchCo(DSUtils.toHashSet(C_S, C_SBAR));
+	static final public Predicate<CTNode> M_NP_NML		= matchCo(DSUtils.toHashSet(C_NP, C_NML));
+	static final public Predicate<CTNode> M_VBD_VBN		= matchCo(DSUtils.toHashSet(P_VBD, P_VBN));
+	static final public Predicate<CTNode> M_VP_RRC_UCP	= matchCo(DSUtils.toHashSet(C_VP, C_RRC, C_UCP));
 	
 	static final private Set<String> S_LGS_PHRASE		= DSUtils.toHashSet(C_PP, C_SBAR);
 	static final private Set<String> S_MAIN_CLAUSE		= DSUtils.toHashSet(C_S, C_SQ, C_SINV);
 	static final private Set<String> S_EDITED_PHRASE	= DSUtils.toHashSet(C_EDITED, C_EMBED);
 	static final private Set<String> S_NOMINAL_PHRASE	= DSUtils.toHashSet(C_NP, C_NML, C_NX, C_NAC);
 	static final private Set<String> S_WH_LINK			= DSUtils.toHashSet(C_WHNP, C_WHPP, C_WHADVP);
-	static final private Set<String> S_SEPARATOR		= DSUtils.toHashSet(POS_COMMA, POS_COLON);
-	static final private Set<String> S_CONJUNCTION		= DSUtils.toHashSet(POS_CC, C_CONJP);
+	static final private Set<String> S_SEPARATOR		= DSUtils.toHashSet(P_COMMA, P_COLON);
+	static final private Set<String> S_CONJUNCTION		= DSUtils.toHashSet(P_CC, C_CONJP);
+
+	static private final Set<String> S_PUNCTUATION = DSUtils.toHashSet(PTBTag.P_COLON, PTBTag.P_COMMA, PTBTag.P_PERIOD, PTBTag.P_LQ, PTBTag.P_RQ, PTBTag.P_LRB, PTBTag.P_RRB, PTBTag.P_HYPH, PTBTag.P_NFP, PTBTag.P_SYM, PTBTag.P_PUNC);
+
+	public static final Set<String> S_RELATIVIZER = DSUtils.toHashSet(PTBTag.P_WDT, PTBTag.P_WP, PTBTag.P_WPS, PTBTag.P_WRB);
 	
-	private CTLibEn() {}
+	private PTBLib() {}
 	
 	/**
 	 * Fixes inconsistent function tags.
@@ -87,16 +92,16 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 
 	/**
 	 * Fixes inconsistent function tags in the specific tree.
-	 * @see CTLibEn#fixSBJ(CTNode)
-	 * @see CTLibEn#fixLGS(CTNode)
-	 * @see CTLibEn#fixCLF(CTNode)
+	 * @see PTBLib#fixSBJ(CTNode)
+	 * @see PTBLib#fixLGS(CTNode)
+	 * @see PTBLib#fixCLF(CTNode)
 	 */
 	static public void fixFunctionTags(CTTree tree)
 	{
 		fixFunctionTagsAux(tree.getRoot());
 	}
 	
-	/** Called by {@link CTLibEn#fixFunctionTags(CTTree)}. */
+	/** Called by {@link PTBLib#fixFunctionTags(CTTree)}. */
 	static private void fixFunctionTagsAux(CTNode node)
 	{
 		if (!fixSBJ(node) && !fixLGS(node) && !fixCLF(node))
@@ -106,7 +111,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 			fixFunctionTagsAux(child);
 	}
 	
-	/** If the specific node contains the function tag {@link CTTagEn#F_SBJ} and it is the only child of its parent, moves the tag to its parent. */
+	/** If the specific node contains the function tag {@link PTBTag#F_SBJ} and it is the only child of its parent, moves the tag to its parent. */
 	static private boolean fixSBJ(CTNode node)
 	{
 		if (node.hasFunctionTag(F_SBJ))
@@ -125,7 +130,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 		return false;
 	}
 	
-	/** If the specific node contains the function tag {@link CTTagEn#F_LGS} and it is not a prepositional phrase, moves the tag to its parent. */
+	/** If the specific node contains the function tag {@link PTBTag#F_LGS} and it is not a prepositional phrase, moves the tag to its parent. */
 	static private boolean fixLGS(CTNode node)
 	{
 		if (node.hasFunctionTag(F_LGS) && !node.isConstituentTag(C_PP))
@@ -143,7 +148,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 		return false;
 	}
 	
-	/** If the specific node contains the function tag {@link CTTagEn#F_CLF} and it is not a subordinate clause, moves the tag to the subordinate clause. */
+	/** If the specific node contains the function tag {@link PTBTag#F_CLF} and it is not a subordinate clause, moves the tag to the subordinate clause. */
 	static private boolean fixCLF(CTNode node)
 	{
 		if (node.hasFunctionTag(F_CLF) && isMainClause(node))
@@ -166,7 +171,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 	/**
 	 * Finds reduced passive empty category ({@code *}) and links them to their antecedents in the specific tree.
 	 * This method links most but not all antecedents; especially ones related to parenthetical phrases and topicalization.
-	 * @see CTLibEn#isPassiveEmptyCategory(CTNode)
+	 * @see PTBLib#isPassiveEmptyCategory(CTNode)
 	 */
 	static public void linkReducedPassiveNulls(CTTree tree)
 	{
@@ -327,7 +332,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 		
 		for (CTNode term : terminals)
 		{
-			if (POSLibEn.isRelativizer(term.getConstituentTag()))
+			if (isRelativizer(term.getConstituentTag()))
 				return term;
 		}
 		
@@ -371,7 +376,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 		return false;
 	}
 	
-	/** Called by {@link CTLibEn#containsCoordination(CTNode, List)}. */
+	/** Called by {@link PTBLib#containsCoordination(CTNode, List)}. */
 	static private boolean containsEtc(List<CTNode> children)
 	{
 		int i, size = children.size();
@@ -381,7 +386,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 		{
 			child = children.get(i);
 			
-			if (POSLibEn.isPunctuation(child.getConstituentTag()))	continue;
+			if (isPunctuation(child.getConstituentTag()))	continue;
 			if (isEtc(child)) return true;
 			break;
 		}
@@ -397,8 +402,8 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 	
 	/**
 	 * @return {@code true} if this node is a conjunction.
-	 * @see CTLibEn#isConjunction(CTNode)
-	 * @see CTLibEn#isSeparator(CTNode)
+	 * @see PTBLib#isConjunction(CTNode)
+	 * @see PTBLib#isSeparator(CTNode)
 	 */
 	static public boolean isCoordinator(CTNode node)
 	{
@@ -420,7 +425,7 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 	/** @return {@code true} if this node is a correlative conjunction. */
 	static public boolean isCorrelativeConjunction(CTNode node)
 	{
-		if (node.isConstituentTag(POS_CC))
+		if (node.isConstituentTag(P_CC))
 		{
 			return ENUtils.isCorrelativeConjunction(node.getWordForm());
 		}
@@ -491,5 +496,45 @@ public class CTLibEn extends CTLib implements CTTagEn, POSTagEn
 			return getNode(node.getFirstChild(), matcher, recursive);
 		
 		return null;
+	}
+
+	static public boolean isNoun(String posTag)
+	{
+		return posTag.startsWith(PTBTag.P_NN) || posTag.equals(PTBTag.P_PRP) || posTag.equals(PTBTag.P_WP);
+	}
+
+	static public boolean isCommonOrProperNoun(String posTag)
+	{
+		return posTag.startsWith(PTBTag.P_NN);
+	}
+
+	static public boolean isPronoun(String posTag)
+	{
+		return posTag.equals(PTBTag.P_PRP) || posTag.equals(PTBTag.P_PRPS);
+	}
+
+	static public boolean isVerb(String posTag)
+	{
+		return posTag.startsWith(PTBTag.P_VB);
+	}
+
+	static public boolean isAdjective(String posTag)
+	{
+		return posTag.startsWith(PTBTag.P_JJ);
+	}
+
+	static public boolean isAdverb(String posTag)
+	{
+		return posTag.startsWith(PTBTag.P_RB) || posTag.equals(PTBTag.P_WRB);
+	}
+
+	static public boolean isRelativizer(String posTag)
+	{
+		return S_RELATIVIZER.contains(posTag);
+	}
+
+	static public boolean isPunctuation(String posTag)
+	{
+		return S_PUNCTUATION.contains(posTag);
 	}
 }

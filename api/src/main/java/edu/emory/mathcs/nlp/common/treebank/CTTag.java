@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.conversion.util;
+package edu.emory.mathcs.nlp.common.treebank;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class KoreanC2DConverter
+public interface CTTag
 {
-
+	/** The special tag for the artificial top node. */
+	String TOP  = "TOP";
+	/** The special tag for empty categories. */
+	String NONE = "-NONE-";
 }

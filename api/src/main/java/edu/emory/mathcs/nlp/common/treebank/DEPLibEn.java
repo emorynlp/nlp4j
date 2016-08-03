@@ -18,7 +18,6 @@ package edu.emory.mathcs.nlp.common.treebank;
 import java.util.List;
 import java.util.Set;
 
-import edu.emory.mathcs.nlp.common.constituent.CTLibEn;
 import edu.emory.mathcs.nlp.common.propbank.PBLib;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.ENUtils;
@@ -36,12 +35,12 @@ public class DEPLibEn implements DEPTagEn
 	
 	static public boolean isNoun(NLPNode node)
 	{
-		return POSLibEn.isNoun(node.getPartOfSpeechTag());
+		return PTBLib.isNoun(node.getPartOfSpeechTag());
 	}
 	
 	static public boolean isVerb(NLPNode node)
 	{
-		return POSLibEn.isVerb(node.getPartOfSpeechTag());
+		return PTBLib.isVerb(node.getPartOfSpeechTag());
 	}
 	
 	/** Enriches certain dependency labels into finer-grained labels. */
@@ -90,7 +89,7 @@ public class DEPLibEn implements DEPTagEn
 			{
 				relinkPreposition(node);
 			}
-			else if (POSLibEn.isVerb(node.getPartOfSpeechTag()))
+			else if (PTBLib.isVerb(node.getPartOfSpeechTag()))
 			{
 				labelReferentOfRelativeClause(node, list);
 			}
@@ -109,7 +108,7 @@ public class DEPLibEn implements DEPTagEn
 		if (head.isDependencyLabel(DEPLibEn.DEP_POBJ))
 			head = head.getDependencyHead();
 		
-		if (isNoun(head) || head.isPartOfSpeechTag(POSTagEn.POS_IN) || head.isPartOfSpeechTag(POSTagEn.POS_RP))
+		if (isNoun(head) || head.isPartOfSpeechTag(PTBTag.P_IN) || head.isPartOfSpeechTag(PTBTag.P_RP))
 		{
 			NLPNode gHead = head.getDependencyHead();		// verb predicate	
 			DEPArc<NLPNode>  sp;
@@ -223,7 +222,7 @@ public class DEPLibEn implements DEPTagEn
 				add = false;
 			}
 			
-			if (dep.isDependencyLabel(DEP_COMPOUND) || dep.isPartOfSpeechTag(CTLibEn.POS_PRPS))
+			if (dep.isDependencyLabel(DEP_COMPOUND) || dep.isPartOfSpeechTag(PTBTag.P_PRPS))
 			{
 				build.append(delim);
 				build.append(dep.getLemma());
@@ -254,7 +253,7 @@ public class DEPLibEn implements DEPTagEn
 		{
 			build.append(delim);
 			
-			if (POSLibEn.isNoun(pobj.getPartOfSpeechTag()))
+			if (PTBLib.isNoun(pobj.getPartOfSpeechTag()))
 				build.append(getSubLemmasForNP(pobj, delim));
 			else
 				build.append(pobj.getLemma());

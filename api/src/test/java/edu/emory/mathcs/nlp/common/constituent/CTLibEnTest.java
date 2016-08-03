@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.propbank.PBLocation;
+import edu.emory.mathcs.nlp.common.treebank.PTBLib;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 
 /**
@@ -44,7 +45,7 @@ public class CTLibEnTest
 		for (i=0; i<size; i++)
 		{
 			tree = reader.nextTree();
-			CTLibEn.fixFunctionTags(tree);
+			PTBLib.fixFunctionTags(tree);
 			assertEquals(parses[i], tree.toStringLine());
 		}
 				
@@ -70,7 +71,7 @@ public class CTLibEnTest
 		for (i=0; i<size; i++)
 		{
 			tree = reader.nextTree();
-			CTLibEn.preprocess(tree);
+			PTBLib.preprocess(tree);
 			assertEquals(tree.getNode(antes[i]), tree.getNode(nulls[i]).getAntecedent());	
 		}
 				
@@ -80,10 +81,10 @@ public class CTLibEnTest
 	@Test
 	public void testPassiveNullPattern()
 	{
-		assertTrue(CTLibEn.P_PASSIVE_NULL.matcher("*").find());
-		assertTrue(CTLibEn.P_PASSIVE_NULL.matcher("*-12").find());
-		assertFalse(CTLibEn.P_PASSIVE_NULL.matcher("*-a").find());
-		assertFalse(CTLibEn.P_PASSIVE_NULL.matcher("*T*").find());
-		assertFalse(CTLibEn.P_PASSIVE_NULL.matcher("-*").find());
+		assertTrue(PTBLib.P_PASSIVE_NULL.matcher("*").find());
+		assertTrue(PTBLib.P_PASSIVE_NULL.matcher("*-12").find());
+		assertFalse(PTBLib.P_PASSIVE_NULL.matcher("*-a").find());
+		assertFalse(PTBLib.P_PASSIVE_NULL.matcher("*T*").find());
+		assertFalse(PTBLib.P_PASSIVE_NULL.matcher("-*").find());
 	}
 }

@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.emory.mathcs.nlp.common.constituent.CTNode;
-import edu.emory.mathcs.nlp.common.constituent.CTTagEn;
 import edu.emory.mathcs.nlp.common.constituent.CTTree;
+import edu.emory.mathcs.nlp.common.treebank.CTTag;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.conversion.util.C2DInfo;
@@ -37,11 +37,41 @@ abstract public class C2DConverter
 	protected HeadRuleMap headrule_map;
 	protected HeadRule    default_rule;
 	
+	/** @param defaultRule use this rule when no specified headrule matches. */
 	public C2DConverter(HeadRuleMap headruleMap, HeadRule defaultRule)
 	{
 		headrule_map = headruleMap;
 		default_rule = defaultRule;
 	}
+	
+	/**
+	 * @return the dependency graph converted from the constituent tree.
+	 * If the constituent tree contains only empty categories, returns {@code null}.
+	 * @param cTree the constituent tree to be converted.
+	 */
+	abstract public NLPNode[] toDependencyGraph(CTTree cTree);
+	
+//	============================= Empty categories ============================= 
+	
+	protected void removeNode(CTNode node)
+	{
+		CTNode parent = node.getParent();
+	
+		if (parent != null)
+		{
+			parent.removeChild(node);
+			
+			if (parent.getChildrenSize() == 0)
+				removeNode(parent);			
+		}
+	}
+	
+	protected void replaceEmptyCategory(CTNode ec, CTNode ante)
+	{
+		removeNode(ante);
+		ec.getParent().replaceChild(ec, ante);
+	}
+	
 	
 	/**
 	 * Sets the head of the specific node and all its sub-nodes.
@@ -61,7 +91,7 @@ abstract public class C2DConverter
 			setHeads(child);
 		
 		// stop traversing if it is the top node
-		if (curr.isConstituentTag(CTTagEn.TOP))
+		if (curr.isConstituentTag(CTTag.TOP))
 			return;
 		
 		// only one child
@@ -218,12 +248,4 @@ abstract public class C2DConverter
 	 * @return a dependency label given the specific phrase structure.
 	 */
 	abstract protected String getDEPLabel(CTNode C, CTNode P, CTNode p);
-	
-	/**
-	 * Returns the dependency tree converted from the specific constituent tree.
-	 * If the constituent tree contains only empty categories, returns {@code null}.
-	 * @param cTree the constituent tree to convert.
-	 * @return the dependency tree converted from the specific constituent tree.
-	 */
-	abstract public NLPNode[] toDependencyGraph(CTTree cTree);
 }

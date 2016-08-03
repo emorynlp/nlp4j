@@ -25,6 +25,7 @@ import edu.emory.mathcs.nlp.common.propbank.PBArgument;
 import edu.emory.mathcs.nlp.common.propbank.PBInstance;
 import edu.emory.mathcs.nlp.common.propbank.PBLib;
 import edu.emory.mathcs.nlp.common.propbank.PBLocation;
+import edu.emory.mathcs.nlp.common.treebank.PTBLib;
 import edu.emory.mathcs.nlp.common.treebank.PBArc;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -293,7 +294,7 @@ public class CTTree
 				{
 					ec = curr.getTerminalList().get(0);
 					
-					if (i == last || isAnteFound || CTLibEn.isDiscontinuousConstituent(ec) || CTLibEn.containsCoordination(curr.getLowestCommonAncestor(list.get(i+1))))
+					if (i == last || isAnteFound || PTBLib.isDiscontinuousConstituent(ec) || PTBLib.containsCoordination(curr.getLowestCommonAncestor(list.get(i+1))))
 						curr.setEmptyCategoryIndex(-1);
 					else
 						curr.setEmptyCategoryIndex(coIndex++);

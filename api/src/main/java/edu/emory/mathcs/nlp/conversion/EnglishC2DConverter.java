@@ -30,16 +30,15 @@ import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.collection.arc.AbstractArc;
 import edu.emory.mathcs.nlp.common.constituent.CTLib;
-import edu.emory.mathcs.nlp.common.constituent.CTLibEn;
 import edu.emory.mathcs.nlp.common.constituent.CTNode;
-import edu.emory.mathcs.nlp.common.constituent.CTTagEn;
 import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.propbank.PBLib;
+import edu.emory.mathcs.nlp.common.treebank.PTBLib;
+import edu.emory.mathcs.nlp.common.treebank.CTTag;
 import edu.emory.mathcs.nlp.common.treebank.DEPLibEn;
 import edu.emory.mathcs.nlp.common.treebank.DEPTagEn;
 import edu.emory.mathcs.nlp.common.treebank.PBArc;
-import edu.emory.mathcs.nlp.common.treebank.POSLibEn;
-import edu.emory.mathcs.nlp.common.treebank.POSTagEn;
+import edu.emory.mathcs.nlp.common.treebank.PTBTag;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.ENUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
@@ -64,188 +63,175 @@ import edu.emory.mathcs.nlp.conversion.util.HeadRuleMap;
 public class EnglishC2DConverter extends C2DConverter
 {
 	
-	private final Set<String> S_NPADVMOD	= DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_QP);
-	private final Set<String> S_ADVCL		= DSUtils.toHashSet(CTTagEn.C_S, CTTagEn.C_SBAR, CTTagEn.C_SINV);
-	private final Set<String> S_NFMOD		= DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_WHNP);
-	private final Set<String> S_CCOMP		= DSUtils.toHashSet(CTTagEn.C_S, CTTagEn.C_SQ, CTTagEn.C_SINV, CTTagEn.C_SBARQ);
-	private final Set<String> S_META		= DSUtils.toHashSet(CTTagEn.C_EDITED, CTTagEn.C_EMBED, CTTagEn.C_LST, CTTagEn.C_META, CTLibEn.POS_CODE, CTTagEn.C_CAPTION, CTTagEn.C_CIT, CTTagEn.C_HEADING, CTTagEn.C_TITLE);
-	private final Set<String> S_MARK		= DSUtils.toHashSet(CTLibEn.POS_IN, CTLibEn.POS_TO, CTLibEn.POS_DT);
-	private final Set<String> S_POSS		= DSUtils.toHashSet(CTLibEn.POS_PRPS, CTLibEn.POS_WPS);
-	private final Set<String> S_INTJ		= DSUtils.toHashSet(CTTagEn.C_INTJ, CTLibEn.POS_UH);
-	private final Set<String> S_PRT 		= DSUtils.toHashSet(CTTagEn.C_PRT, CTLibEn.POS_RP);
-//	private final Set<String> S_NUM			= DSUtils.toHashSet(CTLibEn.POS_CD, CTTagEn.C_QP);
-	private final Set<String> S_DET			= DSUtils.toHashSet(CTLibEn.POS_DT, CTLibEn.POS_WDT, CTLibEn.POS_WP);
-	private final Set<String> S_AUX			= DSUtils.toHashSet(CTLibEn.POS_MD, CTLibEn.POS_TO);
-//	private final Set<String> S_NN			= DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP);
+	private final Set<String> S_NPADVMOD	= DSUtils.toHashSet(PTBTag.C_NML, PTBTag.C_NP, PTBTag.C_QP);
+	private final Set<String> S_ADVCL		= DSUtils.toHashSet(PTBTag.C_S, PTBTag.C_SBAR, PTBTag.C_SINV);
+	private final Set<String> S_NFMOD		= DSUtils.toHashSet(PTBTag.C_NML, PTBTag.C_NP, PTBTag.C_WHNP);
+	private final Set<String> S_CCOMP		= DSUtils.toHashSet(PTBTag.C_S, PTBTag.C_SQ, PTBTag.C_SINV, PTBTag.C_SBARQ);
+	private final Set<String> S_META		= DSUtils.toHashSet(PTBTag.C_EDITED, PTBTag.C_EMBED, PTBTag.C_LST, PTBTag.C_META, PTBTag.P_CODE, PTBTag.C_CAPTION, PTBTag.C_CIT, PTBTag.C_HEADING, PTBTag.C_TITLE);
+	private final Set<String> S_MARK		= DSUtils.toHashSet(PTBTag.P_IN, PTBTag.P_TO, PTBTag.P_DT);
+	private final Set<String> S_POSS		= DSUtils.toHashSet(PTBTag.P_PRPS, PTBTag.P_WPS);
+	private final Set<String> S_INTJ		= DSUtils.toHashSet(PTBTag.C_INTJ, PTBTag.P_UH);
+	private final Set<String> S_PRT 		= DSUtils.toHashSet(PTBTag.C_PRT, PTBTag.P_RP);
+//	private final Set<String> S_NUM			= DSUtils.toHashSet(CTLibEn.P_CD, PTBTag.C_QP);
+	private final Set<String> S_DET			= DSUtils.toHashSet(PTBTag.P_DT, PTBTag.P_WDT, PTBTag.P_WP);
+	private final Set<String> S_AUX			= DSUtils.toHashSet(PTBTag.P_MD, PTBTag.P_TO);
+//	private final Set<String> S_NN			= DSUtils.toHashSet(PTBTag.C_NML, PTBTag.C_NP);
 
-//	private final Set<String> S_ADJT_PHRASE	= DSUtils.toHashSet(CTTagEn.C_ADJP, CTTagEn.C_WHADJP);
-	private final Set<String> S_NOUN_PHRASE	= DSUtils.toHashSet(CTTagEn.C_NP, CTTagEn.C_NML);
-	private final Set<String> S_PREP_PHRASE	= DSUtils.toHashSet(CTTagEn.C_PP, CTTagEn.C_WHPP);
-	private final Set<String> S_ADVB_PHRASE	= DSUtils.toHashSet(CTTagEn.C_ADJP, CTTagEn.C_ADVP, CTTagEn.C_PP);
-	private final Set<String> S_PREPOSITION	= DSUtils.toHashSet(CTLibEn.POS_IN, CTLibEn.POS_TO);
-//	private final Set<String> S_PARTICIPIAL	= DSUtils.toHashSet(CTLibEn.POS_VBG, CTLibEn.POS_VBN);
-	private final Set<String> S_PREP_DET	= DSUtils.toHashSet(CTLibEn.POS_IN, CTLibEn.POS_DT);
+//	private final Set<String> S_ADJT_PHRASE	= DSUtils.toHashSet(PTBTag.C_ADJP, PTBTag.C_WHADJP);
+	private final Set<String> S_NOUN_PHRASE	= DSUtils.toHashSet(PTBTag.C_NP, PTBTag.C_NML);
+	private final Set<String> S_PREP_PHRASE	= DSUtils.toHashSet(PTBTag.C_PP, PTBTag.C_WHPP);
+	private final Set<String> S_ADVB_PHRASE	= DSUtils.toHashSet(PTBTag.C_ADJP, PTBTag.C_ADVP, PTBTag.C_PP);
+	private final Set<String> S_PREPOSITION	= DSUtils.toHashSet(PTBTag.P_IN, PTBTag.P_TO);
+//	private final Set<String> S_PARTICIPIAL	= DSUtils.toHashSet(CTLibEn.P_VBG, CTLibEn.P_VBN);
+	private final Set<String> S_PREP_DET	= DSUtils.toHashSet(PTBTag.P_IN, PTBTag.P_DT);
 	
-	private final Set<String> S_COMP_PARENT_S = DSUtils.toHashSet(CTTagEn.C_VP, CTTagEn.C_SINV, CTTagEn.C_SQ);
-	private final Set<String> S_COMP_PARENT_A = DSUtils.toHashSet(CTTagEn.C_ADJP, CTTagEn.C_ADVP);
-	private final Set<String> S_NMOD_PARENT	  = DSUtils.toHashSet(CTTagEn.C_NML, CTTagEn.C_NP, CTTagEn.C_NX, CTTagEn.C_WHNP);
-	private final Set<String> S_POSS_PARENT	  = DSUtils.toHashSet(CTTagEn.C_NP, CTTagEn.C_NML, CTTagEn.C_WHNP, CTTagEn.C_QP, CTTagEn.C_ADJP);
+	private final Set<String> S_COMP_PARENT_S = DSUtils.toHashSet(PTBTag.C_VP, PTBTag.C_SINV, PTBTag.C_SQ);
+	private final Set<String> S_COMP_PARENT_A = DSUtils.toHashSet(PTBTag.C_ADJP, PTBTag.C_ADVP);
+	private final Set<String> S_NMOD_PARENT	  = DSUtils.toHashSet(PTBTag.C_NML, PTBTag.C_NP, PTBTag.C_NX, PTBTag.C_WHNP);
+	private final Set<String> S_POSS_PARENT	  = DSUtils.toHashSet(PTBTag.C_NP, PTBTag.C_NML, PTBTag.C_WHNP, PTBTag.C_QP, PTBTag.C_ADJP);
 	
 	private final Set<String> S_COMPLM = DSUtils.toHashSet("that", "if", "whether");
 	private final int SIZE_HEAD_FLAGS = 4;
 	
-	private Set<String> s_semTags;
-	private Set<String> s_synTags;
+	/** Syntactic function tags. */
+	private final Set<String> SYN_TAGS = DSUtils.toHashSet(PTBTag.F_ADV, PTBTag.F_CLF, PTBTag.F_CLR, PTBTag.F_DTV, PTBTag.F_NOM, PTBTag.F_PUT, PTBTag.F_PRD, PTBTag.F_TPC);
 	
-	private Map<CTNode,Deque<CTNode>> m_rnr;
-	private Map<CTNode,Deque<CTNode>> m_xsubj;
-	private Map<String,Pattern>       m_coord;
+	/** Semantic function tags. */
+	private final Set<String> SEM_TAGS = DSUtils.toHashSet(PTBTag.F_BNF, PTBTag.F_DIR, PTBTag.F_EXT, PTBTag.F_LOC, PTBTag.F_MNR, PTBTag.F_PRP, PTBTag.F_TMP, PTBTag.F_VOC);
 	
-	private Predicate<CTNode> mt_s;
-	private Predicate<CTNode> mt_to;
-	private Predicate<CTNode> mt_pos;
-	private Predicate<CTNode> mt_sbj;
-	private Predicate<CTNode> mt_prd;
-	private Predicate<CTNode> mt_none;
-	private Predicate<CTNode> mt_in_dt;
-	private Predicate<CTNode> mt_np_prd;
+	/** Mappings between phrasal/clausal tags and phrasal/pos tags for coordination. */
+	@SuppressWarnings("serial")
+	private final Map<String,Pattern> COORD_MAP = new HashMap<String,Pattern>()
+	{{
+		COORD_MAP.put(PTBTag.C_S     , PatternUtils.createClosedORPattern("S","SINV","SQ","SBARQ"));
+		COORD_MAP.put(PTBTag.C_SBAR  , PatternUtils.createClosedORPattern("SBAR.*"));
+		COORD_MAP.put(PTBTag.C_SBARQ , PatternUtils.createClosedORPattern("SBAR.*"));
+		COORD_MAP.put(PTBTag.C_SINV  , PatternUtils.createClosedORPattern("S","SINV"));
+		COORD_MAP.put(PTBTag.C_SQ	   , PatternUtils.createClosedORPattern("S","SQ","SBARQ"));
+
+		COORD_MAP.put(PTBTag.C_ADJP  , PatternUtils.createClosedORPattern("ADJP","JJ.*","VBN","VBG"));
+		COORD_MAP.put(PTBTag.C_ADVP  , PatternUtils.createClosedORPattern("ADVP","RB.*"));
+		COORD_MAP.put(PTBTag.C_INTJ  , PatternUtils.createClosedORPattern("INTJ","UH"));
+		COORD_MAP.put(PTBTag.C_NAC   , PatternUtils.createClosedORPattern("NP"));
+		COORD_MAP.put(PTBTag.C_NML   , PatternUtils.createClosedORPattern("NP","NML","NN.*","PRP"));
+		COORD_MAP.put(PTBTag.C_NP    , PatternUtils.createClosedORPattern("NP","NML","NN.*","PRP"));
+		COORD_MAP.put(PTBTag.C_NX    , PatternUtils.createClosedORPattern("NX"));
+		COORD_MAP.put(PTBTag.C_PP    , PatternUtils.createClosedORPattern("PP","IN","VBG"));
+		COORD_MAP.put(PTBTag.C_PRT   , PatternUtils.createClosedORPattern("PRT","RP"));
+		COORD_MAP.put(PTBTag.C_VP    , PatternUtils.createClosedORPattern("VP","VB.*"));
+		COORD_MAP.put(PTBTag.C_WHADJP, PatternUtils.createClosedORPattern("JJ.*","VBN","VBG"));
+		COORD_MAP.put(PTBTag.C_WHADVP, PatternUtils.createClosedORPattern("RB.*","WRB","IN"));
+		COORD_MAP.put(PTBTag.C_WHNP  , PatternUtils.createClosedORPattern("NN.*","WP"));
+	}};
 	
-	private Emoticon emoticon;
+	/** {@code true} if the constituent tag is {@link PTBTag#C_S}. */
+	private final Predicate<CTNode> MT_S      = CTLib.matchC(PTBTag.C_S);
+	/** {@code true} if the constituent tag is {@link PTBTag#P_TO}. */
+	private final Predicate<CTNode> MT_TO     = CTLib.matchC(PTBTag.P_TO);
+	/** {@code true} if the constituent tag is {@link PTBTag#P_POS}. */
+	private final Predicate<CTNode> MT_POS    = CTLib.matchC(PTBTag.P_POS);
+	/** {@code true} if the constituent tag is {@link CTTag#NONE}. */
+	private final Predicate<CTNode> MT_NONE   = CTLib.matchC(CTTag.NONE);
+	/** {@code true} if the constituent tag is {@link PTBTag#C_NP} and the function tag is {@link PTBTag#F_PRD}. */
+	private final Predicate<CTNode> MT_NP_PRD = CTLib.matchCF(PTBTag.C_NP, PTBTag.F_PRD);
+	/** {@code true} if the constituent tag is {@link PTBTag#P_IN} or {@link PTBTag#P_DT}. */
+	private final Predicate<CTNode> MT_IN_DT  = CTLib.matchCo(DSUtils.toHashSet(PTBTag.P_IN, PTBTag.P_DT));
+	
+	private final Emoticon emoticon = new Emoticon();
 	
 	public EnglishC2DConverter(HeadRuleMap headrules)
 	{
 		super(headrules, new HeadRule(HeadRule.DIR_RIGHT_TO_LEFT));
-		
-		initBasic();
-		initCoord();
-		initMatchers();
-		emoticon = new Emoticon();
 	}
 	
 	@Override
 	public NLPNode[] toDependencyGraph(CTTree cTree)
 	{
-		NLPNode[] tree = null;
+		Map<CTNode,Deque<CTNode>> xsubj = new HashMap<>();
+		Map<CTNode,Deque<CTNode>> rnr   = new HashMap<>();
 		
-		try
-		{
-			CTLibEn.preprocess(cTree);
-			clearMaps();
-			if (!mapEmtpyCategories(cTree))	return null;
-			setHeads(cTree.getRoot());
-			tree = getDEPTree(cTree);	
-		}
-		catch (Exception e) {e.printStackTrace();}
+		PTBLib.preprocess(cTree);
+		if (!mapEmtpyCategories(cTree, xsubj, rnr))	return null;
+		setHeads(cTree.getRoot());
+		NLPNode[] tree = getDEPTree(cTree, xsubj, rnr);
 		
 		if (tree != null) finalize(tree);
 		return tree;
 	}
-	
-// ============================= Initialization ============================= 
-	
-	private void initBasic()
-	{
-		s_semTags = DSUtils.toHashSet(CTTagEn.F_BNF, CTTagEn.F_DIR, CTTagEn.F_EXT, CTTagEn.F_LOC, CTTagEn.F_MNR, CTTagEn.F_PRP, CTTagEn.F_TMP, CTTagEn.F_VOC);
-		s_synTags = DSUtils.toHashSet(CTTagEn.F_ADV, CTTagEn.F_CLF, CTTagEn.F_CLR, CTTagEn.F_DTV, CTTagEn.F_NOM, CTTagEn.F_PUT, CTTagEn.F_PRD, CTTagEn.F_TPC);
-		m_rnr     = new HashMap<>();
-		m_xsubj   = new HashMap<>();
-	}
-	
-	private void initCoord()
-	{
-		m_coord = new HashMap<>();
-		
-		m_coord.put(CTTagEn.C_ADJP	, PatternUtils.createClosedORPattern("ADJP","JJ.*","VBN","VBG"));
-		m_coord.put(CTTagEn.C_ADVP	, PatternUtils.createClosedORPattern("ADVP","RB.*"));
-		m_coord.put(CTTagEn.C_INTJ	, PatternUtils.createClosedORPattern("INTJ","UH"));
-		m_coord.put(CTTagEn.C_PP  	, PatternUtils.createClosedORPattern("PP","IN","VBG"));
-		m_coord.put(CTTagEn.C_PRT 	, PatternUtils.createClosedORPattern("PRT","RP"));
-		m_coord.put(CTTagEn.C_NAC 	, PatternUtils.createClosedORPattern("NP"));
-		m_coord.put(CTTagEn.C_NML 	, PatternUtils.createClosedORPattern("NP","NML","NN.*","PRP"));
-		m_coord.put(CTTagEn.C_NP  	, PatternUtils.createClosedORPattern("NP","NML","NN.*","PRP"));
-		m_coord.put(CTTagEn.C_NX  	, PatternUtils.createClosedORPattern("NX"));
-		m_coord.put(CTTagEn.C_VP  	, PatternUtils.createClosedORPattern("VP","VB.*"));
-		m_coord.put(CTTagEn.C_S   	, PatternUtils.createClosedORPattern("S","SINV","SQ","SBARQ"));
-		m_coord.put(CTTagEn.C_SBAR	, PatternUtils.createClosedORPattern("SBAR.*"));
-		m_coord.put(CTTagEn.C_SBARQ	, PatternUtils.createClosedORPattern("SBAR.*"));
-		m_coord.put(CTTagEn.C_SINV	, PatternUtils.createClosedORPattern("S","SINV"));
-		m_coord.put(CTTagEn.C_SQ	, PatternUtils.createClosedORPattern("S","SQ","SBARQ"));
-		m_coord.put(CTTagEn.C_WHNP	, PatternUtils.createClosedORPattern("NN.*","WP"));
-		m_coord.put(CTTagEn.C_WHADJP, PatternUtils.createClosedORPattern("JJ.*","VBN","VBG"));
-		m_coord.put(CTTagEn.C_WHADVP, PatternUtils.createClosedORPattern("RB.*","WRB","IN"));
-	}
-	
-	private void initMatchers()
-	{
-		mt_s		= CTLib.matchC(CTTagEn.C_S);
-		mt_to		= CTLib.matchC(POSTagEn.POS_TO);
-		mt_pos		= CTLib.matchC(POSTagEn.POS_POS);
-		mt_none		= CTLib.matchC(CTLibEn.NONE);
-		
-		mt_sbj  	= CTLib.matchF(CTTagEn.F_SBJ);
-		mt_prd  	= CTLib.matchF(CTTagEn.F_PRD);
-		mt_np_prd	= CTLib.matchCF(CTTagEn.C_NP, CTTagEn.F_PRD);
-		mt_in_dt	= CTLib.matchCo(DSUtils.toHashSet(POSTagEn.POS_IN, POSTagEn.POS_DT));
-	}
 
-	private void clearMaps()
-	{
-		m_rnr.clear();
-		m_xsubj.clear();
-	}
-	
-// ============================= Empty categories ============================= 
+//	============================= Empty Categories ============================= 
 	
 	/**
 	 * Removes, relocates empty categories in the specific tree. 
 	 * @param cTree the constituent tree to be processed.
 	 * @return {@true} if the constituent tree contains nodes after relocating empty categories.
 	 */
-	private boolean mapEmtpyCategories(CTTree cTree)
+	private boolean mapEmtpyCategories(CTTree cTree, Map<CTNode,Deque<CTNode>> xsubj, Map<CTNode,Deque<CTNode>> rnr)
 	{
 		for (CTNode node : cTree.getTerminalList())
 		{
 			if (!node.isEmptyCategory())	continue;
 			if (node.getParent() == null)	continue;
 			
-			if      (node.wordFormStartsWith(CTTagEn.E_PRO))
-				mapPRO(cTree, node);
-			else if (node.wordFormStartsWith(CTTagEn.E_TRACE))
+			if      (node.wordFormStartsWith(PTBTag.E_PRO))
+				mapPRO(cTree, node, xsubj);
+			else if (node.wordFormStartsWith(PTBTag.E_TRACE))
 				mapTrace(cTree, node);
-			else if (node.matchesWordForm(CTLibEn.P_PASSIVE_NULL))
-				mapPassiveNull(cTree, node);
-			else if (node.isWordForm(CTTagEn.E_ZERO))
+			else if (node.matchesWordForm(PTBLib.P_PASSIVE_NULL))
+				mapPassiveNull(cTree, node, xsubj);
+			else if (node.isWordForm(PTBTag.E_ZERO))
 				continue;
-			else if (CTLibEn.isDiscontinuousConstituent(node))
-				mapDiscontinuousConstituent(cTree, node);
-//			else if (node.wordFormStartsWith(CTTagEn.E_EXP))
+			else if (PTBLib.isDiscontinuousConstituent(node))
+				mapDiscontinuousConstituent(cTree, node, rnr);
+//			else if (node.wordFormStartsWith(PTBTag.E_EXP))
 //				reloateEXP(cTree, node);
 			else
-				removeCTNode(node);
+				removeNode(node);
 		}
 		
 		return cTree.getRoot().getChildrenSize() > 0;
 	}
 	
-	/** Called by {@link #mapEmtpyCategories(CTTree)}. */
-	private void mapPRO(CTTree cTree, CTNode ec)
+	/**
+	 * (TOP (S (NP-SBJ-1 (NNP John))
+     *         (VP (VBD bought)
+     *             (NP (DT a)
+     *                 (NN book))
+     *             (S-PRP (NP-SBJ (-NONE- *PRO*-1))
+     *                    (VP (TO to)
+     *                        (VP (VB teach)
+     *                            (NP (PRP people))))))))
+     *      
+     * (TOP (S (NP-SBJ-1 (NNP John))
+     *         (VP (VBD had)
+     *             (S (NP-SBJ-2 (-NONE- *-1))
+     *                (VP (TO to)
+     *                    (VP (VB buy)
+     *                        (NP (DT a)
+     *                            (NN sugar))
+     *                        (S-PRP (NP-SBJ (-NONE- *PRO*-2))
+     *                               (VP (TO to)
+     *                                   (VP (VB teach)
+     *                                       (NP (NNS people)))))))))))
+	 */
+	private void mapPRO(CTTree cTree, CTNode ec, Map<CTNode,Deque<CTNode>> xsubj)
 	{
 		CTNode np = ec.getParent();
-		CTNode vp = np.getParent().getFirstLowestChainedDescendant(CTLibEn.M_VP);
+		CTNode vp = np.getParent().getFirstLowestChainedDescendant(PTBLib.M_VP);
 		
 		if (vp == null)		// small clauses
-			relocatePRD(np, ec);
+			handleSmallClause(np, ec);
 		else
 		{
 			CTNode ante;
 			
-			if ((ante = ec.getAntecedent()) != null && CTLibEn.isWhPhrase(ante))	// relative clauses
+			if ((ante = ec.getAntecedent()) != null && PTBLib.isWhPhrase(ante))	// relative clauses
 			{
 				if (cTree.getEmptyCategoryList(ante.getEmptyCategoryIndex()).size() == 1)
 					mapTrace(cTree, ec);
 			}
 			
-			addXSubject(ec, m_xsubj);
+			addXSubject(ec, xsubj);
 		}
 	}
 	
@@ -255,55 +241,55 @@ public class EnglishC2DConverter extends C2DConverter
 		CTNode ante = ec.getAntecedent();
 		
 		if (ante == null || ec.isDescendantOf(ante))
-			removeCTNode(ec);
-		else if (ante.hasFunctionTag(CTTagEn.F_TPC))
+			removeNode(ec);
+		else if (ante.hasFunctionTag(PTBTag.F_TPC))
 		{
-			if (!ante.hasFunctionTag(CTTagEn.F_SBJ))
+			if (!ante.hasFunctionTag(PTBTag.F_SBJ))
 			{
 				CTNode parent = ec.getParent();
 				parent.removeChild(ec);
-				replaceEC(parent, ante);
+				replaceEmptyCategory(parent, ante);
 			}
 			else
-				removeCTNode(ec);
+				removeNode(ec);
 		}
 		else	// relative clauses
 		{
-			CTNode parent = ante.getHighestChainedAncestor(CTLibEn.M_SBAR);
+			CTNode parent = ante.getHighestChainedAncestor(PTBLib.M_SBAR);
 			if (parent != null) parent.addFunctionTag(DEPTagEn.DEP_RELCL);
-			replaceEC(ec, ante);
+			replaceEmptyCategory(ec, ante);
 		}
 	}
 	
 	/** Called by {@link #mapEmtpyCategories(CTTree)}. */
-	private void mapPassiveNull(CTTree cTree, CTNode ec)
+	private void mapPassiveNull(CTTree cTree, CTNode ec, Map<CTNode,Deque<CTNode>> xsubj)
 	{
 		CTNode np = ec.getParent();
 		
-		if (np.hasFunctionTag(CTTagEn.F_SBJ))
+		if (np.hasFunctionTag(PTBTag.F_SBJ))
 		{
 			// small clauses
-			if (np.getRightNearestSibling(CTLibEn.M_VP) == null)
-				relocatePRD(np, ec);
+			if (np.getRightNearestSibling(PTBLib.M_VP) == null)
+				handleSmallClause(np, ec);
 			else
-				addXSubject(ec, m_xsubj);
+				addXSubject(ec, xsubj);
 		}
 	}
 	
 	/** Called by {@link #mapEmtpyCategories(CTTree)}. */
-	private void mapDiscontinuousConstituent(CTTree cTree, CTNode ec)
+	private void mapDiscontinuousConstituent(CTTree cTree, CTNode ec, Map<CTNode,Deque<CTNode>> rnr)
 	{
 		CTNode parent = ec.getParent();
 		CTNode ante   = ec.getAntecedent();
 		
-		if (ec.wordFormStartsWith(CTTagEn.E_ICH) && parent.getLeftNearestSibling(CTLibEn.M_WHx) != null)
-			removeCTNode(ec);
+		if (ec.wordFormStartsWith(PTBTag.E_ICH) && parent.getLeftNearestSibling(PTBLib.M_WHx) != null)
+			removeNode(ec);
 		else if (ante == null || ec.isDescendantOf(ante))
-			removeCTNode(ec);
+			removeNode(ec);
 		else
 		{
 			List<CTNode> list = cTree.getEmptyCategoryList(ante.getEmptyCategoryIndex());
-			boolean isRNR = CTLibEn.isRNR(ec);
+			boolean isRNR = PTBLib.isRNR(ec);
 			int i, size = list.size();
 			CTNode node;
 			
@@ -315,7 +301,7 @@ public class EnglishC2DConverter extends C2DConverter
 				{
 					node = list.get(i);
 					if (isRNR)	dq.addLast(node.getParent().getParent());
-					removeCTNode(node);
+					removeNode(node);
 				}
 				
 				ec = list.get(size-1);
@@ -326,35 +312,60 @@ public class EnglishC2DConverter extends C2DConverter
 				{
 					node = list.get(i);
 					if (isRNR)	dq.addFirst(node.getParent().getParent());
-					removeCTNode(node);
+					removeNode(node);
 				}
 				
 				ec = list.get(0);
 			}
 			
 			if (isRNR && !dq.isEmpty())
-				m_rnr.put(ante, dq);
+				rnr.put(ante, dq);
 			
 			parent = ec.getParent();
 			parent.removeChild(ec);
-			replaceEC(parent, ante);
+			replaceEmptyCategory(parent, ante);
 		}
 	}
 	
-	/** Called by {@link #mapPRO(CTTree, CTNode)} and {@link #mapPassiveNull(CTTree, CTNode)}. */
-	private void relocatePRD(CTNode np, CTNode ec)
+	/**
+     * (TOP (S (NP-SBJ (PRP I))
+     *         (VP (VBP call)
+     *             (NP-1 (NNP John))
+     *             (S-CLR (NP-SBJ (-NONE- *PRO*-1))
+     *                    (NP-PRD (DT a)
+     *                            (NN genius))))))
+     * 
+     * (TOP (S (NP-SBJ-1 (NNP John))
+     *         (VP (VBZ is)
+     *             (VP (VBN called)
+     *                 (NP-2 (-NONE- *-1))
+     *                 (S-CLR (NP-SBJ (-NONE- *PRO*-2))
+     *                        (NP-PRD (DT a)
+     *                                (NN genius)))))))
+     * 
+     * (TOP (S (NP (NP (NNP John))
+     *             (SBAR (WHNP-1 (WP who))
+     *                   (S (NP-SBJ (PRP I))
+     *                      (VP (VBP call)
+     *                          (NP-2 (-NONE- *T*-1))
+     *                          (S-CLR (NP-SBJ (-NONE- *PRO*-2))
+     *                                 (NP-PRD (DT a)
+     *                                 (NN genius)))))))
+     *         (VP (VBZ is)
+     *             (ADVP-LOC (RB here)))))                       
+	 */
+	private void handleSmallClause(CTNode np, CTNode ec)
 	{
 		CTNode s   = np.getParent();
-		CTNode prd = s.getFirstChild(mt_prd);
-		Set<String> fTags = s.getFunctionTagSet();
+		CTNode prd = s.getFirstChild(PTBLib.M_PRD);
 		
-		if (prd != null && (fTags.isEmpty() || fTags.contains(CTTagEn.F_CLR)))
+		if (prd != null && (!s.hasFunctionTag() || s.hasFunctionTag(PTBTag.F_CLR)))
 		{
-			fTags.clear();
-			fTags.add(DEPTagEn.DEP_OPRD);
+			s.clearFunctionTags();
+			s.addFunctionTag(DEPTagEn.DEP_OPRD);
 		}
 
-		removeCTNode(ec);
+		removeNode(ec);
 	}
 	
 /*	private void reloateEXP(CTTree cTree, CTNode ec)
@@ -373,53 +384,26 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	/**
 	 * @param ec empty subject.
-	 * @param map key: antecedent, value: list of clauses containing empty subjects.
+	 * @param xsubj key: antecedent, value: list of clauses containing empty subjects.
 	 */
-	private void addXSubject(CTNode ec, Map<CTNode, Deque<CTNode>> map)
+	private void addXSubject(CTNode ec, Map<CTNode, Deque<CTNode>> xsubj)
 	{
 		CTNode ante = ec.getAntecedent();
 		
 		while (ante != null && ante.isEmptyCategoryTerminal())
 		{
-			if (CTLibEn.isWhPhrase(ante)) return;
+			if (PTBLib.isWhPhrase(ante)) return;
 			ante = ante.getFirstTerminal().getAntecedent();
 		}
 		
 		if (ante != null)
 		{
-			CTNode s = ec.getNearestAncestor(mt_s);
-			
-			if (s != null)
-			{
-				Deque<CTNode> dq = map.get(ante);
-				if (dq == null)	dq = new ArrayDeque<CTNode>();
-				
-				dq.add(s);
-				map.put(ante, dq);
-			}
+			CTNode s = ec.getNearestAncestor(MT_S);
+			if (s != null) xsubj.computeIfAbsent(ante, n -> new ArrayDeque<>()).add(s);
 		}
 	}
 	
-	private void removeCTNode(CTNode node)
-	{
-		CTNode parent = node.getParent();
-	
-		if (parent != null)
-		{
-			parent.removeChild(node);
-			
-			if (parent.getChildrenSize() == 0)
-				removeCTNode(parent);			
-		}
-	}
-	
-	private void replaceEC(CTNode ec, CTNode ante)
-	{
-		removeCTNode(ante);
-		ec.getParent().replaceChild(ec, ante);
-	}
-	
-// ============================= Find heads =============================
+//	============================= Set Heads =============================
 	
 	@Override
 	protected void setHeadsAux(HeadRule rule, CTNode curr)
@@ -450,11 +434,11 @@ public class EnglishC2DConverter extends C2DConverter
 		{
 			node = curr.getChild(sId);
 			
-			if (!POSLibEn.isPunctuation(node.getConstituentTag()) && !CTLibEn.isConjunction(node) && !node.isEmptyCategoryTerminal())
+			if (!PTBLib.isPunctuation(node.getConstituentTag()) && !PTBLib.isConjunction(node) && !node.isEmptyCategoryTerminal())
 				break;
 		}
 		
-		if (!CTLibEn.containsCoordination(curr, curr.getChildrenList(sId)))
+		if (!PTBLib.containsCoordination(curr, curr.getChildrenList(sId)))
 			return false;
 		
 		// find conjuncts
@@ -467,7 +451,7 @@ public class EnglishC2DConverter extends C2DConverter
 		{
 			node = curr.getChild(eId);
 			
-			if (CTLibEn.isCoordinator(node))
+			if (PTBLib.isCoordinator(node))
 			{
 				if (isFound)
 				{
@@ -509,7 +493,7 @@ public class EnglishC2DConverter extends C2DConverter
 	/** Called by {@link #findHeadsCoordination(HeadRule, CTNode)}. */
 	private Pattern getConjunctPattern(CTNode curr, int sId, int size)
 	{
-		Pattern rTags = m_coord.get(curr.getConstituentTag());
+		Pattern rTags = COORD_MAP.get(curr.getConstituentTag());
 		
 		if (rTags != null)
 		{
@@ -536,23 +520,23 @@ public class EnglishC2DConverter extends C2DConverter
 	/** Called by {@link #findHeadsCoordination(HeadRule, CTNode)}. */
 	private boolean isConjunct(CTNode C, CTNode P, Pattern rTags)
 	{
-		if (P.isConstituentTag(CTTagEn.C_SBAR) && C.isConstituentTagAny(S_PREP_DET))
+		if (P.isConstituentTag(PTBTag.C_SBAR) && C.isConstituentTagAny(S_PREP_DET))
 			return false;
 		else if (rTags.pattern().equals(".*"))
 			return getSpecialLabel(C) == null;
 		else if (rTags.matcher(C.getConstituentTag()).find())
 		{
-			if (P.isConstituentTag(CTTagEn.C_VP) && getAuxLabel(C) != null)
+			if (P.isConstituentTag(PTBTag.C_VP) && getAuxLabel(C) != null)
 				return false;
 			
-			if (CTLibEn.isMainClause(P) && C.isConstituentTag(CTTagEn.C_S) && hasAdverbialTag(C))
+			if (PTBLib.isMainClause(P) && C.isConstituentTag(PTBTag.C_S) && hasAdverbialTag(C))
 				return false;
 			
 			return true;
 		}
-		else if (P.isConstituentTag(CTTagEn.C_NP))
+		else if (P.isConstituentTag(PTBTag.C_NP))
 		{
-			return C.hasFunctionTag(CTTagEn.F_NOM);
+			return C.hasFunctionTag(PTBTag.F_NOM);
 		}
 		
 		return false;
@@ -568,7 +552,7 @@ public class EnglishC2DConverter extends C2DConverter
 			String label = DEPTagEn.DEP_CONJ;
 			
 			if (isIntj(currHead))						label = DEPTagEn.DEP_DISCOURSE;
-			else if (POSLibEn.isPunctuation(currHead.getConstituentTag()))	label = DEPTagEn.DEP_PUNCT;
+			else if (PTBLib.isPunctuation(currHead.getConstituentTag()))	label = DEPTagEn.DEP_PUNCT;
 
 			setHeadCoord(currHead, lastHead, label);
 		}
@@ -586,7 +570,7 @@ public class EnglishC2DConverter extends C2DConverter
 		int i, size = node.getChildrenSize();
 		CTNode prev, hyph, next;
 		boolean isFound = false;
-		boolean isVP = node.isConstituentTag(CTTagEn.C_VP);
+		boolean isVP = node.isConstituentTag(PTBTag.C_VP);
 		
 		for (i=0; i<size-2; i++)
 		{
@@ -594,7 +578,7 @@ public class EnglishC2DConverter extends C2DConverter
 			hyph = node.getChild(i+1);
 			next = node.getChild(i+2);
 			
-			if (hyph.isConstituentTag(CTLibEn.POS_HYPH))
+			if (hyph.isConstituentTag(PTBTag.P_HYPH))
 			{
 				if (isVP)
 				{
@@ -624,12 +608,12 @@ public class EnglishC2DConverter extends C2DConverter
 	 */
 	private boolean findHeadsApposition(CTNode curr)
 	{
-		if (!curr.isConstituentTagAny(S_NOUN_PHRASE) || curr.containsChild(CTLibEn.M_NNx))
+		if (!curr.isConstituentTagAny(S_NOUN_PHRASE) || curr.containsChild(PTBLib.M_NNx))
 			return false;
 		
-		CTNode fst = curr.getFirstChild(CTLibEn.M_NP_NML);
-		while (fst != null && fst.containsChild(mt_pos))
-			fst = fst.getRightNearestSibling(CTLibEn.M_NP_NML);
+		CTNode fst = curr.getFirstChild(PTBLib.M_NP_NML);
+		while (fst != null && fst.containsChild(MT_POS))
+			fst = fst.getRightNearestSibling(PTBLib.M_NP_NML);
 		
 		if (fst == null || fst.getC2DInfo().hasHead())	return false;
 
@@ -641,8 +625,8 @@ public class EnglishC2DConverter extends C2DConverter
 			if (snd.getC2DInfo().hasHead())	continue;
 			
 			if ((snd.isConstituentTagAny(S_NOUN_PHRASE) && !hasAdverbialTag(snd)) ||
-				(snd.hasFunctionTagAny(CTTagEn.F_HLN, CTTagEn.F_TTL)) ||
-				(snd.isConstituentTag(CTTagEn.C_RRC) && snd.containsChild(mt_np_prd)))
+				(snd.hasFunctionTagAny(PTBTag.F_HLN, PTBTag.F_TTL)) ||
+				(snd.isConstituentTag(PTBTag.C_RRC) && snd.containsChild(MT_NP_PRD)))
 			{
 				snd.getC2DInfo().setHead(fst, DEPTagEn.DEP_APPOS);
 				hasAppo = true;
@@ -656,22 +640,22 @@ public class EnglishC2DConverter extends C2DConverter
 	{
 		CTNode parent = node.getParent();
 		
-		if (node.isConstituentTag(CTTagEn.C_S) && !node.containsChild(CTLibEn.M_VP))
+		if (node.isConstituentTag(PTBTag.C_S) && !node.containsChild(PTBLib.M_VP))
 		{
-			CTNode sbj = node.getFirstChild(mt_sbj);
-			CTNode prd = node.getFirstChild(mt_prd);
+			CTNode sbj = node.getFirstChild(PTBLib.M_SBJ);
+			CTNode prd = node.getFirstChild(PTBLib.M_PRD);
 			
 			if (sbj != null && prd != null)
 			{
-				if (parent.isConstituentTag(CTTagEn.C_SQ))
+				if (parent.isConstituentTag(PTBTag.C_SQ))
 				{
-					CTNode vb = parent.getFirstChild(CTLibEn.M_VBx);
+					CTNode vb = parent.getFirstChild(PTBLib.M_VBx);
 					
 					if (vb != null)
 					{
 						sbj.getC2DInfo().setHead(vb, getDEPLabel(sbj, parent, vb));
 						node.setConstituentTag(prd.getConstituentTag());
-						node.addFunctionTag(CTTagEn.F_PRD);
+						node.addFunctionTag(PTBTag.F_PRD);
 					}
 				}
 				
@@ -696,7 +680,7 @@ public class EnglishC2DConverter extends C2DConverter
 		if (isMeta(child))
 			return 2;
 		
-		if (child.isEmptyCategoryTerminal() || POSLibEn.isPunctuation(child.getConstituentTag()))
+		if (child.isEmptyCategoryTerminal() || PTBLib.isPunctuation(child.getConstituentTag()))
 			return 3;
 		
 		return 0;
@@ -725,7 +709,7 @@ public class EnglishC2DConverter extends C2DConverter
 			return label;
 		
 		// coordination
-		if (C.isConstituentTag(CTTagEn.C_UCP))
+		if (C.isConstituentTag(PTBTag.C_UCP))
 		{
 			c.addFunctionTags(C.getFunctionTagSet());
 			return getDEPLabel(c, P, p);
@@ -778,21 +762,21 @@ public class EnglishC2DConverter extends C2DConverter
 			}
 		}
 		
-		if (C.isConstituentTag(CTTagEn.C_SBAR) || isXcomp(C) || (P.isConstituentTag(CTTagEn.C_PP) && CTLibEn.isClause(C)))
+		if (C.isConstituentTag(PTBTag.C_SBAR) || isXcomp(C) || (P.isConstituentTag(PTBTag.C_PP) && PTBLib.isClause(C)))
 			return DEPTagEn.DEP_ADVCL;
 		
 		if (C.isConstituentTagAny(S_CCOMP))
 			return DEPTagEn.DEP_CCOMP;
 		
-		if (P.isConstituentTag(CTTagEn.C_QP))
+		if (P.isConstituentTag(PTBTag.C_QP))
 		{
-//			if (C.isConstituentTag(CTLibEn.POS_CD) && p.isConstituentTag(CTLibEn.POS_CD))
+//			if (C.isConstituentTag(CTLibEn.P_CD) && p.isConstituentTag(CTLibEn.P_CD))
 //				return DEPTagEn.DEP_COMPOUND;
 //			else
 			return DEPTagEn.DEP_QMOD;
 		}
 		
-		if (P.isConstituentTagAny(S_NMOD_PARENT) || POSLibEn.isNoun(p.getConstituentTag()))
+		if (P.isConstituentTagAny(S_NMOD_PARENT) || PTBLib.isNoun(p.getConstituentTag()))
 			return getNmodLabel(C, d);
 		
 		if (c != null)
@@ -800,16 +784,16 @@ public class EnglishC2DConverter extends C2DConverter
 			if ((label = getSimpleLabel(c)) != null)
 				return label;
 			
-			if (d.isConstituentTag(CTLibEn.POS_IN))
+			if (d.isConstituentTag(PTBTag.P_IN))
 				return DEPTagEn.DEP_PREP;
 			
-			if (POSLibEn.isAdverb(d.getConstituentTag()))
+			if (PTBLib.isAdverb(d.getConstituentTag()))
 				return DEPTagEn.DEP_ADVMOD;
 		}
 		
-		if ((P.isConstituentTagAny(S_ADVB_PHRASE) || POSLibEn.isAdjective(p.getConstituentTag()) || POSLibEn.isAdverb(p.getConstituentTag())))
+		if ((P.isConstituentTagAny(S_ADVB_PHRASE) || PTBLib.isAdjective(p.getConstituentTag()) || PTBLib.isAdverb(p.getConstituentTag())))
 		{
-			if (C.isConstituentTagAny(S_NPADVMOD) || POSLibEn.isNoun(C.getConstituentTag()))
+			if (C.isConstituentTagAny(S_NPADVMOD) || PTBLib.isNoun(C.getConstituentTag()))
 				return DEPTagEn.DEP_NPADVMOD;
 			
 			return DEPTagEn.DEP_ADVMOD;
@@ -823,14 +807,14 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean hasAdverbialTag(CTNode node)
 	{
-		return node.hasFunctionTag(CTTagEn.F_ADV) || DSUtils.hasIntersection(node.getFunctionTagSet(), s_semTags);
+		return node.hasFunctionTag(PTBTag.F_ADV) || DSUtils.hasIntersection(node.getFunctionTagSet(), SEM_TAGS);
 	}
 	
 	private String getObjectLabel(CTNode node)
 	{
 		if (node.isConstituentTagAny(S_NOUN_PHRASE))
 		{
-			if (node.hasFunctionTag(CTTagEn.F_PRD))
+			if (node.hasFunctionTag(PTBTag.F_PRD))
 				return DEPTagEn.DEP_ATTR;
 			else
 				return DEPTagEn.DEP_DOBJ;
@@ -841,16 +825,16 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private String getSubjectLabel(CTNode C, CTNode d)
 	{
-		if (C.hasFunctionTag(CTTagEn.F_SBJ))
+		if (C.hasFunctionTag(PTBTag.F_SBJ))
 		{
-			if (CTLibEn.isClause(C))
+			if (PTBLib.isClause(C))
 				return DEPTagEn.DEP_CSUBJ;
-			else if (d.isConstituentTag(CTLibEn.POS_EX) || d.isWordFormIgnoreCase("there"))
+			else if (d.isConstituentTag(PTBTag.P_EX) || d.isWordFormIgnoreCase("there"))
 				return DEPTagEn.DEP_EXPL;
 			else
 				return DEPTagEn.DEP_NSUBJ;
 		}
-		else if (C.hasFunctionTag(CTTagEn.F_LGS))
+		else if (C.hasFunctionTag(PTBTag.F_LGS))
 			return DEPTagEn.DEP_AGENT;
 		
 		return null;
@@ -869,10 +853,10 @@ public class EnglishC2DConverter extends C2DConverter
 		if (C.isConstituentTagAny(S_PREP_PHRASE))
 			return DEPTagEn.DEP_PREP;
 		
-		if (CTLibEn.isCorrelativeConjunction(C))
+		if (PTBLib.isCorrelativeConjunction(C))
 			return DEPTagEn.DEP_PRECONJ;
 		
-		if (CTLibEn.isConjunction(C))
+		if (PTBLib.isConjunction(C))
 			return DEPTagEn.DEP_CC;
 		
 		if (isPrt(C))
@@ -888,7 +872,7 @@ public class EnglishC2DConverter extends C2DConverter
 	{
 		CTNode d = C.getC2DInfo().getTerminalHead();
 		
-		if (POSLibEn.isPunctuation(C.getConstituentTag()) || POSLibEn.isPunctuation(d.getConstituentTag()))
+		if (PTBLib.isPunctuation(C.getConstituentTag()) || PTBLib.isPunctuation(d.getConstituentTag()))
 			return DEPTagEn.DEP_PUNCT;
 		
 		if (isIntj(C) || isIntj(d))
@@ -913,14 +897,14 @@ public class EnglishC2DConverter extends C2DConverter
 
 		CTNode vp;
 		
-		if (POSLibEn.isVerb(node.getConstituentTag()) && (vp = node.getRightNearestSibling(CTLibEn.M_VP)) != null)
+		if (PTBLib.isVerb(node.getConstituentTag()) && (vp = node.getRightNearestSibling(PTBLib.M_VP)) != null)
 		{
 			if (ENUtils.isPassiveAuxiliaryVerb(node.getWordForm()))
 			{
-				if (vp.containsChild(CTLibEn.M_VBD_VBN))
+				if (vp.containsChild(PTBLib.M_VBD_VBN))
 					return DEPTagEn.DEP_AUXPASS;
 				
-				if (!vp.containsChild(CTLibEn.M_VBx) && (vp = vp.getFirstChild(CTLibEn.M_VP)) != null && vp.containsChild(CTLibEn.M_VBD_VBN))
+				if (!vp.containsChild(PTBLib.M_VBx) && (vp = vp.getFirstChild(PTBLib.M_VP)) != null && vp.containsChild(PTBLib.M_VBD_VBN))
 					return DEPTagEn.DEP_AUXPASS;
 			}
 			
@@ -938,16 +922,16 @@ public class EnglishC2DConverter extends C2DConverter
 		if (C.isConstituentTagAny(S_DET))
 			return DEPTagEn.DEP_DET;
 		
-//		if (C.isConstituentTagAny(S_NN) || (C.matches(CTLibEn.M_NNx) || C.isConstituentTag(CTLibEn.POS_FW)))
+//		if (C.isConstituentTagAny(S_NN) || (C.matches(CTLibEn.M_NNx) || C.isConstituentTag(CTLibEn.P_FW)))
 //			return DEPTagEn.DEP_COMPOUND;
 		
-//		if (C.isConstituentTagAny(S_NUM) || d.isConstituentTag(CTLibEn.POS_CD))
+//		if (C.isConstituentTagAny(S_NUM) || d.isConstituentTag(CTLibEn.P_CD))
 //			return DEPTagEn.DEP_NUMMOD;
 
-		if (C.isConstituentTag(CTLibEn.POS_POS))
+		if (C.isConstituentTag(PTBTag.P_POS))
 			return DEPTagEn.DEP_CASE;
 		
-		if (C.isConstituentTag(CTLibEn.POS_PDT))
+		if (C.isConstituentTag(PTBTag.P_PDT))
 			return DEPTagEn.DEP_PREDET;
 		
 		return DEPTagEn.DEP_NMOD;
@@ -955,7 +939,7 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private String getPmodLabel(CTNode C, CTNode d)
 	{
-		if (C.isConstituentTagAny(S_NOUN_PHRASE) || POSLibEn.isRelativizer(d.getConstituentTag()))
+		if (C.isConstituentTagAny(S_NOUN_PHRASE) || PTBLib.isRelativizer(d.getConstituentTag()))
 			return DEPTagEn.DEP_POBJ;
 		else
 			return DEPTagEn.DEP_PCOMP;	
@@ -963,7 +947,7 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean isHyph(CTNode node)
 	{
-		return node.isConstituentTag(CTLibEn.POS_HYPH);
+		return node.isConstituentTag(PTBTag.P_HYPH);
 	}
 	
 //	private boolean isAmod(CTNode node)
@@ -973,7 +957,7 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean isAdv(CTNode C)
 	{
-		if (C.isConstituentTag(CTTagEn.C_ADVP) || POSLibEn.isAdverb(C.getConstituentTag()))
+		if (C.isConstituentTag(PTBTag.C_ADVP) || PTBLib.isAdverb(C.getConstituentTag()))
 		{
 			CTNode P = C.getParent();
 			
@@ -998,7 +982,7 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean isPrn(CTNode node)
 	{
-		return node.isConstituentTag(CTTagEn.C_PRN);
+		return node.isConstituentTag(PTBTag.C_PRN);
 	}
 	
 	private boolean isPrt(CTNode curr)
@@ -1008,7 +992,7 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean isAcomp(CTNode node)
 	{
-		return node.isConstituentTag(CTTagEn.C_ADJP);
+		return node.isConstituentTag(PTBTag.C_ADJP);
 	}
 	
 	private boolean isOprd(CTNode curr)
@@ -1016,9 +1000,9 @@ public class EnglishC2DConverter extends C2DConverter
 		if (curr.hasFunctionTag(DEPTagEn.DEP_OPRD))
 			return true;
 		
-		if (curr.isConstituentTag(CTTagEn.C_S) && !curr.containsChild(CTLibEn.M_VP) && curr.containsChild(mt_prd))
+		if (curr.isConstituentTag(PTBTag.C_S) && !curr.containsChild(PTBLib.M_VP) && curr.containsChild(PTBLib.M_PRD))
 		{
-			CTNode sbj = curr.getFirstChild(mt_sbj);
+			CTNode sbj = curr.getFirstChild(PTBLib.M_SBJ);
 			return sbj != null && sbj.isEmptyCategoryTerminal();
 		}
 		
@@ -1031,23 +1015,23 @@ public class EnglishC2DConverter extends C2DConverter
 			return true;
 		
 		if (parent.isConstituentTagAny(S_POSS_PARENT))
-			return curr.containsChild(mt_pos);
+			return curr.containsChild(MT_POS);
 		
 		return false;
 	}
 	
 	private boolean isXcomp(CTNode node)
 	{
-		if (node.isConstituentTag(CTTagEn.C_S))
+		if (node.isConstituentTag(PTBTag.C_S))
 		{
-			CTNode sbj = node.getFirstChild(mt_sbj);
+			CTNode sbj = node.getFirstChild(PTBLib.M_SBJ);
 			
-			if (node.containsChild(CTLibEn.M_VP) && (sbj == null || sbj.isEmptyCategoryTerminal()))
+			if (node.containsChild(PTBLib.M_VP) && (sbj == null || sbj.isEmptyCategoryTerminal()))
 				return true;
 		}
 		else if (node.hasFunctionTag(DEPTagEn.DEP_RELCL))
 		{
-			CTNode s = node.getFirstChild(mt_s);
+			CTNode s = node.getFirstChild(MT_S);
 			if (s != null)	return isXcomp(s);
 		}
 
@@ -1059,14 +1043,14 @@ public class EnglishC2DConverter extends C2DConverter
 		if (node.isConstituentTagAny(S_CCOMP))
 			return true;
 		
-		if (node.isConstituentTag(CTTagEn.C_SBAR))
+		if (node.isConstituentTag(PTBTag.C_SBAR))
 		{
 			CTNode comp;
 			
-			if ((comp = node.getFirstChild(mt_none)) != null && comp.isWordForm(CTTagEn.E_ZERO))
+			if ((comp = node.getFirstChild(MT_NONE)) != null && comp.isWordForm(PTBTag.E_ZERO))
 				return true;
 			
-			if ((comp = node.getFirstChild(mt_in_dt)) != null)
+			if ((comp = node.getFirstChild(MT_IN_DT)) != null)
 			{
 				if (isComplm(comp))
 				{
@@ -1076,7 +1060,7 @@ public class EnglishC2DConverter extends C2DConverter
 				}
 			}
 			
-			if (node.hasFunctionTag(DEPTagEn.DEP_RELCL) || node.containsChild(CTLibEn.M_WHx))
+			if (node.hasFunctionTag(DEPTagEn.DEP_RELCL) || node.containsChild(PTBLib.M_WHx))
 				return true;
 		}
 		
@@ -1085,28 +1069,28 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean isNfmod(CTNode curr)
 	{
-		return isXcomp(curr) || curr.isConstituentTag(CTTagEn.C_VP);
+		return isXcomp(curr) || curr.isConstituentTag(PTBTag.C_VP);
 	}
 	
 	protected boolean isInfMod(CTNode curr)
 	{
-		CTNode vp = curr.isConstituentTag(CTTagEn.C_VP) ? curr : curr.getFirstDescendant(CTLibEn.M_VP);
+		CTNode vp = curr.isConstituentTag(PTBTag.C_VP) ? curr : curr.getFirstDescendant(PTBLib.M_VP);
 		
 		if (vp != null)
 		{
-			CTNode vc = vp.getFirstChild(CTLibEn.M_VP);
+			CTNode vc = vp.getFirstChild(PTBLib.M_VP);
 			
 			while (vc != null)
 			{
 				vp = vc;
 				
-				if (vp.getLeftNearestSibling(mt_to) != null)
+				if (vp.getLeftNearestSibling(MT_TO) != null)
 					return true;
 				
-				vc = vp.getFirstChild(CTLibEn.M_VP);
+				vc = vp.getFirstChild(PTBLib.M_VP);
 			}
 			
-			return vp.containsChild(mt_to);
+			return vp.containsChild(MT_TO);
 		}
 		
 		return false;
@@ -1114,7 +1098,7 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean isRcmod(CTNode curr)
 	{
-		return curr.isConstituentTag(CTTagEn.C_RRC) || curr.hasFunctionTag(DEPTagEn.DEP_RELCL) || (curr.isConstituentTag(CTTagEn.C_SBAR) && curr.containsChild(CTLibEn.M_WHx));
+		return curr.isConstituentTag(PTBTag.C_RRC) || curr.hasFunctionTag(DEPTagEn.DEP_RELCL) || (curr.isConstituentTag(PTBTag.C_SBAR) && curr.containsChild(PTBLib.M_WHx));
 	}
 	
 	private boolean isComplm(CTNode curr)
@@ -1124,7 +1108,7 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	// ============================= Get a dependency tree =============================
 	
-	private NLPNode[] getDEPTree(CTTree cTree)
+	private NLPNode[] getDEPTree(CTTree cTree, Map<CTNode,Deque<CTNode>> xsubj, Map<CTNode,Deque<CTNode>> rnr)
 	{
 		NLPNode[] dTree = initDEPTree(cTree);
 		addDEPHeads(dTree, cTree);
@@ -1133,7 +1117,7 @@ public class EnglishC2DConverter extends C2DConverter
 			throw new UnknownFormatConversionException("Cyclic depedency relation.");
 
 		DEPLibEn.enrichLabels(dTree);
-		addSecondaryHeads(dTree);
+		addSecondaryHeads(dTree, xsubj, rnr);
 		addFeats(dTree, cTree, cTree.getRoot());
 		
 		if (cTree.hasPropBank())
@@ -1174,7 +1158,7 @@ public class EnglishC2DConverter extends C2DConverter
 			{
 				label = cNode.getC2DInfo().getLabel();
 				
-				if (cNode.isConstituentTagAny(S_MARK) && cNode.getParent().isConstituentTag(CTTagEn.C_SBAR))// && !label.equals(DEPTagEn.DEP_COMPLM))
+				if (cNode.isConstituentTagAny(S_MARK) && cNode.getParent().isConstituentTag(PTBTag.C_SBAR))// && !label.equals(DEPTagEn.DEP_COMPLM))
 					label = DEPTagEn.DEP_MARK;
 				
 				dNode.setDependencyHead(dTree[headId], label);
@@ -1189,23 +1173,23 @@ public class EnglishC2DConverter extends C2DConverter
 	}
 	
 	/** Called by {@link #getDEPTree(CTTree)}. */
-	private void addSecondaryHeads(NLPNode[] dTree)
+	private void addSecondaryHeads(NLPNode[] dTree, Map<CTNode,Deque<CTNode>> xsubj, Map<CTNode,Deque<CTNode>> rnr)
 	{
-		for (CTNode curr : m_xsubj.keySet())
+		for (CTNode curr : xsubj.keySet())
 		{
 			if (curr.hasC2DInfo())
-				addSecondaryHeadsAux(dTree, curr, m_xsubj.get(curr), DEPTagEn.DEP2_XSUBJ);
+				addSecondaryHeadsAux(dTree, curr, xsubj.get(curr), DEPTagEn.DEP2_XSUBJ);
 		}
 		
-		for (CTNode curr : m_rnr.keySet())
+		for (CTNode curr : rnr.keySet())
 		{
 			if (curr.getParent() == null)
 				continue;
 			
 			if (curr.getParent().getC2DInfo().getNonTerminalHead() != curr)
-				addSecondaryHeadsAux(dTree, curr, m_rnr.get(curr), DEPTagEn.DEP2_RNR);
+				addSecondaryHeadsAux(dTree, curr, rnr.get(curr), DEPTagEn.DEP2_RNR);
 			else
-				addSecondaryChildren(dTree, curr, m_rnr.get(curr), DEPTagEn.DEP2_RNR);
+				addSecondaryChildren(dTree, curr, rnr.get(curr), DEPTagEn.DEP2_RNR);
 		}
 	}
 	
@@ -1265,10 +1249,10 @@ public class EnglishC2DConverter extends C2DConverter
 			dNode.addSecondaryHead(getNLPNode(dTree, ante), DEPTagEn.DEP2_GAP);
 		}
 		
-		if ((feat = getFunctionTags(cNode, s_semTags)) != null)
+		if ((feat = getFunctionTags(cNode, SEM_TAGS)) != null)
 			cNode.getC2DInfo().putFeat(NLPUtils.FEAT_SEM, feat);
 		
-		if ((feat = getFunctionTags(cNode, s_synTags)) != null)
+		if ((feat = getFunctionTags(cNode, SYN_TAGS)) != null)
 			cNode.getC2DInfo().putFeat(NLPUtils.FEAT_SYN, feat);
 
 		for (CTNode child : cNode.getChildrenList())
@@ -1293,7 +1277,7 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private NLPNode getNLPNode(NLPNode[] dTree, CTNode cNode)
 	{
-		if (cNode.isConstituentTag(CTTagEn.TOP)) return null;
+		if (cNode.isConstituentTag(CTTag.TOP)) return null;
 		CTNode cHead = cNode.isTerminal() ? cNode : cNode.getC2DInfo().getTerminalHead();
 		return cHead.isEmptyCategory() ? null : dTree[cHead.getTokenID()+1];
 //		return cNode.isTerminal() ? dTree.get(cNode.getTokenID()+1) : dTree.get(cNode.getC2DInfo().getTerminalHead().getTokenID()+1);
@@ -1328,7 +1312,7 @@ public class EnglishC2DConverter extends C2DConverter
 	{
 		for (CTNode child : curr.getChildrenList())
 		{
-			if (CTLibEn.isEditedPhrase(child))
+			if (PTBLib.isEditedPhrase(child))
 			{
 				for (CTNode sub : child.getTokenList())
 					set.add(sub.getTokenID()+1);
@@ -1383,7 +1367,7 @@ public class EnglishC2DConverter extends C2DConverter
 				
 				if ((c = getReferentArgument(cNode)) != null)
 				{
-					if ((c = CTLibEn.getRelativizer(c)) != null && (c = c.getAntecedent()) != null)
+					if ((c = PTBLib.getRelativizer(c)) != null && (c = c.getAntecedent()) != null)
 					{
 						d = getNLPNode(dTree, c);
 						
@@ -1408,14 +1392,14 @@ public class EnglishC2DConverter extends C2DConverter
 	{
 		CTNode ref;
 		
-		if ((ref = CTLibEn.getWhPhrase(node)) != null)
+		if ((ref = PTBLib.getWhPhrase(node)) != null)
 			return ref;
 		
-		if (node.isConstituentTag(CTTagEn.C_PP))
+		if (node.isConstituentTag(PTBTag.C_PP))
 		{
 			for (CTNode child : node.getChildrenList()) 
 			{
-				if ((ref = CTLibEn.getWhPhrase(child)) != null)
+				if ((ref = PTBLib.getWhPhrase(child)) != null)
 					return ref;
 			}
 		}
@@ -1505,8 +1489,8 @@ public class EnglishC2DConverter extends C2DConverter
 	private void finalize(NLPNode[] tree)
 	{
 		finalizeLabels(tree);
-		finalizeCompound(tree, POSTagEn.POS_NN, DEPTagEn.DEP_NMOD , n -> n.getPartOfSpeechTag().startsWith(POSTagEn.POS_NNP) || n.isDependencyLabel(DEPTagEn.DEP_NMOD) || n.isDependencyLabel(DEPTagEn.DEP_DEP));
-		finalizeCompound(tree, POSTagEn.POS_CD, DEPTagEn.DEP_QMOD, n -> n.isDependencyLabel(DEPTagEn.DEP_QMOD) || n.isDependencyLabel(DEPTagEn.DEP_DEP));
+		finalizeCompound(tree, PTBTag.P_NN, DEPTagEn.DEP_NMOD , n -> n.getPartOfSpeechTag().startsWith(PTBTag.P_NNP) || n.isDependencyLabel(DEPTagEn.DEP_NMOD) || n.isDependencyLabel(DEPTagEn.DEP_DEP));
+		finalizeCompound(tree, PTBTag.P_CD, DEPTagEn.DEP_QMOD, n -> n.isDependencyLabel(DEPTagEn.DEP_QMOD) || n.isDependencyLabel(DEPTagEn.DEP_DEP));
 	}
 	
 	private void finalizeLabels(NLPNode[] tree)
@@ -1524,12 +1508,12 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean isDative(NLPNode node)
 	{
-		if (!POSLibEn.isVerb(node.getDependencyHead().getPartOfSpeechTag())) return false;
+		if (!PTBLib.isVerb(node.getDependencyHead().getPartOfSpeechTag())) return false;
 //		if (node.isDependencyLabel(DEPTagEn.DEP_IOBJ)) return true;
 		String feat;
 		
-		if ((feat = node.getFeat(NLPUtils.FEAT_SYN)) != null && DSUtils.toHashSet(Splitter.splitCommas(feat)).contains(CTTagEn.F_DTV)) return true;
-		if (CTTagEn.F_BNF.equals(node.getFeat(NLPUtils.FEAT_SEM))) return true;
+		if ((feat = node.getFeat(NLPUtils.FEAT_SYN)) != null && DSUtils.toHashSet(Splitter.splitCommas(feat)).contains(PTBTag.F_DTV)) return true;
+		if (PTBTag.F_BNF.equals(node.getFeat(NLPUtils.FEAT_SEM))) return true;
 		
 		return false;
 	}
@@ -1544,7 +1528,7 @@ public class EnglishC2DConverter extends C2DConverter
 	private boolean isVocative(NLPNode node)
 	{
 		String feat;
-		return (feat = node.getFeat(NLPUtils.FEAT_SEM)) != null && feat.equals(CTLibEn.F_VOC);
+		return (feat = node.getFeat(NLPUtils.FEAT_SEM)) != null && feat.equals(PTBLib.F_VOC);
 	}
 	
 	private void finalizeCompound(NLPNode[] tree, String pos, String label, Predicate<NLPNode> p)
@@ -1567,7 +1551,7 @@ public class EnglishC2DConverter extends C2DConverter
 						node.setDependencyLabel(DEPTagEn.DEP_COMPOUND);
 						i = j;
 					}
-					else if (node.isPartOfSpeechTag(POSTagEn.POS_HYPH))
+					else if (node.isPartOfSpeechTag(PTBTag.P_HYPH))
 						continue;
 					else
 						break;
