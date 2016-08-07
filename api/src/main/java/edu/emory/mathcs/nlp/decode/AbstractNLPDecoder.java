@@ -28,6 +28,7 @@ import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -46,6 +48,19 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 /**
+ * The decoder of the NLP4J package.
+ * This class provides the API to decoding via the various components. The core API
+ * is the methods that accept and return {@link AbstractNLPNode} objects. Convenience
+ * methods handle input and output from files.
+ * <br>
+ * The simplest way to set up a decoder is by calling the {@link #AbstractNLPDecoder(DecodeConfig)}
+ * or {@link #init(DecodeConfig)}. However, an application can have finer control over the process
+ * by calling the no-args constructor and then calling {@link #setComponents(List)}, after
+ * creating the component objects with the help of methods in {@link edu.emory.mathcs.nlp.common.util.NLPUtils}.
+ * Applications should include {@link GlobalLexica} as the first component, and then other components as needed.
+ * Note that if you do not initialize from a {@code DecodeConfig},
+ * you must call {@link #setReaderFieldMap(Object2IntMap)} in order to use TSV files.
+ *
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
@@ -57,7 +72,7 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 	
 	volatile private List<NLPComponent<N>> components;
 	volatile private Tokenizer tokenizer;
-	private DecodeConfig decode_config;
+	private Object2IntMap<String> readerFieldMap;
 
 //	======================================== CONSTRUCTORS ========================================
 	
@@ -73,12 +88,12 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		init(new DecodeConfig(configuration));
 	}
 	
-	public void init(DecodeConfig config)
+	public void init(DecodeConfig decode_config)
 	{
 		List<NLPComponent<N>> components = new ArrayList<>();
-		Language language = config.getLanguage();
-		decode_config = config;
-		
+		Language language = decode_config.getLanguage();
+		readerFieldMap = decode_config.getReaderFieldMap();
+
 		components.add(new GlobalLexica<>(decode_config.getDocumentElement()));
 		
 		LOG.info("Loading tokenizer");
@@ -131,6 +146,10 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 	{
 		this.tokenizer = tokenizer;
 	}
+
+	public void setReaderFieldMap(Object2IntMap<String> map) {
+		this.readerFieldMap = map;
+	}
 	
 	public void setComponents(List<NLPComponent<N>> components)
 	{
@@ -155,12 +174,12 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 	
 	public String decode(String s, String format)
 	{
-		return new String(decodeByteArray(s, format));
+		return new String(decodeByteArray(s, format), StandardCharsets.UTF_8);
 	}
 	
 	public byte[] decodeByteArray(String s, String format)
 	{
-		InputStream bin = new ByteArrayInputStream(s.getBytes());
+		InputStream bin = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		
 		decode(bin, bout, format);
@@ -313,7 +332,7 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 	
 	public TSVReader<N> createTSVReader()
 	{
-		return new TSVReader<N>(decode_config.getReaderFieldMap())
+		return new TSVReader<N>(readerFieldMap)
 		{
 			@Override
 			protected N create() {return AbstractNLPDecoder.this.create();}

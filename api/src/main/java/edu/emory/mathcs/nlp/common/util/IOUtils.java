@@ -366,6 +366,26 @@ public class IOUtils
 		return wrapStream(baseStream, pathname);
 	}
 
+	/**
+	 * Return a stream, set up to decompress as needed, for a resource found via classloading.
+	 * @param classpath the pathname of the resource.
+	 * @param classLoader the classloader to search. If {@code null}, this method uses
+	 *                    the thread context class loader.
+	 * @return the stream.
+	 * @throws IOException if something goes wrong.
+	 */
+	static public InputStream createArtifactInputStreamForClasspath(String classpath, ClassLoader classLoader) throws IOException {
+		if (classLoader == null) {
+			classLoader = Thread.currentThread().getContextClassLoader();
+		}
+		InputStream baseStream = classLoader.getResourceAsStream(classpath);
+		if (baseStream == null) {
+			throw new IOException(String.format("Could not find %s in provided class loader.",
+					classpath));
+		}
+		return wrapStream(baseStream, classpath);
+	}
+
 	static public InputStream createArtifactInputStream(Path path) throws IOException
 	{
 		String name = path.getFileName().toString();
@@ -392,6 +412,18 @@ public class IOUtils
 	 * @see #createArtifactInputStream(String)
 	 */
 	static public ObjectInputStream createArtifactObjectInputStream(String pathname) throws IOException
+	{
+		return new ObjectInputStream(createArtifactInputStream(pathname));
+	}
+
+	/**
+	 * Open an input stream that reads a {@link Path} in Serialized java format.
+	 * @param pathname the pathname.
+	 * @return the stream.
+	 * @throws IOException if something goes wrong.
+	 * @see #createArtifactInputStream(String)
+	 */
+	static public ObjectInputStream createArtifactObjectInputStream(Path pathname) throws IOException
 	{
 		return new ObjectInputStream(createArtifactInputStream(pathname));
 	}

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.List;
@@ -34,6 +35,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * This class is a holder for data resources shared across multiple components.
+ * Each of these items is usually stored as a {@link java.io.Serializable} object
+ * written with {@link java.io.ObjectOutputStream}, but an application might choose
+ * to make other arrangements. If the caller does not choose to initialize from an XML
+ * descriptor, but rather to call the various {@code set} methods, the caller must call
+ * {@link #getGlobalLexicon(InputStream, Field, String)} to wrap the object in a
+ * {@link GlobalLexicon}.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<N>
@@ -56,13 +64,27 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 	protected GlobalLexicon<Set<String>>                    stop_words;
 	
 //	=================================== CONSTRUCTOR ===================================
+
+	/**
+	 * Initialize the lexica with no contents.
+	 * Call this if you plan to call the various 'set' methods for yourself.
+	 */
+	public GlobalLexica() {
+		//
+	}
 	
-	/** @param in configuration xml. */
+	/**
+	 * Initialize from an XML decoder descriptor read from a stream.
+	 * @param in configuration xml. */
 	public GlobalLexica(InputStream in)
 	{
 		this(XMLUtils.getDocumentElement(in));
 	}
-	
+
+	/**
+	 * Initialize from an XML decoder descriptor represented as an XML DOM.
+	 * @param doc the document object of the DOM.
+	 */
 	public GlobalLexica(Element doc)
 	{
 		Element eLexica = XMLUtils.getFirstElementByTagName(doc, LEXICA);
@@ -99,6 +121,23 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 		catch (Exception e) {e.printStackTrace();}
 
 		return new GlobalLexicon<>(lexicon, field, name);
+	}
+
+	/**
+	 * Read a global lexicon resource from a stream in Java serialized object format.
+	 * The caller is responsible for decompression if appropriate.
+	 * @param objectInput the input data.
+	 * @param field the {@link Field} that identifies the resource.
+	 * @param name a name used in diagnostics.
+	 * @param <T> the underlying type of the item. See {@link GlobalLexica} for these.
+	 * @return the lexicon item.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> GlobalLexicon<T> getGlobalLexicon(InputStream objectInput, Field field, String name) throws IOException, ClassNotFoundException {
+		try (ObjectInputStream ois = new ObjectInputStream(objectInput)) {
+			T lexicon = (T) ois.readObject();
+			return new GlobalLexicon<T>(lexicon, field, name);
+		}
 	}
 	
 //	=================================== GETTERS/SETTERS ===================================
