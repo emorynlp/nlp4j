@@ -17,7 +17,7 @@
             <groupId>edu.emory.mathcs.nlp</groupId>
             <artifactId>nlp4j-english</artifactId>
             <scope>test</scope>
-            <version>1.1.2</version>
+            <version>1.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -41,7 +41,6 @@
             <version>2.4</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -67,4 +66,34 @@
             <artifactId>commons-csv</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <!-- Allow us to have unit tests that work with the -->
+                    <execution>
+                        <id>unpack</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>edu.emory.mathcs.nlp</groupId>
+                                    <artifactId>nlp4j-english</artifactId>
+                                    <version>1.1.3</version>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/english</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

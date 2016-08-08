@@ -23,6 +23,11 @@ import org.w3c.dom.Element;
 import java.io.InputStream;
 
 /**
+ * This class contains the specification of components to use in a decoder.
+ * It is usually initialized from an XML file, but may be initialized manually
+ * if an application prefers. It stores the names of models for the desired
+ * components as {@code String} values. By convention, these are interpreted
+ * as either a classpath reference or a URI that can be converted to a {@link java.nio.file.Path}.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class DecodeConfig extends NLPConfig<NLPNode>

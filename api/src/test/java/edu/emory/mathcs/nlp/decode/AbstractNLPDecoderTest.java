@@ -15,21 +15,35 @@
 package edu.emory.mathcs.nlp.decode;
 
 import com.google.common.io.Resources;
+import edu.emory.mathcs.nlp.component.template.NLPComponent;
+import edu.emory.mathcs.nlp.component.template.feature.Field;
+import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
+import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexicon;
 import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 
-import org.junit.Ignore;
+import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import org.junit.Test;
+import org.tukaani.xz.XZInputStream;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
  */
 public class AbstractNLPDecoderTest {
 
-	@Ignore
     @Test
     public void createTsv() throws Exception {
         URL configUrl = Resources.getResource("decoder-test-config.xml");
@@ -45,5 +59,40 @@ public class AbstractNLPDecoderTest {
             reader.open(tsvStream);
             reader.readDocument();
         }
+    }
+
+    private <T> GlobalLexicon<T> readLexiconItemFromStream(InputStream stream, Field field, String name) throws IOException, ClassNotFoundException {
+        return GlobalLexica.getGlobalLexicon(stream, field, name);
+    }
+
+    private InputStream openTestResourceFromTarget(String pathname) throws IOException {
+        Path path = getPathForTestResource(pathname);
+        // all these are sitting around XZ-compressed.
+        return new XZInputStream(new BufferedInputStream(Files.newInputStream(path, StandardOpenOption.READ)));
+    }
+
+    private Path getPathForTestResource(String pathname) {
+        Path path = Paths.get("target/english");
+        path = path.resolve(pathname);
+        return path;
+    }
+
+    @Test
+    public void initializeManually() throws Exception {
+        List<NLPComponent<NLPNode>> components = new ArrayList<>();
+        GlobalLexica<NLPNode> lexica = new GlobalLexica<>();
+        lexica.setAmbiguityClasses(readLexiconItemFromStream(openTestResourceFromTarget("edu/emory/mathcs/nlp/lexica/en-ambiguity-classes-simplified-lowercase.xz"),
+                Field.ambiguity_classes, "edu/emory/mathcs/nlp/lexica/en-ambiguity-classes-simplified-lowercase.xz"));
+        lexica.setWordClusters(readLexiconItemFromStream(openTestResourceFromTarget("edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz"),
+                Field.word_clusters, "edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz"));
+        lexica.setWordEmbeddings(readLexiconItemFromStream(openTestResourceFromTarget("edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz"),
+                Field.word_embedding, "edu/emory/mathcs/nlp/lexica/en-word-embeddings-undigitalized.xz"));
+        components.add(lexica);
+        components.add(edu.emory.mathcs.nlp.common.util.NLPUtils.getComponent(getPathForTestResource("edu/emory/mathcs/nlp/models/en-pos.xz")));
+        NLPDecoder decoder = new NLPDecoder();
+        decoder.setComponents(components);
+        decoder.setTokenizer(new EnglishTokenizer());
+        NLPNode[] results = decoder.decode("My dog has fleas.");
+        assertNotNull(results[1].getPartOfSpeechTag());
     }
 }

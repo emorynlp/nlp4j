@@ -15,9 +15,11 @@
  */
 package edu.emory.mathcs.nlp.common.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Array;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -211,4 +213,61 @@ public class NLPUtils
 		
 		return graph;
 	}
+
+    /**
+     * Create a component from an object in a file system. Throw exceptions
+     * for errors reading the data.
+     * @param pathname the object's location.
+     * @param <N> The type of NLP node that this component processes.
+     * @param <S> State manager type.
+     * @return the object.
+     */
+    @SuppressWarnings("unchecked")
+    static public <N extends AbstractNLPNode<N>, S extends NLPState<N>> NLPComponent<N> getComponent(Path pathname) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(pathname)) {
+            OnlineComponent<N, S> component;
+            component = (OnlineComponent<N, S>) oin.readObject();
+            component.setFlag(NLPFlag.DECODE);
+            return component;
+        }
+    }
+
+    /**
+     * Create a component from an object found in the classpath. Throw exceptions
+     * for errors reading the data.
+     * @param classpath the object's location in the classpath.
+     * @param <N> The type of NLP node that this component processes.
+     * @param <S> State manager type.
+     * @return the object.
+     */
+    @SuppressWarnings("unchecked")
+    static public <N extends AbstractNLPNode<N>, S extends NLPState<N>> NLPComponent<N>
+    getComponentFromClasspath(String classpath, ClassLoader classLoader) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream oin = new ObjectInputStream(IOUtils.createArtifactInputStreamForClasspath(classpath, classLoader))) {
+            OnlineComponent<N, S> component;
+            component = (OnlineComponent<N, S>) oin.readObject();
+            component.setFlag(NLPFlag.DECODE);
+            return component;
+        }
+    }
+
+    /**
+     * Create a component from an object read from a stream. It is the caller's responsibility
+     * to arrange for any decompression.
+     * @param <N> The type of NLP node that this component processes.
+     * @param <S> State manager type.
+     * @param inputStream the stream containing the object.
+     * @return the object.
+     */
+    @SuppressWarnings("unchecked")
+    static public <N extends AbstractNLPNode<N>, S extends NLPState<N>> NLPComponent<N>
+    getComponentFromRawStream(InputStream inputStream) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream oin = new ObjectInputStream(inputStream)) {
+            OnlineComponent<N, S> component;
+            component = (OnlineComponent<N, S>) oin.readObject();
+            component.setFlag(NLPFlag.DECODE);
+            return component;
+        }
+    }
+
 }
