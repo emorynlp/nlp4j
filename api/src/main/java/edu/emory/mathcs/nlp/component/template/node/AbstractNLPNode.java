@@ -253,8 +253,14 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> implements S
 	{
 		return getCollectionValue(ambiguity_classes);
 	}
-	
+
+	@Deprecated
 	public List<String> getAmbiguityClasseList()
+	{
+		return ambiguity_classes;
+	}
+
+	public List<String> getAmbiguityClassList()
 	{
 		return ambiguity_classes;
 	}
