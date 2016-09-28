@@ -355,6 +355,8 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	{
 		LOG.info("Reducing:");
 		float rate = 0f;
+
+		component.setFlag(NLPFlag.EVALUATE);
 		
 		DoubleIntPair p;
 		LOG.info(String.format("%8.4f: %7d -> %s", rate, component.getFeatureTemplate().getSparseFeatureSize(), component.getEval().toString()));
