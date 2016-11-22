@@ -65,6 +65,6 @@ public class PatternUtilsTest
 		int i, size = org.length;
 		
 		for (i=0; i<size; i++)
-			assertEquals(rep[i], PatternUtils.revertBrackets(org[i]));
+			assertEquals(rep[i], PatternUtils.revertSymbols(org[i]));
 	}
 }

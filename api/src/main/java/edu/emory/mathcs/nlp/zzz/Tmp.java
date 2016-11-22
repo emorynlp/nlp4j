@@ -15,44 +15,136 @@
  */
 package edu.emory.mathcs.nlp.zzz;
 
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import edu.emory.mathcs.nlp.common.util.FastUtils;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.component.dep.DEPArc;
+import edu.emory.mathcs.nlp.conversion.C2DConverter;
+import edu.emory.mathcs.nlp.conversion.EnglishC2DConverter;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTNode;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTReader;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTTree;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+import edu.emory.mathcs.nlp.lexicon.headrule.HeadRuleMap;
+import edu.emory.mathcs.nlp.lexicon.util.PTBLib;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class Tmp
 {
-	public Tmp(String[] args) throws Exception
+	public Tmp() throws Exception
 	{
-		boolean b = false;
+//		String[] filenames = {"ontonotes.tb","web.tb","question.tb","mipacq.tb","sharp.tb","thyme.tb","craft.tb"};
+		String[] filenames = {"ontonotes.tb","web.tb","bolt.tb","question.tb"};
+		CTReader reader = new CTReader();
+		List<CTNode> tokens;
+		CTTree tree;
+		int sc, wc;
 		
-		for (int i=0; i<10; i++)
-			b |= get();
+		int tsc = 0, twc = 0;
 		
-		System.out.println(b);
-	}
-	
-	boolean get()
-	{
-		System.out.println("HELLO");
-		return true;
-	}
-	
-	boolean skip(String form)
-	{
-		char[] cs = form.toCharArray();
-		if (cs.length < 3 || cs.length > 20) return true;
-		
-		for (int i=0; i<cs.length; i++)
+		for (String filename : filenames)
 		{
-			if (cs[i] == '_' || cs[i] >= 128)
-				return true;
+			reader.open(IOUtils.createFileInputStream("/Users/jdchoi/Documents/Data/english/"+filename));
+			sc = wc = 0;
+			
+			while ((tree = reader.next()) != null)
+			{
+				 tokens = tree.getTokens();
+
+				 if (!tokens.isEmpty())
+				 {
+					 sc++;
+					 wc += tokens.size();					 
+				 }
+			}
+			
+			reader.close();
+			System.out.printf("%15s%10d%10d\n", filename, sc, wc);
+			tsc += sc;
+			twc += wc;
 		}
 		
-		return false;
+		System.out.printf("%15s%10d%10d\n", "total", tsc, twc);
 	}
+	
+	public void traverse(CTNode node, Object2IntMap<String> map)
+	{
+		if (node.isSyntacticTag("ADJP") && node.isFunctionTag("PRD"))
+		{
+			CTNode s = node.getFirstChild(PTBLib.M_S);
+			
+			if (s != null)
+			{
+				CTNode np = s.getFirstChild(PTBLib.M_SBJ);
+				if (np != null && np.isEmptyCategoryPhrase() && np.getFirstTerminal().hasAntecedent())
+				{
+					CTNode jj = node.getChildren().stream().filter(n -> n.isSyntacticTag("JJ")).findFirst().orElse(null);
+					if (jj != null) FastUtils.increment(map, StringUtils.toLowerCase(jj.getForm()));					
+				}
+			}
+		}
+		else
+		{
+			for (CTNode child : node.getChildren())
+				traverse(child, map);
+		}
+	}
+	
+	public Tmp(String filename) throws Exception
+	{
+		final String headrules = "src/main/resources/edu/emory/mathcs/nlp/conversion/en-headrules.txt";
+		final String transferVerbs = "src/main/resources/edu/emory/mathcs/nlp/conversion/en-transfer-verbs.txt";
 		
+		HeadRuleMap headruleMap = new HeadRuleMap(IOUtils.createFileInputStream(headrules));
+		Set<String> transferVerbSet = IOUtils.readSet(IOUtils.createFileInputStream(transferVerbs));
+		C2DConverter conv = new EnglishC2DConverter(headruleMap, transferVerbSet);
+
+		CTReader reader = new CTReader();
+		reader.open(IOUtils.createFileInputStream(filename));
+		NLPNode[] nodes;
+		CTTree cTree;
+		
+//		PrintStream fout = IOUtils.createBufferedPrintStream(filename+".ddg");
+		Object2IntMap<String> map = new Object2IntOpenHashMap<>();
+		int snd = 0;
+		
+		while ((cTree = reader.next()) != null)
+		{
+			nodes = conv.toDependencyGraph(cTree);
+			if (nodes == null) continue;
+			for (int i=1; i<nodes.length; i++)
+			{
+				for (DEPArc<NLPNode> n : nodes[i].getSecondaryHeadList())
+					FastUtils.increment(map, n.getLabel());
+				
+				snd += nodes[i].getSecondaryHeadList().size();
+			}
+//			fout.println(Joiner.join(nodes, "\n", 1)+"\n");
+		}
+		
+//		fout.close();
+		
+		
+		System.out.println(snd);
+		for (Entry<String,Integer> e : map.entrySet())
+			System.out.println(e.getKey()+" "+e.getValue());
+
+		
+	}
+	
 	static public void main(String[] args) throws Exception
 	{
-		new Tmp(args);
+		String filename = "/Users/jdchoi/Documents/Data/english/thyme.tb";
+//		new Tmp(filename);
+		new Tmp();
 	}
 }
 

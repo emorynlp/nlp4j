@@ -22,13 +22,10 @@ package edu.emory.mathcs.nlp.component.template.feature;
 public enum Field
 {
 	// form features
-	word_form,
-	word_form_lowercase,
-	word_form_undigitalized,
-	word_form_simplified,
-	word_form_simplified_lowercase,
-	word_shape,
-	word_shape_lowercase,
+	form,
+	form_lowercase,
+	form_simplified,
+	form_simplified_lowercase,
 	orthographic,
 	orthographic_lowercase,
 	prefix,
@@ -37,7 +34,7 @@ public enum Field
 	// part-of-speech tagging features
 	lemma,
 	feats,
-	part_of_speech_tag,
+	syntactic_tag,
 	ambiguity_classes,
 	
 	// named entity recognition

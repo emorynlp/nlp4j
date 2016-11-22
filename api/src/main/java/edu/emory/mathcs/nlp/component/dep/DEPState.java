@@ -18,9 +18,9 @@ package edu.emory.mathcs.nlp.component.dep;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 import java.util.Arrays;
@@ -71,7 +71,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		for (int i=1; i<nodes.length; i++)
 		{
 			DEPArc<N> o = oracle.get(i);
-			nodes[i].setDependencyHead(o.getNode(), o.getLabel());
+			nodes[i].setParent(o.getNode(), o.getLabel());
 		}
 	}
 	
@@ -90,7 +90,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		String list;
 		
 		// left arc
-		gold = oracle.get(stack.getID());
+		gold = oracle.get(stack.getTokenID());
 		
 		if (gold.isNode(input) && !input.isDescendantOf(stack))
 		{
@@ -99,7 +99,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		}
 				
 		// right arc
-		gold = oracle.get(input.getID());
+		gold = oracle.get(input.getTokenID());
 		
 		if (gold.isNode(stack) && !stack.isDescendantOf(input))
 		{
@@ -121,7 +121,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		// if head(input) < stack
 		N stack = getStack();
 		
-		if (oracle.get(input).getNode().getID() < stack.getID())
+		if (oracle.get(input).getNode().getTokenID() < stack.getTokenID())
 			return false;
 		
 		// if child(input) < stack
@@ -130,7 +130,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 
 		while ((stack = peekStack(--i)) != null)
 		{
-			if (oracle.get(stack.getID()).isNode(input))
+			if (oracle.get(stack.getTokenID()).isNode(input))
 				return false;
 		}
 		
@@ -143,7 +143,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		// if stack has no head
 		N stack = getStack();
 		
-		if (!hasHead && !stack.hasDependencyHead())
+		if (!hasHead && !stack.hasParent())
 			return false;
 		
 		// if child(stack) > input 
@@ -167,13 +167,13 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		
 		if (label.isArc(ARC_LEFT))
 		{
-			stack.setDependencyHead(input, label.getDeprel());
+			stack.setParent(input, label.getDeprel());
 			if (label.isList(LIST_REDUCE)) reduce();
 			else pass();
 		}
 		else if (label.isArc(ARC_RIGHT))
 		{
-			input.setDependencyHead(stack, label.getDeprel());
+			input.setParent(stack, label.getDeprel());
 			if (label.isList(LIST_SHIFT)) shift();
 			else pass();
 		}
@@ -275,7 +275,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 			gold = oracle.get(i);
 			node = nodes[i];
 			
-			if (gold.isNode(node.getDependencyHead()))
+			if (gold.isNode(node.getParent()))
 			{
 				uas++;
 				if (gold.isLabel(node.getDependencyLabel())) las++;

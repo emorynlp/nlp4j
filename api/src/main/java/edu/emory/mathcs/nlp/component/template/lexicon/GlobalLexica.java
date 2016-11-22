@@ -21,8 +21,9 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.util.BILOU;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -290,6 +291,6 @@ public class GlobalLexica<N extends AbstractNLPNode<N>> implements NLPComponent<
 	
 	protected String getKey(N node, Field field)
 	{
-		return node.getValue(field);
+		return node.get(field);
 	}
 }

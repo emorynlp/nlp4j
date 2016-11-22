@@ -17,9 +17,9 @@ package edu.emory.mathcs.nlp.bin;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.decode.AbstractNLPDecoder;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

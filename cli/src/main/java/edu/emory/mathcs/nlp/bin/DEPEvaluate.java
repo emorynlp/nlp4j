@@ -15,20 +15,21 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
-import edu.emory.mathcs.nlp.bin.util.BinUtils;
-import edu.emory.mathcs.nlp.common.util.FileUtils;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
-import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
-import edu.emory.mathcs.nlp.decode.DecodeConfig;
-import edu.emory.mathcs.nlp.decode.NLPDecoder;
-import org.kohsuke.args4j.Option;
-
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.List;
+
+import org.kohsuke.args4j.Option;
+
+import edu.emory.mathcs.nlp.bin.util.BinUtils;
+import edu.emory.mathcs.nlp.common.util.FileUtils;
+import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
+import edu.emory.mathcs.nlp.decode.DecodeConfig;
+import edu.emory.mathcs.nlp.decode.NLPDecoder;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
 
 /**
  * A command-line program that does LAS/UAS evaluation for dependency parsing.
@@ -79,26 +80,26 @@ public class DEPEvaluate {
             String[] goldPos = new String[sentence.length];
             for (int x = 1; x < sentence.length; x++) {
                 // capture gold and erase it so we recreate it in the decode.
-                goldHeads[x] = sentence[x].getDependencyHead().getID();
-                sentence[x].setDependencyHead(null);
+                goldHeads[x] = sentence[x].getParent().getTokenID();
+                sentence[x].setParent(null);
                 goldLabels[x] = sentence[x].getDependencyLabel();
                 sentence[x].setDependencyLabel(null);
                 // also forget the POS tag
                 if (!useGoldPos) {
-                    goldPos[x] = sentence[x].getPartOfSpeechTag();
-                    sentence[x].setPartOfSpeechTag(null);
+                    goldPos[x] = sentence[x].getSyntacticTag();
+                    sentence[x].setSyntacticTag(null);
                 }
             }
             decoder.decode(sentence);
             for (int x = 1; x < sentence.length; x++) {
                 total++;
                 if (!useGoldPos) {
-                    if (goldPos[x].equals(sentence[x].getPartOfSpeechTag())) {
+                    if (goldPos[x].equals(sentence[x].getSyntacticTag())) {
                         pos++;
                     }
                 }
 
-                if (goldHeads[x] == sentence[x].getDependencyHead().getID()) {
+                if (goldHeads[x] == sentence[x].getParent().getTokenID()) {
                     uas++;
                     if (goldLabels[x].equals(sentence[x].getDependencyLabel())) {
                         las++;

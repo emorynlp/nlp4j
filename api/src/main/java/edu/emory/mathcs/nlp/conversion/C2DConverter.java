@@ -19,15 +19,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.emory.mathcs.nlp.common.constituent.CTNode;
-import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.treebank.CTTag;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.conversion.util.C2DInfo;
-import edu.emory.mathcs.nlp.conversion.util.HeadRule;
-import edu.emory.mathcs.nlp.conversion.util.HeadRuleMap;
-import edu.emory.mathcs.nlp.conversion.util.HeadTagSet;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTNode;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTTree;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+import edu.emory.mathcs.nlp.lexicon.headrule.HeadRule;
+import edu.emory.mathcs.nlp.lexicon.headrule.HeadRuleMap;
+import edu.emory.mathcs.nlp.lexicon.headrule.HeadTagSet;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -70,6 +70,7 @@ abstract public class C2DConverter
 	{
 		removeNode(ante);
 		ec.getParent().replaceChild(ec, ante);
+		ante.addFunctionTags(ec.getFunctionTags());
 	}
 	
 	
@@ -87,11 +88,11 @@ abstract public class C2DConverter
 		}
 		
 		// set the heads of all children
-		for (CTNode child : curr.getChildrenList())
+		for (CTNode child : curr.getChildren())
 			setHeads(child);
 		
 		// stop traversing if it is the top node
-		if (curr.isConstituentTag(CTTag.TOP))
+		if (curr.isSyntacticTag(CTTag.TOP))
 			return;
 		
 		// only one child
@@ -102,16 +103,16 @@ abstract public class C2DConverter
 		}
 		
 		// find the headrule of the current node
-		HeadRule rule = headrule_map.get(curr.getConstituentTag());
+		HeadRule rule = headrule_map.get(curr.getSyntacticTag());
 				
 		if (rule == null)
 		{
-			System.err.println("Error: headrules not found for \""+curr.getConstituentTag()+"\"");
+			System.err.println("Error: headrules not found for \""+curr.getSyntacticTag()+"\"");
 			rule = default_rule;
 		}
 		
 		// abstract method
-		setHeadsAux(rule, curr);
+		setHeads(curr, rule);
 	}
 	
 	/**
@@ -193,7 +194,7 @@ abstract public class C2DConverter
 		
 		for (CTNode node : nodes)
 		{
-			if (!node.isEmptyCategoryTerminal())
+			if (!node.isEmptyCategoryPhrase())
 			{
 				if (head != null) return null;
 				head = node;
@@ -206,9 +207,9 @@ abstract public class C2DConverter
 	/** @return the dependency tree converted from the specific constituent tree without head information. */
 	protected NLPNode[] initDEPTree(CTTree cTree)
 	{
-		List<CTNode>  cNodes = cTree.getTokenList();
-		NLPNode[]     dNodes = new NLPNode[cNodes.size()];
-		String form, pos;
+		List<CTNode>  cNodes = cTree.getTokens();
+		NLPNode[]     dNodes = new NLPNode[cNodes.size()+1];
+		String form, pos, lemma;
 		NLPNode dNode;
 		int id;
 		
@@ -217,14 +218,14 @@ abstract public class C2DConverter
 		for (CTNode cNode : cNodes)
 		{
 			id   = cNode.getTokenID() + 1;
-			form = PatternUtils.revertBrackets(cNode.getWordForm());
-			pos  = cNode.getConstituentTag();
-			
-			dNode = new NLPNode(id, form, pos, cNode.getC2DInfo().getFeatMap());
+			form = PatternUtils.revertSymbols(cNode.getForm());
+			lemma = cNode.getLemma();
+			pos  = cNode.getSyntacticTag();
+			dNode = new NLPNode(id, form, lemma, pos, cNode.getC2DInfo().getFeatMap());
 			dNode.setSecondaryHeads(new ArrayList<>());
 			dNodes[id] = dNode;
 		}
-		
+
 		return dNodes;
 	}
 	
@@ -232,7 +233,7 @@ abstract public class C2DConverter
 	 * Sets the head of the specific constituent node using the specific headrule.
 	 * Called by {@link #setHeads(CTNode)}.
 	 */
-	abstract protected void setHeadsAux(HeadRule rule, CTNode curr);
+	abstract protected void setHeads(CTNode curr, HeadRule rule);
 	
 	/**
 	 * @return the head flag of the specific constituent node.

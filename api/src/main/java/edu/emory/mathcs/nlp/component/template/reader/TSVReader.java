@@ -18,8 +18,8 @@ package edu.emory.mathcs.nlp.component.template.reader;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
-import edu.emory.mathcs.nlp.component.template.node.FeatMap;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.lexicon.util.FeatMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 import java.io.BufferedReader;
@@ -155,7 +155,7 @@ public abstract class TSVReader<N extends AbstractNLPNode<N>>
 		FeatMap t = (feats  >= 0) ? new FeatMap(values[feats]) : new FeatMap();
 		
 		N node = create();
-		node.set(id, f, l, p, n, t, null, null);
+		node.init(id, f, l, p, n, t, null, null);
 		return node;
 	}
 	
@@ -172,7 +172,7 @@ public abstract class TSVReader<N extends AbstractNLPNode<N>>
 	{
 		if (BLANK.equals(values[dhead])) return;
 		int headID = Integer.parseInt(values[dhead]);
-		nodes[id].setDependencyHead(nodes[headID], values[deprel]);
+		nodes[id].setParent(nodes[headID], values[deprel]);
 	}
 	
 	protected void initSemanticHeads(int id, String value, N[] nodes)

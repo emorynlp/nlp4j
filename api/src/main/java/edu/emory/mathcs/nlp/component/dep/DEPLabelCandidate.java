@@ -15,8 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.dep;
 
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -70,16 +70,16 @@ public class DEPLabelCandidate<N extends AbstractNLPNode<N>> implements Serializ
 	
 	public IntSet get(N stack, N input)
 	{
-		if (stack.getID() == 0)
+		if (stack.getTokenID() == 0)
 			return X_SHIFT;
 		
 		if (stack.isDescendantOf(input))
 			return NO_X;
 		
 		if (input.isDescendantOf(stack))
-			return stack.hasDependencyHead() ? NO_X : NO_SHIFT_OR_PASS;
+			return stack.hasParent() ? NO_X : NO_SHIFT_OR_PASS;
 		
-		if (!stack.hasDependencyHead())
+		if (!stack.hasParent())
 			return NOT_NO_REDUCE;
 
 		return null;

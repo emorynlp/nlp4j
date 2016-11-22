@@ -15,8 +15,12 @@
  */
 package edu.emory.mathcs.nlp.conversion.util;
 
-import edu.emory.mathcs.nlp.common.constituent.CTNode;
-import edu.emory.mathcs.nlp.component.template.node.FeatMap;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import edu.emory.mathcs.nlp.lexicon.constituency.CTNode;
+import edu.emory.mathcs.nlp.lexicon.util.FeatMap;
 
 /**
  * Constituent to dependency information.
@@ -25,6 +29,7 @@ import edu.emory.mathcs.nlp.component.template.node.FeatMap;
  */
 public class C2DInfo
 {
+	private Set<CTNode> secondary_heads;
 	private CTNode  t_head;
 	private CTNode  n_head;
 	private boolean b_head;
@@ -48,6 +53,8 @@ public class C2DInfo
 			n_head  = null;
 			d_feats = new FeatMap();
 		}
+		
+		secondary_heads = new HashSet<>();
 	}
 	
 	public void setTerminalHead(CTNode head)
@@ -84,6 +91,22 @@ public class C2DInfo
 		
 		setLabel(label);
 		b_head = true;
+	}
+	
+	public void addSecondaryHeads(Collection<CTNode> heads)
+	{
+		for (CTNode head : heads)
+			addSecondaryHead(head);
+	}
+	
+	public void addSecondaryHead(CTNode head)
+	{
+		t_head.getC2DInfo().secondary_heads.add(head.getC2DInfo().getTerminalHead());
+	}
+	
+	public Set<CTNode> getSecondaryHeads()
+	{
+		return secondary_heads;
 	}
 	
 	public String putFeat(String key, String value)

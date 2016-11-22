@@ -18,9 +18,9 @@ package edu.emory.mathcs.nlp.component.ner;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectIntIntTriple;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.state.L2RState;
 import edu.emory.mathcs.nlp.component.template.util.BILOU;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 

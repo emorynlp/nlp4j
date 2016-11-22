@@ -36,6 +36,11 @@ public class FileExtensionFilter implements FilenameFilter
 	@Override
 	public boolean accept(File dir, String name)
 	{
-		return s_extension.equals(StringConst.ASTERISK) || StringUtils.toLowerCase(name).endsWith(s_extension); 
+		return match(name); 
+	}
+	
+	public boolean match(String name)
+	{
+		return s_extension.equals(StringConst.ASTERISK) || StringUtils.toLowerCase(name).endsWith(s_extension);
 	}
 }

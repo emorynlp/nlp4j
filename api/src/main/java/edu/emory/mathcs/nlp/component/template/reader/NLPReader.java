@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.template.reader;
 
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**

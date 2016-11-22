@@ -15,12 +15,12 @@
  */
 package edu.emory.mathcs.nlp.component.dep;
 
-import edu.emory.mathcs.nlp.common.treebank.DEPTagEn;
+import edu.emory.mathcs.nlp.common.treebank.DSRTag;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.io.InputStream;
@@ -95,16 +95,16 @@ public class DEPParser<N extends AbstractNLPNode<N>> extends OnlineComponent<N,D
 		{
 			node = nodes[i];
 			
-			if (!node.hasDependencyHead())
+			if (!node.hasParent())
 			{
 				max = new DEPTriple();
 				processHeadless(state, max, nodes, i, -1);
 				processHeadless(state, max, nodes, i,  1);
 				
 				if (max.isNull())
-					node.setDependencyHead(nodes[0], DEPTagEn.DEP_ROOT);
+					node.setParent(nodes[0], DSRTag.ROOT);
 				else
-					node.setDependencyHead(nodes[max.headId], new DEPLabel(optimizer.getLabel(max.yhat)).getDeprel());
+					node.setParent(nodes[max.headId], new DEPLabel(optimizer.getLabel(max.yhat)).getDeprel());
 			}
 		}
 	}

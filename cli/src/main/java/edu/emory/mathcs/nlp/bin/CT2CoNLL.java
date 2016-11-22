@@ -15,11 +15,11 @@
  */
 package edu.emory.mathcs.nlp.bin;
 
-import edu.emory.mathcs.nlp.common.constituent.CTReader;
-import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.util.CharTokenizer;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTReader;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTTree;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class CT2CoNLL
 		int tokenID;
 		CTTree tree;
 		
-		while ((tree = reader.nextTree()) != null)
+		while ((tree = reader.next()) != null)
 		{
 			tokenID = 0;
 			

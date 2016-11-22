@@ -18,8 +18,8 @@ package edu.emory.mathcs.nlp.component.template.state;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 
 import java.util.Arrays;
 

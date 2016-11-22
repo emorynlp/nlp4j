@@ -20,7 +20,7 @@ import edu.emory.mathcs.nlp.common.collection.ngram.Unigram;
 import edu.emory.mathcs.nlp.common.collection.tuple.ObjectDoublePair;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -52,7 +52,7 @@ public class AmbiguityClassMap implements Serializable
 	
 	public void add(NLPNode node)
 	{
-		pos_count.add(toKey(node), node.getPartOfSpeechTag());
+		pos_count.add(toKey(node), node.getSyntacticTag());
 	}
 	
 	public void expand(double threshold)
@@ -98,6 +98,6 @@ public class AmbiguityClassMap implements Serializable
 	
 	private String toKey(NLPNode node)
 	{
-		return node.getWordFormSimplified();
+		return node.getFormSimplified();
 	}
 }

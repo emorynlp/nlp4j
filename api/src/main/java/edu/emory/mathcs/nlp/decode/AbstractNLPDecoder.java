@@ -23,11 +23,10 @@ import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.component.morph.MorphologicalAnalyzer;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
-
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -313,7 +312,7 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		for (int i=0,j=1; i<tokens.size(); i++,j++)
 		{
 			nodes[j] = f.apply(tokens.get(i));
-			nodes[j].setID(j);
+			nodes[j].setTokenID(j);
 		}
 			
 		return nodes;
@@ -324,7 +323,7 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 	public N create(Token token)
 	{
 		N node = create();
-		node.setWordForm   (token.getWordForm());
+		node.setForm   (token.getWordForm());
 		node.setStartOffset(token.getStartOffset());
 		node.setEndOffset  (token.getEndOffset());
 		return node;

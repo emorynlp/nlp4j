@@ -18,7 +18,7 @@ package edu.emory.mathcs.nlp.component.morph;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.component.morph.english.EnglishMorphAnalyzer;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class MorphologicalAnalyzer<N extends AbstractNLPNode<N>> implements NLPC
 		for (int i=1; i<nodes.length; i++)
 		{
 			node = nodes[i];
-			node.setLemma(analyzer.lemmatize(node.getWordFormSimplified(), node.getPartOfSpeechTag()));
+			node.setLemma(analyzer.lemmatize(node.getFormSimplified(), node.getSyntacticTag()));
 		}
 	}
 

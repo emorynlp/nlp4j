@@ -30,7 +30,6 @@ oz
 pg
 pm
 qtr
-st
 yd
 yg
 ym

@@ -15,6 +15,19 @@
  */
 package edu.emory.mathcs.nlp.component.tokenizer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.magicwerk.brownies.collections.GapList;
+
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
@@ -31,18 +44,6 @@ import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import edu.emory.mathcs.nlp.component.tokenizer.token.TokenIndex;
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
-import org.magicwerk.brownies.collections.GapList;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -588,11 +589,10 @@ abstract public class Tokenizer
 	{
 		int len = lcs.length;
 		if (len < 2) return false;
-
+		
 		if (tokenizeDigitAux(lcs[0]) && CharUtils.containsDigitPunctuationOnly(lcs, 1, len))
 		{
-            Token Token = new Token(original.substring(0, 1), bIndex2.getVal(),
-                    bIndex2.getVal() + 1);
+            Token Token = new Token(original.substring(0, 1), bIndex2.getVal(), bIndex2.getVal() + 1);
             tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + 1);
             Token newinterval = new Token(original.substring(1), bIndex2.getVal(), bIndex2.getVal()
@@ -606,12 +606,10 @@ abstract public class Tokenizer
 
 		if (tokenizeDigitAux(lcs[len]) && CharUtils.containsDigitPunctuationOnly(lcs, 0, len))
 		{
-            Token Token = new Token(original.substring(0, len), bIndex2.getVal(),
-                    bIndex2.getVal() + len);
+            Token Token = new Token(original.substring(0, len), bIndex2.getVal(), bIndex2.getVal() + len);
             tokens.add(Token);
             bIndex2.setVal(bIndex2.getVal() + len);
-            Token newinterval = new Token(original.substring(len), bIndex2.getVal(), bIndex2.getVal()
-									        + original.length() - len);
+            Token newinterval = new Token(original.substring(len), bIndex2.getVal(), bIndex2.getVal() + original.length() - len);
             tokens.add(newinterval);
             bIndex2.setVal(bIndex2.getVal() + original.length() - len);
             return true;

@@ -16,9 +16,9 @@
 package edu.emory.mathcs.nlp.component.template.util;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.NLPReader;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -46,7 +46,7 @@ public class TSVReaderTest
 		
 		for (int i=1; i<nodes.length; i++)
 		{
-			System.out.println("----------- "+i+" "+nodes[i].dependent_id+" "+nodes[i].getWordForm()+"\n"+nodes[i].getLeftNearestSibling()+"\n"+nodes[i].getRightNearestSibling());
+			System.out.println("----------- "+i+" "+nodes[i].child_index+" "+nodes[i].getForm()+"\n"+nodes[i].getLeftNearestSibling()+"\n"+nodes[i].getRightNearestSibling());
 		}
 				
 		reader.close();

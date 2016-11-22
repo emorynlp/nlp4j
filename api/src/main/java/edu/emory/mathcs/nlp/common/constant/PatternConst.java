@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
  */
 public interface PatternConst
 {
+	Pattern ANY = Pattern.compile(".*");
+	
 	Pattern COMMA		= Pattern.compile(StringConst.COMMA);
 	Pattern COLON		= Pattern.compile(StringConst.COLON);
 	Pattern HYPHEN		= Pattern.compile(StringConst.HYPHEN);

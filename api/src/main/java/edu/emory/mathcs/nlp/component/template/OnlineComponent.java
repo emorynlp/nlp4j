@@ -18,7 +18,6 @@ package edu.emory.mathcs.nlp.component.template;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
@@ -26,6 +25,7 @@ import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.Instance;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 
 import java.io.InputStream;
 import java.io.Serializable;

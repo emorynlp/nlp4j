@@ -36,6 +36,7 @@ public class Splitter implements PatternConst
 	static public CharTokenizer T_PLUS        = new CharTokenizer('+');
 	static public CharTokenizer T_PIPE        = new CharTokenizer('|');
 	static public CharTokenizer T_TAB         = new CharTokenizer('\t');
+	static public CharTokenizer T_NEW_LINE    = new CharTokenizer('\n');
 	
 	static public String[] split(String s, Pattern p)
 	{
@@ -95,6 +96,11 @@ public class Splitter implements PatternConst
 	static public String[] splitPipes(String s)
 	{
 		return T_PIPE.tokenize(s);
+	}
+	
+	static public String[] splitNewLines(String s)
+	{
+		return T_NEW_LINE.tokenize(s);
 	}
 	
 	static public List<String> splitIncludingMatches(Pattern p, String s)

@@ -15,12 +15,11 @@
  */
 package edu.emory.mathcs.nlp.common.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.constant.PatternConst;
 
 /**
@@ -76,24 +75,23 @@ public class PatternUtils implements PatternConst
 //	====================================== Punctuation ======================================
 	
 	/** Reverts coded brackets to their original forms (e.g., from {@code "-LBR-"} to {@code "("}). */
-	static public String revertBrackets(String form)
+	static public String revertSymbols(String form)
 	{
-		for (Pair<Pattern,String> p : L_BRACKETS)
-			form = p.o1.matcher(form).replaceAll(p.o2);
-		
-		return form;
+		return SYMBOL_CODE_MAP.getOrDefault(form, form);
 	}
 	
-	/** Called by {@link #revertBrackets(String)}. */
+	/** Called by {@link #revertSymbols(String)}. */
 	@SuppressWarnings("serial")
-	static private final List<Pair<Pattern, String>> L_BRACKETS = new ArrayList<Pair<Pattern,String>>(6)
+	static private final Map<String,String> SYMBOL_CODE_MAP = new HashMap<String,String>()
 	{{
-		add(new Pair<Pattern,String>(Pattern.compile("-LRB-"), "("));
-		add(new Pair<Pattern,String>(Pattern.compile("-RRB-"), ")"));
-		add(new Pair<Pattern,String>(Pattern.compile("-LSB-"), "["));
-		add(new Pair<Pattern,String>(Pattern.compile("-RSB-"), "]"));
-		add(new Pair<Pattern,String>(Pattern.compile("-LCB-"), "{"));
-		add(new Pair<Pattern,String>(Pattern.compile("-RCB-"), "}"));
+		put("-LRB-", "(");
+		put("-LSB-", "[");
+		put("-LCB-", "{");
+		put("-RRB-", ")");
+		put("-RSB-", "]");
+		put("-RCB-", "}");
+		put("``"   , "\"");
+		put("''"   , "\"");
 	}};
 	
 //	====================================== Replace ======================================

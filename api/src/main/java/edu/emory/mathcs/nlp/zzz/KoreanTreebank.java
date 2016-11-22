@@ -17,13 +17,13 @@ package edu.emory.mathcs.nlp.zzz;
 
 import java.util.Map.Entry;
 
-import edu.emory.mathcs.nlp.common.constituent.CTNode;
-import edu.emory.mathcs.nlp.common.constituent.CTReader;
-import edu.emory.mathcs.nlp.common.constituent.CTTree;
 import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTNode;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTReader;
+import edu.emory.mathcs.nlp.lexicon.constituency.CTTree;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -49,10 +49,10 @@ public class KoreanTreebank
 			System.out.println(filename);
 			reader.open(IOUtils.createFileInputStream(filename));
 			
-			while ((tree = reader.nextTree()) != null)
+			while ((tree = reader.next()) != null)
 			{
 				count(tree.getRoot(), phraseTags, posTags, functionTags, emptyCategories);
-				wc += tree.getTokenList().size();
+				wc += tree.getTokens().size();
 			}
 			
 			reader.close();
@@ -83,20 +83,20 @@ public class KoreanTreebank
 	{
 		if (node.isTerminal())
 		{
-			for (String tag : Splitter.splitPlus(node.getConstituentTag()))
+			for (String tag : Splitter.splitPlus(node.getSyntacticTag()))
 				FastUtils.increment(posTags, tag);
 			
 			if (node.isEmptyCategory())
-				FastUtils.increment(emptyCategories, Splitter.splitHyphens(node.getWordForm())[0]);
+				FastUtils.increment(emptyCategories, Splitter.splitHyphens(node.getForm())[0]);
 		}
 		else
 		{
-			FastUtils.increment(phraseTags, node.getConstituentTag());
+			FastUtils.increment(phraseTags, node.getSyntacticTag());
 			
-			for (String tag : node.getFunctionTagSet())
+			for (String tag : node.getFunctionTags())
 				FastUtils.increment(functionTags, tag);
 			
-			for (CTNode child : node.getChildrenList())
+			for (CTNode child : node.getChildren())
 				count(child, phraseTags, posTags, functionTags, emptyCategories);
 		}
 	}

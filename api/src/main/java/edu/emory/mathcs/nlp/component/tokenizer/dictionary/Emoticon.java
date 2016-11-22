@@ -53,6 +53,7 @@ public class Emoticon
 	
 	public int[] getEmoticonRange(String s)
 	{
+		if (s == null) return null;
 		s = StringUtils.toLowerCase(s);
 		
 		if (s_emoticon.contains(s))
@@ -72,5 +73,11 @@ public class Emoticon
 			return new int[]{idx, s.length()};
 		
 		return null;
+	}
+	
+	public boolean isEmoticon(String s)
+	{
+		int[] idx = getEmoticonRange(s);
+		return idx != null && idx[0] == 0 && idx[1] == s.length();
 	}
 }

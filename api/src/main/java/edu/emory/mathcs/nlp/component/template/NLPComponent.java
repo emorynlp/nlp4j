@@ -15,9 +15,9 @@
  */
 package edu.emory.mathcs.nlp.component.template;
 
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
-
 import java.util.List;
+
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

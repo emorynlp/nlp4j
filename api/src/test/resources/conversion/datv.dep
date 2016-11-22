@@ -1,0 +1,27 @@
+1   John    john    NNP _   2   nsubj   _   _   _
+2   sent    send    VBD _   0   root    _   _   _
+3   you you PRP _   2   datv    _   _   _
+4   a   a   DT  _   5   det _   _   _
+5   book    book    NN  _   2   dobj    _   _   _
+
+1   John    john    NNP _   2   nsubj   _   _   _
+2   sent    send    VBD _   0   root    _   _   _
+3   you you PRP _   2   datv    _   _   _
+4   what    what    WP  _   6   dobj    _   _   _
+5   he  he  PRP _   6   nsubj   _   _   _
+6   bought  buy VBD syn=NOM 2   ccomp   _   _   _
+
+1   John    john    NNP _   2   nsubj   _   _   _
+2   sent    send    VBD _   0   root    _   _   _
+3   a   a   DT  _   4   det _   _   _
+4   book    book    NN  _   2   dobj    _   _   _
+5   to  to  IN  _   6   case    _   _   _
+6   you you PRP syn=DTV 2   datv    _   _   _
+
+1   John    john    NNP _   2   nsubj   _   _   _
+2   bought  buy VBD _   0   root    _   _   _
+3   a   a   DT  _   4   det _   _   _
+4   book    book    NN  _   2   dobj    _   _   _
+5   for for IN  _   6   case    _   _   _
+6   you you PRP sem=BNF 2   datv    _   _   _
+

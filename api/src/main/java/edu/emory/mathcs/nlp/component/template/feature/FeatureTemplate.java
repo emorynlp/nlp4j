@@ -15,6 +15,17 @@
  */
 package edu.emory.mathcs.nlp.component.template.feature;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringJoiner;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import edu.emory.mathcs.nlp.common.constant.CharConst;
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.util.CharUtils;
@@ -22,8 +33,6 @@ import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Splitter;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
-import edu.emory.mathcs.nlp.component.template.node.Orthographic;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
 import edu.emory.mathcs.nlp.learning.util.ColumnMajorVector;
@@ -33,20 +42,12 @@ import edu.emory.mathcs.nlp.learning.util.MajorVector;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 import edu.emory.mathcs.nlp.learning.util.StringPrediction;
 import edu.emory.mathcs.nlp.learning.util.WeightVector;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.lexicon.util.Orthographic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -305,7 +306,7 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 	
 	protected String getFeature(S state, FeatureItem item, N node)
 	{
-		String f = node.getValue(item.field);
+		String f = node.get(item.field);
 		if (f != null) return f;
 		
 		switch (item.field)
@@ -321,14 +322,14 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 	/** The prefix cannot be the entire word (e.g., getPrefix("abc", 3) -> null). */
 	protected String getPrefix(N node, int n)
 	{
-		String s = node.getWordFormSimplifiedLowercase();
+		String s = node.getFormSimplifiedLowercase();
 		return (n < s.length()) ? s.substring(0, n) : null;
 	}
 	
 	/** The suffix cannot be the entire word (e.g., getSuffix("abc", 3) -> null). */
 	protected String getSuffix(N node, int n)
 	{
-		String s = node.getWordFormSimplifiedLowercase();
+		String s = node.getFormSimplifiedLowercase();
 		return (n < s.length()) ? s.substring(s.length()-n) : null;
 	}
 	
@@ -347,10 +348,10 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 		case positional: return getPositionFeatures(state, node);
 		case orthographic: return getOrthographicFeatures(state, node, true);
 		case orthographic_lowercase: return getOrthographicFeatures(state, node, false);
-		case ambiguity_classes: return node.getAmbiguityClasseList();
+		case ambiguity_classes: return node.getAmbiguityClassList();
 		case named_entity_gazetteers: return node.getNamedEntityGazetteerSet();
 		case word_clusters: return node.getWordClusters();
-		case dependent_set: return node.getDependentValueSet((Field)item.attribute);
+		case dependent_set: return node.getChildrenFieldSet((Field)item.attribute);
 		default: return null;
 		}
 	}
@@ -369,11 +370,11 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 	{
 		List<String> list = new ArrayList<>();
 		
-		if (MetaConst.HYPERLINK.equals(node.getWordFormSimplified()))
+		if (MetaConst.HYPERLINK.equals(node.getFormSimplified()))
 			list.add(Orthographic.HYPERLINK);
 		else
 		{
-			char[] cs = node.getWordFormSimplified().toCharArray();
+			char[] cs = node.getFormSimplified().toCharArray();
 			getOrthographicFeauturesAux(list, cs, state.isFirst(node), caseSensitive);
 		}
 		

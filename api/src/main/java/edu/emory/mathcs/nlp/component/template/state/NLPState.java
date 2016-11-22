@@ -21,8 +21,8 @@ import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.feature.Relation;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
 
 import java.util.List;
 
@@ -144,20 +144,20 @@ public abstract class NLPState<N extends AbstractNLPNode<N>>
 		
 		switch (relation)
 		{
-		case h   : return node.getDependencyHead();
-		case h2  : return node.getGrandDependencyHead();
-		case lmd : return node.getLeftMostDependent();
-		case lmd2: return node.getLeftMostDependent(1);
-		case lnd : return node.getLeftNearestDependent();
-		case lnd2: return node.getLeftNearestDependent(1);
+		case h   : return node.getParent();
+		case h2  : return node.getGrandParent();
+		case lmd : return node.getLeftMostChild();
+		case lmd2: return node.getLeftMostChild(2);
+		case lnd : return node.getLeftNearestChild();
+		case lnd2: return node.getLeftNearestChild(2);
 		case lns : return node.getLeftNearestSibling();
-		case lns2: return node.getLeftNearestSibling(1);
-		case rmd : return node.getRightMostDependent();
-		case rmd2: return node.getRightMostDependent(1);
-		case rnd : return node.getRightNearestDependent();
-		case rnd2: return node.getRightNearestDependent(1);
+		case lns2: return node.getLeftNearestSibling(2);
+		case rmd : return node.getRightMostChild();
+		case rmd2: return node.getRightMostChild(2);
+		case rnd : return node.getRightNearestChild();
+		case rnd2: return node.getRightNearestChild(2);
 		case rns : return node.getRightNearestSibling();
-		case rns2: return node.getRightNearestSibling(1);
+		case rns2: return node.getRightNearestSibling(2);
 		}
 		
 		return null;

@@ -216,13 +216,6 @@ public class StringUtils
 		return b || uncapitalize ? new String(cs) : s;
 	}
 	
-	/** @deprecated use {@link #toSimplifiedForm(String, boolean)} instead. */
-	@Deprecated
-	static public String toLowerCaseSimplifiedForm(String s)
-	{
-		return toLowerCase(toSimplifiedForm(s));
-	}
-	
 //	====================================== Collapse ======================================
 	
 	static public String collapseDigits(String s)
@@ -460,7 +453,7 @@ public class StringUtils
 	 * @param maxRepetitions the max count of repetition of a word shape in sequence.
 	 * @return the word shape of the word-form.
 	 */
-	static public String getShape(String form, int maxRepetitions)
+	static public String toWordShape(String form, int maxRepetitions)
 	{
 		if (form == null) return null;
 		StringBuilder build = new StringBuilder();

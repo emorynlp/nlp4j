@@ -18,11 +18,11 @@ package edu.emory.mathcs.nlp.zzz;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;

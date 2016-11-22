@@ -1,0 +1,46 @@
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBZ thinks)
+            (ADVP-PRD (RB so)))))
+
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBZ is)
+            (NP-PRD (DT a)
+                    (NN student)))))
+
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBZ is)
+            (ADJP-PRD (JJ smart)))))
+
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBZ is)
+            (ADVP-PRD (RB back)))))
+
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBZ is)
+            (PP-PRD-LOC (IN in)
+                        (NP (NNP Atlanta))))))
+
+(TOP (S (NP-SBJ-1 (DT A)
+                  (NN book))
+        (VP (VBZ is)
+            (VP (VBN bought)
+                (NP (-NONE- *-1))
+                (PP (IN by)
+                    (NP-LGS (NNP John)))))))
+
+(TOP (S (NP-SBJ (EX There))
+        (VP (VBZ comes)
+            (NP (NNP John)))))
+
+(TOP (S (ADJP-TPC-1 (JJ Smart))
+        (VP (VBZ is)
+            (ADJP-PRD (-NONE- *T*-1)))
+        (NP-SBJ (NNP John))))
+
+(TOP (SINV (`` ")
+           (S-TPC-1 (NP-SBJ (PRP I))
+                    (VP (VBD studied)))
+           ('' ")
+           (VP (VBD said)
+               (S (-NONE- *T*-1)))
+           (NP-SBJ (NNP John))))

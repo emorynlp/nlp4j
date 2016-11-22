@@ -21,6 +21,7 @@ import java.io.ObjectInputStream;
 import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -32,12 +33,12 @@ import edu.emory.mathcs.nlp.component.dep.DEPArc;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -72,8 +73,30 @@ public class NLPUtils
 		return Joiner.join(nodes, delim, 1, nodes.length, f);
 	}
 
-
-
+	static public <N>Iterator<N> iterator(N[] nodes)
+	{
+		Iterator<N> it = new Iterator<N>()
+		{
+			private int current_index = 1;
+			
+			@Override
+			public boolean hasNext()
+			{
+				return current_index < nodes.length;
+			}
+			
+			@Override
+			public N next()
+			{
+				return nodes[current_index++];
+			}
+			
+			@Override
+			public void remove() {}
+		};
+		
+		return it;
+	}
 
 
 
@@ -143,7 +166,7 @@ public class NLPUtils
 
 	static public String toStringLine(NLPNode[] nodes, String delim, Field field)
 	{
-		return Joiner.join(nodes, delim, 1, nodes.length, n -> n.getValue(field));
+		return Joiner.join(nodes, delim, 1, nodes.length, n -> n.get(field));
 	}
 	
 	
@@ -173,7 +196,7 @@ public class NLPUtils
 			
 			for (DEPArc<N> arc : node.getSemanticHeadList())
 			{
-				args = list.get(arc.getNode().getID());
+				args = list.get(arc.getNode().getTokenID());
 				args.add(new DEPArc<>(node, arc.getLabel()));
 			}
 		}
@@ -191,7 +214,7 @@ public class NLPUtils
 		{
 			N node = tree[i];
 			
-			if (node.hasDependencyHead() && node.getDependencyHead().isDescendantOf(node))
+			if (node.hasParent() && node.getParent().isDescendantOf(node))
 				return true;
 		}
 		

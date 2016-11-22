@@ -18,12 +18,12 @@ package edu.emory.mathcs.nlp.zzz;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.component.template.node.FeatMap;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+import edu.emory.mathcs.nlp.lexicon.util.FeatMap;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

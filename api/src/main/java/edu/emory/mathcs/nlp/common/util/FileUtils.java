@@ -45,16 +45,17 @@ public class FileUtils
 	 */
 	static public List<String> getFileList(String path, String extension, boolean recursive)
 	{
+		FileExtensionFilter filter = new FileExtensionFilter(extension);
 		List<String> list = new ArrayList<>();
 		File file = new File(path);
 		
 		if (file.isFile())
 			list.add(path);
 		else if (recursive)
-			getFileListRec(path, extension, list);
+			getFileListRec(path, list, filter);
 		else
 		{
-			for (String name : file.list(new FileExtensionFilter(extension)))
+			for (String name : file.list(filter))
 			{
 				name = path + StringConst.FW_SLASH + name;
 				if (new File(name).isFile()) list.add(name);
@@ -65,15 +66,15 @@ public class FileUtils
 	}
 	
 	/** Called by {@link #getFileList(String, String, boolean)}. */
-	static private void getFileListRec(String path, String extension, List<String> list)
+	static private void getFileListRec(String path, List<String> list, FileExtensionFilter filter)
 	{
 		for (String name : new File(path).list())
 		{
 			name = path + StringConst.FW_SLASH + name;
 			
 			if (new File(name).isDirectory())
-				getFileListRec(name, extension, list);
-			else if (name.endsWith(extension))
+				getFileListRec(name, list, filter);
+			else if (filter.match(name))
 				list.add(name);
 		}
 	}

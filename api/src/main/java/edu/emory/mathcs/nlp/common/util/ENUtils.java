@@ -25,6 +25,7 @@ public class ENUtils
 	static private final Set<String> S_BE		= DSUtils.toHashSet("be","been","being","am","is","was","are","were","'m","'s","'re");
 	static private final Set<String> S_BECOME	= DSUtils.toHashSet("become","becomes","became","becoming");
 	static private final Set<String> S_GET		= DSUtils.toHashSet("get","gets","got","gotten","getting");
+	static private final Set<String> S_HAVE		= DSUtils.toHashSet("have","has","had","having");
 
 	static public final Set<String> S_NEGATION = DSUtils.toHashSet("never","not","n't","'nt","no","neither","non");
 	static public final Set<String> S_RELATIVIZER = DSUtils.toHashSet("how","however","that","what","whatever","whatsoever","when","whenever","where","whereby","wherein","whereupon","wherever","which","whichever","whither","who","whoever","whom","whose","why");
@@ -40,6 +41,16 @@ public class ENUtils
 	{
 		form = StringUtils.toLowerCase(form);
 		return S_BE.contains(form) || S_BECOME.contains(form) || S_GET.contains(form);
+	}
+	
+	static public boolean isPerfectAuxiliaryVerb(String form)
+	{
+		return S_HAVE.contains(StringUtils.toLowerCase(form));
+	}
+	
+	static public boolean isBe(String form)
+	{
+		return S_BE.contains(StringUtils.toLowerCase(form));
 	}
 	
 	static public boolean isNegation(String form)

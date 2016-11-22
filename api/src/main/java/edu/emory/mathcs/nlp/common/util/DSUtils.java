@@ -44,6 +44,12 @@ public class DSUtils
 {
 	private DSUtils() {}
 	
+	static public <T extends Comparable<T>>int binarySearch(List<T> list, T key)
+	{
+		int index = Collections.binarySearch(list, key);
+		return (index < 0) ? -(index+1) : index+1;
+	}
+	
 	static public Set<String> createStringHashSet(InputStream in)
 	{
 		return createStringHashSet(in, true, false);
@@ -171,10 +177,21 @@ public class DSUtils
 		return isRange(array, index) ? array[index] : null;
 	}
 	
+	/** @return the first item in the list if exists; otherwise, {@code null}. */
+	static public <T>T getFirst(List<T> list)
+	{
+		return list.isEmpty() ? null : list.get(0);
+	}
+	
 	/** @return the last item in the list if exists; otherwise, {@code null}. */
 	static public <T>T getLast(List<T> list)
 	{
-		return list.isEmpty() ? null : list.get(list.size()-1);
+		return getLast(list, 0);
+	}
+	
+	static public <T>T getLast(List<T> list, int index)
+	{
+		return list.size() > index ? null : list.get(list.size()-1-index);
 	}
 
 	static public <T>boolean isRange(List<T> list, int index)

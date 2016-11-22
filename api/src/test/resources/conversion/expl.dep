@@ -1,0 +1,34 @@
+1	There	there	EX	_	2	expl	_	_	_
+2	comes	come	VBZ	_	0	root	_	_	_
+3	John	john	NNP	_	2	nsubj	_	_	_
+
+1	There	there	EX	_	4	expl	_	_	_
+2	was	be	VBD	_	4	cop	_	_	_
+3	no	no	DT	_	4	det	_	_	_
+4	surprise	surprise	NN	syn=PRD	0	root	_	_	_
+5	that	that	IN	_	7	mark	_	_	_
+6	John	john	NN	_	7	nsubj	_	_	_
+7	studied	study	VBD	_	4	acl	_	_	_
+
+1	It	it	PRP	_	2	expl	_	_	_
+2	struck	strike	VBD	_	0	root	_	_	_
+3	me	me	PRP	_	2	dobj	_	_	_
+4	that	that	IN	_	7	mark	_	_	_
+5	John	john	NNP	_	7	nsubj	_	_	_
+6	was	be	VBZ	_	7	cop	_	_	_
+7	here	here	RB	syn=PRD|sem=LOC	2	csubj	_	_	_
+
+1	It	it	PRP	_	3	expl	_	_	_
+2	is	be	VBZ	_	3	cop	_	_	_
+3	evident	evident	JJ	syn=PRD	0	root	_	_	_
+4	that	that	IN	_	7	mark	_	_	_
+5	John	john	NNP	_	7	nsubj	_	_	_
+6	is	be	VBZ	_	7	cop	_	_	_
+7	smart	smart	JJ	syn=PRD	3	csubj	_	_	_
+
+1	John	john	NNP	_	2	nsubj	_	_	_
+2	made	make	VBD	_	0	root	_	_	_
+3	it	it	PRP	_	4	expl	_	_	_
+4	easy	easy	JJR	syn=PRD	2	oprd	_	_	_
+5	to	to	TO	_	6	mark	_	_	_
+6	understand	understand	VB	_	4	csubj	_	_	_

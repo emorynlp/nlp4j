@@ -38,7 +38,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -58,6 +60,22 @@ public class IOUtils
 {
 	private static final Logger LOG = LoggerFactory.getLogger(IOUtils.class);
 	private IOUtils() {}
+	
+	public static Set<String> readSet(InputStream in)
+	{
+		BufferedReader reader = createBufferedReader(in);
+		Set<String> set = new HashSet<>();
+		String line;
+		
+		try
+		{
+			while ((line = reader.readLine()) != null)
+				set.add(line.trim());
+		}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return set;
+	}
 	
 	public static Object fromByteArray(byte[] array)
 	{

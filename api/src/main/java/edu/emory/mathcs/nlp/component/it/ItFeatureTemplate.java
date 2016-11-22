@@ -18,8 +18,9 @@ package edu.emory.mathcs.nlp.component.it;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
-import edu.emory.mathcs.nlp.component.template.node.AbstractNLPNode;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
+import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+
 import org.w3c.dom.Element;
 
 import java.util.List;
@@ -68,7 +69,7 @@ public class ItFeatureTemplate<N extends AbstractNLPNode<N>> extends FeatureTemp
 		for (int i=state.getNodeID()-1; i>0; i--)
 		{
 			N node = nodes[i];
-			if (node.getPartOfSpeechTag().startsWith(pos))
+			if (node.getSyntacticTag().startsWith(pos))
 				return (float)MathUtils.divide(state.getNodeID()-i, nodes.length-1);
 		}
 		
@@ -82,7 +83,7 @@ public class ItFeatureTemplate<N extends AbstractNLPNode<N>> extends FeatureTemp
 		for (int i=state.getNodeID()+1; i<nodes.length; i++)
 		{
 			N node = nodes[i];
-			if (node.getPartOfSpeechTag().startsWith(pos))
+			if (node.getSyntacticTag().startsWith(pos))
 				return (float)MathUtils.divide(i-state.getNodeID(), nodes.length-1);
 		}
 		

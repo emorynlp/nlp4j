@@ -15,14 +15,16 @@
 package edu.emory.mathcs.nlp.decode;
 
 import com.google.common.io.Resources;
+
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexicon;
-import edu.emory.mathcs.nlp.component.template.node.NLPNode;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
+import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+
 import org.junit.Test;
 import org.tukaani.xz.XZInputStream;
 
@@ -93,6 +95,6 @@ public class AbstractNLPDecoderTest {
         decoder.setComponents(components);
         decoder.setTokenizer(new EnglishTokenizer());
         NLPNode[] results = decoder.decode("My dog has fleas.");
-        assertNotNull(results[1].getPartOfSpeechTag());
+        assertNotNull(results[1].getSyntacticTag());
     }
 }
