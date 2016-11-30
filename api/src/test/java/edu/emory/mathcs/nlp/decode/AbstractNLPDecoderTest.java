@@ -23,7 +23,7 @@ import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexicon;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
-import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
 
 import org.junit.Test;
 import org.tukaani.xz.XZInputStream;

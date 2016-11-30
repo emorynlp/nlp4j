@@ -18,8 +18,8 @@ package edu.emory.mathcs.nlp.bin;
 import edu.emory.mathcs.nlp.common.util.CharTokenizer;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.lexicon.constituency.CTReader;
-import edu.emory.mathcs.nlp.lexicon.constituency.CTTree;
+import edu.emory.mathcs.nlp.structure.constituency.CTReader;
+import edu.emory.mathcs.nlp.structure.constituency.CTTree;
 
 import java.io.PrintStream;
 import java.util.ArrayList;

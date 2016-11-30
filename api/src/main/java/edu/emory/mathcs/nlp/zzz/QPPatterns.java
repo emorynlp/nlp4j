@@ -26,9 +26,9 @@ import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.MathUtils;
-import edu.emory.mathcs.nlp.lexicon.constituency.CTNode;
-import edu.emory.mathcs.nlp.lexicon.constituency.CTReader;
-import edu.emory.mathcs.nlp.lexicon.constituency.CTTree;
+import edu.emory.mathcs.nlp.structure.constituency.CTNode;
+import edu.emory.mathcs.nlp.structure.constituency.CTReader;
+import edu.emory.mathcs.nlp.structure.constituency.CTTree;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 

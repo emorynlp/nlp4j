@@ -16,7 +16,7 @@
 package edu.emory.mathcs.nlp.component.dep;
 
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;

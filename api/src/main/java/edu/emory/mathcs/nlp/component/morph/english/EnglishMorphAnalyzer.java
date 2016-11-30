@@ -16,17 +16,6 @@
 
 package edu.emory.mathcs.nlp.component.morph.english;
 
-import edu.emory.mathcs.nlp.common.constant.MetaConst;
-import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.util.DSUtils;
-import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.component.morph.MorphAnalyzer;
-import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixMatcher;
-import org.w3c.dom.Element;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +25,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipFile;
+
+import org.w3c.dom.Element;
+
+import edu.emory.mathcs.nlp.common.constant.MetaConst;
+import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.util.DSUtils;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
+import edu.emory.mathcs.nlp.common.util.Splitter;
+import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.common.util.XMLUtils;
+import edu.emory.mathcs.nlp.component.morph.MorphAnalyzer;
+import edu.emory.mathcs.nlp.component.morph.util.AbstractAffixMatcher;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

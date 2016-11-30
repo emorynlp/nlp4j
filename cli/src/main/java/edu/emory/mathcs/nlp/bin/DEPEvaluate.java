@@ -29,7 +29,7 @@ import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.decode.DecodeConfig;
 import edu.emory.mathcs.nlp.decode.NLPDecoder;
-import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
 
 /**
  * A command-line program that does LAS/UAS evaluation for dependency parsing.

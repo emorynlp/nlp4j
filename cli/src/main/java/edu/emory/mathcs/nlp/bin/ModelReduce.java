@@ -23,7 +23,7 @@ import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

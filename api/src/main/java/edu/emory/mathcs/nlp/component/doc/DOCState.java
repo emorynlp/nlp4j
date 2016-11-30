@@ -20,7 +20,7 @@ import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

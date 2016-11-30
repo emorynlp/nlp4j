@@ -17,7 +17,7 @@ package edu.emory.mathcs.nlp.decode;
 
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
-import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
 
 import org.w3c.dom.Element;
 

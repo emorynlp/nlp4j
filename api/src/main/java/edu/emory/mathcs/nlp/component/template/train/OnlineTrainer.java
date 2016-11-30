@@ -31,7 +31,7 @@ import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.component.template.util.NLPMode;
 import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

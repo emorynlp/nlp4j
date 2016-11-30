@@ -42,8 +42,8 @@ import edu.emory.mathcs.nlp.learning.util.MajorVector;
 import edu.emory.mathcs.nlp.learning.util.SparseVector;
 import edu.emory.mathcs.nlp.learning.util.StringPrediction;
 import edu.emory.mathcs.nlp.learning.util.WeightVector;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
-import edu.emory.mathcs.nlp.lexicon.util.Orthographic;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.util.Orthographic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -351,7 +351,7 @@ public class FeatureTemplate<N extends AbstractNLPNode<N>, S extends NLPState<N>
 		case ambiguity_classes: return node.getAmbiguityClassList();
 		case named_entity_gazetteers: return node.getNamedEntityGazetteerSet();
 		case word_clusters: return node.getWordClusters();
-		case dependent_set: return node.getChildrenFieldSet((Field)item.attribute);
+		case dependent_set: return node.getDependentFields((Field)item.attribute);
 		default: return null;
 		}
 	}

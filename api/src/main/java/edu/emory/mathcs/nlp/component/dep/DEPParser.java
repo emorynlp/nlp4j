@@ -20,7 +20,7 @@ import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.io.InputStream;

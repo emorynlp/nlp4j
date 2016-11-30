@@ -30,8 +30,6 @@ public interface DSRTag
 	String AUXPROG   = "auxprog";
 	/** Modal verb. */
 	String MODAL     = "modal";
-	
-	
 	/** Clausal modifier of noun (1.2.0). */
 	String ACL       = "acl";
 	/** Adverbial clause (1.2.0). */
@@ -49,7 +47,7 @@ public interface DSRTag
 	/** Clausal complement (1.2.0). */
 	String CCOMP     = "ccomp";
 	/** Compound word. */
-	String COMPO     = "compo";
+	String COM     = "compo";
 	/** Conjunct (1.2.0). */
 	String CONJ      = "conj";
 	/** Copula (1.2.0). */

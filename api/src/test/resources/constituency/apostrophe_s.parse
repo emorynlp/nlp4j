@@ -1,0 +1,27 @@
+(TOP (S (NP-SBJ (PRP It))
+        (VP (VBZ 's)
+            (VP (VBG getting)
+                (ADJP-PRD (RBR better))))))
+
+(TOP (S (NP-SBJ-1 (PRP It))
+        (VP (VBZ 's)
+            (VP (VBN expected)
+                (S (NP-SBJ (-NONE- *-1))
+                   (VP (TO to)
+                       (VP (VB come))))))))
+
+(TOP (S (NP-SBJ-1 (PRP It))
+        (VP (VBZ 's)
+            (VP (VBN known)
+                (NP (-NONE- *-1))))))
+
+(TOP (S (NP-SBJ (PRP It))
+        (VP (VBZ 's)
+            (ADJP-PRD (RB too)
+                      (JJ early)))))
+
+(TOP (S (NP-SBJ (PRP it))
+        (VP (VBZ 's)
+            (VP (VBN taken)
+                (ADVP-TMP-CLR (RB so)
+                              (RB long))))))

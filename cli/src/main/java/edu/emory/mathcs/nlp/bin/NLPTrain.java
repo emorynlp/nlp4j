@@ -29,7 +29,7 @@ import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
 import edu.emory.mathcs.nlp.component.template.util.NLPMode;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import org.kohsuke.args4j.Option;
 

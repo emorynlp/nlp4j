@@ -17,7 +17,7 @@ package edu.emory.mathcs.nlp.component.it;
 
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
 import java.io.InputStream;
 import java.util.List;

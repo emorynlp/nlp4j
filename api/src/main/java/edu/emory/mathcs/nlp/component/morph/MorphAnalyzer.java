@@ -16,6 +16,7 @@
 package edu.emory.mathcs.nlp.component.morph;
 
 import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.structure.node.AbstractNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -28,4 +29,10 @@ public abstract class MorphAnalyzer
 	 * @return the lemmas of the word form given the pos tag.
 	 */
 	public abstract String lemmatize(String simplifiedWordForm, String pos);
+	
+	public <N extends AbstractNode<N>>String setLemma(N node)
+	{
+		node.setLemma(lemmatize(node.getFormSimplified(), node.getSyntacticTag()));
+		return node.getLemma();
+	}
 }

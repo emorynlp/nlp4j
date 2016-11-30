@@ -15,8 +15,8 @@
  */
 package edu.emory.mathcs.nlp.component.dep;
 
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
-import edu.emory.mathcs.nlp.lexicon.util.Arc;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.util.Arc;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

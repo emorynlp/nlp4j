@@ -1,0 +1,4 @@
+S	r	VP;.*
+NP	r	NN|NP;.*
+VP	l	VP;VB.*;.*
+PP	r	NP;.*

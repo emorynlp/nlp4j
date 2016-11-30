@@ -18,8 +18,8 @@ package edu.emory.mathcs.nlp.component.template.reader;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
-import edu.emory.mathcs.nlp.lexicon.util.FeatMap;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.util.FeatMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 import java.io.BufferedReader;

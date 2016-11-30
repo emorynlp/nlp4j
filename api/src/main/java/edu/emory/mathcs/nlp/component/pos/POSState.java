@@ -18,7 +18,7 @@ package edu.emory.mathcs.nlp.component.pos;
 import edu.emory.mathcs.nlp.common.util.NLPUtils;
 import edu.emory.mathcs.nlp.component.template.state.L2RState;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

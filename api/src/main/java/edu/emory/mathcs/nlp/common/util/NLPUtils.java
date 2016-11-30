@@ -37,8 +37,8 @@ import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
-import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

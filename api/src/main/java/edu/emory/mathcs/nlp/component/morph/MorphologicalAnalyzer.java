@@ -18,7 +18,7 @@ package edu.emory.mathcs.nlp.component.morph;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.component.morph.english.EnglishMorphAnalyzer;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
 import java.util.List;
 

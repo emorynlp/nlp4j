@@ -39,7 +39,7 @@ import edu.emory.mathcs.nlp.learning.optimization.method.Perceptron;
 import edu.emory.mathcs.nlp.learning.optimization.method.SoftmaxRegression;
 import edu.emory.mathcs.nlp.learning.optimization.reguralization.RegularizedDualAveraging;
 import edu.emory.mathcs.nlp.learning.util.WeightVector;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.w3c.dom.Element;

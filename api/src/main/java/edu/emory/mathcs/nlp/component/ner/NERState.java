@@ -20,7 +20,7 @@ import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.state.L2RState;
 import edu.emory.mathcs.nlp.component.template.util.BILOU;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 

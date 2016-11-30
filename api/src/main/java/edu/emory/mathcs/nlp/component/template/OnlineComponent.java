@@ -25,7 +25,7 @@ import edu.emory.mathcs.nlp.learning.optimization.OnlineOptimizer;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.Instance;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
-import edu.emory.mathcs.nlp.lexicon.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
 import java.io.InputStream;
 import java.io.Serializable;

@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.common.grammar;
 
-import edu.emory.mathcs.nlp.lexicon.util.FeatMap;
+import edu.emory.mathcs.nlp.structure.util.FeatMap;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

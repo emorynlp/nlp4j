@@ -79,6 +79,11 @@ public class Joiner
 		return build.toString();
 	}
 	
+	static public <T>String join(List<T> list, String delim, int beginIndex)
+	{
+		return join(list, delim, beginIndex, list.size(), T::toString);
+	}
+	
 	static public <T>String join(List<T> list, String delim, int beginIndex, int endIndex)
 	{
 		return join(list, delim, beginIndex, endIndex, T::toString);

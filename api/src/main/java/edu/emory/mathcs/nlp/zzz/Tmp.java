@@ -23,14 +23,14 @@ import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.dep.DEPArc;
-import edu.emory.mathcs.nlp.conversion.C2DConverter;
-import edu.emory.mathcs.nlp.conversion.EnglishC2DConverter;
-import edu.emory.mathcs.nlp.lexicon.constituency.CTNode;
-import edu.emory.mathcs.nlp.lexicon.constituency.CTReader;
-import edu.emory.mathcs.nlp.lexicon.constituency.CTTree;
-import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
-import edu.emory.mathcs.nlp.lexicon.headrule.HeadRuleMap;
-import edu.emory.mathcs.nlp.lexicon.util.PTBLib;
+import edu.emory.mathcs.nlp.structure.constituency.CTNode;
+import edu.emory.mathcs.nlp.structure.constituency.CTReader;
+import edu.emory.mathcs.nlp.structure.constituency.CTTree;
+import edu.emory.mathcs.nlp.structure.conversion.C2DConverter;
+import edu.emory.mathcs.nlp.structure.conversion.EnglishC2DConverter;
+import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadRuleMap;
+import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
+import edu.emory.mathcs.nlp.structure.util.PTBLib;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -75,28 +75,7 @@ public class Tmp
 		System.out.printf("%15s%10d%10d\n", "total", tsc, twc);
 	}
 	
-	public void traverse(CTNode node, Object2IntMap<String> map)
-	{
-		if (node.isSyntacticTag("ADJP") && node.isFunctionTag("PRD"))
-		{
-			CTNode s = node.getFirstChild(PTBLib.M_S);
-			
-			if (s != null)
-			{
-				CTNode np = s.getFirstChild(PTBLib.M_SBJ);
-				if (np != null && np.isEmptyCategoryPhrase() && np.getFirstTerminal().hasAntecedent())
-				{
-					CTNode jj = node.getChildren().stream().filter(n -> n.isSyntacticTag("JJ")).findFirst().orElse(null);
-					if (jj != null) FastUtils.increment(map, StringUtils.toLowerCase(jj.getForm()));					
-				}
-			}
-		}
-		else
-		{
-			for (CTNode child : node.getChildren())
-				traverse(child, map);
-		}
-	}
+	
 	
 	public Tmp(String filename) throws Exception
 	{

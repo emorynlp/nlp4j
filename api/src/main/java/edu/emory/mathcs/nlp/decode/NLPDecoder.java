@@ -17,7 +17,7 @@ package edu.emory.mathcs.nlp.decode;
 
 import java.io.InputStream;
 
-import edu.emory.mathcs.nlp.lexicon.dependency.NLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
