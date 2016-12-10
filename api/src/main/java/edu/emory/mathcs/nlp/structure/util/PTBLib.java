@@ -21,7 +21,6 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.treebank.DSRTag;
 import edu.emory.mathcs.nlp.common.util.ENUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.structure.constituency.CTNode;
@@ -33,7 +32,6 @@ import edu.emory.mathcs.nlp.structure.node.AbstractNode;
  */
 public class PTBLib implements PTBTag
 {
-//	static final public Predicate<CTNode> M_MD_TO_VBx   = matchCo(Sets.newHashSet(P_MD, P_TO, P_VB, P_VBP, P_VBZ, P_VBD, P_VBG, P_VBN));
 //	static final public Predicate<CTNode> M_S_SBAR      = matchCo(Sets.newHashSet(C_S, C_SBAR));
 //	static final public Predicate<CTNode> M_IN_DT_TO    = matchCo(Sets.newHashSet(PTBTag.P_IN, PTBTag.P_DT, PTBTag.P_TO));
 //	static final public Predicate<CTNode> M_VP_OR_PRD   = matchCoF(C_VP, F_PRD);
@@ -52,7 +50,6 @@ public class PTBLib implements PTBTag
 	static final public Set<String> RELATIVIZER    = Sets.newHashSet(P_WDT, P_WP, P_WPS, P_WRB);
 	
 	// more
-	static final public Set<String> NNx            = Sets.newHashSet(P_NN, P_NNS, P_NNP, P_NNPS);
 	static final public Set<String> VBD_VBN        = Sets.newHashSet(P_VBD, P_VBN);
 	static final public Set<String> VP_RRC_UCP     = Sets.newHashSet(C_VP, C_RRC, C_UCP);
 	static final public Set<String> NP_NML_WHNP    = Sets.newHashSet(C_NP, C_NML, C_WHNP);
@@ -73,6 +70,7 @@ public class PTBLib implements PTBTag
 		fixFunctionTags(tree);
 		linkReducedPassiveNulls(tree);
 		linkRelativizers(tree);
+		fixEmptyCategories(tree);
 	}
 	
 //	============================== Fix Function Tags ==============================
@@ -169,9 +167,15 @@ public class PTBLib implements PTBTag
 			return true;	
 		}
 		
+		if (node.isSyntacticTag(C_ADJP) && containsCoordination(node))
+		{
+			for (CTNode n : node.getChildren(n -> n.isSyntacticTag(C_ADJP)))
+				n.addFunctionTag(F_PRD);
+		}
+		
 		return false;
 	}
-
+	
 //	============================== Fix Empty Categories ==============================
 	
 	static public void fixEmptyCategories(CTTree tree)
@@ -179,11 +183,14 @@ public class PTBLib implements PTBTag
 		tree.flatten().forEach(node -> fixEmptyCategories(tree, node));
 	}
 	
-	static public void fixEmptyCategories(CTTree tree, CTNode node)
+	static private void fixEmptyCategories(CTTree tree, CTNode node)
 	{
 		if (node.isEmptyCategory())
 		{
 			if (isPRO(node)) fixPRO(tree, node);
+			else if (isTrace(node)) fixTrace(tree, node);
+			else if (isInterpretConstituentHere(node) || isPermanentPredictableAmbiguity(node)) fixICHnPPA(tree, node);
+			else if (isPassiveNull(node)) fixPassiveNull(tree, node);
 		}
 	}
 	
@@ -191,6 +198,44 @@ public class PTBLib implements PTBTag
 	{
 		if (node.hasAntecedent() && PTBLib.isWhPhrase(node.getAntecedent()) && node.hasCoIndex() && tree.getEmptyCategories(node.getCoIndex()).size() == 1)
 			node.setForm(PTBTag.E_TRACE);
+	}
+	
+	static public void fixTrace(CTTree tree, CTNode node)
+	{
+		CTNode ante = node.getAntecedent();
+		
+		if (ante != null && ante.isFunctionTagAll(F_SBJ, F_TPC))
+		{
+			CTNode np = node.getParent();
+			
+			if (np.isFunctionTag(F_SBJ))
+				node.setForm(E_PRO);
+			else
+			{
+				node.setForm(E_NULL);
+				
+				if (!isPassiveEmptyCategory(node))
+					node.setForm(E_TRACE);
+			}
+		}
+	}
+	
+	static private void fixICHnPPA(CTTree tree, CTNode node)
+	{
+		if (node.hasCoIndex())
+		{
+			List<CTNode> list = tree.getEmptyCategories(node.getCoIndex());
+			if (list.size() > 1) list.stream().forEach(n -> n.setForm(E_RNR));
+		}
+	}
+	
+	static private void fixPassiveNull(CTTree tree, CTNode node)
+	{
+		if (node.hasCoIndex())
+		{
+			if (!node.hasParent(n -> n.isSyntacticTag(C_NP)))
+				node.setForm(E_ICH);
+		}
 	}
 	
 //	============================== Passive Nulls ==============================
@@ -226,7 +271,7 @@ public class PTBLib implements PTBTag
 				node.setAntecedent(vp.getLeftNearestSibling(n -> n.isSyntacticTag(NP_NML_WHNP)));
 				
 				if (!node.hasAntecedent())
-					node.setAntecedent(vp.getLeftNearestSibling(n -> n.isSyntacticTag(NNx)));
+					node.setAntecedent(vp.getLeftNearestSibling(PTBLib::isCommonOrProperNoun));
 				
 				if (!node.hasAntecedent())
 					node.setAntecedent(vp.getLeftNearestSibling(n -> n.isSyntacticTag(C_QP)));
@@ -359,11 +404,6 @@ public class PTBLib implements PTBTag
 		return rel != null ? rel : terminals.stream().filter(n -> ENUtils.isRelativizer(n.getForm())).findAny().orElse(null);
 	}
 	
-//	static public CTNode getWhPhrase(CTNode node)
-//	{
-//		return node.getSingleChained(PTBLib::isWhPhrase);
-//	}
-	
 //	============================== Coordination ==============================
 
 	/** @return {@code true} if the specific node contains coordination. */
@@ -375,6 +415,18 @@ public class PTBLib implements PTBTag
 	/** @return {@code true} if the specific list of children contains coordination. */
 	static public boolean containsCoordination(CTNode parent, List<CTNode> children)
 	{
+		boolean sbj = false, prd = false;
+		
+		for (CTNode child : children)
+		{
+			if (child.isSyntacticTag(C_VP) || isSecondaryPredicate(child))
+				prd = true;
+			else if (isSubject(child))
+				sbj = true;
+		}
+		
+		if (sbj && prd) return false;
+		
 		if (parent.isSyntacticTag(C_UCP))
 			return true;
 		
@@ -421,7 +473,7 @@ public class PTBLib implements PTBTag
 	/** @return {@code true} if this node is a conjunction. */
 	static public boolean isConjunction(CTNode node)
 	{
-		return node.isSyntacticTag(CONJUNCTION) || node.isPrimaryLabel(DSRTag.CC);
+		return node.isSyntacticTag(CONJUNCTION) || node.isFunctionTag(DDGTag.CC);
 	}
 	
 	/** @return {@code true} if this node is a separator. */
@@ -447,6 +499,21 @@ public class PTBLib implements PTBTag
 	}
 	
 //	============================== Clausal/Phrasal Tags ==============================
+	
+	static public boolean isVerbPhrase(CTNode node)
+	{
+		return node.isSyntacticTag(C_VP);
+	}
+	
+	static public boolean isSubject(CTNode node)
+	{
+		return node.isFunctionTag(F_SBJ);
+	}
+	
+	static public boolean isSecondaryPredicate(CTNode node)
+	{
+		return node.isFunctionTag(F_PRD);
+	}
 	
 	static public boolean isNominalSubject(CTNode node)
 	{

@@ -1,0 +1,38 @@
+1	I	I	PRP	_	5	nsbj	_	_
+2	am	be	VBP	_	5	aux	_	_
+3	going	go	VBG	_	5	raise	_	_
+4	to	to	TO	_	5	aux	_	_
+5	study	study	VB	_	0	root	_	_
+
+1	Am	be	VBP	_	5	aux	_	_
+2	I	I	PRP	_	5	nsbj	_	_
+3	going	go	VBG	_	5	raise	_	_
+4	to	to	TO	_	5	aux	_	_
+5	study	study	VB	_	0	root	_	_
+
+1	I	I	PRP	_	5	dat	9:nsbj	_
+2	need	need	VBZ	_	5	raise	_	_
+3	to	to	TO	_	5	aux	_	_
+4	be	be	VB	_	5	aux	_	_
+5	given	give	VBN	_	0	root	_	_
+6	a	a	DT	_	7	det	_	_
+7	chance	chance	NN	_	5	obj	_	_
+8	to	to	TO	_	9	aux	_	_
+9	study	study	VB	sem=PRP	5	advcl	_	_
+
+1	I	I	PRP	_	6	nsbj	_	_
+2	am	be	VBP	_	6	aux	_	_
+3	going	go	VBG	_	6	raise	_	_
+4	to	to	TO	_	6	aux	_	_
+5	keep	keep	VB	_	6	raise	_	_
+6	studying	study	VBG	_	0	root	_	_
+
+1	Myself	myself	PRP	_	0	root	_	_
+2	who	who	WP	_	8	nsbj	_	_
+3	is	be	VBZ	_	8	aux	_	_
+4	going	go	VBG	_	8	raise	_	_
+5	to	to	TO	_	8	aux	_	_
+6	have	have	VB	_	8	raise	_	_
+7	to	to	TO	_	8	aux	_	_
+8	study	study	VB	_	1	relcl	_	_
+

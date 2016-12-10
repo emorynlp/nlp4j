@@ -31,8 +31,8 @@ import org.w3c.dom.NodeList;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.common.verbnet.VNLib;
 import edu.emory.mathcs.nlp.structure.propbank.PBLib;
+import edu.emory.mathcs.nlp.structure.verbnet.VNLib;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

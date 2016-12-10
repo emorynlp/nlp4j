@@ -1,0 +1,27 @@
+(TOP (NP (NP (NNP John))
+         (, ,)
+         (NP (DT the)
+             (NN baptist))))
+
+(TOP (NP (NP (NNP John))
+         (-LRB- -LRB-)
+         (NP (DT the)
+             (NN baptist))
+         (-RRB- -RRB-)))
+
+(TOP (NP-TMP (NP (DT The)
+                 (NN year))
+             (NP (CD 2016))))
+
+(TOP (S (NP-SBJ (NP (NNP John))
+                (NP (PRP himself)))
+        (VP (VBD baptized)
+            (NP (NNP Jesus)))))
+
+
+(TOP (NP (NP (NNP John))
+         (, ,)
+         (RRC (PP-TMP (IN by)
+                      (ADVP (RB now)))
+              (NP-PRD (DT a)
+                      (NN baptist)))))

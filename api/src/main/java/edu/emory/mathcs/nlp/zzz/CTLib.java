@@ -20,8 +20,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import edu.emory.mathcs.nlp.common.treebank.CTTag;
 import edu.emory.mathcs.nlp.structure.constituency.CTNode;
+import edu.emory.mathcs.nlp.structure.constituency.CTTag;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

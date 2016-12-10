@@ -194,7 +194,7 @@ public class NLPUtils
 		{
 			N node = nodes[i];
 			
-			for (DEPArc<N> arc : node.getSemanticHeadList())
+			for (DEPArc<N> arc : node.getSecondaryHeads())
 			{
 				args = list.get(arc.getNode().getTokenID());
 				args.add(new DEPArc<>(node, arc.getLabel()));

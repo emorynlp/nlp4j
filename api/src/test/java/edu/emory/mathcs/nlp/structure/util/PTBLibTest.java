@@ -80,6 +80,61 @@ public class PTBLibTest
 	}
 	
 	@Test
+	public void testFixEmptyCategories()
+	{
+		String filename = "src/test/resources/constituency/empty_categories.parse";
+		CTReader reader = new CTReader(IOUtils.createFileInputStream(filename));
+		CTNode node;
+		CTTree tree;
+
+		// fix PRO
+		tree = reader.next();
+		node = tree.getTerminal(1);
+		assertEquals(PTBTag.E_PRO, node.getForm());
+		PTBLib.fixEmptyCategories(tree);
+		assertEquals(PTBTag.E_TRACE, node.getForm());
+		
+		tree = reader.next();
+		node = tree.getTerminal(8);
+		assertEquals(PTBTag.E_PRO, node.getForm());
+		PTBLib.fixEmptyCategories(tree);
+		assertEquals(PTBTag.E_TRACE, node.getForm());
+		
+		tree = reader.next();
+		node = tree.getTerminal(8);
+		assertEquals(PTBTag.E_PRO, node.getForm());
+		PTBLib.fixEmptyCategories(tree);
+		assertEquals(PTBTag.E_PRO, node.getForm());
+		
+		// fix ICH/PPA
+		tree = reader.next();
+		node = tree.getTerminal(6);
+		assertEquals(PTBTag.E_ICH, node.getForm());
+		node = tree.getTerminal(10);
+		assertEquals(PTBTag.E_EXP, node.getForm());
+		PTBLib.fixEmptyCategories(tree);
+		node = tree.getTerminal(6);
+		assertEquals(PTBTag.E_RNR, node.getForm());
+		node = tree.getTerminal(10);
+		assertEquals(PTBTag.E_RNR, node.getForm());
+
+		// fix Trace
+		tree = reader.next();
+		node = tree.getTerminal(9);
+		assertEquals(PTBTag.E_TRACE, node.getForm());
+		PTBLib.fixEmptyCategories(tree);
+		assertEquals(PTBTag.E_PRO, node.getForm());
+		
+		tree = reader.next();
+		node = tree.getTerminal(6);
+		assertEquals(PTBTag.E_TRACE, node.getForm());
+		PTBLib.fixEmptyCategories(tree);
+		assertEquals(PTBTag.E_NULL, node.getForm());
+		
+		reader.close();
+	}
+	
+	@Test
 	public void testLinkReducedPassiveNulls()
 	{
 		String filename = "src/test/resources/constituency/reduced_passive_nulls.parse";

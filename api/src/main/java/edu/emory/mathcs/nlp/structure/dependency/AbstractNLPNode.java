@@ -46,7 +46,7 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	
 	// fields
 	protected String dependency_label;
-	protected List<DEPArc<N>> semantic_heads;
+	protected List<DEPArc<N>> secondary_heads;
     
 	// offsets
 	protected int start_offset;
@@ -100,7 +100,7 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	protected void init(N parent, String dependency_label)
 	{
 		setParent(parent, dependency_label);
-		semantic_heads = new ArrayList<>();
+		secondary_heads = new ArrayList<>();
 	}
 	
 	public N toRoot()
@@ -466,17 +466,17 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 //	============================== SEMANTICS ==============================
 
 	/** @return a list of all semantic head arc of the node. */
-	public List<DEPArc<N>> getSemanticHeadList()
+	public List<DEPArc<N>> getSecondaryHeads()
 	{
-		return semantic_heads;
+		return secondary_heads;
 	}
 	
 	/** @return a list of all semantic head arc of the node with the given label. */
-	public List<DEPArc<N>> getSemanticHeadList(String label)
+	public List<DEPArc<N>> getSecondaryHeadList(String label)
 	{
 		List<DEPArc<N>> list = new ArrayList<>();
 		
-		for (DEPArc<N> arc : semantic_heads)
+		for (DEPArc<N> arc : secondary_heads)
 		{
 			if (arc.isLabel(label))
 				list.add(arc);
@@ -486,9 +486,9 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	}
 	
 	/** @return semantic arc relationship between the node and another given node. */
-	public DEPArc<N> getSemanticHeadArc(N node)
+	public DEPArc<N> getSecondaryHeadArc(N node)
 	{
-		for (DEPArc<N> arc : semantic_heads)
+		for (DEPArc<N> arc : secondary_heads)
 		{
 			if (arc.isNode(node))
 				return arc;
@@ -498,9 +498,9 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	}
 	
 	/** @return the semantic arc relationship between the node and another given node with a given label. */
-	public DEPArc<N> getSemanticHeadArc(N node, String label)
+	public DEPArc<N> getSecondaryHeadArc(N node, String label)
 	{
-		for (DEPArc<N> arc : semantic_heads)
+		for (DEPArc<N> arc : secondary_heads)
 		{
 			if (arc.equals(node, label))
 				return arc;
@@ -510,9 +510,9 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	}
 	
 	/** @return the semantic arc relationship between the node and another given node with a given pattern. */
-	public DEPArc<N> getSemanticHeadArc(N node, Pattern pattern)
+	public DEPArc<N> getSecondaryHeadArc(N node, Pattern pattern)
 	{
-		for (DEPArc<N> arc : semantic_heads)
+		for (DEPArc<N> arc : secondary_heads)
 		{
 			if (arc.equals(node, pattern))
 				return arc;
@@ -522,9 +522,9 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	}
 	
 	/** @return the semantic label of the given in relation to the node. */
-	public String getSemanticLabel(N node)
+	public String getSecondaryLabel(N node)
 	{
-		for (DEPArc<N> arc : semantic_heads)
+		for (DEPArc<N> arc : secondary_heads)
 		{
 			if (arc.isNode(node))
 				return arc.getLabel();
@@ -534,9 +534,9 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	}
 	
 	/** @return the first node that is found to have the semantic head of the given label from the node. */
-	public N getFirstSemanticHead(String label)
+	public N getFirstSecondaryHead(String label)
 	{
-		for (DEPArc<N> arc : semantic_heads)
+		for (DEPArc<N> arc : secondary_heads)
 		{
 			if (arc.isLabel(label))
 				return arc.getNode();
@@ -546,9 +546,9 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	}
 	
 	/** @return the first node that is found to have the semantic head of the given pattern from the node. */
-	public N getFirstSemanticHead(Pattern pattern)
+	public N getFirstSecondaryHead(Pattern pattern)
 	{
-		for (DEPArc<N> arc : semantic_heads)
+		for (DEPArc<N> arc : secondary_heads)
 		{
 			if (arc.isLabel(pattern))
 				return arc.getNode();
@@ -558,97 +558,97 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	}
 	
 	/** @param arcs {@code Collection<DEPArc>} of the semantic heads. */
-	public void addSemanticHeads(Collection<DEPArc<N>> arcs)
+	public void addSecondaryHeads(Collection<DEPArc<N>> arcs)
 	{
-		semantic_heads.addAll(arcs);
+		secondary_heads.addAll(arcs);
 	}
 	
 	/** Adds a node a give the given semantic label to the node. */
-	public void addSemanticHead(N head, String label)
+	public void addSecondaryHead(N head, String label)
 	{
-		addSemanticHead(new DEPArc<>(head, label));
+		addSecondaryHead(new DEPArc<>(head, label));
 	}
 	
 	/** Adds a semantic arc to the node. */
-	public void addSemanticHead(DEPArc<N> arc)
+	public void addSecondaryHead(DEPArc<N> arc)
 	{
-		semantic_heads.add(arc);
+		secondary_heads.add(arc);
 	}
 	
 	/** Sets semantic heads of the node. */
-	public void setSemanticHeads(List<DEPArc<N>> arcs)
+	public void setSecondaryHeads(List<DEPArc<N>> arcs)
 	{
-		semantic_heads = arcs;
+		secondary_heads = arcs;
 	}
 	
 	/** Removes all semantic heads of the node in relation to a given node.
 	 * @return {@code true}, else {@code false} if nothing gets removed. 
 	 */
-	public boolean removeSemanticHead(N node)
+	public boolean removeSecondaryHead(N node)
 	{
-		for (DEPArc<N> arc : semantic_heads)
+		for (DEPArc<N> arc : secondary_heads)
 		{
 			if (arc.isNode(node))
-				return semantic_heads.remove(arc);
+				return secondary_heads.remove(arc);
 		}
 		
 		return false;
 	}
 	
 	/** Removes a specific semantic head of the node. */
-	public boolean removeSemanticHead(DEPArc<N> arc)
+	public boolean removeSecondaryHead(DEPArc<N> arc)
 	{
-		return semantic_heads.remove(arc);
+		return secondary_heads.remove(arc);
 	}
 	
 	/** Removes a collection of specific semantic heads of the node. */
-	public void removeSemanticHeads(Collection<DEPArc<N>> arcs)
+	public void removeSecondaryHeads(Collection<DEPArc<N>> arcs)
 	{
-		semantic_heads.removeAll(arcs);
+		secondary_heads.removeAll(arcs);
 	}
 	
 	/** Removes all semantic heads of the node that have the given label. */
-	public void removeSemanticHeads(String label)
+	public void removeSecondaryHeads(String label)
 	{
-		semantic_heads.removeAll(getSemanticHeadList(label));
+		secondary_heads.removeAll(getSecondaryHeadList(label));
 	}
 	
 	/** Removes all semantic heads of the node. */
-	public List<DEPArc<N>> clearSemanticHeads()
+	public List<DEPArc<N>> clearSecondaryHeads()
 	{
-		List<DEPArc<N>> backup = semantic_heads.subList(0, semantic_heads.size());
-		semantic_heads.clear();
+		List<DEPArc<N>> backup = secondary_heads.subList(0, secondary_heads.size());
+		secondary_heads.clear();
 		return backup;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc between the two nodes. */
-	public boolean isArgumentOf(N node)
+	public boolean isSecondaryDependentOf(N node)
 	{
-		return getSemanticHeadArc(node) != null;
+		return getSecondaryHeadArc(node) != null;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc with the given label. */
-	public boolean isArgumentOf(String label)
+	public boolean isSecondaryDependentOf(String label)
 	{
-		return getFirstSemanticHead(label) != null;
+		return getFirstSecondaryHead(label) != null;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc with the given pattern. */
-	public boolean isArgumentOf(Pattern pattern)
+	public boolean isSecondaryDependentOf(Pattern pattern)
 	{
-		return getFirstSemanticHead(pattern) != null;
+		return getFirstSecondaryHead(pattern) != null;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc with the given label between the two node. */
-	public boolean isArgumentOf(N node, String label)
+	public boolean isSecondaryDependentOf(N node, String label)
 	{
-		return getSemanticHeadArc(node, label) != null;
+		return getSecondaryHeadArc(node, label) != null;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc with the given pattern between the two node. */
-	public boolean isArgumentOf(N node, Pattern pattern)
+	public boolean isSecondaryDependentOf(N node, Pattern pattern)
 	{
-		return getSemanticHeadArc(node, pattern) != null;
+		return getSecondaryHeadArc(node, pattern) != null;
 	}
 
 	/**
@@ -709,7 +709,7 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 		join.add(toString(syntactic_tag));
 		join.add(feat_map.toString());
 		toStringDependency(join);
-		join.add(toString(semantic_heads));
+		join.add(toString(secondary_heads));
 		join.add(toString(named_entity_tag));
 		
 		return join.toString();

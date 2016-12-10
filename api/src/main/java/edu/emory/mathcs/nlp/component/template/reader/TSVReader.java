@@ -186,7 +186,7 @@ public abstract class TSVReader<N extends AbstractNLPNode<N>>
 		{
 			t = Splitter.splitColons(arg);
 			headID = Integer.parseInt(t[0]);
-			node.addSemanticHead(nodes[headID], t[1]);
+			node.addSecondaryHead(nodes[headID], t[1]);
 		}			
 	}
 }

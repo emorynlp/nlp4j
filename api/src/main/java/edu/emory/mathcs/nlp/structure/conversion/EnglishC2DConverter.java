@@ -15,35 +15,26 @@
  */
 package edu.emory.mathcs.nlp.structure.conversion;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UnknownFormatConversionException;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
 
-import edu.emory.mathcs.nlp.common.collection.tuple.Pair;
 import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.constant.PatternConst;
-import edu.emory.mathcs.nlp.common.grammar.Aspect;
-import edu.emory.mathcs.nlp.common.grammar.TVerb;
-import edu.emory.mathcs.nlp.common.grammar.Tense;
-import edu.emory.mathcs.nlp.common.grammar.Voice;
-import edu.emory.mathcs.nlp.common.treebank.CTTag;
-import edu.emory.mathcs.nlp.common.treebank.DSRTag;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.ENUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
-import edu.emory.mathcs.nlp.common.util.NLPUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.dep.DEPArc;
@@ -57,13 +48,10 @@ import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadRule;
 import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadRuleMap;
 import edu.emory.mathcs.nlp.structure.dependency.NLPGraph;
 import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
-import edu.emory.mathcs.nlp.structure.propbank.PBLib;
-import edu.emory.mathcs.nlp.structure.util.Arc;
+import edu.emory.mathcs.nlp.structure.util.DDGTag;
 import edu.emory.mathcs.nlp.structure.util.FeatMap;
 import edu.emory.mathcs.nlp.structure.util.PTBLib;
 import edu.emory.mathcs.nlp.structure.util.PTBTag;
-import edu.emory.mathcs.nlp.zzz.C2DInfo;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 
 /**
@@ -71,10 +59,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
  */
 public class EnglishC2DConverter extends C2DConverter
 {
+	private final Set<String> COMPP       = Sets.newHashSet(PTBTag.C_VP, PTBTag.C_SINV, PTBTag.C_SQ, PTBTag.C_PP, PTBTag.C_WHPP);
 	private final Set<String> CCOMP       = Sets.newHashSet(PTBTag.C_S, PTBTag.C_SQ, PTBTag.C_SINV, PTBTag.C_SBARQ);
-	private final Set<String> COMPP       = Sets.newHashSet(PTBTag.C_VP, PTBTag.C_SINV, PTBTag.C_SQ);
 	private final Set<String> ADVCL       = Sets.newHashSet(PTBTag.C_S, PTBTag.C_SBAR, PTBTag.C_SINV);
-	private final Set<String> NPMOD       = Sets.newHashSet(PTBTag.C_NML, PTBTag.C_NP, PTBTag.C_QP);
+	private final Set<String> ADVNP       = Sets.newHashSet(PTBTag.C_NML, PTBTag.C_NP, PTBTag.C_QP);
 	private final Set<String> META        = Sets.newHashSet(PTBTag.C_EDITED, PTBTag.C_EMBED, PTBTag.C_LST, PTBTag.C_META, PTBTag.P_CODE, PTBTag.C_CAPTION, PTBTag.C_CIT, PTBTag.C_HEADING, PTBTag.C_TITLE, PTBTag.P_DOLLAR);
 	private final Set<String> POSS        = Sets.newHashSet(PTBTag.P_PRPS, PTBTag.P_WPS);
 	private final Set<String> INTJ        = Sets.newHashSet(PTBTag.C_INTJ, PTBTag.P_UH);
@@ -84,43 +72,44 @@ public class EnglishC2DConverter extends C2DConverter
 	private final Set<String> PP          = Sets.newHashSet(PTBTag.C_PP, PTBTag.C_WHPP);
 	private final Set<String> ADVP        = Sets.newHashSet(PTBTag.C_ADJP, PTBTag.C_ADVP, PTBTag.C_PP);
 	private final Set<String> PREP        = Sets.newHashSet(PTBTag.P_IN, PTBTag.P_TO);
-	private final Set<String> ACOMP       = Sets.newHashSet(PTBTag.C_ADJP, PTBTag.C_ADVP);
+	private final Set<String> ACOMPP      = Sets.newHashSet(PTBTag.C_ADJP, PTBTag.C_ADVP);
 	private final Set<String> PREP_DET    = Sets.newHashSet(PTBTag.P_IN, PTBTag.P_DT);
 	private final Set<String> NMOD_PARENT = Sets.newHashSet(PTBTag.C_NML, PTBTag.C_NP, PTBTag.C_NX, PTBTag.C_WHNP);
 	private final Set<String> POSS_PARENT = Sets.newHashSet(PTBTag.C_NP, PTBTag.C_NML, PTBTag.C_WHNP, PTBTag.C_QP, PTBTag.C_ADJP);
+	private final Set<String> MARK        = Sets.newHashSet(PTBTag.P_IN, PTBTag.P_DT, PTBTag.P_TO);
+	private final Set<String> MD_VBx      = Sets.newHashSet(PTBTag.P_MD, PTBTag.P_VB, PTBTag.P_VBP, PTBTag.P_VBZ, PTBTag.P_VBD, PTBTag.P_VBG, PTBTag.P_VBN);
 
-	/** Syntactic function tags. */
-	private final Set<String> SYN_TAGS = Sets.newHashSet(PTBTag.F_ADV, PTBTag.F_CLF, PTBTag.F_CLR, PTBTag.F_DTV, PTBTag.F_NOM, PTBTag.F_PUT, PTBTag.F_PRD, PTBTag.F_TPC);
+//	/** Syntactic function tags. */
+//	private final Set<String> SYN_TAGS = Sets.newHashSet(PTBTag.F_ADV, PTBTag.F_CLF, PTBTag.F_CLR, PTBTag.F_DTV, PTBTag.F_NOM, PTBTag.F_PUT, PTBTag.F_PRD, PTBTag.F_TPC);
 	/** Semantic function tags. */
 	private final Set<String> SEM_TAGS = Sets.newHashSet(PTBTag.F_BNF, PTBTag.F_DIR, PTBTag.F_EXT, PTBTag.F_LOC, PTBTag.F_MNR, PTBTag.F_PRP, PTBTag.F_TMP);
 	/** Mappings between phrasal/clausal tags and phrasal/pos tags for coordination. */
 	private final Map<String,Pattern> COORD_MAP = initCoordMap();
+	/** Feats */
+	private final Set<String> FEATS = Sets.newHashSet(PTBTag.F_CLR, PTBTag.F_DIR, PTBTag.F_EXT, PTBTag.F_LOC, PTBTag.F_MNR, PTBTag.F_PRP, PTBTag.F_TMP);
 	
 	// lexicons
 	private final MorphAnalyzer analyzer;
 	private final Emoticon      emoticon;
-	private final Set<String>   transfer_verbs;
+	private final Set<String>   eventive_nouns;
+	private final Set<String>   light_verbs = Sets.newHashSet("make", "take", "have", "do", "give", "keep");
 	
-//	private final String AUXP  = "AUXP";
-//	private final String NLGS  = "NLGS";
-//	private final String CLGS  = "CLGS";
-//	private final String XSUBJ = "XSUBJ";
+	private final String NLGS  = "NLGS";
+	private final String CLGS  = "CLGS";
 	
 //	======================== Constructors ========================
 
 	public EnglishC2DConverter()
 	{
-		analyzer = null;
-		emoticon = null;
-		transfer_verbs = null;
+		this(new HeadRuleMap(), new HashSet<>());
 	}
 	
-	public EnglishC2DConverter(HeadRuleMap headrules, Set<String> transfer_verbs)
+	public EnglishC2DConverter(HeadRuleMap headrules, Set<String> eventive_nouns)
 	{
 		super(headrules, new HeadRule(HeadRule.DIR_RIGHT_TO_LEFT));
 		this.analyzer = new EnglishMorphAnalyzer();
 		this.emoticon = new Emoticon();
-		this.transfer_verbs = transfer_verbs;
+		this.eventive_nouns = eventive_nouns;
 	}
 	
 	private Map<String,Pattern> initCoordMap()
@@ -157,46 +146,54 @@ public class EnglishC2DConverter extends C2DConverter
 	{
 		if (tree.containsOnlyEmptyCategories()) return null;
 		preprocess(tree);
-		mapEmtpyCategories(tree);
 		setHead(tree.getRoot());
-		Map<CTNode,CTNode> terminal_map = getTerminalMap(tree.getRoot(), new HashMap<>());
-		finalizeDependencies(tree.getRoot(), terminal_map);
-		return createDependencyGraph(tree);
+		postprocess(tree);
+		finalizeDependencies(tree.getRoot());
+		NLPGraph graph = createDependencyGraph(tree);
+		relabel(tree, graph);
+		addFeats(tree, graph);
+		validate(tree, graph);
+		return graph;
 	}
 	
 	@Override
-	protected void setHead(CTNode curr, HeadRule rule)
+	protected void findHead(CTNode node, HeadRule rule)
 	{
-		if (findHeadCoordination(curr, rule)) return;
-		findHeadHyphen(curr);
-		findHeadApposition(curr);
-		findHeadSmallClause(curr);
-		findHeadQuantifierPhrase(curr);
-
-		CTNode head = getHead(curr.getChildren(), rule, SIZE_HEAD_FLAGS);
-		if (head.getC2DInfo().getLabel() != null) head.getC2DInfo().setLabel(null); 
-		curr.setC2DInfo(new C2DInfo(head));
-	}
-	
-	@Override
-	protected int getHeadFlag(CTNode child)
-	{
-		C2DInfo info = child.getC2DInfo();
+		if (PTBLib.isSecondaryPredicate(node))
+		{
+			if (node.isSyntacticTag(PTBTag.C_PP) && !node.isFunctionTag(DDGTag.OPRD))
+				rule = headrule_map.get("PPP");
+		}
 		
-		if (info.hasHead())// && info.getTerminalHead() != info.getNonTerminalHead())
+		CTNode head = findHeadCoordination(node, rule);
+		
+		if (head == null)
+		{
+			findHeadApposition(node);
+			findHeadQuantifierPhrase(node);
+			head = findHeadDefault(node.getChildren(), rule);
+		}
+		
+		node.setPhraseHead(head);
+	}
+	
+	@Override
+	protected int getHeadFlag(CTNode node)
+	{
+		if (node.hasPrimaryHead())
 			return -1;
 		
-		if (child.isFunctionTag(PTBTag.F_PRD))
-			return 0;
+		if (node.isEmptyCategoryBranch() || PTBLib.isPunctuation(node) || node.isFunctionTag(PTBTag.F_VOC))
+			return 3;
 		
-		if (hasAdverbialTag(child))
-			return 1;
-		
-		if (isMeta(child))
+		if (isMeta(node) || node.isSyntacticTag(INTJ) || node.isSyntacticTag(PTBTag.C_PRN))
 			return 2;
 		
-		if (child.isEmptyCategoryPhrase() || PTBLib.isPunctuation(child.getSyntacticTag()))
-			return 3;
+		if (node.isFunctionTag(PTBTag.F_PRD))
+			return 0;
+		
+		if (hasAdverbialTag(node))
+			return 1;
 		
 		return 0;
 	}
@@ -207,10 +204,13 @@ public class EnglishC2DConverter extends C2DConverter
 	{
 		lemmatize(tree);
 		PTBLib.preprocess(tree);
-		tree.flatten().forEach(n -> preprocess(n));
+		tree.flatten().forEach(node -> preprocess(tree, node));
+		preprocessDuplicates(tree);
+		tree.getTerminals().stream().forEach(n -> preprocessEmptyCategory(tree, n));
+		tree.getRoot().getTerminals().stream().filter(n -> n.isEmptyCategory() && !n.hasAntecedent()).forEach(n -> n.removeSelf());
 	}
 	
-	private void lemmatize(CTTree tree)
+	public void lemmatize(CTTree tree)
 	{
 		for (CTNode token : tree.getTokens())
 		{
@@ -224,44 +224,94 @@ public class EnglishC2DConverter extends C2DConverter
 		}
 	}
 	
-	private void preprocess(CTNode node)
+	private void preprocess(CTTree tree, CTNode node)
 	{
+		preprocessSQ(node);
+		preprocessModalVerb(node);
 		preprocessModalAdjective(node);
 		preprocessQuantifierPhrase(node);
 	}
 	
-	public CTNode preprocessModalAdjective(CTNode node)
+	public CTNode preprocessModalVerb(CTNode node)
 	{
-		boolean is_vp = node.hasParent(n -> n.isSyntacticTag(PTBTag.C_VP));
-		boolean is_sq = node.hasParent(n -> n.isSyntacticTag(PTBTag.C_SQ));
-		
-		if (node.andSF(PTBTag.C_ADJP, PTBTag.F_PRD) && (is_vp || is_sq))
+		if (node.isSyntacticTag(PTBTag.C_VP))
 		{
-			CTNode s = node.getFirstChild(n -> n.isSyntacticTag(PTBTag.C_S));
+			CTNode vb = node.getFirstChild(n -> n.isSyntacticTag(MD_VBx));
 			
-			if (s != null)
+			if (vb != null && !isPassiveVerb(vb))
 			{
-				CTNode np = s.getFirstChild(PTBLib::isNominalSubject);
+				CTNode s = vb.getRightNearestSibling(n -> n.isSyntacticTag(PTBTag.C_S));
 				
-				if (np != null && np.isEmptyCategoryPhrase())
+				if (s != null && s.getChildrenSize() == 2)
 				{
-					CTNode sbj = np.getFirstTerminal().getAntecedent();
+					CTNode np = s.getChild(0);
+					CTNode vp = s.getChild(1);
 					
-					if (sbj != null)
+					if (PTBLib.isNominalSubject(np) && np.isEmptyCategoryPhrase() && (PTBLib.isVerbPhrase(vp) || PTBLib.isSecondaryPredicate(vp)))
 					{
-						CTNode vp = node.getHighestChainedAncestor(n -> n.isSyntacticTag(PTBTag.C_VP));
-						if (is_sq && vp == null) vp = node;
+						CTNode ec = np.getFirstTerminal();
 						
-						if (sbj == vp.getLeftNearestSibling(PTBLib::isNominalSubject))
+						if (PTBLib.isPassiveNull(ec) && ec.hasAntecedent())
 						{
-							CTNode prd = node.getFirstChild(PTBLib::isAdjective);
+							CTNode sbj = ec.getAntecedent();
+							CTNode tmp = node.getHighestChainedAncestor(PTBLib::isVerbPhrase);
+							if (tmp == null) tmp = node;
 							
-							if (prd != null)
+							if (sbj == tmp.getLeftNearestSibling(PTBLib::isNominalSubject))
 							{
 								s.addFunctionTag(PTBTag.F_PRD);
-								return prd;
+								vb.setPrimaryLabel(DDGTag.RAISE);
+								return vb;
 							}
 						}
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public boolean isPassiveVerb(CTNode node)
+	{
+		if (node.isSyntacticTag(PTBTag.P_VBN) && node.hasParent(PTBLib::isVerbPhrase))
+		{
+			CTNode vp = node.getParent();
+			
+			while (vp.hasParent(PTBLib::isVerbPhrase) && PTBLib.containsCoordination(vp.getParent()))
+				vp = vp.getParent();
+			
+			CTNode vb = vp.getLeftNearestSibling(PTBLib::isVerb);
+			return (vb != null && (vb.isLemma("be") || vb.isLemma("become") || vb.isLemma("get")));
+		}
+
+		return false;
+	}
+	
+	public CTNode preprocessModalAdjective(CTNode node)
+	{
+		CTNode prd = node.getFirstChild(n -> PTBLib.isAdjective(n) || n.isSyntacticTag(PTBTag.P_VBG) || n.isSyntacticTag(PTBTag.P_VBN));
+		CTNode s = node.getFirstChild(n -> n.isSyntacticTag(PTBTag.C_S));
+		
+		if (node.andSF(PTBTag.C_ADJP, PTBTag.F_PRD) && prd != null && s != null)
+		{
+			if (node.getParent().isSyntacticTag(node.getSyntacticTag())) node = node.getParent();
+			CTNode np = s.getFirstChild(PTBLib::isNominalSubject);
+			
+			if (np != null && np.isEmptyCategoryPhrase())
+			{
+				CTNode sbj = np.getFirstTerminal().getAntecedent();
+				
+				if (sbj != null)
+				{
+					CTNode vp = node.getHighestChainedAncestor(PTBLib::isVerbPhrase);
+					if (vp == null) vp = node;
+					
+					if (sbj == vp.getLeftNearestSibling(PTBLib::isNominalSubject))
+					{
+						s.addFunctionTag(PTBTag.F_PRD);
+						prd.setPrimaryLabel(DDGTag.MODAL);
+						return prd;
 					}
 				}
 			}
@@ -276,7 +326,7 @@ public class EnglishC2DConverter extends C2DConverter
 		
 		for (CTNode child : node.getChildren())
 		{
-			if (child.isTerminal() && MetaConst.CARDINAL.equals(child.getLemma()))
+			if (child.isTerminal() && (MetaConst.CARDINAL.equals(child.getLemma()) || MetaConst.ORDINAL.equals(child.getLemma())))
 				child.setSyntacticTag(PTBTag.P_CD);
 		}
 		
@@ -302,7 +352,7 @@ public class EnglishC2DConverter extends C2DConverter
 							
 							if (next.isSyntacticTag(PTBTag.P_CD))
 							{
-								child.setPrimaryLabel(DSRTag.CC);
+								child.addFunctionTag(DDGTag.CC);
 								continue outer;
 							}
 						}
@@ -321,208 +371,148 @@ public class EnglishC2DConverter extends C2DConverter
 		return node.isSyntacticTag(PTBTag.P_TO) || node.isSyntacticTag(PTBTag.P_SYM);
 	}
 	
-//	============================= Empty Categories ============================= 
-	
-	/**
-	 * Removes, relocates empty categories in the specific tree. 
-	 * @param tree the constituent tree to be processed.
-	 * @return {@true} if the constituent tree contains nodes after relocating empty categories.
-	 */
-	private boolean mapEmtpyCategories(CTTree tree)
+	private boolean preprocessSQ(CTNode node)
 	{
-		for (CTNode node : tree.getTerminals())
+		if (node.isSyntacticTag(PTBTag.C_S) && 
+			node.hasParent(n -> n.isSyntacticTag(PTBTag.C_SQ)) && 
+		   !node.containsChild(PTBLib::isVerbPhrase) && 
+			node.containsChild(PTBLib::isSubject) && 
+			node.containsChild(PTBLib::isSecondaryPredicate))
 		{
-			if (node.isEmptyCategory() && node.hasParent())
-			{
-				if      (PTBLib.isPRO(node))
-					mapPRO(tree, node, xsubj);
-				else if (PTBLib.isTrace(node))
-					mapTrace(tree, node);
-				else if (PTBLib.isPassiveNull(node))
-					mapPassiveNull(tree, node, xsubj);
-				else if (PTBLib.isDiscontinuousConstituent(node))
-					mapDiscontinuousConstituent(tree, node, rnr);
-				else if (PTBLib.isNullComplementizer(node))
-					continue;
-				else if (PTBLib.isExpletive(node))
-					reloateEXP(tree, node);
-				else
-					removeNode(node);				
-			}
+			node.addFunctionTag(PTBTag.F_PRD);
+			return true;
 		}
 		
-		return tree.getRoot().getChildrenSize() > 0;
+		return false;
 	}
 	
-	/**
-	 * (TOP (S (NP-SBJ-1 (NNP John))
-     *         (VP (VBD bought)
-     *             (NP (DT a)
-     *                 (NN book))
-     *             (S-PRP (NP-SBJ (-NONE- *PRO*-1))
-     *                    (VP (TO to)
-     *                        (VP (VB teach)
-     *                            (NP (DT the)
-     *                                (NN course))))))))
-     *
-     * (TOP (S (NP-SBJ-1 (NNP John))
-     *         (VP (VBD had)
-     *             (S (NP-SBJ-2 (-NONE- *-1))
-     *                (VP (TO to)
-     *                    (VP (VB buy)
-     *                        (NP (DT a)
-     *                            (NN book))
-     *                        (S-PRP (NP-SBJ (-NONE- *PRO*-2))
-     *                               (VP (TO to)
-     *                                   (VP (VB teach)
-     *                                       (NP (DT the)
-     *                                           (NN course)))))))))))
-	 */
-	private void mapPRO(CTTree cTree, CTNode ec, Map<CTNode,Deque<CTNode>> xsubj)
+//	============================= Pre-process: Empty Categories ============================= 
+	
+	private void preprocessDuplicates(CTTree tree)
 	{
-		CTNode np = ec.getParent();
-		CTNode vp = np.getParent().getFirstLowestChainedDescendant(PTBLib.M_VP);
-		
-		if (vp == null)
-			handleSmallClause(np, ec);
-		else
+		for (Entry<Integer,List<CTNode>> e : tree.getEmptyCategoryMap().entrySet())
 		{
-			CTNode ante;
+			List<CTNode> list = e.getValue().stream().filter(PTBLib::isTrace).collect(Collectors.toList());
 			
-			if ((ante = ec.getAntecedent()) != null && PTBLib.isWhPhrase(ante))	// relative clauses
+			for (int i=1; i<list.size(); i++)
+				list.get(i).setForm(PTBTag.E_PRO);
+			
+			list = e.getValue().stream().filter(n -> PTBLib.isPassiveNull(n) && n.hasCoIndex()).collect(Collectors.toList());
+			if (list.isEmpty()) continue;
+			
+			CTNode node = DSUtils.getFirst(list);
+			CTNode ante = node.getAntecedent();
+			
+			if (ante != null)
 			{
-				if (cTree.getEmptyCategories(ante.getCoIndex()).size() == 1)
-					mapTrace(cTree, ec);
+				CTNode np = node.getParent();
+				
+				if (PTBLib.isSubject(np) && !PTBLib.isSubject(ante))
+					node.setForm(PTBTag.E_PRO);
 			}
-			
-			addXSubject(ec, xsubj);
 		}
 	}
 	
-	/**
-	 * (TOP (SINV (`` ")
-     *            (S-TPC-1 (NP-SBJ (PRP I))
-     *                     (VP (VBP am)
-     *                         (ADJP (JJ smart))))
-     *            ('' ")
-     *            (VP (VBZ says)
-     *                (S (-NONE- *T*-1)))
-     *            (NP-SBJ (NNP John))))
-     *        
-     * (TOP (NP (NP (NNP John))
-     *          (SBAR (WHNP-2 (WP who))
-     *                (S (NP-SBJ-1 (PRP I))
-     *                   (VP (VBD wanted)
-     *                       (S (NP-SBJ (-NONE- *PRO*-1))
-     *                          (VP (TO to)
-     *                              (VP (VB meet)
-     *                                  (NP (-NONE- *T*-2)))))))))
-     *       (VP (VBZ is)
-     *           (ADVP-LOC (RB here))))
-     *           
-     * (TOP (NP (NP (NNP John))
-     *          (SBAR (WHNP-1 (WP who))
-     *                (S (NP-SBJ (PRP I))
-     *                   (VP (VBD bought)
-     *                       (NP (DT a)
-     *                           (NN book))
-     *                       (PP (IN for)
-     *                           (NP (-NONE- *T*-1)))))))
-     *       (VP (VBZ is)
-     *           (ADVP-LOC (RB here))))
-	 */
-	private void mapTrace(CTTree cTree, CTNode ec)
+	private void preprocessEmptyCategory(CTTree tree, CTNode node)
+	{
+		if (node.isEmptyCategory())
+		{
+			switch (node.getForm())
+			{
+			case PTBTag.E_ZERO : break;
+			case PTBTag.E_NULL : preprocessPassiveNull(tree, node); break;
+			case PTBTag.E_TRACE: preprocessTrace(node); break;
+			case PTBTag.E_PRO  : preprocessPRO(node); break;
+			case PTBTag.E_EXP  : preprocessEXP(tree, node); break;
+			case PTBTag.E_ICH  :
+			case PTBTag.E_PPA  :
+			case PTBTag.E_RNR  : preprocessDiscontinuousConstituent(tree, node); break;
+			default: node.removeSelf();
+			}
+		}
+	}
+	
+	private void preprocessPassiveNull(CTTree tree, CTNode ec)
 	{
 		CTNode ante = ec.getAntecedent();
 		
 		if (ante == null || ec.isDescendantOf(ante))
-			removeNode(ec);
-		else if (ante.isFunctionTag(PTBTag.F_TPC))
+			ec.removeSelf();
+		else if (ec.hasCoIndex())
 		{
-			if (!ante.isFunctionTag(PTBTag.F_SBJ))
-			{
-				CTNode parent = ec.getParent();
-				parent.removeChild(ec);
-				replaceEmptyCategory(parent, ante);
-			}
-			else
-				removeNode(ec);
-		}
-		else	// relative clauses
-		{
-			CTNode parent = ante.getHighestChainedAncestor(PTBLib.M_SBAR);
-			if (parent != null) parent.addFunctionTag(DSRTag.RELCL);
-			replaceEmptyCategory(ec, ante);
+			List<CTNode> list = tree.getEmptyCategories(ec.getCoIndex());
+			CTNode np = ec.getParent();
+			
+			if (ec == DSUtils.getFirst(list) && !(PTBLib.isSubject(np) && !PTBLib.isSubject(ante)))
+				ec.getParent().replaceChild(ec, ante);
 		}
 	}
 	
-	/** Called by {@link #mapEmtpyCategories(CTTree)}. */
-	private void mapPassiveNull(CTTree cTree, CTNode ec, Map<CTNode,Deque<CTNode>> xsubj)
+	private void preprocessPRO(CTNode ec)
 	{
 		CTNode np = ec.getParent();
 		
-		if (np.isFunctionTag(PTBTag.F_SBJ))
+		// small clause
+		if (!np.hasRightSibling(PTBLib::isVerbPhrase))
 		{
-			// small clauses
-			if (np.getRightNearestSibling(PTBLib.M_VP) == null)
-				handleSmallClause(np, ec);
-			else
-				addXSubject(ec, xsubj);
+			CTNode prd = np.getRightNearestSibling(PTBLib::isSecondaryPredicate);
+			
+			if (prd != null)
+			{
+				CTNode s = np.getParent();
+				
+				if (s.isSyntacticTag(PTBTag.C_S))
+				{
+					prd.addFunctionTag(DDGTag.OPRD);
+					s.setPrimaryLabel(DDGTag.OPRD);
+					ec.setAntecedent(null);
+				}				
+			}
+		}
+	}
+
+	private void preprocessTrace(CTNode ec)
+	{
+		CTNode ante = ec.getAntecedent();
+		
+		if (ante == null || ec.isDescendantOf(ante))
+			ec.removeSelf();
+		else if (ante.isFunctionTag(PTBTag.F_TPC))
+		{
+			ec.getParent().replaceChild(ec, ante);
+		}
+		else	// relative clauses
+		{
+			CTNode parent = ante.getHighestChainedAncestor(n -> n.isSyntacticTag(PTBTag.C_SBAR));
+			if (parent != null) parent.addFunctionTag(DDGTag.RELCL);
+			ec.getParent().replaceChild(ec, ante);
 		}
 	}
 	
-	/** Called by {@link #mapEmtpyCategories(CTTree)}. */
-	private void mapDiscontinuousConstituent(CTTree cTree, CTNode ec, Map<CTNode,Deque<CTNode>> rnr)
+	private void preprocessDiscontinuousConstituent(CTTree tree, CTNode ec)
 	{
-		CTNode parent = ec.getParent();
-		CTNode ante   = ec.getAntecedent();
+		if (!ec.hasGrandParent()) return;
+		CTNode ante = ec.getAntecedent();
 		
-		if (ec.formStartsWith(PTBTag.E_ICH) && parent.getLeftNearestSibling(PTBLib.M_WHx) != null)
-			removeNode(ec);
-		else if (ante == null || ec.isDescendantOf(ante))
-			removeNode(ec);
+		if (ante == null || ec.isDescendantOf(ante))
+			ec.removeSelf();
+		else if (PTBLib.isInterpretConstituentHere(ec) && ec.getParent().hasLeftSibling(PTBLib::isWhPhrase))
+			ec.removeSelf(); 
 		else
 		{
-			List<CTNode> list = cTree.getEmptyCategories(ante.getCoIndex());
-			boolean isRNR = PTBLib.isRightNodeRaising(ec);
-			int i, size = list.size();
-			CTNode node;
+			List<CTNode> list = tree.getEmptyCategories(ante.getCoIndex());
+			ec = list.get(list.size()-1);
 			
-			Deque<CTNode> dq = isRNR ? new ArrayDeque<CTNode>() : null;
-			
-			if (ec.getTerminalID() < ante.getFirstTerminal().getTerminalID())
-			{		
-				for (i=0; i<size-1; i++)
-				{
-					node = list.get(i);
-					if (isRNR)	dq.addLast(node.getParent().getParent());
-					removeNode(node);
-				}
-				
-				ec = list.get(size-1);
-			}
-			else
+			if (!ec.isFunctionTag(PTBTag.E_RNR))
 			{
-				for (i=size-1; i>0; i--)
-				{
-					node = list.get(i);
-					if (isRNR)	dq.addFirst(node.getParent().getParent());
-					removeNode(node);
-				}
-				
-				ec = list.get(0);
+				CTNode gp = ec.getGrandParent();
+				gp.replaceChild(ec.getParent(), ante);
+				ec.addFunctionTag(PTBTag.E_RNR);
 			}
-			
-			if (isRNR && !dq.isEmpty())
-				rnr.put(ante, dq);
-			
-			parent = ec.getParent();
-			parent.removeChild(ec);
-			replaceEmptyCategory(parent, ante);
 		}
 	}
 	
-	private void reloateEXP(CTTree cTree, CTNode ec)
+	private void preprocessEXP(CTTree cTree, CTNode ec)
 	{
 		CTNode s = ec.getParent();
 		
@@ -530,74 +520,16 @@ public class EnglishC2DConverter extends C2DConverter
 		{
 			CTNode np = s.getParent();
 			
-			if (np != null && np.matches(PTBLib.M_NP_SBJ))
+			if (np != null && PTBLib.isNominalSubject(np))
 			{
-				np.addFunctionTag(DSRTag.EXPL);
+				np.addFunctionTag(DDGTag.EXPL);
+				
 				if (ec.hasAntecedent())
 					ec.getAntecedent().addFunctionTag(PTBTag.F_SBJ);
 			}
 		}
 		
-		removeNode(ec);
-	}
-	
-	private void handleSmallClause(CTNode np, CTNode ec)
-	{
-		handleSmallClause(np, ec, false);
-	}
-	
-	/**
-     * (TOP (S (NP-SBJ (PRP I))
-     *         (VP (VBP call)
-     *             (NP-1 (NNP John))
-     *             (S-CLR (NP-SBJ (-NONE- *PRO*-1))
-     *                    (NP-PRD (DT the)
-     *                            (NN genius))))))
-     *
-     * (TOP (S (NP-SBJ (PRP I))
-     *         (VP (VBP consider)
-     *             (S (NP-SBJ (NNP John))
-     *                (ADJP-PRD (JJ smart))))))
-	 */
-	private void handleSmallClause(CTNode np, CTNode ec, boolean replace)
-	{
-		CTNode s   = np.getParent();
-		CTNode prd = s.getFirstChild(PTBLib.M_PRD);
-		
-		if (prd != null && (!s.hasFunctionTag() || s.isFunctionTag(PTBTag.F_CLR)))
-		{
-			s.clearFunctionTags();
-			s.addFunctionTag(DSRTag.OPRD);
-		}
-		
-		if (replace)
-		{
-			if (ec.hasAntecedent())
-				replaceEmptyCategory(ec, ec.getAntecedent());
-		}
-		else
-			removeNode(ec);
-	}
-	
-	/**
-	 * @param ec empty subject.
-	 * @param xsubj key: antecedent, value: list of clauses containing empty subjects.
-	 */
-	private void addXSubject(CTNode ec, Map<CTNode, Deque<CTNode>> xsubj)
-	{
-		CTNode ante = ec.getAntecedent();
-		
-		while (ante != null && ante.isEmptyCategoryPhrase())
-		{
-			if (PTBLib.isWhPhrase(ante)) return; // TODO: why?
-			ante = ante.getFirstTerminal().getAntecedent();
-		}
-		
-		if (ante != null)
-		{
-			CTNode s = ec.getNearestAncestor(PTBLib.M_S);
-			if (s != null) xsubj.computeIfAbsent(ante, n -> new ArrayDeque<>()).add(s);
-		}
+		ec.removeSelf();
 	}
 	
 //	============================= Coordination =============================
@@ -605,9 +537,8 @@ public class EnglishC2DConverter extends C2DConverter
 	/**
 	 * If the specific node contains a coordination structure, find the head of each coordination.
 	 * @param curr the specific node to be compared. 
-	 * @return {@code true} if this node contains a coordination structure.
 	 */
-	private boolean findHeadCoordination(CTNode curr, HeadRule rule)
+	private CTNode findHeadCoordination(CTNode curr, HeadRule rule)
 	{
 		// skip pre-conjunctions and punctuation
 		int i, sId, size = curr.getChildrenSize();
@@ -623,7 +554,7 @@ public class EnglishC2DConverter extends C2DConverter
 		
 		// not a coordination construction
 		if (!PTBLib.containsCoordination(curr, curr.getChildren(sId)))
-			return false;
+			return null;
 		
 		// find conjuncts
 		Pattern rTags = getConjunctPattern(curr, sId, size);
@@ -661,26 +592,16 @@ public class EnglishC2DConverter extends C2DConverter
 				isConjunctFound = true;
 		}
 		
-		if (heads.isEmpty()) return false;
+		if (heads.isEmpty()) return null;
 		
 		if (eId - bId > 0)
 		{
-			if (isConjunctFound)
-			{
-				head = findHeadCoord(curr, rule, bId, eId, main_head);
-				heads.add(head);
-			}
-			else
-			{
-				head = DSUtils.getLast(heads);
-				
-				for (i=bId; i<eId; i++)
-					setPrimaryHead(curr.getChild(i), head);
-			}
+			head = findHeadCoord(curr, rule, bId, eId, main_head);
+			heads.add(head);
 		}
 		
 		handleArgumentsInCoordination(curr, heads);
-		return true;
+		return main_head;
 	}
 	
 	/** Called by {@link #findHeadCoordination(CTNode, HeadRule)}. */
@@ -723,7 +644,7 @@ public class EnglishC2DConverter extends C2DConverter
 		}
 		
 		if (rTags == PatternConst.ANY)
-			return getSpecialLabel(C) == null;
+			return getSpecialLabel(C, C.getTerminalHead()) == null;
 		
 		if (rTags.matcher(C.getSyntacticTag()).find())
 		{
@@ -746,12 +667,13 @@ public class EnglishC2DConverter extends C2DConverter
 	private CTNode findHeadCoord(CTNode curr, HeadRule rule, int bId, int eId, CTNode prevHead)
 	{
 		CTNode currHead = (eId - bId == 1) ? curr.getChild(bId) : findHeadDefault(curr.getChildren(bId, eId), rule);
-		
+		 
 		if (prevHead != null)
 		{
-			String label = DSRTag.CONJ;
-			if (isDiscourse(currHead)) label = DSRTag.DISC;
-			else if (PTBLib.isPunctuation(currHead)) label = DSRTag.PUNCT;
+			String label = DDGTag.CONJ;
+			if (isDiscourse(currHead, currHead.getTerminalHead())) label = DDGTag.DISC;
+			else if (PTBLib.isPunctuation(currHead)) label = DDGTag.P;
+			else if (currHead.isSyntacticTag(ADVCL) && hasAdverbialTag(currHead)) label = DDGTag.ADVCL;
 			currHead.setPrimaryHead(prevHead, label);
 		}
 		
@@ -769,8 +691,17 @@ public class EnglishC2DConverter extends C2DConverter
 			if (child.getPrimaryHead().isNode(head) && isCoordArgument(child))
 			{
 				for (int i=0; i<heads.size()-1; i++)
-					child.addSecondaryHead(heads.get(i), child.getPrimaryLabel());	
+					child.addSecondaryHead(heads.get(i));	
 			}
+		}
+		
+		final List<CTNode> sub = heads.subList(1, heads.size());
+		
+		while (curr.hasParent(PTBLib::isVerbPhrase) || curr.hasParent(n -> n.isSyntacticTag(PTBTag.C_S)))
+		{
+			curr.getSiblings().stream().filter(n -> isCoordArgument(n)).forEach(n -> n.addSecondaryHeads(sub));
+			curr = curr.getParent();
+			if (curr.isSyntacticTag(PTBTag.C_S)) break;
 		}
 		
 		return true;
@@ -778,36 +709,15 @@ public class EnglishC2DConverter extends C2DConverter
 	
 	private boolean isCoordArgument(CTNode node)
 	{
-		return !(node.isPrimaryLabel(DSRTag.PUNCT));
+		CTNode d = node.getTerminalHead();
+		
+		return node.isPrimaryLabel(DDGTag.OBJ) || node.isPrimaryLabel(DDGTag.DAT) || node.isPrimaryLabel(DDGTag.COMP) ||
+			   (node.isFunctionTag(PTBTag.F_SBJ) && !isEXPL(node, d)) || node.isFunctionTag(PTBTag.F_LGS) || node.isFunctionTag(PTBTag.F_DTV) || hasAdverbialTag(node) ||
+			   PTBLib.isAdverb(node); 
 	}
 	
 //	============================= Find Heads =============================
 
-	private boolean findHeadHyphen(CTNode node)
-	{
-		int i, size = node.getChildrenSize();
-		CTNode prev, hyph, next;
-		boolean isFound = false;
-		boolean isVP = node.isSyntacticTag(PTBTag.C_VP);
-		
-		for (i=0; i<size-2; i++)
-		{
-			prev = node.getChild(i);
-			hyph = node.getChild(i+1);
-			next = node.getChild(i+2);
-			
-			if (hyph.isSyntacticTag(PTBTag.P_HYPH))
-			{
-				prev.setPrimaryHead(next, DSRTag.COM);
-				hyph.setPrimaryHead(next, DSRTag.PUNCT);
-				isFound = true;
-				i++;
-			}
-		}
-		
-		return isFound;
-	}
-	
 	/**
 	 * Finds the head of appositional modifiers.
 	 * @param curr the constituent node to be processed.
@@ -823,7 +733,7 @@ public class EnglishC2DConverter extends C2DConverter
 		while (fst != null && fst.containsChild(n -> n.isSyntacticTag(PTBTag.P_POS)))
 			fst = fst.getRightNearestSibling(n -> n.isSyntacticTag(PTBLib.NP_NML_WHNP));
 		
-		if (fst == null || fst.hasPrimaryHead()) return false;
+		if (fst == null || fst.isEmptyCategoryPhrase() || fst.hasPrimaryHead()) return false;
 
 		boolean hasAppo = false;
 		CTNode snd = fst;
@@ -836,7 +746,7 @@ public class EnglishC2DConverter extends C2DConverter
 				(snd.isFunctionTag(PTBTag.F_HLN, PTBTag.F_TTL)) ||
 				(snd.isSyntacticTag(PTBTag.C_RRC) && snd.containsChild(PTBLib::isNominalPredicate)))
 			{
-				snd.setPrimaryHead(fst, DSRTag.APPOS);
+				snd.setPrimaryHead(fst, DDGTag.APPO);
 				hasAppo = true;
 			}
 		}
@@ -844,43 +754,6 @@ public class EnglishC2DConverter extends C2DConverter
 		return hasAppo;
 	}
 
-	/**
-	 * (SQ (VBD was)
-     *     (S (NP-SBJ (PRP it))
-     *        (NP-PRD (NP (DT the)
-     *                    (NN reason))
-     *                (PP-TMP (IN in)
-     *                        (NP (DT the)
-     *                            (NN past))))))
-	 */
-	public boolean findHeadSmallClause(CTNode node)
-	{
-		if (node.isSyntacticTag(PTBTag.C_S) && !node.containsChild(n -> n.isSyntacticTag(PTBTag.C_VP)))
-		{
-			CTNode sbj = node.getFirstChild(n -> n.isFunctionTag(PTBTag.F_SBJ));
-			CTNode prd = node.getFirstChild(n -> n.isFunctionTag(PTBTag.F_PRD));
-			
-			if (sbj != null && prd != null)
-			{
-				CTNode parent = node.getParent();
-				
-				if (parent.isSyntacticTag(PTBTag.C_SQ))
-				{
-					CTNode vb = parent.getFirstChild(PTBLib::isVerb);
-					
-					// see the example above
-					if (vb != null && !sbj.hasPrimaryHead())
-						node.addFunctionTag(PTBTag.F_PRD);
-				}
-
-				node.addFunctionTag(DSRTag.OPRD);
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
 	private boolean findHeadQuantifierPhrase(CTNode node)
 	{
 		if (!node.isSyntacticTag(PTBTag.C_QP)) return false;
@@ -894,428 +767,124 @@ public class EnglishC2DConverter extends C2DConverter
 			if (curr.isSyntacticTag(PTBTag.P_JJR, PTBTag.P_RBR))
 			{
 				if (next != null && (next.isFormLowercase("than")))
-					next.setPrimaryHead(curr, DSRTag.MWE);
+					next.setPrimaryHead(curr, DDGTag.COM);
 			}
 			else if (curr.isSyntacticTag(PTBTag.P_JJ))
 			{
 				if (next != null && (next.isFormLowercase("to")))
-					next.setPrimaryHead(curr, DSRTag.MWE);
+					next.setPrimaryHead(curr, DDGTag.COM);
 			}
 			else if (curr.isSyntacticTag(PTBTag.P_NN))
 			{
 				if (next != null && (next.isFormLowercase("like")))
-					next.setPrimaryHead(curr, DSRTag.MWE);
+					next.setPrimaryHead(curr, DDGTag.COM);
 			}
 			else if (curr.isSyntacticTag(PTBTag.P_IN))
 			{
 				if (next != null && next.isSyntacticTag(PTBTag.P_TO))
-					next.setPrimaryHead(curr, DSRTag.MWE);
+					next.setPrimaryHead(curr, DDGTag.COM);
 			}
 		}
 		
 		return true;
 	}
 	
-//	============================= Arrange Modals =============================
-	
-//	private void arrangeModals(CTTree tree)
-//	{
-//		arrangeModalsRec(tree.getRoot());
-//	}
-//	
-//	private void arrangeModalsRec(CTNode node)
-//	{
-//		if (node.isSyntacticTag(PTBTag.C_VP))
-//		{
-//			CTNode vb = node.getFirstChild(PTBLib.M_MD_TO_VBx);
-//			
-//			if (vb != null && isModal(vb))
-//			{
-//				CTNode s = vb.getRightNearestSibling(PTBLib.M_S);
-//				
-//				if (s != null && s.getChildrenSize() == 2)
-//				{
-//					CTNode np = s.getChild(0);
-//					CTNode vp = s.getChild(1);
-//					
-//					if (np.isEmptyCategoryPhrase() && vp.isSyntacticTag(PTBTag.C_VP))
-//						node.replaceChild(s, vp);
-//				}
-//			}
-//		}
-//		
-//		for (CTNode child : node.getChildren())
-//			arrangeModalsRec(child);
-//	}
-//	
-//	private boolean isModal(CTNode vb)
-//	{
-//		String lower = StringUtils.toLowerCase(vb.getForm());
-//		if (vb.isLemma("have") || vb.isLemma("need") || vb.isLemma("dare") || vb.isLemma("ought") || lower.equals("used")) return true;
-//		
-//		if (lower.equals("going"))
-//		{
-//			CTNode vp = vb.getParent();
-//			CTNode be = vp.getLeftNearestSibling(PTBLib.M_VBx);
-//			return be != null && be.isLemma("be");
-//		}
-//		
-//		return false;
-//	}
-//	
-////	============================= Predicate Argument Structures =============================
-//	
-//	private Map<CTNode,Set<CTNode>> findArguments(CTTree tree)
-//	{
-//		Map<CTNode,Set<CTNode>> map = new HashMap<>();
-//		findArgumentsRec(tree.getRoot(), map);
-//		return map;
-//	}
-//	
-//	/** Called by {@link #findArguments(CTTree)}. */
-//	private void findArgumentsRec(CTNode node, Map<CTNode,Set<CTNode>> map)
-//	{
-//		if (node.isSyntacticTag(PTBTag.C_VP))
-//			findArgumentsAux(node, map);
-//		else
-//			node.getChildren().forEach(n -> findArgumentsRec(n, map));
-//	}
-//	
-//	/**
-//	 * Called by {@link #findArgumentsRec(CTNode, Int2ObjectMap)}.
-//	 * @param vp the highest verb phrase.
-//	 */
-//	private void findArgumentsAux(CTNode vp, Map<CTNode,Set<CTNode>> map)
-//	{
-//		List<CTNode> args = new ArrayList<>();
-//		List<CTNode> auxs = new ArrayList<>();
-//		CTNode p = vp.getParent();
-//		
-//		if (p.matches(PTBLib.M_Sx))
-//		{
-//			for (CTNode n : p.getChildren())
-//			{
-//				if (n == vp || PTBLib.isPunctuation(n.getSyntacticTag())) continue;
-//				if (n.matches(PTBLib.M_MD_TO_VBx)) auxs.add(n);
-//				else args.add(n);
-//			}
-//		}
-//		
-//		findArgumentsAux(vp, map, args, auxs);
-//	}
-//	
-//	/** Called by {@link #findArgumentsAux(CTNode, Map)}. */
-//	private void findArgumentsAux(CTNode vp, Map<CTNode,Set<CTNode>> map, List<CTNode> args, List<CTNode> auxs)
-//	{
-//		List<CTNode> vps = new ArrayList<>();
-//		List<CTNode> vbs = new ArrayList<>();
-//		List<CTNode> tmp = new ArrayList<>();
-//		
-//		for (CTNode n : vp.getChildren())
-//		{
-//			if (n.isSyntacticTag(PTBTag.C_VP))
-//				vps.add(n);
-//			else if (n.matches(PTBLib.M_MD_TO_VBx))
-//				vbs.add(n);
-//			else
-//				tmp.add(n);
-//		}
-//		
-//		if (vps.isEmpty())
-//			vbs.forEach(vb -> initArguments(vb, map, args, auxs));
-//		else
-//		{
-//			args.addAll(tmp);
-//			auxs.addAll(vbs);
-//		
-//			if (vps.size() == 1) findArgumentsAux(DSUtils.getFirst(vps), map, args, auxs);
-//			else for (CTNode n : vps) findArgumentsAux(n, map, new ArrayList<>(args), new ArrayList<>(auxs));
-//		}
-//	}
-//	
-//	private TVerb initArguments(CTNode vb, Map<CTNode,Set<CTNode>> map, List<CTNode> args, List<CTNode> auxs)
-//	{
-//		TVerb vt = new TVerb(vb.getLemma());
-//		vt.setTense(getTense(vb, auxs));
-//		
-//		Pair<Aspect,Voice> p = getAspectAndVoice(vb, auxs);
-//		vt.setAspect(p.o1);
-//		vt.setVoice (p.o2);
-//		
-//		vt.setModals(getModals(auxs));
-//		vt.setNegation(neg);
-//		
-//		return vt;
-//	}
-//	
-//	private void initModals(List<CTNode> auxs)
-//	{
-//		CTNode curr, next;
-//		
-//		for (int i=0; i<auxs.size()-1; i++)
-//		{
-//			curr = auxs.get(i);
-//			next = auxs.get(i+1);
-//			
-//			if (curr.isLemma("go"))
-//			{
-//				if (0 < i)
-//				{
-//					CTNode prev = auxs.get(i-1);
-//					
-//					if (prev.isLemma("be") && next.isLemma("to"))
-//					{
-//						prev.addFunctionTag(DSRTag.MWE);
-//						next.addFunctionTag(DSRTag.MWE);
-//						curr.addFunctionTag(DSRTag.MODAL);
-//					}
-//				}
-//			}
-//			else if (isSemiModal(curr) && next.isLemma("to"))
-//			{
-//				next.addFunctionTag(DSRTag.MWE);
-//				curr.addFunctionTag(DSRTag.MODAL);
-//			}
-//		}
-//	}
-//	
-//	private Tense getTense(CTNode vb, List<CTNode> auxs)
-//	{
-//		if (auxs.isEmpty()) return getTense(vb);
-//		CTNode aux = DSUtils.getFirst(auxs);
-//		
-//		if (aux.isLemma("will") || aux.isLemma("shall"))
-//			return Tense.future;
-//		
-//		for (int i=1; i<auxs.size()-1; i++)
-//		{
-//			aux = auxs.get(i);
-//			CTNode prev = auxs.get(i-1);
-//			CTNode next = auxs.get(i+1);
-//
-//			if (aux.isLemma("go") && prev.isLemma("be") && next.isLemma("to"))
-//			{
-//				prev.addFunctionTag(DSRTag.MWE);
-//				next.addFunctionTag(DSRTag.MWE);
-//				aux .addFunctionTag(DSRTag.MODAL);
-//				return Tense.future;	
-//			}
-//		}
-//		
-//		return getTense(DSUtils.getFirst(auxs));
-//	}
-//	
-//	private Tense getTense(CTNode vb)
-//	{
-//		switch (vb.getSyntacticTag())
-//		{
-//		case PTBTag.P_VBD: return Tense.past;
-//		case PTBTag.P_VBP:
-//		case PTBTag.P_VBZ: return Tense.present;
-//		}
-//		
-//		return Tense.none;
-//	}
-//	
-//	private Pair<Aspect,Voice> getAspectAndVoice(CTNode vb, List<CTNode> auxs)
-//	{
-//		if (auxs.isEmpty()) return new Pair<>(Aspect.none, Voice.active);
-//		CTNode prog = null, perf = null, pass = null;
-//		
-//		if (vb.isSyntacticTag(PTBTag.P_VBG))
-//		{
-//			CTNode a = DSUtils.getLast(auxs);
-//			
-//			if (a.isLemma("be"))
-//			{
-//				prog = a;
-//				
-//				if (a.matches(PTBLib.M_VBD_VBN))
-//				{
-//					a = DSUtils.getLast(auxs, 1);
-//					if (a != null && a.isLemma("have")) perf = a;
-//				}
-//			}
-//		}
-//		else if (vb.matches(PTBLib.M_VBD_VBN))
-//		{
-//			CTNode a = DSUtils.getLast(auxs);
-//			
-//			if (a.isLemma("have"))
-//				perf = a;
-//			else if (a.isLemma("be") || a.isLemma("become") || a.isLemma("get"))
-//				pass = a;
-//		}
-//		
-//		Aspect aspect = Aspect.none;
-//		
-//		if (perf != null && prog != null)
-//			aspect = Aspect.perfect_progressive;
-//		else if (perf != null)
-//			aspect = Aspect.perfect;
-//		else if (prog != null)
-//			aspect = Aspect.progressive;
-//		
-//		Voice voice = (pass != null) ? Voice.passive : Voice.active;
-//		return new Pair<>(aspect, voice);
-//	}
-//	
-//	private void findModals(CTNode vb, List<CTNode> auxs)
-//	{
-//		Set<String> modals = new HashSet<>();
-//		
-//		for (int i=0; i<auxs.size(); i++)
-//		{
-//			CTNode aux = auxs.get(i);
-//			
-//			if (aux.isSyntacticTag(PTBTag.P_MD))
-//			{
-//				if (!aux.isLemma("will") && !aux.isLemma("shall"))
-//					modals.add(aux.getLemma());
-//			}
-//			else if (isSemiModal(aux))
-//			{
-//				if (i+1 < auxs.size() && auxs.get(i+1).isLemma("to"))
-//					modals.add(aux.getLemma());
-//			}
-//		}
-//		
-//		return modals;
-//	}
-//	
-//	private boolean isSemiModal(CTNode vb)
-//	{
-//		return vb.isLemma("have") || vb.isLemma("need") || vb.isLemma("dare") || vb.isLemma("use") || vb.isLemma("go");
-//	}
-//	
-//	private void addDependent(CTNode head, CTNode node, String label)
-//	{
-//		node.addDependencyHead(new CTArc(head, label));
-//	}
-	
-
 // ============================= Get Labels =============================
 	
 	@Override
-	protected String getDependencyLabel(CTNode C, CTNode p)
+	protected String getDependencyLabel(CTNode node, CTNode head)
 	{
-		CTNode c = C.getC2DInfo().getNonTerminalHead();
-		CTNode d = C.getC2DInfo().getTerminalHead();
+		CTNode parent = node.getParent();
+		CTNode c = node.getPhraseHead();
+		CTNode d = node.getTerminalHead();
 		String label;
+		
+		if (node.hasPrimaryLabel())
+			return node.getPrimaryLabel();
+		
+		if (node.hasParent(n -> n.isSyntacticTag(PTBTag.C_CONJP)) || d.isSyntacticTag(PTBTag.P_GW))
+			return DDGTag.COM;
 
 		// vocative
-		if (C.isFunctionTag(PTBLib.F_VOC))
-			return DSRTag.VOC;
+		if (node.isFunctionTag(PTBLib.F_VOC))
+			return DDGTag.VOC;
 		
 		// dative
-		if (C.isFunctionTag(PTBTag.F_DTV))
-			return DSRTag.DATV;
+		if (node.isFunctionTag(PTBTag.F_DTV) || node.isFunctionTag(PTBTag.F_BNF))
+			return DDGTag.DAT;
 				
 		// adverbial clause/phrase
-		if (hasAdverbialTag(C))
+		if (hasAdverbialTag(node))
 		{
-			if (C.isSyntacticTag(ADVCL))
-				return DSRTag.ADVCL;
+			if (node.isSyntacticTag(ADVCL))
+				return DDGTag.ADVCL;
 			
-			if (C.isSyntacticTag(NPMOD))
-				return DSRTag.ADVNP;
+			if (node.isSyntacticTag(ADVNP))
+				return DDGTag.ADVNP;
 		}
 		
 		// subject
-		if ((label = getSubjectLabel(C, d)) != null)
+		if ((label = getSubjectLabel(node, d)) != null)
 			return label;
 		
 		// coordination
-		if (C.isSyntacticTag(PTBTag.C_UCP))
+		if (node.isSyntacticTag(PTBTag.C_UCP))
 		{
-			c.addFunctionTags(C.getFunctionTags());
-			return getDependencyLabel(c, p);
+			c.addFunctionTags(node.getFunctionTags());
+			return getDependencyLabel(c, head);
 		}
 		
 		// complements of verbal predicates
-		if (P.isSyntacticTag(COMPP))
+		if (parent.isSyntacticTag(COMPP))
 		{
-			if ((label = getObjectLabel(C))    != null)	return label;
-			if ((label = getAuxiliaryLabel(C)) != null)	return label;
-			if (isObjectPredicate(C))					return DSRTag.OPRD;
-			if (isOpenClausalComplement(C))				return DSRTag.XCOMP;
-			if (isClausalComplement(C))					return DSRTag.CCOMP;
-			
+			if ((label = getObjectLabel(node, d)) != null) return label;
+			if ((label = getAuxiliaryLabel(node)) != null) return label;
+			if (isClausalComplement(node))                 return DDGTag.COMP;
 		}
 		
 		// complements of adjectival/adverbial predicates
-		if (P.isSyntacticTag(ACOMP))
+		if (parent.isSyntacticTag(ACOMPP))
 		{
-			if (isOpenClausalComplement(C))	return DSRTag.XCOMP;
-			if (isClausalComplement(C))		return DSRTag.CCOMP;
+			if (isClausalComplement(node)) return DDGTag.COMP;
 		}
 
 		// complements of nouns
-		if (P.matches(PTBLib.M_NP_NML_WHNP))
+		if (parent.isSyntacticTag(PTBLib.NP_NML_WHNP))
 		{
-			if (isRelativeClause(C)) return DSRTag.RELCL;
-			if (isNonFiniteClause(C) || isClausalComplement(C)) return DSRTag.ACL;
+			if (isRelativeClause(node)) return DDGTag.RELCL;
+			if (isNonFiniteClause(node) || isClausalComplement(node)) return DDGTag.ACL;
 		}
 		
 		// possessive
-		if (isPossive(C, P))
-			return DSRTag.POSS;
+		if (isPossive(node, parent))
+			return DDGTag.POSS;
 		
 		// simple labels
-		if ((label = getSimpleLabel(C)) != null)
+		if ((label = getSimpleLabel(node, d)) != null)
 			return label;
 			
 		// default
-		if (P.isSyntacticTag(PP))
+		if (node.isSyntacticTag(PTBTag.C_SBAR) || isOpenClausalComplement(node) || (parent.isSyntacticTag(PTBTag.C_PP) && PTBLib.isClause(node)))
+			return DDGTag.ADVCL;
+		
+		if (node.isSyntacticTag(CCOMP))
+			return DDGTag.COMP;
+		
+		if (parent.isSyntacticTag(PTBTag.C_QP) || isNum(head) || head.isSyntacticTag(PTBTag.C_QP))
+			return DDGTag.ATTR;
+		
+		if (parent.isSyntacticTag(NMOD_PARENT) || PTBLib.isNoun(head))
+			return DDGTag.ATTR;
+		
+		if ((parent.isSyntacticTag(ADVP) || PTBLib.isAdjective(head) || PTBLib.isAdverb(head)))
 		{
-			if (p.getParent() == C.getParent())	// p and C are siblings
-			{
-				if (p.isLeftSiblingOf(C))
-					return getPmodLabel(C, d);
-			}
-			else								// UCP
-			{
-				if (p.getFirstTerminal().getTerminalID() < C.getFirstTerminal().getTerminalID())
-					return getPmodLabel(C, d);
-			}
+			if (node.isSyntacticTag(ADVNP) || PTBLib.isNoun(node))
+				return DDGTag.ADVNP;
+			
+			return DDGTag.ADV;
 		}
 		
-		if (C.isSyntacticTag(PTBTag.C_SBAR) || isOpenClausalComplement(C) || (P.isSyntacticTag(PTBTag.C_PP) && PTBLib.isClause(C)))
-			return DSRTag.ADVCL;
-		
-		if (C.isSyntacticTag(CCOMP))
-			return DSRTag.CCOMP;
-		
-		if (P.isSyntacticTag(PTBTag.C_QP))
-			return getQmodLabel(C);	// TODO: check with c
-		
-		if (P.isSyntacticTag(NMOD_PARENT) || PTBLib.isNoun(p.getSyntacticTag()))
-			return getNmodLabel(C, d);
-		
-		if (c != null)
-		{
-			if ((label = getSimpleLabel(c)) != null)
-				return label;
-			
-			if (d.isSyntacticTag(PTBTag.P_IN))
-				return DSRTag.CASE;
-			
-			if (PTBLib.isAdverb(d.getSyntacticTag()))
-				return DSRTag.ADV;
-		}
-		
-		if ((P.isSyntacticTag(ADVP) || PTBLib.isAdjective(p.getSyntacticTag()) || PTBLib.isAdverb(p.getSyntacticTag())))
-		{
-			if (C.isSyntacticTag(NPMOD) || PTBLib.isNoun(C.getSyntacticTag()))
-				return DSRTag.ADVNP;
-			
-			return DSRTag.ADV;
-		}
-		
-		if (d.hasC2DInfo() && (label = d.getC2DInfo().getLabel()) != null)
-			return label;
-		
-		return DSRTag.DEP;
+		return DDGTag.DEP;
 	}
 	
 	private boolean hasAdverbialTag(CTNode node)
@@ -1323,20 +892,20 @@ public class EnglishC2DConverter extends C2DConverter
 		return node.isFunctionTag(PTBTag.F_ADV) || DSUtils.hasIntersection(node.getFunctionTags(), SEM_TAGS);
 	}
 	
-	private String getSubjectLabel(CTNode C, CTNode d)
+	private String getSubjectLabel(CTNode node, CTNode d)
 	{
-		if (C.isFunctionTag(PTBTag.F_SBJ))
+		if (node.isFunctionTag(PTBTag.F_SBJ))
 		{
-			if (C.isFunctionTag(DSRTag.EXPL) ||  d.isSyntacticTag(PTBTag.P_EX) || d.isFormIgnoreCase("there"))
-				return DSRTag.EXPL;
-			else if (PTBLib.isClause(C))
-				return isOpenClausalComplement(C) ? XSUBJ : DSRTag.CSUBJ;
+			if (isEXPL(node, d))
+				return DDGTag.EXPL;
+			else if (PTBLib.isClause(node))
+				return DDGTag.CSBJ;
 			else
-				return DSRTag.NSUBJ;
+				return DDGTag.NSBJ;
 		}
-		else if (C.isFunctionTag(PTBTag.F_LGS))
+		else if (node.isFunctionTag(PTBTag.F_LGS))
 		{
-			if (C.containsChild(PTBLib.M_Sx))
+			if (node.containsChild(PTBLib::isClause))
 				return CLGS;
 			else
 				return NLGS;
@@ -1345,74 +914,37 @@ public class EnglishC2DConverter extends C2DConverter
 		return null;
 	}
 	
-	private String getObjectLabel(CTNode node)
+	private boolean isEXPL(CTNode node, CTNode d)
 	{
-		return node.isSyntacticTag(NP) ? DSRTag.DOBJ : null;
+		return node.isFunctionTag(DDGTag.EXPL) || node.getFirstTerminal().isSyntacticTag(PTBTag.P_EX) || (d != null && d.isFormLowercase("there"));
+	}
+	
+	private String getObjectLabel(CTNode node, CTNode d)
+	{
+		if (node.isSyntacticTag(NP))
+			return node.hasRightSibling(n -> !hasAdverbialTag(n) && !n.isFunctionTag(PTBTag.F_VOC) && (n.isSyntacticTag(NP) || n.isFunctionTag(PTBTag.F_NOM))) ? DDGTag.DAT : DDGTag.OBJ;
+		
+		return null;
 	}
 	
 	private String getAuxiliaryLabel(CTNode node)
 	{
 		if (node.isSyntacticTag(PTBTag.P_MD))
-			return DSRTag.AUX;
+			return DDGTag.MODAL;
 		
 		if (node.isSyntacticTag(PTBTag.P_TO))
-			return DSRTag.MARK;
+			return DDGTag.AUX;
 
-		if (PTBLib.isVerb(node.getSyntacticTag()))
+		if (PTBLib.isVerb(node))
 		{
-			if (node.getRightNearestSibling(PTBLib.M_PRD) != null)
-				return DSRTag.COP;
+			if (node.hasRightSibling(PTBLib::isSecondaryPredicate))
+				return DDGTag.COP;
 			
-			CTNode vp;
-			
-			if ((vp = node.getRightNearestSibling(PTBLib.M_VP)) != null)
-			{
-				if (ENUtils.isPassiveAuxiliaryVerb(node.getForm()))
-				{
-					if (vp.containsChild(PTBLib.M_VBD_VBN))
-						return AUXP;
-					
-					if (!vp.containsChild(PTBLib.M_VBx) && (vp = vp.getFirstChild(PTBLib.M_VP)) != null && vp.containsChild(PTBLib.M_VBD_VBN))
-						return AUXP;
-				}
-				
-				return DSRTag.AUX;	
-			}
+			if (node.hasRightSibling(PTBLib::isVerbPhrase))
+				return DDGTag.AUX;	
 		}
 		
 		return null;
-	}
-	
-	private boolean isObjectPredicate(CTNode curr)
-	{
-		if (curr.isFunctionTag(DSRTag.OPRD))
-			return true;
-		
-		if (curr.isSyntacticTag(PTBTag.C_S) && !curr.containsChild(PTBLib.M_VP) && curr.containsChild(PTBLib.M_PRD))
-		{
-			CTNode sbj = curr.getFirstChild(PTBLib.M_SBJ);
-			return sbj != null && sbj.isEmptyCategoryPhrase();
-		}
-		
-		return false;
-	}
-	
-	private boolean isOpenClausalComplement(CTNode node)
-	{
-		if (node.isSyntacticTag(PTBTag.C_S))
-		{
-			CTNode sbj = node.getFirstChild(PTBLib.M_SBJ);
-			
-			if (node.containsChild(PTBLib.M_VP) && (sbj == null || sbj.isEmptyCategoryPhrase()))
-				return true;
-		}
-		else if (node.isFunctionTag(DSRTag.RELCL))
-		{
-			CTNode s = node.getFirstChild(PTBLib.M_S);
-			if (s != null)	return isOpenClausalComplement(s);
-		}
-
-		return false;
 	}
 	
 	private boolean isClausalComplement(CTNode node)
@@ -1422,142 +954,120 @@ public class EnglishC2DConverter extends C2DConverter
 		
 		if (node.isSyntacticTag(PTBTag.C_SBAR))
 		{
-			CTNode mark;
-			
-			if ((mark = node.getFirstChild(PTBLib.C_NONE)) != null && mark.isForm(PTBTag.E_ZERO))
+			if (node.containsChild(PTBLib::isNullComplementizer))
 				return true;
 			
-			if ((mark = node.getFirstChild(PTBLib.M_IN_DT_TO)) != null)
-			{
-				mark.getC2DInfo().setLabel(DSRTag.MARK);
+			if (node.containsChild(n -> n.isSyntacticTag(MARK)))
 				return true;
-			}
 			
-			if (node.isFunctionTag(DSRTag.RELCL) || node.containsChild(PTBLib.M_WHx))
+			if (node.isFunctionTag(DDGTag.RELCL) || node.containsChild(PTBLib::isWhPhrase))
 				return true;
 		}
 		
 		return false;
 	}
 	
-	private boolean isRelativeClause(CTNode curr)
+	private boolean isOpenClausalComplement(CTNode node)
 	{
-		return curr.isSyntacticTag(PTBTag.C_RRC) || curr.isFunctionTag(DSRTag.RELCL) || (curr.isSyntacticTag(PTBTag.C_SBAR) && curr.containsChild(PTBLib.M_WHx));
-	}
-	
-	private boolean isNonFiniteClause(CTNode curr)
-	{
-		return isOpenClausalComplement(curr) || curr.isSyntacticTag(PTBTag.C_VP);
-	}
-	
-	private boolean isDeterminer(CTNode curr)
-	{
-		return curr.isSyntacticTag(DET);
-	}
-	
-	private boolean isNum(CTNode curr)
-	{
-		return curr.isSyntacticTag(PTBTag.P_CD) || "0".equals(curr.getLemma());
-	}
-	
-	private String getSimpleLabel(CTNode C)
-	{
-		String label;
-		
-		if (C.isSyntacticTag(PP))
-			return DSRTag.CASE;
-		
-		if (PTBLib.isCorrelativeConjunction(C) || PTBLib.isConjunction(C))
-			return DSRTag.CC;
-		
-		if (isPrt(C))
-			return DSRTag.PRT;
-
-		if ((label = getSpecialLabel(C)) != null)
-			return label;
-		
-		return null;
-	}
-	
-	private String getSpecialLabel(CTNode C)
-	{
-		CTNode d = C.getC2DInfo().getTerminalHead();
-		
-		if (PTBLib.isPunctuation(C.getSyntacticTag()) || PTBLib.isPunctuation(d.getSyntacticTag()))
-			return DSRTag.PUNCT;
-		
-		if (isDiscourse(C))
-			return DSRTag.DISC;
-		
-		if (C.isSyntacticTag(PTBTag.C_QP) || isNum(d))
-			return DSRTag.NUM;
-		
-		if (isMeta(C))
-			return DSRTag.META;
-		
-		if (isPrn(C))
-			return DSRTag.PARAT;
-
-		if (isAdverb(C))
-			return DSRTag.ADV;
-		
-		return null;
-	}
-	
-	private String getNmodLabel(CTNode C, CTNode d)
-	{
-		if (isDeterminer(C))
-			return DSRTag.DET;
-
-		if (C.isSyntacticTag(PTBTag.P_POS))
-			return DSRTag.CASE;
-		
-		return DSRTag.NDEP;
-	}
-	
-	private String getPmodLabel(CTNode C, CTNode d)
-	{
-		if (C.isSyntacticTag(NP) || PTBLib.isRelativizer(d.getSyntacticTag()))
-			return DSRTag.POBJ;
-		else
-			return DSRTag.PCOMP;	
-	}
-	
-	private String getQmodLabel(CTNode C)
-	{
-		if (isDeterminer(C))
-			return DSRTag.DET;
-		
-		if (isMeta(C))
-			return DSRTag.META;
-		
-		return DSRTag.QDEP;
-	}
-	
-	private boolean isAdverb(CTNode C)
-	{
-		if (C.isSyntacticTag(PTBTag.C_ADVP) || PTBLib.isAdverb(C.getSyntacticTag()))
+		if (node.isSyntacticTag(PTBTag.C_S))
 		{
-			CTNode P = C.getParent();
+			CTNode sbj = node.getFirstChild(PTBLib::isSubject);
 			
-			if (P.isSyntacticTag(PP) && C.getRightNearestSibling() == null && C.getLeftNearestSibling().isSyntacticTag(PREP))
-				return false;
-
-			return true;
+			if (node.containsChild(PTBLib::isVerbPhrase) && (sbj == null || sbj.isEmptyCategoryPhrase()))
+				return true;
 		}
+		else if (node.isFunctionTag(DDGTag.RELCL))
+		{
+			CTNode s = node.getFirstChild(n -> n.isSyntacticTag(PTBTag.C_S));
+			if (s != null)	return isOpenClausalComplement(s);
+		}
+
+		return false;
+	}
+	
+	private boolean isRelativeClause(CTNode node)
+	{
+		return node.isSyntacticTag(PTBTag.C_RRC) || node.isFunctionTag(DDGTag.RELCL) || (node.isSyntacticTag(PTBTag.C_SBAR) && node.containsChild(PTBLib::isWhPhrase));
+	}
+	
+	private boolean isNonFiniteClause(CTNode node)
+	{
+		return isOpenClausalComplement(node) || node.isSyntacticTag(PTBTag.C_VP);
+	}
+	
+	private boolean isPossive(CTNode node, CTNode parent)
+	{
+		if (node.isSyntacticTag(POSS))
+			return true;
+		
+		if (parent.isSyntacticTag(POSS_PARENT))
+			return node.containsChild(n -> n.isSyntacticTag(PTBTag.P_POS));
 		
 		return false;
 	}
 	
-	private boolean isDiscourse(CTNode C)
+	private String getSimpleLabel(CTNode node, CTNode d)
 	{
-		CTNode d = C.getC2DInfo().getTerminalHead();
-		return isInterjection(C) || isInterjection(d) || emoticon.isEmoticon(d.getForm());
+		if (PTBLib.isCorrelativeConjunction(node) || PTBLib.isConjunction(node))
+			return DDGTag.CC;
+
+		if (node.isSyntacticTag(PP))
+			return DDGTag.PPMOD;
+		
+		if (node.isSyntacticTag(PTBTag.C_QP) || isNum(d))
+			return DDGTag.NUM;
+		
+		if (isMark(node))
+			return DDGTag.MARK;
+		
+		if (isCaseMarker(node))
+			return DDGTag.CASE;
+		
+		return getSpecialLabel(node, d);
 	}
 	
-	private boolean isInterjection(CTNode node)
+	private String getSpecialLabel(CTNode node, CTNode d)
 	{
-		return node.isSyntacticTag(INTJ);
+		if (isDiscourse(node, d))
+			return DDGTag.DISC;
+		
+		if (PTBLib.isPunctuation(node) || PTBLib.isPunctuation(d))
+			return DDGTag.P;
+		
+		if (isNegation(node) || isNegation(d))
+			return DDGTag.NEG;
+		
+		if (isMeta(node))
+			return DDGTag.META;
+		
+		if (isPrn(node))
+			return DDGTag.PRN;
+
+		if (isAdverb(node, d))
+			return DDGTag.ADV;
+		
+		if (isPrt(node))
+			return DDGTag.PRT;
+		
+		if (isDeterminer(node))
+			return DDGTag.DET;
+		
+		return null;
+	}
+	
+	private boolean isMark(CTNode node)
+	{
+		return node.isSyntacticTag(MARK) && node.hasParent(n -> n.isSyntacticTag(PTBTag.C_SBAR));
+	}
+	
+	private boolean isDiscourse(CTNode node, CTNode d)
+	{
+		return node.isSyntacticTag(INTJ) || d.isSyntacticTag(INTJ) || d.isSyntacticTag(PTBTag.P_EMO) || emoticon.isEmoticon(d.getForm());
+	}
+	
+	private boolean isNum(CTNode node)
+	{
+		return node.isSyntacticTag(PTBTag.P_CD) || "0".equals(node.getLemma());
 	}
 	
 	private boolean isMeta(CTNode node)
@@ -1570,323 +1080,294 @@ public class EnglishC2DConverter extends C2DConverter
 		return node.isSyntacticTag(PTBTag.C_PRN);
 	}
 	
-	private boolean isPrt(CTNode curr)
+	private boolean isAdverb(CTNode node, CTNode d)
 	{
-		return curr.isSyntacticTag(PRT);
-	}
-	
-	private boolean isPossive(CTNode curr, CTNode parent)
-	{
-		if (curr.isSyntacticTag(POSS))
-			return true;
-		
-		if (parent.isSyntacticTag(POSS_PARENT))
-			return curr.containsChild(PTBLib.M_POS);
-		
-		return false;
-	}
-	
-	private boolean isNegation(CTNode node)	// TODO: use
-	{
-		if (node.isTerminal() && node.getForm() != null && ENUtils.isNegation(node.getForm()))
-			return true;
-		
-		if (node.getChildrenSize() == 2 && "no longer".equals(StringUtils.toLowerCase(node.toForms())))
-			return true;
-		
-		return false;
-	}
-	
-//	private boolean isAmod(CTNode node)
-//	{
-//		return node.isConstituentTagAny(S_ADJT_PHRASE) || CTLibEn.isAdjective(node);
-//	}
-//
-//	protected boolean isInfMod(CTNode curr)
-//	{
-//		CTNode vp = curr.isConstituentTag(PTBTag.C_VP) ? curr : curr.getFirstDescendant(PTBLib.M_VP);
-//		
-//		if (vp != null)
-//		{
-//			CTNode vc = vp.getFirstChild(PTBLib.M_VP);
-//			
-//			while (vc != null)
-//			{
-//				vp = vc;
-//				
-//				if (vp.getLeftNearestSibling(PTBLib.M_TO) != null)
-//					return true;
-//				
-//				vc = vp.getFirstChild(PTBLib.M_VP);
-//			}
-//			
-//			return vp.containsChild(PTBLib.M_TO);
-//		}
-//		
-//		return false;
-//	}
-//	
-//	private final Set<String> MARK  = Sets.newHashSet(PTBTag.P_IN, PTBTag.P_TO, PTBTag.P_DT);
-//	private final Set<String> MARK_WORDS  = Sets.newHashSet("that", "if", "whether");
-//	
-//	private boolean isMark(CTNode curr)
-//	{
-//		return MARK_WORDS.contains(StringUtils.toLowerCase(curr.getWordForm()));
-//	}
-	
-// ============================= Get a dependency graph =============================
-	
-	private NLPNode[] getDependencyGraph(CTTree cTree, Map<CTNode,Deque<CTNode>> xsubj, Map<CTNode,Deque<CTNode>> rnr)
-	{
-		NLPNode[] dTree = initDependencyGraph(cTree);
-		addDEPHeads(dTree, cTree);
-		
-		if (NLPUtils.containsCycle(dTree))
-			throw new UnknownFormatConversionException("Cyclic depedency relation.");
-
-		addSecondaryCoord(dTree);
-		deepLabel(dTree);
-		addSecondaryHeads(dTree, xsubj, rnr);
-		addFeats(dTree, cTree, cTree.getRoot());
-		labelCompounds(dTree);
-		postProcess(dTree);
-		addCoordArguments(dTree, cTree);
-		
-		if (cTree.hasPropBank())
-			addSemanticHeads(dTree, cTree);
-		
-		if (cTree.hasNamedEntity())
-			addNamedEntities(dTree, cTree);
-		
-		return getDEPTreeWithoutEdited(cTree, dTree);
-	}
-	
-	/** Adds dependency heads. */
-	private int addDEPHeads(NLPNode[] dTree, CTTree cTree)
-	{
-		int currId, headId, size = dTree.length, rootCount = 0;
-		CTNode cNode, ante;
-		NLPNode dNode;
-		String label;
-		
-		for (currId=1; currId<size; currId++)
+		if (node.isSyntacticTag(PTBTag.C_ADVP) || PTBLib.isAdverb(node) || PTBLib.isAdverb(d))
 		{
-			dNode  = dTree[currId];
-			cNode  = cTree.getToken(currId-1);
-			headId = cNode.getC2DInfo().getTerminalHead().getTokenID() + 1;
+			if (node.hasParent(n -> n.isSyntacticTag(PP)) && !node.hasRightSibling() && node.getLeftNearestSibling().isSyntacticTag(PREP))
+				return false;
+
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean isPrt(CTNode node)
+	{
+		return node.isSyntacticTag(PRT);
+	}
+	
+	private boolean isDeterminer(CTNode node)
+	{
+		return node.isSyntacticTag(DET);
+	}
+	
+	private boolean isCaseMarker(CTNode node)
+	{	
+		return node.isSyntacticTag(PTBTag.P_IN) || node.isSyntacticTag(PTBTag.P_POS);
+	}
+	
+	private boolean isNegation(CTNode node)
+	{
+		if (PTBLib.isAdverb(node) && node.getForm() != null && ENUtils.isNegation(node.getForm()))
+			return true;
+		
+		if (node.isSyntacticTag(PTBTag.C_ADVP) && node.matchesForms("no","longer"))
+			return true;
+		
+		return false;
+	}
+
+// ============================= Post-process =============================
+	
+	private void postprocess(CTTree tree)
+	{
+		tree.flatten().forEach(n -> postprocess(tree, n));
+	}
+	
+	private void postprocess(CTTree tree, CTNode node)
+	{
+		postprocessLabelSecondaryDependency(node);
+		postprocessEmptyCategory(tree, node);
+	}
+	
+	private void postprocessLabelSecondaryDependency(CTNode node)
+	{
+		for (CTArc arc : node.getSecondaryHeads())
+		{
+			if (arc.getLabel() == null)
+				arc.setLabel(getDependencyLabel(node, arc.getNode()));
+		}
+	}
+	
+	private void postprocessEmptyCategory(CTTree tree, CTNode node)
+	{
+		CTNode ante = getAntecedent(node);
+		
+		if (ante != null)
+		{
+			if (PTBLib.isPassiveNull(node))
+				postprocessNull(tree, node, ante);
+			else if (PTBLib.isPRO(node))
+				postprocessPRO(node, ante);
+			else if (PTBLib.isNullComplementizer(node) || PTBLib.isRelativizer(node))
+				postprocessRelativizer(tree, node, ante);
+			else if (PTBLib.isRightNodeRaising(node))
+				postprocessRightNodeRaising(tree, node, ante);
+		}
+	}
+	
+	private void postprocessNull(CTTree tree, CTNode node, CTNode ante)
+	{
+		CTNode np  = node.getParent();
+		CTArc  arc = getPrimaryArc(np, ante);
+		CTNode p   = arc.getNode();
+		
+		if (p != null && !(PTBLib.isSecondaryPredicate(p) && p.isEmptyCategoryPhrase()))
+			ante.addSecondaryHead(arc);
+//		{
+//			if (node.hasCoIndex())
+//			{
+//				List<CTNode> list = tree.getEmptyCategories(node.getCoIndex());
+//				
+//				if (node == DSUtils.getFirst(list))
+//				{
+//					if (PTBLib.isSubject(np) && !PTBLib.isSubject(ante))
+//						ante.addSecondaryHead(arc);
+//					else if (!node.isDescendantOf(ante) && !isPrimaryAncestorOf(ante, arc.getNode()))
+//						ante.setPrimaryHead(arc);
+//				}
+//				else
+//					ante.addSecondaryHead(arc);
+//			}
+//			else
+//				ante.addSecondaryHead(arc);			
+//		}
+	}
+	
+	private void postprocessPRO(CTNode node, CTNode ante)
+	{
+		CTNode np = node.getParent();
+		CTArc arc = np.getPrimaryHead();
+		
+		if (arc.getNode() != null)
+			ante.addSecondaryHead(arc.getNode(), arc.getLabel());
+	}
+
+	private void postprocessRelativizer(CTTree tree, CTNode node, CTNode ante)
+	{
+		CTNode wh = node.getParent();
+		
+		while (!wh.hasCoIndex() && wh.hasParent(PTBLib::isWhPhrase))
+			wh = wh.getParent();
+		
+		if (wh.hasCoIndex())
+		{
+			CTArc arc = getPrimaryArc(wh.getParent(), ante);
 			
-			if (currId == headId)	// root
+			if (arc.getNode() != null && !arc.isLabel(DDGTag.RELCL) && !arc.isLabel(DDGTag.CONJ))
 			{
-				dNode.setParent(dTree[0], DSRTag.ROOT);
-				rootCount++;
+				ante.addSecondaryHead(arc);
+				arc.setLabel(DDGTag.R+arc.getLabel());
 			}
+		}
+	}
+	
+	private void postprocessRightNodeRaising(CTTree tree, CTNode node, CTNode ante)
+	{
+		CTNode p = node.getParent();
+		CTArc arc = getPrimaryArc(p, ante);
+
+		if (arc.getNode() != null)
+		{
+			if (!isPrimaryAncestorOf(ante, arc.getNode()) && !arc.isLabel(DDGTag.DEP) && !arc.isLabel(DDGTag.ATTR))
+				ante.addSecondaryHead(arc);
+		}
+	}
+	
+	private CTNode getAntecedent(CTNode node)
+	{
+		CTNode ante = node.getAntecedent();
+		
+		while (ante != null && ante.isEmptyCategoryPhrase())
+			ante = ante.getFirstTerminal().getAntecedent();
+
+		return ante;
+	}
+	
+	private CTArc getPrimaryArc(CTNode node, CTNode ante)
+	{
+		if (node.hasParent(n -> n.isSyntacticTag(PP)) && node.getParent().hasPrimaryHead())
+		{
+			ante.addFunctionTags(node.getParent().getFunctionTags());
+			node.getParent().clearFunctionTags();
+			return node.getParent().getPrimaryHead();
+		}
+		
+		return node.getPrimaryHead();
+	}
+	
+	/** n1 is a primary ancestor of n2. */
+	private boolean isPrimaryAncestorOf(CTNode n1, CTNode n2)
+	{
+		while (n2 != null)
+		{
+			if (n2.hasPrimaryHead(n1)) return true;
+			n2 = n2.getParent();
+		}
+		
+		return false;
+	}
+	
+// ============================= relabel =============================
+	
+	private void relabel(CTTree tree, NLPGraph graph)
+	{
+		graph.forEach(n -> relabel(tree, n));
+		labelCompounds(graph);
+		labelLightVerbs(graph);
+	}
+	
+	private void relabel(CTTree tree, NLPNode node)
+	{
+		if (PTBLib.isVerb(node))
+			relabelEXPL(node);
+		else if (node.isSyntacticTag(PTBTag.P_IN))
+		{
+			if (!node.hasChild() && !node.isDependencyLabel(DDGTag.COM) && !node.isDependencyLabel(DDGTag.MARK) && !node.getDependencyLabel().startsWith(DDGTag.R))
+				node.setDependencyLabel(DDGTag.CASE);
+		}
+		
+		String label = relabelAux(node.getParent(), node.getDependencyLabel());
+		if (label != null) node.setDependencyLabel(label);
+		
+		Iterator<DEPArc<NLPNode>> it = node.getSecondaryHeads().iterator();
+		
+		while (it.hasNext())
+		{
+			DEPArc<NLPNode> snd = it.next();
+			
+			if (snd.isLabel(DDGTag.DEP))
+			{
+				if (node.isDependencyLabel(DDGTag.NSBJ) || node.isDependencyLabel(DDGTag.CSBJ))
+					snd.setLabel(node.getDependencyLabel());
+				else
+					it.remove();
+			}
+			else if (snd.isLabel(DDGTag.CONJ))
+				it.remove();
 			else
 			{
-				label = cNode.getC2DInfo().getLabel();
-				dNode.setParent(dTree[headId], label);
+				label = relabelAux(snd.getNode(), snd.getLabel());
+				if (label != null) snd.setLabel(label);
 			}
-			
-			if ((ante = cNode.getAntecedent()) != null)
-				dNode.addSecondaryHead(getNLPNode(dTree, ante), DSRTag.DEP2_REF);
+		}
+	}
+	
+	private String relabelAux(NLPNode head, String label)
+	{
+		switch (label)
+		{
+		case CLGS:
+		case DDGTag.R+CLGS: return DDGTag.CSBJ;
+		case NLGS:
+		case DDGTag.R+NLGS: return DDGTag.NSBJ;
 		}
 		
-		return rootCount;
-//		if (rootCount > 1)	System.err.println("Warning: multiple roots exist");
-	}
-	
-	private void addCoordArguments(NLPNode[] dTree, CTTree cTree)
-	{
-		int currId, size = dTree.length;
-		NLPNode dNode;
-		CTNode  cNode;
+		if (label.equals(DDGTag.COP) && PTBLib.isVerb(head))
+			return DDGTag.AUX;
 		
-		for (currId=1; currId<size; currId++)
-		{
-			dNode = dTree[currId];
-			cNode = cTree.getToken(currId-1);
-			
-			if (cNode.getParent().isSyntacticTag(PTBLib.C_PP))
-				dNode = dNode.getParent();
-			
-			for (CTNode cHead : cNode.getC2DInfo().getSecondaryHeads())
-			{
-				int headId = cHead.getTokenID()+1;
-				
-				if (headId > 0)
-				{
-					NLPNode dHead = dTree[headId];
-					if (!dNode.isChildOf(dHead))
-						dNode.addSecondaryHead(dHead, dNode.getDependencyLabel());
-				}
-			}
-		}
+		return null;
 	}
 	
-	private void deepLabel(NLPNode[] tree)
+	private void relabelEXPL(NLPNode node)
 	{
-		for (int i=1; i<tree.length; i++)
-		{
-			NLPNode node = tree[i];
-			
-			if (node.isDependencyLabel(DSRTag.ADV))
-			{
-				if (ENUtils.isNegation(node.getForm()))
-					changeLabel(node, DSRTag.NEG);
-			}
-			else if (node.isDependencyLabel(AUXP))
-			{
-				NLPNode head = node.getParent();
-				changeLabel(node, DSRTag.AUX);
-				
-				for (NLPNode sib : head.getChildren())
-				{
-					switch (sib.getDependencyLabel())
-					{
-					case DSRTag.NSUBJ: changeLabel(sib, DSRTag.DOBJ);  break;
-					case DSRTag.CSUBJ: changeLabel(sib, DSRTag.CCOMP); break;
-					case        XSUBJ: changeLabel(sib, DSRTag.XCOMP); break;
-					}
-				}
-			}
-			else if (node.isDependencyLabel(DSRTag.EXPL))
-			{
-				NLPNode head = node.getParent();
-				NLPNode d = head.getFirstChildByDependencyLabel(DSRTag.DOBJ);
-				
-				if (d != null && node.getFormLowercase().equals("there"))
-					changeLabel(d, DSRTag.NSUBJ);
-				
-				d = head.getFirstChildByDependencyLabel(DSRTag.CCOMP);
-				if (d == null) d = head.getFirstChildByDependencyLabel(DSRTag.XCOMP);
-				if (d != null) changeLabel(d, DSRTag.CSUBJ);
-			}
-			else if (node.isDependencyLabel(DSRTag.ACL))
-			{
-				addDOBJinRRC(node, node.getParent());
-			}
-			else if (node.isDependencyLabel(DSRTag.OPRD))
-			{
-				NLPNode nsubj = node.getFirstChildByDependencyLabel(DSRTag.NSUBJ);
-				if (nsubj != null) nsubj.setParent(node.getParent(), DSRTag.DOBJ);
-			}
-			
-			List<NLPNode> list = node.getChildrenByDependencyLabel(DSRTag.DOBJ);
-			
-			if (list.size() > 1 || (list.size() == 1 && node.hasChildByDepenencyLabel(DSRTag.CCOMP)))
-				changeLabel(list.get(0), DSRTag.DATV);
-		}
+		NLPNode expl = node.getFirstChild(n -> n.isDependencyLabel(DDGTag.EXPL));
 		
-		for (int i=1; i<tree.length; i++)
+		if (expl != null && expl.isLemma("there"))
 		{
-			NLPNode node = tree[i];
-			
-			switch (node.getDependencyLabel())
-			{
-			case XSUBJ: changeLabel(node, DSRTag.CSUBJ); break;
-			case NLGS : changeLabel(node, DSRTag.NSUBJ); break;
-			case CLGS : changeLabel(node, DSRTag.CSUBJ); break;
-			}
+			NLPNode obj = node.getFirstChild(n -> n.isDependencyLabel(DDGTag.OBJ));
+			if (obj != null) obj.setDependencyLabel(DDGTag.NSBJ);
 		}
 	}
 	
-	private void changeLabel(NLPNode sib, String label)
+	private void labelCompounds(NLPGraph graph)
 	{
-		for (DEPArc<NLPNode> d : sib.getSecondaryHeadList())
-			if (d.isLabel(sib.getDependencyLabel())) d.setLabel(label);
+		labelCompounds(graph,
+				head -> PTBLib.isCommonOrProperNoun(head),
+				node -> node.isDependencyLabel(DDGTag.ATTR) || node.isDependencyLabel(DDGTag.DEP) || node.getSyntacticTag().startsWith(PTBTag.P_NNP));
 		
-		sib.setDependencyLabel(label);
-	}
-	
-	private void addDOBJinRRC(NLPNode node, NLPNode head)
-	{
-		if (node != null && node.isSyntacticTag(PTBLib.P_VBN))
-		{
-			head.addSecondaryHead(node, DSRTag.DOBJ);
-			addDOBJinRRC(node.getFirstChildByDependencyLabel(DSRTag.CONJ), head);			
-		}
-	}
-	
-	private void postProcess(NLPNode[] nodes)
-	{
-		for (int i=1; i<nodes.length; i++) postProcess(nodes[i]);
-	}
-	
-	private boolean postProcess(NLPNode node)
-	{
-		// flip PP
-		if (node.isSyntacticTag(PTBTag.P_IN) && !(node.hasChildByDepenencyLabel(DSRTag.COP) || node.isDependencyLabel(DSRTag.OPRD)))
-		{
-			NLPNode pdep = node.getFirstChildByDependencyLabel(DSRTag.POBJ);
-			if (pdep == null) pdep = node.getFirstChildByDependencyLabel(DSRTag.PCOMP);
-			
-			if (pdep == null)
-			{
-				NLPNode in = node.getLeftMostChild(PTBTag.P_IN, (n,s) -> n.isSyntacticTag(s));
-				if (in == null || in.getChildren().isEmpty()) return false;
-				node.adaptDependents(in);
-				return postProcess(node);
-			}
-			
-			String label = (node.isDependencyLabel(DSRTag.CASE)) ? DSRTag.PPMOD : node.getDependencyLabel();
-			pdep.setParent(node.getParent(), label);
-			pdep.setFeatMap(node.getFeatMap());
-			pdep.adaptDependents(node);
-			node.setParent(pdep, DSRTag.CASE);
-			node.setFeatMap(new FeatMap());
-			return true;
-		}
-		// dative
-		else if (PTBTag.F_BNF.equals(node.getFeat(NLPUtils.FEAT_SEM)))
-		{
-			NLPNode head = node.getParent();
-			if (PTBLib.isVerb(head.getSyntacticTag()) && transfer_verbs.contains(head.getLemma()))
-				node.setDependencyLabel(DSRTag.DATV);
-		}
-
-		return false;
-	}
-	
-// ============================= Compounds =============================
-
-	private void labelCompounds(NLPNode[] tree)
-	{
-		labelCompounds(tree,
-				head -> head.getSyntacticTag().startsWith(PTBTag.P_NN) && (!head.getParent().getSyntacticTag().startsWith(PTBTag.P_NN) || head.isDependencyLabel(DSRTag.CONJ)),
-				node -> node.getSyntacticTag().startsWith(PTBTag.P_NN) && (node.isDependencyLabel(DSRTag.NDEP) || node.isDependencyLabel(DSRTag.DEP) || node.getSyntacticTag().startsWith(PTBTag.P_NNP)));
+		labelCompounds(graph, 
+				head -> isNumber(head),
+				node -> node.isDependencyLabel(DDGTag.ATTR) || node.isDependencyLabel(DDGTag.DEP) || node.isDependencyLabel(DDGTag.NUM));
 		
-		labelCompounds(tree, 
-				head -> isNumber(head) && (!isNumber(head.getParent()) || head.isDependencyLabel(DSRTag.CONJ)),
-				node -> isNumber(node) && (node.isDependencyLabel(DSRTag.QDEP) || node.isDependencyLabel(DSRTag.NUM) || node.isDependencyLabel(DSRTag.DEP)));
-		
-		for (int i=1; i<tree.length; i++)
-		{
-			NLPNode node = tree[i];
-			if (node.isDependencyLabel(DSRTag.QDEP) && node.isLemma(MetaConst.ORDINAL) && node.getParent().isSyntacticTag(PTBTag.P_CD))
-				node.setDependencyLabel(DSRTag.COM);
-		}
+		labelCompounds(graph, 
+				head -> PTBLib.isAdverb(head),
+				node -> node.isDependencyLabel(DDGTag.ADV) || node.isDependencyLabel(DDGTag.DEP) || node.isDependencyLabel(DDGTag.NEG));
 	}
 	
-	private void labelCompounds(NLPNode[] tree, Predicate<NLPNode> p1, Predicate<NLPNode> p2)
+	private void labelCompounds(NLPGraph graph, Predicate<NLPNode> main_condition, Predicate<NLPNode> node_condition)
 	{
 		NLPNode node, head;
 		int i, j;
 		
-		for (i=tree.length-1; i>0; i--)
+		for (i=graph.size()-1; i>0; i--)
 		{
-			head = tree[i];
+			head = graph.get(i);
 			
-			if (p1.test(head))
+			if (main_condition.test(head))
 			{
 				for (j=i-1; j>0; j--)
 				{
-					node = tree[j];
+					node = graph.get(j);
 					
-					if (node.isDescendantOf(head) && node.getParent().getTokenID() > node.getTokenID() && p2.test(node))
+					if (node.isDescendantOf(head) && node.getParent().compareTo(node) > 0 && main_condition.test(node) && node_condition.test(node))
 					{
-						node.setDependencyLabel(DSRTag.COM);
+						node.setDependencyLabel(DDGTag.COM);
 						i = j;
 					}
-					else if (node.isSyntacticTag(PTBTag.P_HYPH) && !node.isDependencyLabel(DSRTag.CC))
+					else if (node.isSyntacticTag(PTBTag.P_HYPH) && !node.isDependencyLabel(DDGTag.CC))
 						continue;
 					else
 						break;
@@ -1900,363 +1381,745 @@ public class EnglishC2DConverter extends C2DConverter
 		return node.isSyntacticTag(PTBLib.P_CD) || node.isLemma("0") || node.isLemma(MetaConst.CARDINAL) || node.isLemma(MetaConst.ORDINAL);
 	}
 	
-// ============================= Secondary Dependencies =============================
+	private void labelLightVerbs(NLPGraph graph)
+	{
+		for (NLPNode node : graph)
+		{
+			if (PTBLib.isVerb(node) && light_verbs.contains(node.getLemma()))
+			{
+				NLPNode obj = node.getFirstChild(n -> n.isDependencyLabel(DDGTag.OBJ));
+				
+				if (obj != null && eventive_nouns.contains(obj.getLemma()) && !node.containsChild(n -> n.isDependencyLabel(DDGTag.DAT)) && !node.containsChild(n -> n.isDependencyLabel(DDGTag.OPRD)))
+				{
+					// heads
+					obj.setParent(node.getParent(), node.getDependencyLabel());
+					obj.addSecondaryHeads(node.getSecondaryHeads());
+					node.clearSecondaryHeads();
+					node.setParent(obj, DDGTag.LV);
+					
+					for (NLPNode d : node.getChildren())
+					{
+						if (d.isDependencyLabel(DDGTag.ATTR))
+							d.setDependencyLabel(DDGTag.ADV);
+					}
+					
+					// children 
+					for (NLPNode d : graph)
+					{
+						if (d.isChildOf(node)) d.setParent(obj);
+						d.getSecondaryHeads().stream().filter(a -> a.isNode(node)).forEach(a -> a.setNode(obj));
+					}
+				}
+			}
+		}
+	}
+	
+	// ============================= validate =============================
+	
+	private void addFeats(CTTree tree, NLPGraph graph)
+	{
+		tree.flatten().forEach(n -> addFeats(n, graph));
+	}
+	
+	private void addFeats(CTNode node, NLPGraph graph)
+	{
+		CTNode term = node.getTerminalHead();
+		if (term == null || term.isEmptyCategory()) return;
+		
+		Set<String> tags = new TreeSet<>(node.getFunctionTags());
+		tags.retainAll(FEATS);
+		
+		if (tags.size() > 1)
+			tags.remove(PTBTag.F_CLR);
+		
+		if (!tags.isEmpty())
+		{
+			String feat = StringUtils.toLowerCase(Joiner.join(tags, FeatMap.DELIM_VALUES));
+			NLPNode n = graph.get(term.getTokenID()+1);
+			if (n.isDependencyLabel(DDGTag.LV))
+			{
+				n = n.getParent();
+				n.removeFeat(DDGTag.FEAT_SEM);
+			}
+			n.putFeat(DDGTag.FEAT_SEM, feat);
+		}
+	}
 
-	/** Called by {@link #getDEPTree(CTTree)}. */
-	private void addSecondaryHeads(NLPNode[] dTree, Map<CTNode,Deque<CTNode>> xsubj, Map<CTNode,Deque<CTNode>> rnr)
+	// ============================= validate =============================
+	
+	public void validate(CTTree tree, NLPGraph graph)
 	{
-		for (CTNode curr : xsubj.keySet())
-		{
-			if (curr.hasC2DInfo())
-				addSecondaryHeadsAux(dTree, curr, xsubj.get(curr), DSRTag.DEP2_XSUBJ);
-		}
+		String message = null;
 		
-		for (CTNode curr : rnr.keySet())
-		{
-			if (curr.getParent() == null)
-				continue;
-			
-			if (curr.getParent().getC2DInfo().getNonTerminalHead() != curr)
-				addSecondaryHeadsAux(dTree, curr, rnr.get(curr), DSRTag.DEP2_RNR);
-			else
-				addSecondaryChildren(dTree, curr, rnr.get(curr), DSRTag.DEP2_RNR);
-		}
-	}
-	
-	private void addSecondaryCoord(NLPNode[] dTree)
-	{
-		for (int i=1; i<dTree.length; i++)
-		{
-			NLPNode node = dTree[i];
-			
-			if (isPredicate(node))
-			{
-				NLPNode sbj = getSubject(node);
-				if (sbj != null) addSecondaryCoord(node.getFirstChildByDependencyLabel(DSRTag.CONJ), sbj);
-			}
-		}
-	}
-	
-	private void addSecondaryCoord(NLPNode conj, NLPNode sbj)
-	{
-		if (conj != null && isPredicate(conj))
-		{
-			if (getSubject(conj) == null)
-				sbj.addSecondaryHead(conj, sbj.getDependencyLabel());
-			
-			addSecondaryCoord(conj.getFirstChildByDependencyLabel(DSRTag.CONJ), sbj);
-		}
-	}
-	
-	private boolean isPredicate(NLPNode node)
-	{
-		return PTBLib.isVerb(node.getSyntacticTag()) || PTBTag.F_PRD.equals(node.getFeat(NLPUtils.FEAT_SYN));
-	}
-	
-	private NLPNode getSubject(NLPNode node)
-	{
-		NLPNode sbj = node.getFirstChildByDependencyLabel(DSRTag.NSUBJ);
-		return (sbj != null) ? sbj : node.getFirstChildByDependencyLabel(DSRTag.CSUBJ);	
-	}
-	
-	/** Called by {@link #addSecondaryHeads(DEPTree)}. */
-	private void addSecondaryHeadsAux(NLPNode[] dTree, CTNode cNode, Deque<CTNode> dq, String label)
-	{
-		if (cNode.isEmptyCategoryPhrase()) return;
-		NLPNode node = getNLPNode(dTree, cNode);
-		NLPNode head;
+		if (graph.getRoot().getChildrenSize() != tree.getRoot().getChildrenSize())
+			message = "Root mistach";
 		
-		for (CTNode cHead : dq)
+		for (NLPNode node : graph)
 		{
-			head = getNLPNode(dTree, cHead);
+			if (!node.hasParent() || node.getDependencyLabel() == null)
+				message = "Primary head error: "+node.getTokenID();
 			
-			if (head == null)
+			for (DEPArc<NLPNode> arc : node.getSecondaryHeads())
 			{
-				System.err.println("HEAD NOT EXIST: AUX");
-				continue;
+				if (arc.getNode() == null || arc.getLabel() == null)
+					message = "Secondary head error: "+node.getTokenID();
 			}
 			
-			if (!node.isChildOf(head)) node.addSecondaryHead(head, label);
+			if (node.isAncestorOf(node.getParent()))
+				message = "Cyclic relation: "+node.getTokenID();
 			
-			if (label.equals(DSRTag.DEP2_XSUBJ) && head.isDependencyLabel(DSRTag.CCOMP))
-				head.setDependencyLabel(DSRTag.XCOMP);
+//			if (node.getChildren(n -> n.isDependencyLabel(DDGTag.OBJ)).size() > 1)
+//				message = "Multiple objects: "+node.getTokenID();
 		}
+		
+		if (message != null)
+			System.err.println(message+"\n"+tree.toString()+"\n"+graph.toString());
 	}
 	
-	/** Called by {@link #addSecondaryHeads(DEPTree)}. */
-	private void addSecondaryChildren(NLPNode[] dTree, CTNode cHead, Deque<CTNode> dq, String label)
-	{
-		NLPNode head = getNLPNode(dTree, cHead);
-		NLPNode node;
-		
-		for (CTNode cNode : dq)
-		{
-			node = getNLPNode(dTree, cNode);
-			
-			if (node == null || node.getTokenID() == 0)
-			{
-				System.err.println("HEAD NOT EXIST: CHILDREN");
-				continue;
-			}
-			
-			node.addSecondaryHead(head, label);			
-		}
-	}
-	
-	/** Called by {@link #getDEPTree(CTTree)}. */
-	private void addFeats(NLPNode[] dTree, CTTree cTree, CTNode cNode)
-	{
-		CTNode ante;
-		String feat;
-		
-		if (!cNode.isEmptyCategoryPhrase() && cNode.getGapIndex() != -1 && cNode.getParent().getGapIndex() == -1 && (ante = cTree.getAntecedent(cNode.getGapIndex())) != null)
-		{
-			NLPNode dNode = getNLPNode(dTree, cNode);
-			dNode.addSecondaryHead(getNLPNode(dTree, ante), DSRTag.DEP2_GAP);
-		}
-		
-		if ((feat = getFunctionTags(cNode, SEM_TAGS)) != null)
-			cNode.getC2DInfo().putFeat(NLPUtils.FEAT_SEM, feat);
-		
-		if ((feat = getFunctionTags(cNode, SYN_TAGS)) != null)
-			cNode.getC2DInfo().putFeat(NLPUtils.FEAT_SYN, feat);
+////============================= Predicate Argument Structures =============================
+//
+//private Map<CTNode,Set<CTNode>> findArguments(CTTree tree)
+//{
+//	Map<CTNode,Set<CTNode>> map = new HashMap<>();
+//	findArgumentsRec(tree.getRoot(), map);
+//	return map;
+//}
+//
+///** Called by {@link #findArguments(CTTree)}. */
+//private void findArgumentsRec(CTNode node, Map<CTNode,Set<CTNode>> map)
+//{
+//	if (node.isSyntacticTag(PTBTag.C_VP))
+//		findArgumentsAux(node, map);
+//	else
+//		node.getChildren().forEach(n -> findArgumentsRec(n, map));
+//}
+//
+///**
+// * Called by {@link #findArgumentsRec(CTNode, Int2ObjectMap)}.
+// * @param vp the highest verb phrase.
+// */
+//private void findArgumentsAux(CTNode vp, Map<CTNode,Set<CTNode>> map)
+//{
+//	List<CTNode> args = new ArrayList<>();
+//	List<CTNode> auxs = new ArrayList<>();
+//	CTNode p = vp.getParent();
+//	
+//	if (p.matches(PTBLib.M_Sx))
+//	{
+//		for (CTNode n : p.getChildren())
+//		{
+//			if (n == vp || PTBLib.isPunctuation(n.getSyntacticTag())) continue;
+//			if (n.matches(PTBLib.M_MD_TO_VBx)) auxs.add(n);
+//			else args.add(n);
+//		}
+//	}
+//	
+//	findArgumentsAux(vp, map, args, auxs);
+//}
+//
+///** Called by {@link #findArgumentsAux(CTNode, Map)}. */
+//private void findArgumentsAux(CTNode vp, Map<CTNode,Set<CTNode>> map, List<CTNode> args, List<CTNode> auxs)
+//{
+//	List<CTNode> vps = new ArrayList<>();
+//	List<CTNode> vbs = new ArrayList<>();
+//	List<CTNode> tmp = new ArrayList<>();
+//	
+//	for (CTNode n : vp.getChildren())
+//	{
+//		if (n.isSyntacticTag(PTBTag.C_VP))
+//			vps.add(n);
+//		else if (n.matches(PTBLib.M_MD_TO_VBx))
+//			vbs.add(n);
+//		else
+//			tmp.add(n);
+//	}
+//	
+//	if (vps.isEmpty())
+//		vbs.forEach(vb -> initArguments(vb, map, args, auxs));
+//	else
+//	{
+//		args.addAll(tmp);
+//		auxs.addAll(vbs);
+//	
+//		if (vps.size() == 1) findArgumentsAux(DSUtils.getFirst(vps), map, args, auxs);
+//		else for (CTNode n : vps) findArgumentsAux(n, map, new ArrayList<>(args), new ArrayList<>(auxs));
+//	}
+//}
+//
+//private TVerb initArguments(CTNode vb, Map<CTNode,Set<CTNode>> map, List<CTNode> args, List<CTNode> auxs)
+//{
+//	TVerb vt = new TVerb(vb.getLemma());
+//	vt.setTense(getTense(vb, auxs));
+//	
+//	Pair<Aspect,Voice> p = getAspectAndVoice(vb, auxs);
+//	vt.setAspect(p.o1);
+//	vt.setVoice (p.o2);
+//	
+//	vt.setModals(getModals(auxs));
+//	vt.setNegation(neg);
+//	
+//	return vt;
+//}
+//
+//private void initModals(List<CTNode> auxs)
+//{
+//	CTNode curr, next;
+//	
+//	for (int i=0; i<auxs.size()-1; i++)
+//	{
+//		curr = auxs.get(i);
+//		next = auxs.get(i+1);
+//		
+//		if (curr.isLemma("go"))
+//		{
+//			if (0 < i)
+//			{
+//				CTNode prev = auxs.get(i-1);
+//				
+//				if (prev.isLemma("be") && next.isLemma("to"))
+//				{
+//					prev.addFunctionTag(DSRTag.MWE);
+//					next.addFunctionTag(DSRTag.MWE);
+//					curr.addFunctionTag(DSRTag.MODAL);
+//				}
+//			}
+//		}
+//		else if (isSemiModal(curr) && next.isLemma("to"))
+//		{
+//			next.addFunctionTag(DSRTag.MWE);
+//			curr.addFunctionTag(DSRTag.MODAL);
+//		}
+//	}
+//}
+//
+//private Tense getTense(CTNode vb, List<CTNode> auxs)
+//{
+//	if (auxs.isEmpty()) return getTense(vb);
+//	CTNode aux = DSUtils.getFirst(auxs);
+//	
+//	if (aux.isLemma("will") || aux.isLemma("shall"))
+//		return Tense.future;
+//	
+//	for (int i=1; i<auxs.size()-1; i++)
+//	{
+//		aux = auxs.get(i);
+//		CTNode prev = auxs.get(i-1);
+//		CTNode next = auxs.get(i+1);
+//
+//		if (aux.isLemma("go") && prev.isLemma("be") && next.isLemma("to"))
+//		{
+//			prev.addFunctionTag(DSRTag.MWE);
+//			next.addFunctionTag(DSRTag.MWE);
+//			aux .addFunctionTag(DSRTag.MODAL);
+//			return Tense.future;	
+//		}
+//	}
+//	
+//	return getTense(DSUtils.getFirst(auxs));
+//}
+//
+//private Tense getTense(CTNode vb)
+//{
+//	switch (vb.getSyntacticTag())
+//	{
+//	case PTBTag.P_VBD: return Tense.past;
+//	case PTBTag.P_VBP:
+//	case PTBTag.P_VBZ: return Tense.present;
+//	}
+//	
+//	return Tense.none;
+//}
+//
+//private Pair<Aspect,Voice> getAspectAndVoice(CTNode vb, List<CTNode> auxs)
+//{
+//	if (auxs.isEmpty()) return new Pair<>(Aspect.none, Voice.active);
+//	CTNode prog = null, perf = null, pass = null;
+//	
+//	if (vb.isSyntacticTag(PTBTag.P_VBG))
+//	{
+//		CTNode a = DSUtils.getLast(auxs);
+//		
+//		if (a.isLemma("be"))
+//		{
+//			prog = a;
+//			
+//			if (a.matches(PTBLib.M_VBD_VBN))
+//			{
+//				a = DSUtils.getLast(auxs, 1);
+//				if (a != null && a.isLemma("have")) perf = a;
+//			}
+//		}
+//	}
+//	else if (vb.matches(PTBLib.M_VBD_VBN))
+//	{
+//		CTNode a = DSUtils.getLast(auxs);
+//		
+//		if (a.isLemma("have"))
+//			perf = a;
+//		else if (a.isLemma("be") || a.isLemma("become") || a.isLemma("get"))
+//			pass = a;
+//	}
+//	
+//	Aspect aspect = Aspect.none;
+//	
+//	if (perf != null && prog != null)
+//		aspect = Aspect.perfect_progressive;
+//	else if (perf != null)
+//		aspect = Aspect.perfect;
+//	else if (prog != null)
+//		aspect = Aspect.progressive;
+//	
+//	Voice voice = (pass != null) ? Voice.passive : Voice.active;
+//	return new Pair<>(aspect, voice);
+//}
+//
+//private void findModals(CTNode vb, List<CTNode> auxs)
+//{
+//	Set<String> modals = new HashSet<>();
+//	
+//	for (int i=0; i<auxs.size(); i++)
+//	{
+//		CTNode aux = auxs.get(i);
+//		
+//		if (aux.isSyntacticTag(PTBTag.P_MD))
+//		{
+//			if (!aux.isLemma("will") && !aux.isLemma("shall"))
+//				modals.add(aux.getLemma());
+//		}
+//		else if (isSemiModal(aux))
+//		{
+//			if (i+1 < auxs.size() && auxs.get(i+1).isLemma("to"))
+//				modals.add(aux.getLemma());
+//		}
+//	}
+//	
+//	return modals;
+//}
+//
+//private boolean isSemiModal(CTNode vb)
+//{
+//	return vb.isLemma("have") || vb.isLemma("need") || vb.isLemma("dare") || vb.isLemma("use") || vb.isLemma("go");
+//}
+//
+//private void addDependent(CTNode head, CTNode node, String label)
+//{
+//	node.addDependencyHead(new CTArc(head, label));
+//}
+//	
+//	private void deepLabel(NLPNode[] tree)
+//	{
+//		for (int i=1; i<tree.length; i++)
+//		{
+//			NLPNode node = tree[i];
+//			
+//			if (node.isDependencyLabel(DDGTag.ADV))
+//			{
+//				if (ENUtils.isNegation(node.getForm()))
+//					changeLabel(node, DDGTag.NEG);
+//			}
+//			else if (node.isDependencyLabel(AUXP))
+//			{
+//				NLPNode head = node.getParent();
+//				changeLabel(node, DDGTag.AUX);
+//				
+//				for (NLPNode sib : head.getChildren())
+//				{
+//					switch (sib.getDependencyLabel())
+//					{
+//					case DDGTag.NSBJ: changeLabel(sib, DDGTag.OBJ);  break;
+//					case DDGTag.CSBJ: changeLabel(sib, DDGTag.COMP); break;
+//					case        XSUBJ: changeLabel(sib, DDGTag.XCOMP); break;
+//					}
+//				}
+//			}
+//			else if (node.isDependencyLabel(DDGTag.EXPL))
+//			{
+//				NLPNode head = node.getParent();
+//				NLPNode d = head.getFirstChildByDependencyLabel(DDGTag.OBJ);
+//				
+//				if (d != null && node.getFormLowercase().equals("there"))
+//					changeLabel(d, DDGTag.NSBJ);
+//				
+//				d = head.getFirstChildByDependencyLabel(DDGTag.COMP);
+//				if (d == null) d = head.getFirstChildByDependencyLabel(DDGTag.XCOMP);
+//				if (d != null) changeLabel(d, DDGTag.CSBJ);
+//			}
+//			else if (node.isDependencyLabel(DDGTag.ACL))
+//			{
+//				addDOBJinRRC(node, node.getParent());
+//			}
+//			else if (node.isDependencyLabel(DDGTag.SCOMP))
+//			{
+//				NLPNode nsubj = node.getFirstChildByDependencyLabel(DDGTag.NSBJ);
+//				if (nsubj != null) nsubj.setParent(node.getParent(), DDGTag.OBJ);
+//			}
+//			
+//			List<NLPNode> list = node.getChildrenByDependencyLabel(DDGTag.OBJ);
+//			
+//			if (list.size() > 1 || (list.size() == 1 && node.hasChildByDepenencyLabel(DDGTag.COMP)))
+//				changeLabel(list.get(0), DDGTag.DAT);
+//		}
+//		
+//		for (int i=1; i<tree.length; i++)
+//		{
+//			NLPNode node = tree[i];
+//			
+//			switch (node.getDependencyLabel())
+//			{
+//			case XSUBJ: changeLabel(node, DDGTag.CSBJ); break;
+//			case NLGS : changeLabel(node, DDGTag.NSBJ); break;
+//			case CLGS : changeLabel(node, DDGTag.CSBJ); break;
+//			}
+//		}
+//	}
+//	
+//	private boolean postProcess(NLPNode node)
+//	{
+//		// flip PP
+//		if (node.isSyntacticTag(PTBTag.P_IN) && !(node.hasChildByDepenencyLabel(DDGTag.COP) || node.isDependencyLabel(DDGTag.SCOMP)))
+//		{
+//			NLPNode pdep = node.getFirstChildByDependencyLabel(DDGTag.POBJ);
+//			if (pdep == null) pdep = node.getFirstChildByDependencyLabel(DDGTag.PCOMP);
+//			
+//			if (pdep == null)
+//			{
+//				NLPNode in = node.getLeftMostChild(PTBTag.P_IN, (n,s) -> n.isSyntacticTag(s));
+//				if (in == null || in.getChildren().isEmpty()) return false;
+//				node.adaptDependents(in);
+//				return postProcess(node);
+//			}
+//			
+//			String label = (node.isDependencyLabel(DDGTag.CASE)) ? DDGTag.PREP : node.getDependencyLabel();
+//			pdep.setParent(node.getParent(), label);
+//			pdep.setFeatMap(node.getFeatMap());
+//			pdep.adaptDependents(node);
+//			node.setParent(pdep, DDGTag.CASE);
+//			node.setFeatMap(new FeatMap());
+//			return true;
+//		}
+//		// dative
+//		else if (PTBTag.F_BNF.equals(node.getFeat(NLPUtils.FEAT_SEM)))
+//		{
+//			NLPNode head = node.getParent();
+//			if (PTBLib.isVerb(head.getSyntacticTag()) && transfer_verbs.contains(head.getLemma()))
+//				node.setDependencyLabel(DDGTag.DAT);
+//		}
+//
+//		return false;
+//	}
+//	
 
-		for (CTNode child : cNode.getChildren())
-			addFeats(dTree, cTree, child);
-	}
-	
-	/** Called by {@link #addFeats(DEPTree, CTTree, CTNode)}. */
-	private String getFunctionTags(CTNode node, Set<String> sTags)
-	{
-		List<String> tags = new ArrayList<>();
-		
-		for (String tag : node.getFunctionTags())
-		{
-			if (sTags.contains(tag))
-				tags.add(tag);
-		}
-		
-		if (tags.isEmpty())	return null;
-		Collections.sort(tags);
-		return Joiner.join(tags, FeatMap.DELIM_VALUES);
-	}
-	
-	private NLPNode getNLPNode(NLPNode[] dTree, CTNode cNode)
-	{
-		if (cNode.isSyntacticTag(CTTag.TOP)) return null;
-		CTNode cHead = cNode.isTerminal() ? cNode : cNode.getC2DInfo().getTerminalHead();
-		return cHead.isEmptyCategory() ? null : dTree[cHead.getTokenID()+1];
-//		return cNode.isTerminal() ? dTree.get(cNode.getTokenID()+1) : dTree.get(cNode.getC2DInfo().getTerminalHead().getTokenID()+1);
-	}
-	
-// ============================= Edited phrases =============================
-	
-	public NLPNode[] getDEPTreeWithoutEdited(CTTree cTree, NLPNode[] dTree)
-	{
-		List<NLPNode> nodes = new ArrayList<>();
-		Set<Integer> set = new HashSet<>();
-		int id = 1;
-			
-		addEditedTokensAux(cTree.getRoot(), set);
-			
-		for (int i=1; i<dTree.length; i++)
-		{
-			NLPNode node = dTree[i];
-			
-			if (!set.contains(node.getTokenID()))
-			{
-				removeEditedHeads(node.getSecondaryHeadList(), set);
-				removeEditedHeads(node.getSemanticHeadList() , set);
-				node.setTokenID(id++);
-				nodes.add(node);
-			}
-		}
-		
-		return (nodes.size() > 0) ? NLPUtils.toDependencyTree(nodes, NLPNode::new) : null;
-	}
-		
-	/** Called by {@link #getDEPTreeWithoutEdited(CTTree, DEPTree)}. */
-	private void addEditedTokensAux(CTNode curr, Set<Integer> set)
-	{
-		for (CTNode child : curr.getChildren())
-		{
-			if (PTBLib.isEditedPhrase(child))
-			{
-				for (CTNode sub : child.getTokens())
-					set.add(sub.getTokenID()+1);
-			}
-			else if (!child.isTerminal())
-				addEditedTokensAux(child, set);
-		}
-	}
-		
-	/** Called by {@link #getDEPTreeWithoutEdited(CTTree, DEPTree)}. */
-	private <T extends Arc<NLPNode>>void removeEditedHeads(List<T> heads, Set<Integer> set)
-	{
-		if (heads == null) return;
-		List<T> remove = new ArrayList<>();
-		
-		for (T arc : heads)
-		{
-			if (arc.getNode() == null || set.contains(arc.getNode().getTokenID()))
-				remove.add(arc);
-		}
-		
-		heads.removeAll(remove);
-	}	
+//	
+//// ============================= Get a dependency graph =============================
+//	
+//	private NLPNode[] getDependencyGraph(CTTree cTree, Map<CTNode,Deque<CTNode>> xsubj, Map<CTNode,Deque<CTNode>> rnr)
+//	{
+//		NLPNode[] dTree = initDependencyGraph(cTree);
+//		addDEPHeads(dTree, cTree);
+//		
+//		if (NLPUtils.containsCycle(dTree))
+//			throw new UnknownFormatConversionException("Cyclic depedency relation.");
+//
+//		addSecondaryCoord(dTree);
+//		deepLabel(dTree);
+//		addSecondaryHeads(dTree, xsubj, rnr);
+//		addFeats(dTree, cTree, cTree.getRoot());
+//		labelCompounds(dTree);
+//		postProcess(dTree);
+//		addCoordArguments(dTree, cTree);
+//		
+//		if (cTree.hasPropBank())
+//			addSemanticHeads(dTree, cTree);
+//		
+//		if (cTree.hasNamedEntity())
+//			addNamedEntities(dTree, cTree);
+//		
+//		return getDEPTreeWithoutEdited(cTree, dTree);
+//	}
+//
+//// ============================= Compounds =============================
+//
+//	private boolean findHeadHyphen(CTNode node)
+//	{
+//		int i, size = node.getChildrenSize();
+//		CTNode prev, hyph, next;
+//		boolean isFound = false;
+//		boolean isVP = node.isSyntacticTag(PTBTag.C_VP);
+//		
+//		for (i=0; i<size-2; i++)
+//		{
+//			prev = node.getChild(i);
+//			hyph = node.getChild(i+1);
+//			next = node.getChild(i+2);
+//			
+//			if (hyph.isSyntacticTag(PTBTag.P_HYPH))
+//			{
+//				prev.setPrimaryHead(next, DDGTag.COM);
+//				hyph.setPrimaryHead(next, DDGTag.P);
+//				isFound = true;
+//				i++;
+//			}
+//		}
+//		
+//		return isFound;
+//	}
+//	
+//// ============================= Secondary Dependencies =============================
+//	
+//	/** Called by {@link #getDEPTree(CTTree)}. */
+//	private void addFeats(NLPNode[] dTree, CTTree cTree, CTNode cNode)
+//	{
+//		CTNode ante;
+//		String feat;
+//		
+//		if (!cNode.isEmptyCategoryPhrase() && cNode.getGapIndex() != -1 && cNode.getParent().getGapIndex() == -1 && (ante = cTree.getAntecedent(cNode.getGapIndex())) != null)
+//		{
+//			NLPNode dNode = getNLPNode(dTree, cNode);
+//			dNode.addSecondaryHead(getNLPNode(dTree, ante), DDGTag.DEP2_GAP);
+//		}
+//		
+//		if ((feat = getFunctionTags(cNode, SEM_TAGS)) != null)
+//			cNode.getC2DInfo().putFeat(NLPUtils.FEAT_SEM, feat);
+//		
+//		if ((feat = getFunctionTags(cNode, SYN_TAGS)) != null)
+//			cNode.getC2DInfo().putFeat(NLPUtils.FEAT_SYN, feat);
+//
+//		for (CTNode child : cNode.getChildren())
+//			addFeats(dTree, cTree, child);
+//	}
+//	
+//	/** Called by {@link #addFeats(DEPTree, CTTree, CTNode)}. */
+//	private String getFunctionTags(CTNode node, Set<String> sTags)
+//	{
+//		List<String> tags = new ArrayList<>();
+//		
+//		for (String tag : node.getFunctionTags())
+//		{
+//			if (sTags.contains(tag))
+//				tags.add(tag);
+//		}
+//		
+//		if (tags.isEmpty())	return null;
+//		Collections.sort(tags);
+//		return Joiner.join(tags, FeatMap.DELIM_VALUES);
+//	}
+//	
+//	private NLPNode getNLPNode(NLPNode[] dTree, CTNode cNode)
+//	{
+//		if (cNode.isSyntacticTag(CTTag.TOP)) return null;
+//		CTNode cHead = cNode.isTerminal() ? cNode : cNode.getC2DInfo().getTerminalHead();
+//		return cHead.isEmptyCategory() ? null : dTree[cHead.getTokenID()+1];
+////		return cNode.isTerminal() ? dTree.get(cNode.getTokenID()+1) : dTree.get(cNode.getC2DInfo().getTerminalHead().getTokenID()+1);
+//	}
+//	
+//// ============================= Edited phrases =============================
+//	
+//	public NLPNode[] getDEPTreeWithoutEdited(CTTree cTree, NLPNode[] dTree)
+//	{
+//		List<NLPNode> nodes = new ArrayList<>();
+//		Set<Integer> set = new HashSet<>();
+//		int id = 1;
+//			
+//		addEditedTokensAux(cTree.getRoot(), set);
+//			
+//		for (int i=1; i<dTree.length; i++)
+//		{
+//			NLPNode node = dTree[i];
+//			
+//			if (!set.contains(node.getTokenID()))
+//			{
+//				removeEditedHeads(node.getSecondaryHeadList(), set);
+//				removeEditedHeads(node.getSemanticHeadList() , set);
+//				node.setTokenID(id++);
+//				nodes.add(node);
+//			}
+//		}
+//		
+//		return (nodes.size() > 0) ? NLPUtils.toDependencyTree(nodes, NLPNode::new) : null;
+//	}
+//		
+//	/** Called by {@link #getDEPTreeWithoutEdited(CTTree, DEPTree)}. */
+//	private void addEditedTokensAux(CTNode curr, Set<Integer> set)
+//	{
+//		for (CTNode child : curr.getChildren())
+//		{
+//			if (PTBLib.isEditedPhrase(child))
+//			{
+//				for (CTNode sub : child.getTokens())
+//					set.add(sub.getTokenID()+1);
+//			}
+//			else if (!child.isTerminal())
+//				addEditedTokensAux(child, set);
+//		}
+//	}
+//		
+//	/** Called by {@link #getDEPTreeWithoutEdited(CTTree, DEPTree)}. */
+//	private <T extends Arc<NLPNode>>void removeEditedHeads(List<T> heads, Set<Integer> set)
+//	{
+//		if (heads == null) return;
+//		List<T> remove = new ArrayList<>();
+//		
+//		for (T arc : heads)
+//		{
+//			if (arc.getNode() == null || set.contains(arc.getNode().getTokenID()))
+//				remove.add(arc);
+//		}
+//		
+//		heads.removeAll(remove);
+//	}	
 	
 	// ============================= Add PropBank arguments =============================
 	
-	private void addSemanticHeads(NLPNode[] dTree, CTTree cTree)
-	{
-		initPropBank(dTree, cTree.getRoot());
-		arrangePropBank(dTree);
-		relabelNumberedArguments(dTree);
-	}
-	
-	/** Called by {@link #addSemanticHeads(DEPTree, CTTree)}. */
-	private void initPropBank(NLPNode[] dTree, CTNode cNode)
-	{
-		NLPNode dNode = getNLPNode(dTree, cNode);
-		
-		if (dNode != null)
-		{
-			if (cNode.isPredicate())
-				dNode.putFeat(NLPUtils.FEAT_PREDICATE, cNode.getFrameID());
-			
-			NLPNode sHead, d;
-			String  label;
-			CTNode  c;
-			
-			for (CTArc p : cNode.getSemanticHeads())
-			{
-				sHead = getNLPNode(dTree, p.getNode());
-				label = PBLib.getShortLabel(p.getLabel());
-				
-				if ((c = getReferentArgument(cNode)) != null)
-				{
-					if ((c = PTBLib.getRelativizer(c)) != null && (c = c.getAntecedent()) != null)
-					{
-						d = getNLPNode(dTree, c);
-						
-						if (d != null && d.getSemanticHeadArc(sHead) == null)
-							d.addSemanticHead(new DEPArc<>(sHead, label));
-					}
-					
-					label = PBLib.PREFIX_REFERENT + label;
-				}
-				
-				if (!dNode.isArgumentOf(sHead) && dNode != sHead)
-					dNode.addSemanticHead(sHead, label);
-			}	
-		}
-		
-		for (CTNode child : cNode.getChildren())
-			initPropBank(dTree, child);
-	}
-	
-	/** Called by {@link #initPropBank(DEPTree, CTNode)}. */
-	private CTNode getReferentArgument(CTNode node)
-	{
-		CTNode ref;
-		
-		if ((ref = PTBLib.getWhPhrase(node)) != null)
-			return ref;
-		
-		if (node.isSyntacticTag(PTBTag.C_PP))
-		{
-			for (CTNode child : node.getChildren()) 
-			{
-				if ((ref = PTBLib.getWhPhrase(child)) != null)
-					return ref;
-			}
-		}
-
-		return null;
-	}
-	
-	/** Called by {@link #addSemanticHeads(DEPTree, CTTree)}. */
-	private void arrangePropBank(NLPNode[] tree)
-	{
-		List<DEPArc<NLPNode>> remove;
-		NLPNode head;
-		String label;
-		
-		for (NLPNode node : tree)
-		{
-			remove = new ArrayList<>();
-			
-			for (DEPArc<NLPNode> arc : node.getSemanticHeadList())
-			{
-				head  = arc.getNode();
-				label = arc.getLabel();
-				
-				if (ancestorHasSemanticHead(node, head, label))
-					remove.add(arc);
-			//	else if (rnrHasSHead(node, head, label))
-			//		remove.add(arc);
-			}
-			
-			node.removeSemanticHeads(remove);
-		}
-	}
-	
-	/** Called by {@link #arrangePropBank(DEPTree)}. */
-	private boolean ancestorHasSemanticHead(NLPNode dNode, NLPNode sHead, String label)
-	{
-		NLPNode dHead = dNode.getParent();
-		
-		while (dHead.getTokenID() != 0)
-		{
-			if (dHead.isArgumentOf(sHead, label))
-				return true;
-			
-			dHead = dHead.getParent();
-		}
-		
-		return false;
-	}
-	
-//	private boolean rnrHasSHead(NLPNode dNode, NLPNode sHead, String label)
+//	private void addSemanticHeads(NLPNode[] dTree, CTTree cTree)
 //	{
-//		for (DEPArc rnr : dNode.getSecondaryHeadList(DEPTagEn.DEP2_RNR))
+//		initPropBank(dTree, cTree.getRoot());
+//		arrangePropBank(dTree);
+//		relabelNumberedArguments(dTree);
+//	}
+//	
+//	/** Called by {@link #addSemanticHeads(DEPTree, CTTree)}. */
+//	private void initPropBank(NLPNode[] dTree, CTNode cNode)
+//	{
+//		NLPNode dNode = getNLPNode(dTree, cNode);
+//		
+//		if (dNode != null)
 //		{
-//			if (rnr.getNode().isArgumentOf(sHead, label))
+//			if (cNode.isPredicate())
+//				dNode.putFeat(NLPUtils.FEAT_PREDICATE, cNode.getFrameID());
+//			
+//			NLPNode sHead, d;
+//			String  label;
+//			CTNode  c;
+//			
+//			for (CTArc p : cNode.getSemanticHeads())
+//			{
+//				sHead = getNLPNode(dTree, p.getNode());
+//				label = PBLib.getShortLabel(p.getLabel());
+//				
+//				if ((c = getReferentArgument(cNode)) != null)
+//				{
+//					if ((c = PTBLib.getRelativizer(c)) != null && (c = c.getAntecedent()) != null)
+//					{
+//						d = getNLPNode(dTree, c);
+//						
+//						if (d != null && d.getSemanticHeadArc(sHead) == null)
+//							d.addSemanticHead(new DEPArc<>(sHead, label));
+//					}
+//					
+//					label = PBLib.PREFIX_REFERENT + label;
+//				}
+//				
+//				if (!dNode.isArgumentOf(sHead) && dNode != sHead)
+//					dNode.addSemanticHead(sHead, label);
+//			}	
+//		}
+//		
+//		for (CTNode child : cNode.getChildren())
+//			initPropBank(dTree, child);
+//	}
+//	
+//	/** Called by {@link #initPropBank(DEPTree, CTNode)}. */
+//	private CTNode getReferentArgument(CTNode node)
+//	{
+//		CTNode ref;
+//		
+//		if ((ref = PTBLib.getWhPhrase(node)) != null)
+//			return ref;
+//		
+//		if (node.isSyntacticTag(PTBTag.C_PP))
+//		{
+//			for (CTNode child : node.getChildren()) 
+//			{
+//				if ((ref = PTBLib.getWhPhrase(child)) != null)
+//					return ref;
+//			}
+//		}
+//
+//		return null;
+//	}
+//	
+//	/** Called by {@link #addSemanticHeads(DEPTree, CTTree)}. */
+//	private void arrangePropBank(NLPNode[] tree)
+//	{
+//		List<DEPArc<NLPNode>> remove;
+//		NLPNode head;
+//		String label;
+//		
+//		for (NLPNode node : tree)
+//		{
+//			remove = new ArrayList<>();
+//			
+//			for (DEPArc<NLPNode> arc : node.getSemanticHeadList())
+//			{
+//				head  = arc.getNode();
+//				label = arc.getLabel();
+//				
+//				if (ancestorHasSemanticHead(node, head, label))
+//					remove.add(arc);
+//			//	else if (rnrHasSHead(node, head, label))
+//			//		remove.add(arc);
+//			}
+//			
+//			node.removeSemanticHeads(remove);
+//		}
+//	}
+//	
+//	/** Called by {@link #arrangePropBank(DEPTree)}. */
+//	private boolean ancestorHasSemanticHead(NLPNode dNode, NLPNode sHead, String label)
+//	{
+//		NLPNode dHead = dNode.getParent();
+//		
+//		while (dHead.getTokenID() != 0)
+//		{
+//			if (dHead.isArgumentOf(sHead, label))
 //				return true;
+//			
+//			dHead = dHead.getParent();
 //		}
 //		
 //		return false;
 //	}
-	
-	/** Called by {@link #addSemanticHeads(DEPTree, CTTree)}. */
-	private void relabelNumberedArguments(NLPNode[] tree)
-	{
-		Map<String,NLPNode> map = new HashMap<>();
-		String key;
-		
-		for (NLPNode node : tree)
-		{
-			for (DEPArc<NLPNode> arc : node.getSemanticHeadList())
-			{
-				if (PBLib.isReferentArgument(arc.getLabel()))
-					continue;
-								
-				if (PBLib.isModifier(arc.getLabel()))
-					continue;
-				
-				key = arc.toString();
-				
-				if (map.containsKey(key))
-					arc.setLabel(PBLib.PREFIX_CONCATENATION + arc.getLabel());
-				else
-					map.put(key, node);
-			}
-		}
-	}
-		
-	public void addNamedEntities(NLPNode[] dTree, CTTree cTree)
-	{
-		for (CTNode node : cTree.getTokens())
-			dTree[node.getTokenID()+1].setNamedEntityTag(node.getNamedEntityTag());
-	}
+//	
+////	private boolean rnrHasSHead(NLPNode dNode, NLPNode sHead, String label)
+////	{
+////		for (DEPArc rnr : dNode.getSecondaryHeadList(DEPTagEn.DEP2_RNR))
+////		{
+////			if (rnr.getNode().isArgumentOf(sHead, label))
+////				return true;
+////		}
+////		
+////		return false;
+////	}
+//	
+//	/** Called by {@link #addSemanticHeads(DEPTree, CTTree)}. */
+//	private void relabelNumberedArguments(NLPNode[] tree)
+//	{
+//		Map<String,NLPNode> map = new HashMap<>();
+//		String key;
+//		
+//		for (NLPNode node : tree)
+//		{
+//			for (DEPArc<NLPNode> arc : node.getSemanticHeadList())
+//			{
+//				if (PBLib.isReferentArgument(arc.getLabel()))
+//					continue;
+//								
+//				if (PBLib.isModifier(arc.getLabel()))
+//					continue;
+//				
+//				key = arc.toString();
+//				
+//				if (map.containsKey(key))
+//					arc.setLabel(PBLib.PREFIX_CONCATENATION + arc.getLabel());
+//				else
+//					map.put(key, node);
+//			}
+//		}
+//	}
+//		
+//	public void addNamedEntities(NLPNode[] dTree, CTTree cTree)
+//	{
+//		for (CTNode node : cTree.getTokens())
+//			dTree[node.getTokenID()+1].setNamedEntityTag(node.getNamedEntityTag());
+//	}
 }

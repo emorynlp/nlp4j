@@ -1,0 +1,71 @@
+1	John	john	NNP	_	0	root	4:nsbj	_
+2	who	who	WP	_	4	r-nsbj	_	_
+3	is	be	VBZ	_	4	cop	_	_
+4	smart	smart	JJ	_	1	relcl	_	_
+
+1	John	john	NNP	_	0	root	8:obj	_
+2	many	many	JJ	_	8	r-obj	_	_
+3	of	of	IN	_	4	case	_	_
+4	which	which	WDT	_	2	ppmod	_	_
+5	I	I	PRP	_	6	nsbj	8:nsbj	_
+6	wanted	want	VBD	_	1	relcl	_	_
+7	to	to	TO	_	8	aux	_	_
+8	meet	meet	VB	_	6	comp	_	_
+
+1	John	john	NNP	_	0	root	5:dat	_
+2	for	for	IN	_	3	case	_	_
+3	whom	whom	WP	_	5	r-dat	_	_
+4	I	I	PRP	_	5	nsbj	_	_
+5	bought	buy	VBD	_	1	relcl	_	_
+6	a	a	DT	_	7	det	_	_
+7	book	book	NN	_	5	obj	_	_
+
+1	John	john	NNP	_	0	root	4:dat	_
+2	who	who	WP	_	4	r-dat	_	_
+3	I	I	PRP	_	4	nsbj	_	_
+4	bought	buy	VBD	_	1	relcl	_	_
+5	a	a	DT	_	6	det	_	_
+6	book	book	NN	_	4	obj	_	_
+7	for	for	IN	_	2	case	_	_
+
+1	The	the	DT	_	2	det	_	_
+2	bookstore	bookstore	NN	_	0	root	5:adv	_
+3	where	where	WRB	sem=LOC	5	r-adv	_	_
+4	I	I	PRP	_	5	nsbj	_	_
+5	met	meet	VBD	_	2	relcl	_	_
+6	John	john	NNP	_	5	obj	_	_
+
+1	The	the	DT	_	2	det	_	_
+2	moment	moment	NN	_	0	root	5:adv	_
+3	when	when	WRB	sem=TMP	5	r-adv	_	_
+4	John	john	NNP	_	5	nsbj	_	_
+5	came	come	VBD	_	2	relcl	_	_
+
+1	John	john	NNP	_	0	root	3:obj;5:nsbj	_
+2	I	I	PRP	_	3	nsbj	_	_
+3	dare	dare	VBP	_	1	relcl	_	_
+4	to	to	TO	_	5	aux	_	_
+5	come	come	VB	_	3	comp	_	_
+
+1	John	john	NNP	_	0	root	3:dat	_
+2	I	I	PRP	_	3	nsbj	_	_
+3	bought	buy	VBD	_	1	relcl	_	_
+4	a	a	DT	_	5	det	_	_
+5	book	book	NN	_	3	obj	_	_
+6	for	for	IN	_	3	case	_	_
+
+1	The	the	DT	_	2	det	_	_
+2	place	place	NN	_	0	root	6:ppmod	_
+3	I	I	PRP	_	6	nsbj	_	_
+4	need	need	VBP	_	6	raise	_	_
+5	to	to	TO	_	6	aux	_	_
+6	get	get	VB	_	2	relcl	_	_
+7	to	to	IN	sem=CLR	6	case	_	_
+
+1	John	john	NNP	_	0	root	_	_
+2	,	,	,	_	1	p	_	_
+3	now	now	RB	sem=TMP	6	adv	_	_
+4	at	at	IN	_	6	case	_	_
+5	the	the	DT	_	6	det	_	_
+6	bookstore	bookstore	NN	sem=LOC	1	relcl	_	_
+

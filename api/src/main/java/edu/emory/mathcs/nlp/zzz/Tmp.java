@@ -84,7 +84,7 @@ public class Tmp
 		
 		HeadRuleMap headruleMap = new HeadRuleMap(IOUtils.createFileInputStream(headrules));
 		Set<String> transferVerbSet = IOUtils.readSet(IOUtils.createFileInputStream(transferVerbs));
-		C2DConverter conv = new EnglishC2DConverter(headruleMap, transferVerbSet);
+		C2DConverter conv = new EnglishC2DConverter(headruleMap);
 
 		CTReader reader = new CTReader();
 		reader.open(IOUtils.createFileInputStream(filename));
@@ -101,10 +101,10 @@ public class Tmp
 			if (nodes == null) continue;
 			for (int i=1; i<nodes.length; i++)
 			{
-				for (DEPArc<NLPNode> n : nodes[i].getSecondaryHeadList())
+				for (DEPArc<NLPNode> n : nodes[i].getSecondaryHeads())
 					FastUtils.increment(map, n.getLabel());
 				
-				snd += nodes[i].getSecondaryHeadList().size();
+				snd += nodes[i].getSecondaryHeads().size();
 			}
 //			fout.println(Joiner.join(nodes, "\n", 1)+"\n");
 		}

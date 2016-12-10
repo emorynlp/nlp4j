@@ -1,0 +1,31 @@
+(TOP (S (NP-SBJ-1 (PRP I))
+        (VP (VBP am)
+            (VP (VBG studying)))))
+
+(TOP (S (NP-SBJ-1 (PRP I))
+        (VP (VBP have)
+            (VP (VBN studied)))))
+
+(TOP (S (NP-SBJ-1 (PRP I))
+        (VP (VBD did)
+            (VP (VB study)))))
+
+(TOP (SQ (VBD Did)
+         (NP-SBJ (PRP I))
+         (VP (VB study))))
+
+(TOP (S (NP-SBJ-1 (PRP I))
+        (VP (VBD was)
+            (VP (VBN chosen)
+                (NP (-NONE- *-1))))))
+
+(TOP (S (NP-SBJ-1 (PRP I))
+        (VP (VBD got)
+            (VP (VBN chosen)
+                (NP (-NONE- *-1))))))
+
+(TOP (S (NP-SBJ-1 (PRP I))
+        (VP (VBD came)
+            (S-PRP (NP-SBJ (-NONE- *PRO*-1))
+                   (VP (TO to)
+                       (VP (VB study)))))))

@@ -1,0 +1,11 @@
+(TOP (S (INTJ (UH Yes))
+        (, ,)
+        (NP-SBJ (NNP John))
+        (VP (VBD came))))
+
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBD said)
+            (INTJ (UH hello))
+            (PP-CLR (IN to)
+                    (NP (PRP me))))
+        (NFP :-)))

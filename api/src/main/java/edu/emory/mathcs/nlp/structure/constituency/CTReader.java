@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.treebank.CTTag;
 
 /**
  * Constituent tree reader.

@@ -25,6 +25,11 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import edu.emory.mathcs.nlp.structure.verbnet.VNClass;
+import edu.emory.mathcs.nlp.structure.verbnet.VNFrame;
+import edu.emory.mathcs.nlp.structure.verbnet.VNLib;
+import edu.emory.mathcs.nlp.structure.verbnet.VNMap;
+
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})

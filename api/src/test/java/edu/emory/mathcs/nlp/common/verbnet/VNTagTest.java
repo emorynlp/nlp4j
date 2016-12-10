@@ -20,6 +20,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import edu.emory.mathcs.nlp.structure.verbnet.VNTag;
+
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */

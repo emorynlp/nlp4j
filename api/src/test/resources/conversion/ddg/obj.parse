@@ -1,0 +1,4 @@
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBD bought)
+            (NP (DT a)
+                (NN book)))))

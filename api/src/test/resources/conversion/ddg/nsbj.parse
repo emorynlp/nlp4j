@@ -1,0 +1,16 @@
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBZ thinks)
+            (ADVP-PRD (RB so)))))
+
+(TOP (S (ADJP-TPC-1 (JJ Smart))
+        (VP (VBZ is)
+            (ADJP-PRD (-NONE- *T*-1)))
+        (NP-SBJ (NNP John))))
+
+(TOP (SINV (`` ")
+           (S-TPC-1 (NP-SBJ (PRP I))
+                    (VP (VBD studied)))
+           ('' ")
+           (VP (VBD said)
+               (S (-NONE- *T*-1)))
+           (NP-SBJ (NNP John))))

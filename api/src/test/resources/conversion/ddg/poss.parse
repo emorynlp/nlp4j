@@ -1,0 +1,12 @@
+(TOP (NP (PRP$ His)
+         (NN book)))
+
+(TOP (NP (NP (NNP John)
+             (POS 's))
+         (NN book)))
+
+ 2460         (NP-SBJ (NP (NP (PRP$ our)
+   2461                         (NN park)
+   2462                         (POS 's))
+   2463                     (NN logo))
+  

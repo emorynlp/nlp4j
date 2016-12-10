@@ -1,0 +1,11 @@
+(TOP (S (NP-SBJ (PRP He))
+        (VP (VBD threw)
+            (PRT (RP away)
+            (NP (DT the)
+                (NN book))))))
+
+(TOP (S (NP-SBJ (PRP He))
+        (VP (VBD threw)
+            (NP (DT the)
+                (NN book))
+            (PRT (RP away)))))

@@ -186,14 +186,9 @@ public class DSUtils
 	/** @return the last item in the list if exists; otherwise, {@code null}. */
 	static public <T>T getLast(List<T> list)
 	{
-		return getLast(list, 0);
+		return list.isEmpty() ? null : list.get(list.size()-1);
 	}
 	
-	static public <T>T getLast(List<T> list, int index)
-	{
-		return list.size() > index ? null : list.get(list.size()-1-index);
-	}
-
 	static public <T>boolean isRange(List<T> list, int index)
 	{
 		return 0 <= index && index < list.size();

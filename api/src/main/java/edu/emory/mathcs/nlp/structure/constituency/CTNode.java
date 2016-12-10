@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
-import edu.emory.mathcs.nlp.common.treebank.CTTag;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
@@ -57,8 +56,9 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 	private CTNode gapping = null;
 	
 	// dependency structures
-	private CTNode      phrase_head = null;
-	private CTArc       primary_head;
+	private CTNode phrase_head = null;
+	private CTNode terminal_head = null;
+	private CTArc  primary_head;
 	private List<CTArc> secondary_heads;
 	
 	// predicate argument structures
@@ -351,9 +351,19 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 		return primary_head;
 	}
 	
+	public void setPrimaryHead(CTArc arc)
+	{
+		setPrimaryHead(arc.getNode(), arc.getLabel());
+	}
+	
 	public void setPrimaryHead(CTNode node, String label)
 	{
 		primary_head.set(node, label);
+	}
+	
+	public void setPrimaryHead(CTNode node)
+	{
+		primary_head.setNode(node);
 	}
 	
 	public boolean hasPrimaryHead()
@@ -371,6 +381,16 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 		primary_head.setLabel(label);
 	}
 	
+	public boolean hasPrimaryLabel()
+	{
+		return primary_head.getLabel() != null;
+	}
+	
+	public boolean hasPrimaryHead(CTNode node)
+	{
+		return primary_head.isNode(node);
+	}
+	
 	public boolean isPrimaryLabel(String label)
 	{
 		return primary_head.isLabel(label);
@@ -381,14 +401,32 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 		return secondary_heads;
 	}
 	
+	public CTArc getSecondaryHeads(CTNode head)
+	{
+		return secondary_heads.stream().filter(n -> n.isNode(head)).findFirst().orElse(null);
+	}
+	
+	public void addSecondaryHead(CTNode node)
+	{
+		addSecondaryHead(node, null);
+	}
+	
 	public void addSecondaryHead(CTArc arc)
 	{
-		secondary_heads.add(arc);
+		addSecondaryHead(arc.getNode(), arc.getLabel());
 	}
 	
 	public void addSecondaryHead(CTNode node, String label)
 	{
-		addSecondaryHead(new CTArc(node, label));
+		if (node == this) return;
+		CTArc arc = secondary_heads.stream().filter(n -> n.isNode(node)).findAny().orElse(null);
+		if (arc == null) secondary_heads.add(new CTArc(node, label));
+		else arc.setLabel(label);
+	}
+	
+	public void addSecondaryHeads(Collection<CTNode> nodes)
+	{
+		nodes.stream().forEach(n -> addSecondaryHead(n));
 	}
 	
 	public CTNode getPhraseHead()
@@ -399,11 +437,19 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 	public void setPhraseHead(CTNode head)
 	{
 		phrase_head = head;
+		
+		if (head != null && !isTerminal())
+			terminal_head = head.getTerminalHead();
 	}
 	
 	public boolean hasPhraseHead()
 	{
 		return phrase_head != null;
+	}
+	
+	public CTNode getTerminalHead()
+	{
+		return isTerminal() ? self() : terminal_head;
 	}
 	
 //	======================== Predicate Argument Structures ========================
@@ -499,6 +545,26 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 		}
 		
 		return node.isEmptyCategory();
+	}
+	
+	public boolean isEmptyCategoryBranch()
+	{
+		return !getTerminals().stream().filter(n -> !n.isEmptyCategory()).findAny().isPresent();
+	}
+	
+	/** @param forms in lower case. */
+	public boolean matchesForms(String... forms)
+	{
+		List<CTNode> tokens = getTokens();
+		if (tokens.size() != forms.length) return false;
+		
+		for (int i=0; i<tokens.size(); i++)
+		{
+			if (!tokens.get(i).isFormLowercase(forms[i]))
+				return false;
+		}
+		
+		return true;
 	}
 	
 //	======================== Strings ========================

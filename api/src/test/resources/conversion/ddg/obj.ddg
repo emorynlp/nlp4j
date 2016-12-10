@@ -1,0 +1,5 @@
+1	John	john	NNP	_	2	nsbj	_	_
+2	bought	buy	VBD	_	0	root	_	_
+3	a	a	DT	_	4	det	_	_
+4	book	book	NN	_	2	obj	_	_
+

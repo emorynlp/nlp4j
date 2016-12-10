@@ -1,0 +1,49 @@
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBD came)
+            (NP-TMP (DT this)
+                    (NN evening)))))
+
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBD lives)
+            (PP-LOC (IN in)
+                    (NP (NP (NNP Atlanta))
+                        (, ,)
+                        (NP-LOC (NNP Georgia)))))))
+
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBD went)
+           (NP-DIR (DT that)
+                   (NN way)))))
+
+(TOP (NP-SBJ (PRP I))
+     (VP (VBD did)
+         (NP (PRP it))
+         (NP-MNR (PRP$ my)
+                 (NN way))))
+
+(TOP (NP-TMP (NP (CD Two)
+                 (NNS days))
+             (NP-ADV (DT a)
+                     (NN week))))
+
+(TOP (ADVP-TMP (NP (CD Two)
+                   (NNS days))
+               (RB ago)))
+
+(TOP (S (NP-SBJ (PRP I))
+        (VP (VBP live)
+            (NP-LOC (JJ next)
+                    (NN door)))))
+
+(TOP (S (NP-SBJ (PRP I))
+        (VP (VBP am)
+            (ADJP-PRD (NP-ADV (DT a)
+                              (NN bit))
+                      (JJ surprised)))))
+
+(TOP (NP-SBJ (PRP I))
+     (VP (MD would)
+         (VP (VB do)
+             (NP (PRP it))
+             (NP-ADV (PRP myself)))))
+

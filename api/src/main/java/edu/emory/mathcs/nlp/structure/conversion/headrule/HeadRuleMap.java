@@ -39,6 +39,8 @@ public class HeadRuleMap extends HashMap<String, HeadRule>
 	
 	static final private Pattern P_COLUMN = PatternConst.TAB; 
 	
+	public HeadRuleMap() {}
+	
 	/**
 	 * Constructs a headrule map from the specific reader.
 	 * Each line indicates the headrule for a specific phrase.

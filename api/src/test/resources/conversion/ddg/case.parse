@@ -1,0 +1,6 @@
+(TOP (NP (PRP$ His)
+         (NN book)))
+
+(TOP (NP (NP (NNP John)
+             (POS 's))
+         (NN book)))

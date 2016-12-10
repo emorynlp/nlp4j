@@ -67,7 +67,7 @@ public class Unigram<T> implements Serializable
 	
 	public int get(T key)
 	{
-		return count_map.get(key);
+		return count_map.getInt(key);
 	}
 	
 	public int getTotalCount()

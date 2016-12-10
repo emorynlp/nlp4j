@@ -18,20 +18,19 @@ package edu.emory.mathcs.nlp.structure.conversion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import edu.emory.mathcs.nlp.common.treebank.CTTag;
-import edu.emory.mathcs.nlp.common.treebank.DSRTag;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.structure.constituency.CTArc;
 import edu.emory.mathcs.nlp.structure.constituency.CTNode;
+import edu.emory.mathcs.nlp.structure.constituency.CTTag;
 import edu.emory.mathcs.nlp.structure.constituency.CTTree;
 import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadRule;
 import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadRuleMap;
 import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadTagSet;
 import edu.emory.mathcs.nlp.structure.dependency.NLPGraph;
 import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
+import edu.emory.mathcs.nlp.structure.util.DDGTag;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -68,7 +67,7 @@ abstract public class C2DConverter
 	 * Sets the head of the specific constituent node using the specific headrule.
 	 * @return the head of the node list.
 	 */
-	protected abstract void setHead(CTNode node, HeadRule rule);
+	protected abstract void findHead(CTNode node, HeadRule rule);
 	
 	/**
 	 * @return the head flag of the specific constituent node.
@@ -120,7 +119,7 @@ abstract public class C2DConverter
 		}
 		
 		// abstract method
-		setHead(node, rule);
+		findHead(node, rule);
 	}
 	
 	/**
@@ -198,43 +197,40 @@ abstract public class C2DConverter
 	
 //	============================= Get Dependency Graph =============================
 	
-	protected Map<CTNode,CTNode> getTerminalMap(CTNode node, Map<CTNode,CTNode> map)
-	{
-		if (node.isTerminal())
-		{
-			map.put(node, node);
-			return map;
-		}
-		
-		for (CTNode child : node.getChildren())
-			getTerminalMap(child, map);
-		
-		if (node.hasPhraseHead())
-		{
-			CTNode head = map.get(node.getPhraseHead());
-			
-			if (head != null)
-			{
-				map.put(node, head);
-				head.addFunctionTags(node.getFunctionTags());
-			}
-		}
-		
-		return map;
-	}
-	
-	protected void finalizeDependencies(CTNode node, Map<CTNode,CTNode> map)
+	protected void finalizeDependencies(CTNode node)
 	{
 		if (node.hasPrimaryHead())
 		{
-			CTArc arc = node.getPrimaryHead();
-			CTNode head = map.get(arc.getNode());
-			CTNode dep  = map.get(node);
+			CTArc  arc  = node.getPrimaryHead();
+			CTNode head = arc.getNode().getTerminalHead();
+			CTNode dep  = node.getTerminalHead();
 			dep.setPrimaryHead(head, arc.getLabel());	
 		}
 		
+		for (CTArc arc : node.getSecondaryHeads())
+		{
+			if (arc.getNode() == null) continue;
+			CTNode head = arc.getNode().getTerminalHead();
+			CTNode dep  = getTerminalHead(node);
+			
+			if (head != null && dep != null && dep != node)
+				dep.addSecondaryHead(head, arc.getLabel());
+			else
+				arc.setNode(head);
+		}
+		
 		for (CTNode child : node.getChildren())
-			finalizeDependencies(child, map);
+			finalizeDependencies(child);
+	}
+	
+	private CTNode getTerminalHead(CTNode node)
+	{
+		CTNode t = node.getTerminalHead();
+		
+		while (t.hasAntecedent())
+			t = t.getAntecedent().getTerminalHead();
+		
+		return t;
 	}
 	
 	/** @return the dependency graph converted from the specific constituent tree without head information. */
@@ -244,7 +240,6 @@ abstract public class C2DConverter
 		NLPGraph graph = new NLPGraph();
 		String form, pos, lemma;
 		NLPNode node, head;
-		CTArc arc;
 		int id;
 		
 		for (CTNode token : tokens)
@@ -262,12 +257,18 @@ abstract public class C2DConverter
 			
 			if (token.hasPrimaryHead())
 			{
-				arc  = token.getPrimaryHead();
+				CTArc arc = token.getPrimaryHead();
 				head = graph.get(arc.getNode().getTokenID() + 1);
 				node.setParent(head, arc.getLabel());	
 			}
 			else
-				node.setParent(graph.getRoot(), DSRTag.ROOT);
+				node.setParent(graph.getRoot(), DDGTag.ROOT);
+			
+			for (CTArc arc : token.getSecondaryHeads())
+			{
+				head = graph.get(arc.getNode().getTokenID() + 1);
+				if (!node.isChildOf(head)) node.addSecondaryHead(head, arc.getLabel());
+			}
 		}
 
 		return graph;

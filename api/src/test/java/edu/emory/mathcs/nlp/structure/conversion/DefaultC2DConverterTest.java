@@ -41,5 +41,4 @@ public class DefaultC2DConverterTest
 		NLPGraph graph = c2d.toDependencyGraph(tree);
 		System.out.println(graph.toString());
 	}
-
 }

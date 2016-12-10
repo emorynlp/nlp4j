@@ -1,0 +1,13 @@
+(TOP (S (NP-VOC (NNP John))
+        (NP-SBJ (PRP I))
+        (VP (VBD studied))))
+
+(TOP (S-IMP (NP-SBJ (-NONE- *PRO*))
+            (VP (VB Come)
+                (PRT (RP on)))
+            (, ,)
+            (NP-VOC (NNS guys))))
+
+(TOP (FRAG (INTJ (UH Thanks))
+           (, ,)
+           (NP-VOC (NNP John))))

@@ -15,11 +15,13 @@
  */
 package edu.emory.mathcs.nlp.structure.util;
 
+import edu.emory.mathcs.nlp.structure.constituency.CTTag;
+
 /**
  * Penn English Treebank Tags.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public interface PTBTag
+public interface PTBTag extends CTTag
 {
 	/** The clausal tag for declaratives. */
 	String C_S     = "S";
@@ -123,10 +125,14 @@ public interface PTBTag
 	String P_CODE = "CODE";
 	/** The part-of-speech tag for determiners. */
 	String P_DT   = "DT";
+	/** The part-of-speech tag for emoticons. */
+	String P_EMO  = "EMO";
 	/** The part-of-speech tag for existentials. */
 	String P_EX   = "EX";
 	/** The part-of-speech tag for foreign words. */
 	String P_FW   = "FW";
+	/** The part-of-speech tag for goes-with. */
+	String P_GW   = "GW";
 	/** The part-of-speech tag for hyphens. */
 	String P_HYPH = "HYPH";
 	/** The part-of-speech tag for prepositions or subordinating conjunctions. */

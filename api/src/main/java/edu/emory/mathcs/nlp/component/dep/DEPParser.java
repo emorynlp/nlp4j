@@ -15,12 +15,12 @@
  */
 package edu.emory.mathcs.nlp.component.dep;
 
-import edu.emory.mathcs.nlp.common.treebank.DSRTag;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.util.DDGTag;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.io.InputStream;
@@ -102,7 +102,7 @@ public class DEPParser<N extends AbstractNLPNode<N>> extends OnlineComponent<N,D
 				processHeadless(state, max, nodes, i,  1);
 				
 				if (max.isNull())
-					node.setParent(nodes[0], DSRTag.ROOT);
+					node.setParent(nodes[0], DDGTag.ROOT);
 				else
 					node.setParent(nodes[max.headId], new DEPLabel(optimizer.getLabel(max.yhat)).getDeprel());
 			}

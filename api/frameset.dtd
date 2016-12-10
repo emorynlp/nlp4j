@@ -1,0 +1,136 @@
+<!--
+                    dtd for predicate argument lexicon files
+
+ Each file will contain a set of predicates associated with a particular
+ lemma (including phrasal variants,  like 'keep_from', etc)
+
+ Each predicate will contain a set of roles in an entity called a roleset.  The
+ rolesets give mneumonics of the argument labels for each different set of
+ arguments.  Multiple rolesets per predicate are necessary for the accomodation
+ of different senses of the predicate.
+
+ Each roleset associates the argument labels with a set of examples
+ demonstrating some of the primary considerations in predicate argument
+ annotation for the predicate+roleset in consideration.  The examples contain
+ plain text sentences and then assign arguments to segments of the sentence.
+ The examples usually have names which are often space delimited descriptions
+ of the annotation.  The examples often have types which describe, in a
+ nutshell, some primary linguistic properties such as "benefactive" or
+ "agentive".  The type attribute may also include a phrasal particle variant
+ (eg type="keep pace") so as to indicate the guidelines for annotation of these
+ cases.
+
+ The entire document can be decorated with notes for unstructured description of
+ the information presented.
+-->
+<!ELEMENT frameset (note | predicate)*>
+<!ELEMENT note (#PCDATA)>
+<!ELEMENT predicate (note | roleset)*>
+<!ATTLIST predicate lemma CDATA #REQUIRED>
+<!--
+  The roleset's levine class attribute takes the following form:
+
+  -|\d+(\.\d+)*( \d+(\.\d+)*)*
+
+  where '-' means there is no levine class
+  and something like 47.2 means 47.2 is a levine class of this
+  roleset.  The list of levine classes is space delimited
+-->
+<!ELEMENT roleset (aliases?, note*, roles, ( example | note )*)>
+<!ATTLIST roleset
+  id   CDATA #REQUIRED
+  name CDATA #IMPLIED>
+<!ELEMENT aliases (alias*)>
+<!ELEMENT alias (#PCDATA)>
+<!ATTLIST alias
+pos (v | n | j | l) #REQUIRED
+verbnet CDATA #IMPLIED
+framenet CDATA #IMPLIED>
+<!ELEMENT roles   (note | role)*>
+<!ELEMENT role (vnrole | fnrole)* >
+<!--
+  roles have a number (or an "M" associated
+  with them, for common adjuncts that don't qualify for number argument status). 
+  Both numbered arguments and adjuncts are labeled with the function tags from the list below:
+
+    EXT  extent
+    LOC  location
+    DIR  direction
+    NEG  negation  (not in PREDITOR)
+    MOD  general modification
+    ADV  adverbial modification
+    MNR  manner
+    PRD  secondary predication
+    REC  recipricol (eg herself, etc)
+    TMP  temporal
+    PRP  purpose
+    PNC  purpose no cause (no longer used)
+    CAU  cause
+    CXN  constructional pattern (adjectival comparative marker)
+    ADJ  adjectival (nouns only)
+    COM  comitative
+    DIS  discourse
+    DSP  direct speech
+    GOL  goal
+    PAG  prototypical agent (function tag for arg1)
+    PPT  prototypical patient (function tag for arg1)
+    RCL  relative clause (no longer used)
+    SLC  selectional constraint link
+    VSP  verb specific (function tag for numbered arguments)
+    LVB  light verb (for nouns only)
+
+-->
+<!ATTLIST role
+  n ( 0 | 1 | 2 | 3 | 4 | 5 | 6 | m | M ) #REQUIRED
+  f ( PAG | PPT | GOL | CXN | VSP | COM | ADJ | CAU | PRP | MNR | EXT | LOC | DIR | ADV | TMP | adv | tmp | pag | ppt | gol | vsp | com | adj | cau | prp | rec | mnr | ext | loc | dir | prd | PRD ) #REQUIRED
+  descr CDATA #REQUIRED>
+<!ELEMENT vnrole EMPTY>
+<!ATTLIST vnrole
+  vncls CDATA #REQUIRED
+  vntheta (actor| Actor| actor1| Actor1 |actor2|  Actor2| agent| Agent|
+  asset| Asset| attribute| Attribute| beneficiary| Beneficiary| cause| Cause|
+  co-agent | Co-Agent | co-patient | Co-Patient | co-theme | Co-Theme | 
+  destination| Destination| experiencer| Experiencer| extent| Extent| 
+  goal | Goal | initial_location | Initial_Location |
+  instrument| Instrument| location| Location| material| Material| patient|
+  Patient| patient1| Patient1| patient2| Patient2| pivot | Pivot | 
+  predicate| Predicate| product| Product| recipient| Recipient| reflexive | Reflexive | result | Result |
+  source| Source| stimulus| Stimulus| theme| Theme|theme1| Theme1| theme2| Theme2| time| Time| topic|
+  Topic| Trajectory | trajectory | proposition| Proposition| value| Value | unspecified) #REQUIRED>
+<!ELEMENT fnrole EMPTY>
+<!ATTLIST fnrole
+frame CDATA #REQUIRED
+fe CDATA #REQUIRED>
+<!--
+  examples may contain inflectional information and notes notes
+  After that, they contain the text of an example followed by
+  the argument structure.
+
+  The src attribute is for automatically retrieved examples
+  and refers to a roleset identifier.
+-->
+<!ELEMENT example (inflection?, note?, text, (arg | rel | note)*)>
+<!ATTLIST example
+  name CDATA #IMPLIED
+  type CDATA #IMPLIED
+  src  CDATA #IMPLIED>
+<!ELEMENT text (#PCDATA)>
+<!ELEMENT inflection EMPTY>
+<!ATTLIST inflection
+  person (third | other | ns) "ns"
+  tense  (present | past | future | ns) "ns"
+  aspect (perfect | progressive | both | ns) "ns"
+  voice  (active | passive | ns) "ns"
+  form   (infinitive | gerund | participle | full | ns) "ns">
+<!-- the n and f attributes corresponds to those of the roles
+     described above -->
+<!ELEMENT arg (#PCDATA)>
+<!ATTLIST arg
+  n ( 0 | 1 | 2 | 3 | 4 | 5 | 6 | m | M | a | A) #REQUIRED
+  f CDATA #IMPLIED>
+<!-- a rel can have an "f" attribute for a single reason, so that
+     auxilliary uses of the verb "have" can be marked as such.
+     There should be no other "f" attributes -->
+<!ELEMENT rel (#PCDATA)>
+<!ATTLIST rel
+  f CDATA #IMPLIED>

@@ -159,6 +159,11 @@ public class CTTree
 		return tokens;
 	}
 	
+	public Int2ObjectMap<List<CTNode>> getEmptyCategoryMap()
+	{
+		return empty_category_map;
+	}
+	
 	/** @return a list of empty categories with he specific co-index if exists; otherwise, {@code null}. */
 	public List<CTNode> getEmptyCategories(int index)
 	{

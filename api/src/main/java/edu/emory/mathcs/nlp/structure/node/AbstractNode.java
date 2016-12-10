@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.structure.node;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -486,6 +487,11 @@ public abstract class AbstractNode<N extends AbstractNode<N>> extends DefaultFie
 		return hasParent() && matcher.test(parent);
 	}
 	
+	public boolean hasGrandParent()
+	{
+		return getGrandParent() != null;
+	}
+	
 //	============================== Siblings ==============================
 	
 	/** @return the left-nearest sibling of this node if exists; otherwise, null. */
@@ -566,6 +572,11 @@ public abstract class AbstractNode<N extends AbstractNode<N>> extends DefaultFie
 	public boolean isRightSiblingOf(N node)
 	{
 		return node.isLeftSiblingOf(self());
+	}
+	
+	public List<N> getSiblings()
+	{
+		return hasParent() ? parent.children.stream().filter(n -> n != self()).collect(Collectors.toList()) : new ArrayList<>();
 	}
 	
 //	============================== Helpers ==============================
