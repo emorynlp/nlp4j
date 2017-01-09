@@ -1,0 +1,7 @@
+1	John	john	NNP	_	4	nsbj	_	_
+2	made	make	VBN	_	4	lv	_	_
+3	a	a	DT	_	4	det	_	_
+4	call	call	NN	_	0	root	_	_
+5	to	to	IN	_	6	case	_	_
+6	Mary	mary	NNP	_	4	ppmod	_	_
+

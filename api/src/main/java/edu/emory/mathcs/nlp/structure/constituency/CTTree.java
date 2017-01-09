@@ -25,6 +25,10 @@ import java.util.stream.Stream;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
+import edu.emory.mathcs.nlp.structure.propbank.PBArgument;
+import edu.emory.mathcs.nlp.structure.propbank.PBInstance;
+import edu.emory.mathcs.nlp.structure.propbank.PBLocation;
+import edu.emory.mathcs.nlp.structure.util.PBLib;
 import edu.emory.mathcs.nlp.structure.util.PTBLib;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -133,6 +137,11 @@ public class CTTree
 	public CTNode getNode(int terminal_id, int height)
 	{
 		return DSUtils.isRange(terminals, terminal_id) ? getTerminal(terminal_id).getAncestor(height) : null; 
+	}
+	
+	public CTNode getNode(PBLocation loc)
+	{
+		return getNode(loc.getTerminalID(), loc.getHeight());
 	}
 	
 	/** @return a terminal node in this tree with the specific ID. */
@@ -323,6 +332,25 @@ public class CTTree
 		
 		for (CTNode child : curr.getChildren())
 			remapGapIndices(map, lastIndex, child);
+	}
+	
+	public void set(PBInstance instance)
+	{
+		CTNode pred = getTerminal(instance.getPredicateID()), node;
+		pred.setFrameID(instance.getFrameID());
+		
+		for (PBArgument arg : instance.getArguments())
+		{
+			String label = arg.getLabel();
+			if (PBLib.isLinkArgument(label))	continue;
+			if (PBLib.isUndefinedLabel(label))	continue;
+			
+			for (PBLocation loc : arg.getLocations())
+			{
+				node = getNode(loc);
+				if (node != pred) node.addSemanticHead(new CTArc(pred, label));
+			}
+		}
 	}
 
 //	======================== Strings ========================

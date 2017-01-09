@@ -27,7 +27,7 @@ import edu.emory.mathcs.nlp.structure.constituency.CTTree;
 import edu.emory.mathcs.nlp.structure.propbank.PBArgument;
 import edu.emory.mathcs.nlp.structure.propbank.PBInstance;
 import edu.emory.mathcs.nlp.structure.propbank.PBReader;
-import edu.emory.mathcs.nlp.structure.propbank.PBTag;
+import edu.emory.mathcs.nlp.structure.util.PBTag;
 
 
 /**
@@ -50,28 +50,28 @@ public class PBReaderTest
 		
 		argument = instance.getArgument(0);
 		node = tree.getNode(argument.getLocation(0));
-		assertEquals("Pierre Vinken , 61 years old ,", node.toForms());
-		assertEquals(PBTag.PB_ARG0, argument.getLabel());
+		assertEquals(node, tree.getNode(0, 2));
+		assertEquals(PBTag.ARG0, argument.getLabel());
 		
 		argument = instance.getArgument(5);
 		node = tree.getNode(argument.getLocation(0));
-		assertEquals("Nov. 29", node.toForms());
-		assertEquals(PBTag.PB_ARGM_TMP, argument.getLabel());
+		assertEquals(node, tree.getNode(15, 1));
+		assertEquals(PBTag.ARGM_TMP, argument.getLabel());
 		
 		instance = instances.get(2);
 		tree = instance.getTree();
 		
 		argument = instance.getArgument(0);
 		node = tree.getNode(argument.getLocation(0));
-		assertEquals("publishing", node.toForms());
-		assertEquals(PBTag.PB_REL, argument.getLabel());
+		assertEquals(node, tree.getNode(10, 0));
+		assertEquals(PBTag.REL, argument.getLabel());
 		
 		instance = instances.get(3);
 		tree = instance.getTree();
 		
 		argument = instance.getArgument(0);
 		node = tree.getNode(argument.getLocation(1));
-		assertEquals("*-1", node.toForms("",true));
-		assertEquals(PBTag.PB_ARG1, argument.getLabel());
+		assertEquals(node, tree.getNode(17,1));
+		assertEquals(PBTag.ARG1, argument.getLabel());
 	}
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.structure.propbank;
+package edu.emory.mathcs.nlp.structure.util;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,6 +27,8 @@ import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.structure.constituency.CTReader;
 import edu.emory.mathcs.nlp.structure.constituency.CTTree;
+import edu.emory.mathcs.nlp.structure.propbank.PBInstance;
+import edu.emory.mathcs.nlp.structure.propbank.PBReader;
 
 
 /**
@@ -57,20 +59,14 @@ public class PBLib
 		List<CTTree> trees = new CTReader(treebank).readTrees();
 		PBReader reader = new PBReader(propbank);
 		PBInstance instance;
-		CTTree tree;
-		
-		for (CTTree t : trees)
+
+		while ((instance = reader.next()) != null)
 		{
-			if (normalize) t.normalizeIndices();
-			t.initPBLocations();
-		}
-		
-		while ((instance = reader.nextInstance()) != null)
-		{
-			if (!isIllegalRolesetID(instance.getRolesetID()))
+			if (!isIllegalRolesetID(instance.getFrameID()))
 			{
-				tree = trees.get(instance.getTreeID());
-				tree.initPBInstance(instance);
+				CTTree tree = trees.get(instance.getTreeID());
+				if (normalize) tree.normalizeIndices();
+				tree.set(instance);
 			}
 		}
 		
@@ -135,7 +131,7 @@ public class PBLib
 	
 	static public String getShortLabel(String label)
 	{
-		return PBTag.PB_REL.equals(label) ? PBTag.PB_C_V : "A"+label.substring(3);
+		return PBTag.REL.equals(label) ? PBTag.C_V : "A"+label.substring(3);
 	}
 	
 	/**

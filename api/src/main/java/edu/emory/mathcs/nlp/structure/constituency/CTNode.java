@@ -62,7 +62,7 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 	private List<CTArc> secondary_heads;
 	
 	// predicate argument structures
-	private String		predicate_id = null;
+	private String		frame_id = null;
 	private List<CTArc> semantic_heads;
 	
 //	======================== Constructors ========================
@@ -159,7 +159,7 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 	/** @return the semantic frame ID if exists; otherwise, null. */
 	public String getFrameID()
 	{
-		return predicate_id;
+		return frame_id;
 	}
 	
 	/** @return the height from its first terminal. */
@@ -454,25 +454,20 @@ public class CTNode extends AbstractNode<CTNode> implements Comparable<CTNode>
 	
 //	======================== Predicate Argument Structures ========================
 
-	public String getPredicateID()
+	public void setFrameID(String id)
 	{
-		return predicate_id;
-	}
-	
-	public void setPredicateID(String id)
-	{
-		predicate_id = id;
+		frame_id = id;
 	}
 	
 	/** @return true if the specific id matches this node's predicate id. */
-	public boolean isPredicateID(String id)
+	public boolean isFrameID(String id)
 	{
-		return id.equals(predicate_id);
+		return id.equals(frame_id);
 	}
 	
 	public boolean isPredicate()
 	{
-		return predicate_id != null;
+		return frame_id != null;
 	}
 	
 	/** @return the set of predicates of this node. */

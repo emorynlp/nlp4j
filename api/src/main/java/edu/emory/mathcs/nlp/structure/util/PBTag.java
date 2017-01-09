@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.structure.propbank;
+package edu.emory.mathcs.nlp.structure.util;
 
 
 /**
@@ -21,57 +21,56 @@ package edu.emory.mathcs.nlp.structure.propbank;
  */
 public interface PBTag
 {
-	String PB_REL  = "rel";
-	String PB_DSP  = "DSP";
-	String PB_C_V  = "C-V";
+	String REL  = "rel";
+	String C_V  = "C-V";
 	
-	String PB_ARG0 = "ARG0";
-	String PB_ARG1 = "ARG1";
-	String PB_ARG2 = "ARG2";
-	String PB_ARG3 = "ARG3";
-	String PB_ARG4 = "ARG4";
-
+	String ARG0 = "ARG0";
+	String ARG1 = "ARG1";
+	String ARG2 = "ARG2";
+	String ARG3 = "ARG3";
+	String ARG4 = "ARG4";
 	/** External causer. */
-	String PB_ARGA = "ARGA";
+	String ARGA = "ARGA";
+
 	/** Adjectival. */
-	String PB_ARGM_ADJ = "ARGM-ADJ";
+	String ARGM_ADJ = "ARGM-ADJ";
 	/** Adverbial. */
-	String PB_ARGM_ADV = "ARGM-ADV";
+	String ARGM_ADV = "ARGM-ADV";
 	/** Cause. */
-	String PB_ARGM_CAU = "ARGM-CAU";
+	String ARGM_CAU = "ARGM-CAU";
 	/** Comitative. */
-	String PB_ARGM_COM = "ARGM-COM";
+	String ARGM_COM = "ARGM-COM";
 	/** Direction. */
-	String PB_ARGM_DIR = "ARGM-DIR";
+	String ARGM_DIR = "ARGM-DIR";
 	/** Discourse. */
-	String PB_ARGM_DIS = "ARGM-DIS";
+	String ARGM_DIS = "ARGM-DIS";
 	/** Goal. */
-	String PB_ARGM_GOL = "ARGM-GOL";
+	String ARGM_GOL = "ARGM-GOL";
 	/** Extent. */
-	String PB_ARGM_EXT = "ARGM-EXT";
+	String ARGM_EXT = "ARGM-EXT";
 	/** Location. */
-	String PB_ARGM_LOC = "ARGM-LOC";
+	String ARGM_LOC = "ARGM-LOC";
 	/** Manner. */
-	String PB_ARGM_MNR = "ARGM-MNR";
+	String ARGM_MNR = "ARGM-MNR";
 	/** Modal. */
-	String PB_ARGM_MOD = "ARGM-MOD";
+	String ARGM_MOD = "ARGM-MOD";
 	/** Negation. */
-	String PB_ARGM_NEG = "ARGM-NEG";
+	String ARGM_NEG = "ARGM-NEG";
 	/** Secondary predication. */
-	String PB_ARGM_PRD = "ARGM-PRD";
+	String ARGM_PRD = "ARGM-PRD";
 	/** Purpose. */
-	String PB_ARGM_PRP = "ARGM-PRP";
+	String ARGM_PRP = "ARGM-PRP";
 	/** Compound noun of light verb. */
-	String PB_ARGM_PRR = "ARGM-PRR";
+	String ARGM_PRR = "ARGM-PRR";
 	/** Recipricol. */
-	String PB_ARGM_REC = "ARGM-REC";
+	String ARGM_REC = "ARGM-REC";
 	/** Temporal. */
-	String PB_ARGM_TMP = "ARGM-TMP";
+	String ARGM_TMP = "ARGM-TMP";
 	
 	/** Link caused by reduced relative clauses. */
-	String PB_LINK_SLC	= "LINK-SLC";
+	String LINK_SLC	= "LINK-SLC";
 	/** Link caused by *PRO*. */
-	String PB_LINK_PRO	= "LINK-PRO";
-	/** Link caused by passive construtions. */
-	String PB_LINK_PSV	= "LINK-PSV";
+	String LINK_PRO	= "LINK-PRO";
+	/** Link caused by passive constructions. */
+	String LINK_PSV	= "LINK-PSV";
 }

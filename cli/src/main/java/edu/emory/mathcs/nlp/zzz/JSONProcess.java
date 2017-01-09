@@ -216,7 +216,7 @@ public class JSONProcess
 	
 	public static void main(String[] args)
 	{
-		final String configFile = args[0];
+//		final String configFile = args[0];
 		final String inputPath  = args[1];
 		final String inputExt   = args[2];
 		final int threads = Integer.parseInt(args[3]);

@@ -207,7 +207,12 @@ public class EnglishC2DConverter extends C2DConverter
 		tree.flatten().forEach(node -> preprocess(tree, node));
 		preprocessDuplicates(tree);
 		tree.getTerminals().stream().forEach(n -> preprocessEmptyCategory(tree, n));
-		tree.getRoot().getTerminals().stream().filter(n -> n.isEmptyCategory() && !n.hasAntecedent()).forEach(n -> n.removeSelf());
+		tree.getRoot().getTerminals().stream().filter(n -> removeEmptyCategoriesAux(n)).forEach(n -> n.removeSelf());
+	}
+	
+	private boolean removeEmptyCategoriesAux(CTNode node)
+	{
+		return node.isEmptyCategory() && !(node.hasAntecedent() || PTBLib.isNullComplementizer(node));
 	}
 	
 	public void lemmatize(CTTree tree)
@@ -464,8 +469,7 @@ public class EnglishC2DConverter extends C2DConverter
 				if (s.isSyntacticTag(PTBTag.C_S))
 				{
 					prd.addFunctionTag(DDGTag.OPRD);
-					s.setPrimaryLabel(DDGTag.OPRD);
-					ec.setAntecedent(null);
+					s.setPrimaryLabel(DDGTag.COMP);
 				}				
 			}
 		}
@@ -839,7 +843,7 @@ public class EnglishC2DConverter extends C2DConverter
 		{
 			if ((label = getObjectLabel(node, d)) != null) return label;
 			if ((label = getAuxiliaryLabel(node)) != null) return label;
-			if (isClausalComplement(node))                 return DDGTag.COMP;
+			if (isClausalComplement(node)) return DDGTag.COMP;
 		}
 		
 		// complements of adjectival/adverbial predicates
@@ -1275,7 +1279,7 @@ public class EnglishC2DConverter extends C2DConverter
 			relabelEXPL(node);
 		else if (node.isSyntacticTag(PTBTag.P_IN))
 		{
-			if (!node.hasChild() && !node.isDependencyLabel(DDGTag.COM) && !node.isDependencyLabel(DDGTag.MARK) && !node.getDependencyLabel().startsWith(DDGTag.R))
+			if (!node.hasChild() && !node.isDependencyLabel(DDGTag.COM) && !node.isDependencyLabel(DDGTag.MARK))// && !node.getDependencyLabel().startsWith(DDGTag.R))
 				node.setDependencyLabel(DDGTag.CASE);
 		}
 		

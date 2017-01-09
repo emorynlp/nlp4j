@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -34,18 +35,18 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 	/** The delimiter between location and label ("-"). */
 	static public final String DELIM = StringConst.HYPHEN;
 	
-	private List<PBLocation> l_locations;
-	private String s_label;
+	private List<PBLocation> locations;
+	private String label;
 	
 	public PBArgument()
 	{
-		l_locations = new ArrayList<>();
+		locations = new ArrayList<>();
 	}
 	
 	/** @param str "<location>(<operator><location>)*-label". */
 	public PBArgument(String str)
 	{
-		l_locations = new ArrayList<>();
+		locations = new ArrayList<>();
 		int idx = str.indexOf(DELIM);
 		String type;
 		
@@ -53,7 +54,7 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 			throw new IllegalArgumentException(str);
 		
 		StringTokenizer tok = new StringTokenizer(str.substring(0, idx), "*&,;", true);
-		s_label = str.substring(idx+1);
+		label = str.substring(idx+1);
 		
 		if (!tok.hasMoreTokens())
 			throw new IllegalArgumentException(str);
@@ -73,96 +74,76 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 	
 	public String getLabel()
 	{
-		return s_label;
+		return label;
 	}
 	
 	/** @return the index'th location of this argument if exists; otherwise, {@code null}. */
 	public PBLocation getLocation(int index)
 	{
-		return DSUtils.isRange(l_locations, index) ? l_locations.get(index) : null;
+		return DSUtils.isRange(locations, index) ? locations.get(index) : null;
 	}
 	
 	/** @return the first location matching the specific terminal ID and height in this argument. */
 	public PBLocation getLocation(int terminalID, int height)
 	{
-		for (PBLocation loc : l_locations)
-		{
-			if (loc.matches(terminalID, height))
-				return loc;
-		}
-		
-		return null;
+		return locations.stream().filter(loc -> loc.matches(terminalID, height)).findFirst().orElse(null);
 	}
 	
 	/** @return a list of locations of this argument. */
-	public List<PBLocation> getLocationList()
+	public List<PBLocation> getLocations()
 	{
-		return l_locations;
+		return locations;
 	}
 	
 	/** @return the number of locations in this argument. */
 	public int getLocationSize()
 	{
-		return l_locations.size();
+		return locations.size();
 	}
 	
-//	/**
-//	 * Returns a set of terminal IDs belonging to this argument given the specific tree.
-//	 * @param tree the constituent tree.
-//	 * @return a set of terminal IDs belonging to this argument.
-//	 */
-//	public Set<Integer> getTerminalIDSet(CTTree tree)
-//	{
-//		Set<Integer> set = new HashSet<>();
-//		
-//		for (PBLocation loc : l_locations)
-//			set.addAll(tree.getNode(loc).getTerminalIDSet());
-//		
-//		return set;
-//	}
-		
 	/** Adds the specific location to this argument. */
 	public void addLocation(PBLocation location)
 	{
-		l_locations.add(location);
+		locations.add(location);
 	}
 	
 	/** Adds the specific collection of locations to this argument. */
 	public void addLocations(Collection<PBLocation> locations)
 	{
-		l_locations.addAll(locations);
+		locations.addAll(locations);
 	}
 	
 	public void setLabel(String label)
 	{
-		s_label = label;
+		this.label = label;
 	}
 	
 	public void setLocations(List<PBLocation> locations)
 	{
-		l_locations = locations;
+		this.locations = locations;
 	}
 	
-	/** Removes the first location matching the specific terminal ID and height from this argument. */
-	public void removeLocation(int terminalId, int height)
+	/** Removes all locations matching the specific terminal ID and height from this argument. */
+	public void removeLocations(int terminalId, int height)
 	{
-		int i, size = l_locations.size();
+		Iterator<PBLocation> it = locations.iterator();
 		
-		for (i=0; i<size; i++)
+		while (it.hasNext())
 		{
-			if (l_locations.get(i).matches(terminalId, height))
-			{
-				l_locations.remove(i);
-				break;
-			}
+			PBLocation loc = it.next();
+			
+			if (loc.matches(terminalId, height))
+				it.remove();
 		}
+		
+		if (!this.locations.isEmpty()) this.locations.get(0).setType(StringConst.EMPTY);
 	}
 	
 	/** Removes the specific collection of locations from this argument. */
 	public void removeLocations(Collection<PBLocation> locations)
 	{
-		l_locations.removeAll(locations);
-		if (!l_locations.isEmpty())	l_locations.get(0).setType(StringConst.EMPTY);
+		this.locations.removeAll(locations);
+		if (!this.locations.isEmpty()) this.locations.get(0).setType(StringConst.EMPTY);
 	}
 	
 	/**
@@ -171,16 +152,16 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 	 */
 	public void sortLocations()
 	{
-		if (l_locations.isEmpty())	return;
+		if (locations.isEmpty()) return;
 		
-		Collections.sort(l_locations);
-		PBLocation fst = l_locations.get(0), loc;
+		Collections.sort(locations);
+		PBLocation fst = locations.get(0), loc;
 		
 		if (!fst.isType(StringConst.EMPTY))
 		{
-			for (int i=1; i<l_locations.size(); i++)
+			for (int i=1; i<locations.size(); i++)
 			{
-				loc = l_locations.get(i);
+				loc = locations.get(i);
 				
 				if (loc.isType(StringConst.EMPTY))
 				{
@@ -195,18 +176,12 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 	
 	public boolean containsOperator(String operator)
 	{
-		for (PBLocation loc : l_locations)
-		{
-			if (loc.isType(operator))
-				return true;
-		}
-		
-		return false;
+		return locations.stream().anyMatch(loc -> loc.isType(operator));
 	}
 	
 	public boolean isLabel(String label)
 	{
-		return s_label.equals(label);
+		return this.label.equals(label);
 	}
 
 	@Override
@@ -214,11 +189,11 @@ public class PBArgument implements Serializable, Comparable<PBArgument>
 	{
 		StringBuilder build = new StringBuilder();
 		
-		for (PBLocation loc : l_locations)
+		for (PBLocation loc : locations)
 			build.append(loc.toString());
 				
 		build.append(DELIM);
-		build.append(s_label);
+		build.append(label);
 		
 		return build.toString();
 	}

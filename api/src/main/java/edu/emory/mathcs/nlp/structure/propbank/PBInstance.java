@@ -19,16 +19,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import edu.emory.mathcs.nlp.common.constant.PatternConst;
 import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.structure.constituency.CTArc;
-import edu.emory.mathcs.nlp.structure.constituency.CTNode;
 import edu.emory.mathcs.nlp.structure.constituency.CTTree;
+import edu.emory.mathcs.nlp.structure.util.PBTag;
 import edu.emory.mathcs.nlp.structure.util.PTBLib;
 
 
@@ -42,19 +43,19 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 	static public final String  DELIM = StringConst.SPACE;
 	static public final Pattern SPLIT = PatternConst.SPACE;
 	
-	private String				s_treePath;
-	private int					i_treeID;
-	private int					i_predicateID;
-	private String				s_annotator;
-	private String				s_type;
-	private String				s_rolesetID;
-	private String				s_aspects;
-	private List<PBArgument>	l_arguments;
+	private String				tree_path;
+	private int					tree_id;
+	private int					predicate_id;
+	private String				annotator;
+	private String				predicate_type;
+	private String				frame_id;
+	private String				aspects;
+	private List<PBArgument>	arguments;
 	private CTTree				tree = null;
 	
 	public PBInstance()
 	{
-		l_arguments = new ArrayList<>();
+		arguments = new ArrayList<>();
 	}
 	
 	/** @param str {@code <treePath><treeId><predId><annotator><type><roleset><aspects>(<argument>)+}. */
@@ -65,153 +66,149 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 		if (tmp.length < 7 || !StringUtils.containsDigitOnly(tmp[1]) || !StringUtils.containsDigitOnly(tmp[2]))
 			throw new IllegalArgumentException(str);
 		
-		s_treePath 		= tmp[0];
-		i_treeID		= Integer.parseInt(tmp[1]);
-		i_predicateID	= Integer.parseInt(tmp[2]);
-		s_annotator		= tmp[3];
-		s_type			= tmp[4];
-		s_rolesetID		= tmp[5];
-		s_aspects		= tmp[6];
+		tree_path      = tmp[0];
+		tree_id        = Integer.parseInt(tmp[1]);
+		predicate_id   = Integer.parseInt(tmp[2]);
+		annotator      = tmp[3];
+		predicate_type = tmp[4];
+		frame_id       = tmp[5];
+		aspects        = tmp[6];
 		
-		l_arguments = new ArrayList<>();
+		arguments = new ArrayList<>();
 		int i, size = tmp.length;
 		
 		for (i=7; i<size; i++)
+		{
 			addArgument(new PBArgument(tmp[i]));
+		}
 	}
 	
 	public String getTreePath()
 	{
-		return s_treePath;
+		return tree_path;
 	}
 	
 	public int getTreeID()
 	{
-		return i_treeID;
+		return tree_id;
 	}
 	
 	public int getPredicateID()
 	{
-		return i_predicateID;
+		return predicate_id;
 	}
 	
 	public String getAnnotator()
 	{
-		return s_annotator;
+		return annotator;
 	}
 	
-	public String getType()
+	public String getPredicateType()
 	{
-		return s_type;
+		return predicate_type;
 	}
 	
-	public String getRolesetID()
+	public String getFrameID()
 	{
-		return s_rolesetID;
+		return frame_id;
 	}
 	
 	public String getAspects()
 	{
-		return s_aspects;
+		return aspects;
 	}
 	
 	/** @return the list of all arguments of this instance. */
-	public List<PBArgument> getArgumentList()
+	public List<PBArgument> getArguments()
 	{
-		return l_arguments;
+		return arguments;
 	}
 	
 	/** @return the index'th argument of this instance if exists; otherwise, {@code null}. */
 	public PBArgument getArgument(int index)
 	{
-		return (0 <= index && index < l_arguments.size()) ? l_arguments.get(index) : null;
+		return DSUtils.get(arguments, index);
 	}
 	
 	/** @return the first argument with the specific PropBank label. */
 	public PBArgument getFirstArgument(String label)
 	{
-		for (PBArgument arg : l_arguments)
-			if (arg.isLabel(label))
-				return arg;
-		
-		return null;
+		return arguments.stream().filter(arg -> arg.isLabel(label)).findFirst().orElse(null);
 	}
 	
 	public void setTreePath(String path)
 	{
-		s_treePath = path;
+		tree_path = path;
 	}
 	
 	public void setTreeID(int id)
 	{
-		i_treeID = id;
+		tree_id = id;
 	}
 	
 	public void setPredicateID(int id)
 	{
-		i_predicateID = id;
+		predicate_id = id;
 	}
 	
 	public void setAnnotator(String annotator)
 	{
-		s_annotator = annotator;
+		this.annotator = annotator;
 	}
 	
-	public void setType(String type)
+	public void setPredicateType(String type)
 	{
-		s_type = type;
+		predicate_type = type;
 	}
 	
-	public void setRolesetID(String rolesetID)
+	public void setFrameID(String id)
 	{
-		s_rolesetID = rolesetID;
+		frame_id = id;
 	}
 	
 	public void getAspects(String aspects)
 	{
-		s_aspects = aspects;
+		this.aspects = aspects;
 	}
 	
 	public void addArguments(Collection<PBArgument> args)
 	{
-		l_arguments.addAll(args);
+		arguments.addAll(args);
 	}
 	
 	public void addArgument(PBArgument argument)
 	{
-		l_arguments.add(argument);
+		arguments.add(argument);
 	}
 	
 	public void removeArguments(Collection<PBArgument> args)
 	{
-		l_arguments.removeAll(args);
+		arguments.removeAll(args);
 	}
 	
 	/** Removes all argument with the specific label. */
 	public void removeArguments(String label)
 	{
-		List<PBArgument> remove = new ArrayList<>();
+		Iterator<PBArgument> it = arguments.iterator();
 		
-		for (PBArgument arg : l_arguments)
+		while (it.hasNext())
 		{
+			PBArgument arg = it.next();
+			
 			if (arg.isLabel(label))
-				remove.add(arg);
+				it.remove();
 		}
-		
-		l_arguments.removeAll(remove);
 	}
 
 	public void sortArguments()
 	{
-		for (PBArgument arg : l_arguments)
-			arg.sortLocations();
-				
-		Collections.sort(l_arguments);
+		arguments.forEach(a -> a.sortLocations());
+		Collections.sort(arguments);
 	}
 
 	public int getArgumentSize()
 	{
-		return l_arguments.size();
+		return arguments.size();
 	}
 	
 	public CTTree getTree()
@@ -219,20 +216,20 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 		return tree;
 	}
 	
-	/** @return {@link PBInstance#s_treePath}+"_"+{@link PBInstance#i_treeID}+"_"+{@link PBInstance#i_predicateID}. */
+	/** @return {@link PBInstance#tree_path}+"_"+{@link PBInstance#tree_id}+"_"+{@link PBInstance#predicate_id}. */
 	public String getKey()
 	{
-		return getKey(i_predicateID);
+		return getKey(predicate_id);
 	}
 	
-	/** @return {@link PBInstance#s_treePath}+"_"+{@link PBInstance#i_treeID}+"_"+{@code predicateID}. */
+	/** @return {@link PBInstance#tree_path}+"_"+{@link PBInstance#tree_id}+"_"+{@code predicateID}. */
 	public String getKey(int predicateID)
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(s_treePath);
+		build.append(tree_path);
 		build.append(StringConst.UNDERSCORE);
-		build.append(i_treeID);
+		build.append(tree_id);
 		build.append(StringConst.UNDERSCORE);
 		build.append(predicateID);
 		
@@ -246,84 +243,59 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 	
 	public boolean isTreePath(String path)
 	{
-		return s_treePath.equals(path);
+		return tree_path.equals(path);
 	}
 	
 	/** @return {@code true} if the roleset ID of this instance is {@code ER|NN|IE|YY}. */
-	public boolean isTemporaryInstance()
+	public boolean isExperimental()
 	{
-		return StringUtils.endsWithAny(s_rolesetID, "ER","NN","IE","YY");
+		return StringUtils.endsWithAny(frame_id, "ER","NN","IE","YY");
 	}
 	
 	/** @return {@code true} if the predicate of this instance is a verb. */
-	public boolean isVerbPredicate()
+	public boolean isVerbalPredicate()
 	{
-		return s_type.endsWith("-v");
+		return predicate_type.endsWith("-v");
 	}
 	
 	/** @return {@code true} if the predicate of this instance is a noun. */
-	public boolean isNounPredicate()
+	public boolean isNominalPredicate()
 	{
-		return s_type.endsWith("-n");
+		return predicate_type.endsWith("-n");
+	}
+	
+	/** @return {@code true} if the predicate of this instance is an adjective. */
+	public boolean isAdjectivalPredicate()
+	{
+		return predicate_type.endsWith("-j");
 	}
 	
 	/** @return {@code true} if the predicate of this instance is a compound noun of a light verb. */
-	public boolean isNounPredicateLightVerb(CTTree tree, Language lang)
+	public boolean isNominalPredicateLightVerb(CTTree tree, Language lang)
 	{
-		if (isNounPredicate())
+		if (lang == Language.ENGLISH && isNominalPredicate())
 		{
-			PBArgument rel = getFirstArgument(PBTag.PB_REL);
-			if (rel == null) return false;
-			
-			for (PBLocation loc : rel.getLocationList())
-			{
-				if (lang == Language.ENGLISH && PTBLib.isVerb(tree.getNode(loc.getTerminalID(), loc.getHeight()).getSyntacticTag()))
-					return true;
-			}			
+			PBArgument rel = getFirstArgument(PBTag.REL);
+			if (rel != null) return rel.getLocations().stream().anyMatch(loc -> PTBLib.isVerb(tree.getNode(loc)));
 		}
 		
 		return false;
 	}
 	
-	/** PRE: {@link #initPBLocations()} and {@link #initPropBank()} must be called. */
-	public void addTo(CTTree tree)
-	{
-		CTNode pred = tree.getTerminal(i_predicateID), node;
-		String label;
-		
-		pred.setPredicateID(s_rolesetID);
-		
-		for (PBArgument arg : l_arguments)
-		{
-			label = arg.getLabel();
-			
-			if (PBLib.isLinkArgument(label))	continue;
-			if (PBLib.isUndefinedLabel(label))	continue;
-			
-			for (PBLocation loc : arg.getLocationList())
-			{
-				node = tree.getNode(loc.getTerminalID(), loc.getHeight());
-				
-				if (node != pred)
-					node.addSemanticHead(new CTArc(pred, label));
-			}
-		}
-	}
-
 	@Override
 	public String toString()
 	{
 		StringBuilder build = new StringBuilder();
 		
-		build.append(s_treePath);		build.append(DELIM);
-		build.append(i_treeID);			build.append(DELIM);
-		build.append(i_predicateID);	build.append(DELIM);
-		build.append(s_annotator);		build.append(DELIM);
-		build.append(s_type);			build.append(DELIM);
-		build.append(s_rolesetID);		build.append(DELIM);
-		build.append(s_aspects);
+		build.append(tree_path);		build.append(DELIM);
+		build.append(tree_id);			build.append(DELIM);
+		build.append(predicate_id);		build.append(DELIM);
+		build.append(annotator);		build.append(DELIM);
+		build.append(predicate_type);	build.append(DELIM);
+		build.append(frame_id);			build.append(DELIM);
+		build.append(aspects);
 		
-		for (PBArgument arg : l_arguments)
+		for (PBArgument arg : arguments)
 		{
 			build.append(DELIM);
 			build.append(arg.toString());
@@ -337,10 +309,9 @@ public class PBInstance implements Serializable, Comparable<PBInstance>
 	{
 		int cmp;
 		
-		if ((cmp = s_treePath.compareTo(instance.s_treePath)) != 0) return cmp;
-		if ((cmp = i_treeID - instance.i_treeID) != 0) return cmp;
-		if ((cmp = i_predicateID - instance.i_predicateID) != 0) return cmp;
-		
-		return s_rolesetID.compareTo(instance.s_rolesetID);
+		if ((cmp = tree_path.compareTo(instance.tree_path)) != 0) return cmp;
+		if ((cmp = tree_id - instance.tree_id) != 0) return cmp;
+		if ((cmp = predicate_id - instance.predicate_id) != 0) return cmp;
+		return frame_id.compareTo(instance.frame_id);
 	}
 }

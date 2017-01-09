@@ -1,9 +1,27 @@
 1	A	a	DT	_	2	det	_	_
 2	book	book	NN	_	4	obj	_	_
 3	is	be	VBZ	_	4	aux	_	_
-4	bought	buy	VBN	_	0	root	_	_
+4	given	give	VBN	_	0	root	_	_
 5	by	by	IN	_	6	case	_	_
 6	John	john	NNP	_	4	nsbj	_	_
+7	to	to	IN	_	8	case	_	_
+8	Mary	mary	NNP	_	4	dat	_	_
+
+1	Mary	mary	NNP	_	3	dat	_	_
+2	is	be	VBZ	_	3	aux	_	_
+3	given	give	VBN	_	0	root	_	_
+4	a	a	DT	_	5	det	_	_
+5	book	book	NN	_	3	obj	_	_
+6	by	by	IN	_	7	case	_	_
+7	John	john	NNP	_	3	nsbj	_	_
+
+1	A	a	DT	_	2	det	_	_
+2	book	book	NN	_	0	root	3:obj	_
+3	given	give	VBN	_	2	acl	_	_
+4	to	to	IN	_	5	case	_	_
+5	Mary	mary	NNP	_	3	dat	_	_
+6	by	by	IN	_	7	case	_	_
+7	John	john	NNP	_	3	nsbj	_	_
 
 1	My	my	DT	_	2	det	_	_
 2	grade	grade	NN	_	4	obj	_	_
@@ -11,23 +29,15 @@
 4	affected	affect	VBN	_	0	root	_	_
 5	by	by	IN	_	9	case	_	_
 6	how	how	WRB	_	7	com	_	_
-7	much	much	RB	sem=MNR	9	adv	_	_
+7	much	much	RB	sem=mnr	9	adv	_	_
 8	I	I	PRP	_	9	nsbj	_	_
 9	studied	study	VBD	_	4	csbj	_	_
 
-1	That	that	DT	sem=CLR	4	ppmod	_	_
+1	That	that	DT	sem=clr	4	ppmod	_	_
 2	was	be	VBD	_	4	aux	_	_
 3	taken	take	VBN	_	4	lv	_	_
 4	care	care	NN	_	0	root	_	_
 5	of	of	IN	_	1	case	_	_
-
-1	A	a	DT	_	2	det	_	_
-2	book	book	NN	_	7	nsbj	3:obj	_
-3	bought	buy	VBN	_	2	acl	_	_
-4	by	by	IN	_	5	case	_	_
-5	John	john	NNP	_	3	nsbj	_	_
-6	was	be	VBD	_	7	cop	_	_
-7	new	new	JJ	_	0	root	_	_
 
 1	My	my	PRP$	_	2	poss	_	_
 2	grade	grade	NN	_	8	nsbj	3:obj	_
@@ -35,7 +45,7 @@
 4	by	by	IN	_	6	case	_	_
 5	me	me	PRP	_	6	nsbj	_	_
 6	studying	study	VBG	_	3	csbj	_	_
-7	hard	hard	RB	sem=MNR	6	adv	_	_
+7	hard	hard	RB	sem=mnr	6	adv	_	_
 8	improved	improve	VBD	_	0	root	_	_
 
 1	What	what	WP	_	3	obj	_	_
@@ -64,5 +74,5 @@
 5	expected	expect	VBN	_	2	comp	_	_
 6	at	at	IN	_	8	case	_	_
 7	that	that	DT	_	8	det	_	_
-8	time	time	NN	sem=TMP	5	ppmod	_	_
+8	time	time	NN	sem=tmp	5	ppmod	_	_
 

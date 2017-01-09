@@ -63,7 +63,7 @@ public class EnglishC2DConverterTest
 		int count = 0;
 		
 		String corpus = "/Users/jdchoi/Documents/Data/english/mipacq";
-		corpus = "src/test/resources/conversion/tmp";
+		corpus = "src/test/resources/conversion/ddg/oprd";
 		input_file  = corpus+".parse";
 		output_file = corpus+".ddg";
 		reader.open(IOUtils.createFileInputStream(input_file));
@@ -155,7 +155,6 @@ public class EnglishC2DConverterTest
 			System.out.println(e.getKey()+"\t"+e.getValue());
 		
 		System.out.println("=====");
-		
 		
 		List<String> keys = new ArrayList<>(syn2sem.keySet());
 		Collections.sort(keys);

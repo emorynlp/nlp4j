@@ -56,3 +56,13 @@
 1516147                                          (VBG lining))))))
 1516148             (SBAR-PRP (IN because)
 
+
+
+
+(TOP (S (NP-SBJ (NP (PRP It))
+                (SBAR (-NONE- *EXP*-1)))
+        (VP (VBD is)
+            (ADJP-PRD (JJ easy))
+            (S-1 (NP-SBJ (-NONE- *PRO*))
+                 (VP (TO to)
+                     (VP (VB see)))))))

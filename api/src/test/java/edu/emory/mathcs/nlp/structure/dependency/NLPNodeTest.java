@@ -44,8 +44,8 @@ public class NLPNodeTest
 		Assert.assertEquals(nodes[0], nodes[5].getParent());
 		
 		// root_0 -> selected_5 -> from_6 -> families_7
-		Assert.assertEquals(nodes[5], nodes[7].getGrandDependencyHead());
-		Assert.assertEquals(null    , nodes[5].getGrandDependencyHead());
+		Assert.assertEquals(nodes[5], nodes[7].getGrandParent());
+		Assert.assertEquals(null    , nodes[5].getGrandParent());
 		
 		// Students_1 - will_2 - also_3 - be_4 <- selected_5 -> from_6
 		Assert.assertEquals(nodes[4], nodes[5].getLeftNearestDependent());

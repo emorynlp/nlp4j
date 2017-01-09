@@ -27,7 +27,7 @@ import org.junit.Test;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.structure.constituency.CTNode;
 import edu.emory.mathcs.nlp.structure.constituency.CTTree;
-import edu.emory.mathcs.nlp.structure.propbank.PBLib;
+import edu.emory.mathcs.nlp.structure.util.PBLib;
 
 
 /**
@@ -46,7 +46,7 @@ public class PBLibTest
 		
 		tree = trees.get(0);
 		pNode = tree.getPredicates().get(2);
-		assertEquals("25:0", pNode.getLocation().toString());
+		assertEquals(tree.getNode(25,0), pNode);
 		assertEquals("show.02", pNode.getFrameID());
 		
 		aNode = tree.getNode(22, 1);
@@ -66,7 +66,7 @@ public class PBLibTest
 		
 		tree = trees.get(1);
 		pNode = tree.getPredicates().get(1);
-		assertEquals("21:0", pNode.getLocation().toString());
+		assertEquals(tree.getNode(21,0), pNode);
 		assertEquals("be.01", pNode.getFrameID());
 		
 		aNode = tree.getNode(19, 1);

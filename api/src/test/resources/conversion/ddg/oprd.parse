@@ -1,4 +1,4 @@
-(TOP (S (NP-SBJ (NNS People))
+(TOP (S (NP-SBJ (PRP I))
         (VP (VBP call)
             (NP-1 (NNP John))
             (S-CLR (NP-SBJ (-NONE- *PRO*-1))

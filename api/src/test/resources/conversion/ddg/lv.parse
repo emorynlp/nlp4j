@@ -1,0 +1,6 @@
+(TOP (S (NP-SBJ (NNP John))
+        (VP (VBN made)
+            (NP (NP (DT a)
+                    (NN call))
+                (PP (IN to)
+                    (NP (NNP Mary)))))))

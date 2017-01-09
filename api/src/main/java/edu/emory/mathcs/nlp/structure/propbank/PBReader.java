@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  */
 public class PBReader
 {
-	private BufferedReader f_in;
+	private BufferedReader reader;
 	
 	public PBReader() {}
 	
@@ -47,27 +47,25 @@ public class PBReader
 	/** @param in internally wrapped by {@code new BufferedReader(new InputStreamReader(in))}}. */
 	public void open(InputStream in)
 	{
-		f_in = IOUtils.createBufferedReader(in);
+		reader = IOUtils.createBufferedReader(in);
 	}
 	
 	public void close()
 	{
 		try
 		{
-			f_in.close();
+			reader.close();
 		}
 		catch (IOException e) {e.printStackTrace();}
 	}
 	
 	/** @return the next instance if exists; otherwise, {@code null}. */
-	public PBInstance nextInstance()
+	public PBInstance next()
 	{
 		try
 		{
-			String line = f_in.readLine();
-			
-			if (line != null)
-				return new PBInstance(line);
+			String line = reader.readLine();
+			if (line != null) return new PBInstance(line);
 		}
 		catch (IOException e) {e.printStackTrace();}
 		
@@ -80,7 +78,7 @@ public class PBReader
 		List<PBInstance> list;
 		PBInstance instance;
 		
-		while ((instance = nextInstance()) != null)
+		while ((instance = next()) != null)
 		{
 			if (map.containsKey(instance.getTreeID()))
 				list = map.get(instance.getTreeID());
@@ -96,21 +94,6 @@ public class PBReader
 		return map;
 	}
 
-	/** @return the sorted list of instances. */
-	public List<PBInstance> getSortedInstanceList()
-	{
-		List<PBInstance> list = new ArrayList<>();
-		PBInstance instance;
-		
-		while ((instance = nextInstance()) != null)
-			list.add(instance);
-
-		close();
-		Collections.sort(list);
-		
-		return list;
-	}
-	
 	/** @return {@link #getSortedInstanceList(String, boolean)}, where {@code normalize=false}. */
 	public List<PBInstance> getSortedInstanceList(String treeDir)
 	{
@@ -144,9 +127,23 @@ public class PBReader
 				tree = reader.next();
 			
 			if (normalize)	tree.normalizeIndices();
-			tree.initPBLocations();
 			instance.setTree(tree);
 		}
+		
+		return list;
+	}
+	
+	/** @return the sorted list of instances. */
+	public List<PBInstance> getSortedInstanceList()
+	{
+		List<PBInstance> list = new ArrayList<>();
+		PBInstance instance;
+		
+		while ((instance = next()) != null)
+			list.add(instance);
+
+		close();
+		Collections.sort(list);
 		
 		return list;
 	}

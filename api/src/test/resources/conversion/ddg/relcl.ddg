@@ -30,14 +30,14 @@
 
 1	The	the	DT	_	2	det	_	_
 2	bookstore	bookstore	NN	_	0	root	5:adv	_
-3	where	where	WRB	sem=LOC	5	r-adv	_	_
+3	where	where	WRB	sem=loc	5	r-adv	_	_
 4	I	I	PRP	_	5	nsbj	_	_
 5	met	meet	VBD	_	2	relcl	_	_
 6	John	john	NNP	_	5	obj	_	_
 
 1	The	the	DT	_	2	det	_	_
 2	moment	moment	NN	_	0	root	5:adv	_
-3	when	when	WRB	sem=TMP	5	r-adv	_	_
+3	when	when	WRB	sem=tmp	5	r-adv	_	_
 4	John	john	NNP	_	5	nsbj	_	_
 5	came	come	VBD	_	2	relcl	_	_
 
@@ -55,17 +55,17 @@
 6	for	for	IN	_	3	case	_	_
 
 1	The	the	DT	_	2	det	_	_
-2	place	place	NN	_	0	root	6:ppmod	_
+2	place	place	NN	sem=clr	0	root	6:ppmod	_
 3	I	I	PRP	_	6	nsbj	_	_
 4	need	need	VBP	_	6	raise	_	_
 5	to	to	TO	_	6	aux	_	_
 6	get	get	VB	_	2	relcl	_	_
-7	to	to	IN	sem=CLR	6	case	_	_
+7	to	to	IN	_	6	case	_	_
 
 1	John	john	NNP	_	0	root	_	_
 2	,	,	,	_	1	p	_	_
-3	now	now	RB	sem=TMP	6	adv	_	_
+3	now	now	RB	sem=tmp	6	adv	_	_
 4	at	at	IN	_	6	case	_	_
 5	the	the	DT	_	6	det	_	_
-6	bookstore	bookstore	NN	sem=LOC	1	relcl	_	_
+6	bookstore	bookstore	NN	sem=loc	1	relcl	_	_
 

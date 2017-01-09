@@ -1,0 +1,47 @@
+1	There	there	EX	_	2	expl	_	_
+2	came	come	VBD	_	0	root	_	_
+3	John	john	NNP	_	2	nsbj	_	_
+
+1	There	there	EX	_	4	expl	_	_
+2	was	be	VBD	_	4	cop	_	_
+3	no	no	DT	_	4	det	_	_
+4	surprise	surprise	NN	_	0	root	_	_
+5	that	that	IN	_	7	mark	_	_
+6	John	john	NN	_	7	nsbj	_	_
+7	came	come	VBD	_	4	acl	_	_
+
+1	It	it	PRP	_	2	expl	_	_
+2	struck	strike	VBD	_	0	root	_	_
+3	me	me	PRP	_	2	obj	_	_
+4	that	that	IN	_	6	mark	_	_
+5	John	john	NNP	_	6	nsbj	_	_
+6	came	come	VBD	_	2	csbj	_	_
+
+1	It	it	PRP	_	3	expl	_	_
+2	is	be	VBZ	_	3	cop	_	_
+3	true	true	JJ	_	0	root	_	_
+4	that	that	IN	_	6	mark	_	_
+5	John	john	NNP	_	6	nsbj	_	_
+6	came	come	VBD	_	3	csbj	_	_
+
+1	It	it	PRP	_	3	expl	_	_
+2	is	be	VBD	_	3	cop	_	_
+3	easy	easy	JJ	_	0	root	_	_
+4	for	for	IN	_	7	mark	_	_
+5	John	john	NNP	_	7	nsbj	_	_
+6	to	to	TO	_	7	aux	_	_
+7	come	come	VB	_	3	csbj	_	_
+
+1	John	john	NNP	_	2	nsbj	_	_
+2	made	make	VBD	_	0	root	_	_
+3	it	it	PRP	_	4	expl	_	_
+4	easy	easy	JJ	_	2	comp	_	_
+5	to	to	TO	_	6	aux	_	_
+6	see	see	VB	_	4	csbj	_	_
+
+1	It	it	PRP	_	3	expl	_	_
+2	is	be	VBD	_	3	cop	_	_
+3	easy	easy	JJ	_	0	root	_	_
+4	to	to	TO	_	5	aux	_	_
+5	see	see	VB	_	3	csbj	_	_
+

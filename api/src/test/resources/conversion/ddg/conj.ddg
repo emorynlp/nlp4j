@@ -1,0 +1,168 @@
+1	Sam	sam	NNP	_	0	root	_	_
+2	,	,	,	_	1	p	_	_
+3	Sarah	sarah	NNP	_	1	conj	_	_
+4	,	,	,	_	3	p	_	_
+5	and	and	CC	_	3	cc	_	_
+6	John	john	NNP	_	1	conj	_	_
+
+1	Sam	sam	NNP	_	0	root	_	_
+2	,	,	,	_	1	p	_	_
+3	Sarah	sarah	NNP	_	1	conj	_	_
+4	,	,	,	_	3	p	_	_
+5	John	john	NNP	_	1	conj	_	_
+6	,	,	,	_	5	p	_	_
+7	etc.	etc.	FW	_	1	conj	_	_
+
+1	Sam	sam	NNP	_	0	root	_	_
+2	,	,	,	_	1	p	_	_
+3	Sarah	sarah	NNP	_	1	conj	_	_
+4	,	,	,	_	3	p	_	_
+5	John	john	NNP	_	1	conj	_	_
+6	,	,	,	_	5	p	_	_
+7	and	and	CC	_	5	cc	_	_
+8	so	so	RB	_	1	conj	_	_
+9	on	on	IN	_	8	case	_	_
+
+1	Sam	sam	NNP	_	0	root	_	_
+2	and	and	CC	_	1	cc	_	_
+3	Sarah	sarah	NNP	_	1	conj	_	_
+4	as	as	RB	_	5	com	_	_
+5	well	well	RB	_	3	cc	_	_
+6	as	as	IN	_	5	com	_	_
+7	John	john	NNP	_	1	conj	_	_
+
+1	Not	not	RB	_	2	com	_	_
+2	only	only	RB	_	3	cc	_	_
+3	Sam	sam	NNP	_	0	root	_	_
+4	but	but	CC	_	3	cc	_	_
+5	also	also	RB	_	6	adv	_	_
+6	Sarah	sarah	NNP	_	3	conj	_	_
+
+1	Either	either	CC	_	2	cc	_	_
+2	Sam	sam	NNP	_	0	root	_	_
+3	or	or	CC	_	2	cc	_	_
+4	who	who	WP	_	6	obj	_	_
+5	you	you	PRP	_	6	nsbj	_	_
+6	met	meet	VBD	_	2	conj	_	_
+
+1	Both	both	CC	_	2	cc	_	_
+2	here	here	RB	sem=loc	0	root	_	_
+3	and	and	CC	_	2	cc	_	_
+4	also	also	RB	_	7	adv	_	_
+5	at	at	IN	_	7	case	_	_
+6	his	his	PRP$	_	7	poss	_	_
+7	place	place	NN	_	2	conj	_	_
+
+1	Five	#crd#	CD	_	0	root	_	_
+2	and	and	CC	_	1	cc	_	_
+3	two	#crd#	CD	_	5	com	_	_
+4	-	-	HYPH	_	5	p	_	_
+5	thirds	#ord#	CD	_	1	conj	_	_
+
+1	1	0	CD	_	2	com	_	_
+2	hundred	#crd#	CD	_	0	root	_	_
+3	%	%	NN	_	2	meta	_	_
+4	to	to	TO	_	2	cc	_	_
+5	2	0	CD	_	6	com	_	_
+6	hundreds	#crd#	CD	_	2	conj	_	_
+7	%	%	NN	_	6	meta	_	_
+
+1	70	0	CD	_	0	root	_	_
+2	~	~	SYM	_	1	cc	_	_
+3	80	0	CD	_	1	conj	_	_
+
+1	20	0	CD	_	0	root	_	_
+2	x	x	SYM	_	1	cc	_	_
+3	40	0	CD	_	1	conj	_	_
+
+1	I	I	PRP	_	5	nsbj	_	_
+2	can	can	MD	_	5	modal	_	_
+3	and	and	CC	_	5	cc	_	_
+4	should	should	MD	_	5	modal	_	_
+5	study	study	VB	_	0	root	_	_
+
+1	John	john	NNP	_	3	nsbj	5:nsbj;7:nsbj	_
+2	had	have	VBD	_	3	aux	_	_
+3	found	find	VBN	_	0	root	_	_
+4	,	,	,	_	3	p	_	_
+5	bought	buy	VBN	_	3	conj	_	_
+6	and	and	CC	_	5	cc	_	_
+7	read	read	VBN	_	3	conj	_	_
+8	the	the	DT	_	9	det	_	_
+9	book	book	NN	_	7	obj	3:obj;5:obj	_
+10	last	last	JJ	_	11	attr	_	_
+11	week	week	NN	sem=tmp	7	advnp	3:advnp;5:advnp	_
+
+1	The	the	DT	_	2	det	_	_
+2	book	book	NN	_	4	obj	6:obj;8:obj	_
+3	was	be	VBD	_	4	aux	_	_
+4	found	find	VBN	_	0	root	_	_
+5	,	,	,	_	4	p	_	_
+6	bought	buy	VBN	_	4	conj	_	_
+7	and	and	CC	_	6	cc	_	_
+8	read	read	VBN	_	4	conj	_	_
+9	by	by	IN	_	10	case	_	_
+10	John	john	NNP	_	8	nsbj	4:nsbj;6:nsbj	_
+
+1	The	the	DT	_	2	det	_	_
+2	book	book	NN	_	0	root	3:obj;5:obj	_
+3	bought	buy	VBN	_	2	acl	_	_
+4	and	and	CC	_	3	cc	_	_
+5	read	read	VBN	_	3	conj	_	_
+6	by	by	IN	_	7	case	_	_
+7	John	john	NNP	_	5	nsbj	3:nsbj	_
+
+1	Evidence	evidence	NN	sem=clr	4	obj	6:ppmod	_
+2	is	be	VBZ	_	4	aux	_	_
+3	either	either	CC	_	4	cc	_	_
+4	withheld	withhold	VBN	_	0	root	_	_
+5	or	or	CC	_	4	cc	_	_
+6	tampered	tamper	VBN	_	4	conj	_	_
+7	with	with	IN	_	6	case	_	_
+
+1	John	john	NNP	_	2	nsbj	4:nsbj	_
+2	attended	attend	VBD	_	0	root	_	_
+3	and	and	CC	_	2	cc	_	_
+4	gave	give	VBD	_	2	conj	_	_
+5	a	a	DT	_	6	det	_	_
+6	speech	speech	NN	_	4	obj	_	_
+
+1	People	people	NNS	_	2	nsbj	4:nsbj;8:nsbj	_
+2	dare	dare	VB	_	0	root	_	_
+3	to	to	TO	_	4	aux	_	_
+4	eat	eat	VB	_	2	comp	_	_
+5	Taiwanese	taiwanese	JJ	_	4	obj	_	_
+6	but	but	CC	_	4	cc	_	_
+7	not	not	RB	_	8	neg	_	_
+8	speak	speak	VBP	_	4	conj	_	_
+9	Taiwanese	taiwanese	NNP	_	8	obj	_	_
+
+1	John	john	NNP	_	4	nsbj	7:nsbj;9:nsbj	_
+2	did	do	VBD	_	4	aux	_	_
+3	not	not	RB	_	4	neg	7:neg	_
+4	speak	speak	VB	_	0	root	_	_
+5	forcefully	forcefully	RB	sem=mnr	4	adv	_	_
+6	and	and	CC	_	4	cc	_	_
+7	dare	dare	VB	_	4	conj	_	_
+8	to	to	TO	_	9	aux	_	_
+9	confront	confront	VB	_	7	comp	_	_
+
+1	I	I	PRP	_	2	nsbj	4:nsbj	_
+2	value	value	VBP	_	0	root	_	_
+3	and	and	CC	_	2	cc	_	_
+4	feel	feel	VBP	_	2	conj	_	_
+5	gratitude	gratitude	NN	_	4	obj	_	_
+6	for	for	IN	_	7	case	_	_
+7	John	john	NNP	_	5	ppmod	2:obj	_
+
+1	I	I	PRP	_	3	nsbj	8:nsbj	_
+2	am	be	VBP	_	3	cop	_	_
+3	aware	aware	JJ	_	0	root	_	_
+4	of	of	IN	_	3	case	_	_
+5	and	and	CC	_	3	cc	_	_
+6	willing	willing	JJ	_	8	modal	_	_
+7	to	to	TO	_	8	aux	_	_
+8	face	face	VB	_	3	conj	_	_
+9	the	the	DT	_	10	det	_	_
+10	fact	fact	NN	_	8	obj	3:ppmod	_
+
