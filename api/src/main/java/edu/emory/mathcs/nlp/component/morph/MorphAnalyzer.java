@@ -16,7 +16,9 @@
 package edu.emory.mathcs.nlp.component.morph;
 
 import edu.emory.mathcs.nlp.common.util.StringUtils;
+import edu.emory.mathcs.nlp.structure.constituency.CTNode;
 import edu.emory.mathcs.nlp.structure.node.AbstractNode;
+import edu.emory.mathcs.nlp.structure.util.PTBLib;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
@@ -33,6 +35,13 @@ public abstract class MorphAnalyzer
 	public <N extends AbstractNode<N>>String setLemma(N node)
 	{
 		node.setLemma(lemmatize(node.getFormSimplified(), node.getSyntacticTag()));
+		
+		if (node instanceof CTNode && node.isLemma("'s"))
+		{
+			String lemma = PTBLib.getLemmaOfApostropheS((CTNode)node);
+			if (lemma != null) node.setLemma(lemma);
+		}
+		
 		return node.getLemma();
 	}
 }

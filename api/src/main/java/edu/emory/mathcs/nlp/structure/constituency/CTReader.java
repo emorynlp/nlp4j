@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import edu.emory.mathcs.nlp.common.constant.StringConst;
+import edu.emory.mathcs.nlp.common.util.Language;
+import edu.emory.mathcs.nlp.structure.util.PTBLib;
 
 /**
  * Constituent tree reader.
@@ -38,13 +40,28 @@ public class CTReader
 {
 	private LineNumberReader reader;
 	private Deque<String>    tokens;
+	private Language         language;
 	
-	public CTReader() {}
+	public CTReader()
+	{
+		this(Language.ENGLISH);
+	}
+	
+	public CTReader(Language language)
+	{
+		setLanguage(language);
+	}
 	
 	/** @param in internally wrapped by {@code new LineNumberReader(new InputStreamReader(new BufferedInputStream(in)))}}. */
 	public CTReader(InputStream in)
 	{
+		this(in, Language.ENGLISH);
+	}
+	
+	public CTReader(InputStream in, Language language)
+	{
 		open(in);
+		setLanguage(language);
 	}
 	
 	/** @param in internally wrapped by {@code new LineNumberReader(new InputStreamReader(new BufferedInputStream(in)))}}. */
@@ -74,6 +91,16 @@ public class CTReader
 			}
 			catch (IOException e) {e.printStackTrace();}			
 		}
+	}
+	
+	public Language getLanguage()
+	{
+		return language;
+	}
+	
+	public void setLanguage(Language language)
+	{
+		this.language = language;
 	}
 	
 	/** @return a list of all constituent trees in the input stream. */
@@ -136,6 +163,7 @@ public class CTReader
 			if (nBrackets == 0)
 			{
 				CTTree tree = new CTTree(root);
+				if (language == Language.ENGLISH) PTBLib.preprocess(tree);
 				return tree;
 			}
 		}

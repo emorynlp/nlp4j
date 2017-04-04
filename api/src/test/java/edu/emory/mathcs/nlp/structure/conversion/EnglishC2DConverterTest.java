@@ -31,10 +31,10 @@ import edu.emory.mathcs.nlp.common.util.FastUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Splitter;
-import edu.emory.mathcs.nlp.component.dep.DEPArc;
 import edu.emory.mathcs.nlp.structure.constituency.CTReader;
 import edu.emory.mathcs.nlp.structure.constituency.CTTree;
 import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadRuleMap;
+import edu.emory.mathcs.nlp.structure.dependency.NLPArc;
 import edu.emory.mathcs.nlp.structure.dependency.NLPGraph;
 import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
 import edu.emory.mathcs.nlp.structure.util.DDGTag;
@@ -125,7 +125,7 @@ public class EnglishC2DConverterTest
 						}
 					}
 					
-					for (DEPArc<NLPNode> snd : node.getSecondaryHeads())
+					for (NLPArc<NLPNode> snd : node.getSecondaryHeads())
 						FastUtils.increment(secondary, snd.getLabel());
 				}
 			}

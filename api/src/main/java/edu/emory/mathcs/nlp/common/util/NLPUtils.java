@@ -29,7 +29,6 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.emory.mathcs.nlp.component.dep.DEPArc;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.OnlineComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
@@ -37,7 +36,10 @@ import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
+import edu.emory.mathcs.nlp.structure.conversion.C2DConverter;
+import edu.emory.mathcs.nlp.structure.conversion.EnglishC2DConverter;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.NLPArc;
 import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
 
 /**
@@ -67,6 +69,17 @@ public class NLPUtils
 	static public final String FEAT_NER2 = "n2";
 	/** The feat-key of sentiments (for root). */
 	static public final String FEAT_FUTURE = "fut";
+	
+	static public C2DConverter getC2DConverter(Language language)
+	{
+		switch (language)
+		{
+		case ENGLISH: return new EnglishC2DConverter();
+		default: new IllegalArgumentException("Invalid language: "+language);
+		}
+		
+		return null;
+	}
 	
 	static public <N extends AbstractNLPNode<N>>String join(N[] nodes, String delim, Function<N,String> f)
 	{
@@ -182,10 +195,10 @@ public class NLPUtils
 	 * @return the list of semantic arguments in the dependency graph (e.g., list.get(1) = semantic arguments of nodes[1]).
 	 * @param nodes dependency graph.
 	 */
-	static public <N extends AbstractNLPNode<N>>List<List<DEPArc<N>>> getSemanticArgumentList(N[] nodes)
+	static public <N extends AbstractNLPNode<N>>List<List<NLPArc<N>>> getSemanticArgumentList(N[] nodes)
 	{
-		List<List<DEPArc<N>>> list = new ArrayList<>();
-		List<DEPArc<N>> args;
+		List<List<NLPArc<N>>> list = new ArrayList<>();
+		List<NLPArc<N>> args;
 		
 		for (int i=0; i<nodes.length; i++)
 			list.add(new ArrayList<>());
@@ -194,10 +207,10 @@ public class NLPUtils
 		{
 			N node = nodes[i];
 			
-			for (DEPArc<N> arc : node.getSecondaryHeads())
+			for (NLPArc<N> arc : node.getSecondaryHeads())
 			{
 				args = list.get(arc.getNode().getTokenID());
-				args.add(new DEPArc<>(node, arc.getLabel()));
+				args.add(new NLPArc<>(node, arc.getLabel()));
 			}
 		}
 		

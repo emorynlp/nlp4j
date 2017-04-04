@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.dep;
+package edu.emory.mathcs.nlp.structure.dependency;
 
-import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 import edu.emory.mathcs.nlp.structure.util.Arc;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPArc<N extends AbstractNLPNode<N>> extends Arc<N>
+public class NLPArc<N extends AbstractNLPNode<N>> extends Arc<N>
 {
 	private static final long serialVersionUID = -9099516205158258095L;
 	private double weight;
 	
-	public DEPArc(N node, String label)
+	public NLPArc(N node, String label)
 	{
 		super(node, label);
 	}

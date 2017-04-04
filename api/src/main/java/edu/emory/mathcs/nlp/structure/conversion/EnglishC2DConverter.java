@@ -17,7 +17,6 @@ package edu.emory.mathcs.nlp.structure.conversion;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,10 +33,10 @@ import edu.emory.mathcs.nlp.common.constant.MetaConst;
 import edu.emory.mathcs.nlp.common.constant.PatternConst;
 import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.common.util.ENUtils;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.PatternUtils;
 import edu.emory.mathcs.nlp.common.util.StringUtils;
-import edu.emory.mathcs.nlp.component.dep.DEPArc;
 import edu.emory.mathcs.nlp.component.morph.MorphAnalyzer;
 import edu.emory.mathcs.nlp.component.morph.english.EnglishMorphAnalyzer;
 import edu.emory.mathcs.nlp.component.tokenizer.dictionary.Emoticon;
@@ -46,6 +45,7 @@ import edu.emory.mathcs.nlp.structure.constituency.CTNode;
 import edu.emory.mathcs.nlp.structure.constituency.CTTree;
 import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadRule;
 import edu.emory.mathcs.nlp.structure.conversion.headrule.HeadRuleMap;
+import edu.emory.mathcs.nlp.structure.dependency.NLPArc;
 import edu.emory.mathcs.nlp.structure.dependency.NLPGraph;
 import edu.emory.mathcs.nlp.structure.dependency.NLPNode;
 import edu.emory.mathcs.nlp.structure.util.DDGTag;
@@ -101,7 +101,8 @@ public class EnglishC2DConverter extends C2DConverter
 
 	public EnglishC2DConverter()
 	{
-		this(new HeadRuleMap(), new HashSet<>());
+		this(new HeadRuleMap(IOUtils.getInputStreamsFromResource("edu/emory/mathcs/nlp/conversion/en-headrules.txt")),
+			IOUtils.readSet(IOUtils.getInputStreamsFromResource("edu/emory/mathcs/nlp/conversion/en-eventive-nouns.txt")));
 	}
 	
 	public EnglishC2DConverter(HeadRuleMap headrules, Set<String> eventive_nouns)
@@ -161,7 +162,7 @@ public class EnglishC2DConverter extends C2DConverter
 	{
 		if (PTBLib.isSecondaryPredicate(node))
 		{
-			if (node.isSyntacticTag(PTBTag.C_PP) && !node.isFunctionTag(DDGTag.OPRD))
+			if (node.isSyntacticTag(PTBTag.C_PP))// && !node.isFunctionTag(DDGTag.OPRD))
 				rule = headrule_map.get("PPP");
 		}
 		
@@ -203,7 +204,6 @@ public class EnglishC2DConverter extends C2DConverter
 	public void preprocess(CTTree tree)
 	{
 		lemmatize(tree);
-		PTBLib.preprocess(tree);
 		tree.flatten().forEach(node -> preprocess(tree, node));
 		preprocessDuplicates(tree);
 		tree.getTerminals().stream().forEach(n -> preprocessEmptyCategory(tree, n));
@@ -218,15 +218,7 @@ public class EnglishC2DConverter extends C2DConverter
 	public void lemmatize(CTTree tree)
 	{
 		for (CTNode token : tree.getTokens())
-		{
 			analyzer.setLemma(token);
-			
-			if (token.isLemma("'s"))
-			{
-				String lemma = PTBLib.getLemmaOfApostropheS(token);
-				if (lemma != null) token.setLemma(lemma);
-			}
-		}
 	}
 	
 	private void preprocess(CTTree tree, CTNode node)
@@ -449,7 +441,15 @@ public class EnglishC2DConverter extends C2DConverter
 			CTNode np = ec.getParent();
 			
 			if (ec == DSUtils.getFirst(list) && !(PTBLib.isSubject(np) && !PTBLib.isSubject(ante)))
+			{
 				ec.getParent().replaceChild(ec, ante);
+
+				if (PTBLib.isClause(ante))
+				{
+					np.getParent().replaceChild(np, ante);
+					ante.removeFunctionTag(PTBTag.F_SBJ);
+				}
+			}
 		}
 	}
 	
@@ -1270,7 +1270,7 @@ public class EnglishC2DConverter extends C2DConverter
 	{
 		graph.forEach(n -> relabel(tree, n));
 		labelCompounds(graph);
-		labelLightVerbs(graph);
+		labelLightVerbs(tree, graph);
 	}
 	
 	private void relabel(CTTree tree, NLPNode node)
@@ -1286,11 +1286,11 @@ public class EnglishC2DConverter extends C2DConverter
 		String label = relabelAux(node.getParent(), node.getDependencyLabel());
 		if (label != null) node.setDependencyLabel(label);
 		
-		Iterator<DEPArc<NLPNode>> it = node.getSecondaryHeads().iterator();
+		Iterator<NLPArc<NLPNode>> it = node.getSecondaryHeads().iterator();
 		
 		while (it.hasNext())
 		{
-			DEPArc<NLPNode> snd = it.next();
+			NLPArc<NLPNode> snd = it.next();
 			
 			if (snd.isLabel(DDGTag.DEP))
 			{
@@ -1385,11 +1385,12 @@ public class EnglishC2DConverter extends C2DConverter
 		return node.isSyntacticTag(PTBLib.P_CD) || node.isLemma("0") || node.isLemma(MetaConst.CARDINAL) || node.isLemma(MetaConst.ORDINAL);
 	}
 	
-	private void labelLightVerbs(NLPGraph graph)
+	private void labelLightVerbs(CTTree tree, NLPGraph graph)
 	{
 		for (NLPNode node : graph)
 		{
 			if (PTBLib.isVerb(node) && light_verbs.contains(node.getLemma()))
+//			if (tree.getToken(node.getTokenID()-1).isFunctionTag(DDGTag.LV))
 			{
 				NLPNode obj = node.getFirstChild(n -> n.isDependencyLabel(DDGTag.OBJ));
 				
@@ -1463,7 +1464,7 @@ public class EnglishC2DConverter extends C2DConverter
 			if (!node.hasParent() || node.getDependencyLabel() == null)
 				message = "Primary head error: "+node.getTokenID();
 			
-			for (DEPArc<NLPNode> arc : node.getSecondaryHeads())
+			for (NLPArc<NLPNode> arc : node.getSecondaryHeads())
 			{
 				if (arc.getNode() == null || arc.getLabel() == null)
 					message = "Secondary head error: "+node.getTokenID();

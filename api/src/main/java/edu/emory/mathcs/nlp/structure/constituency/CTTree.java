@@ -338,6 +338,7 @@ public class CTTree
 	{
 		CTNode pred = getTerminal(instance.getPredicateID()), node;
 		pred.setFrameID(instance.getFrameID());
+		instance.setTree(this);
 		
 		for (PBArgument arg : instance.getArguments())
 		{

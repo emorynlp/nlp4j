@@ -21,6 +21,7 @@ import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
+import edu.emory.mathcs.nlp.structure.dependency.NLPArc;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	public static final String LIST_REDUCE = "R";
 	public static final String LIST_PASS   = "P";
 	
-	private List<DEPArc<N>> oracle;
+	private List<NLPArc<N>> oracle;
 	private IntArrayList    stack;
 	private IntArrayList    inter;
 	private int             input;
@@ -70,7 +71,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		
 		for (int i=1; i<nodes.length; i++)
 		{
-			DEPArc<N> o = oracle.get(i);
+			NLPArc<N> o = oracle.get(i);
 			nodes[i].setParent(o.getNode(), o.getLabel());
 		}
 	}
@@ -86,7 +87,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	{
 		N stack = getStack();
 		N input = getInput();
-		DEPArc<N> gold;
+		NLPArc<N> gold;
 		String list;
 		
 		// left arc
@@ -267,7 +268,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	public void evaluate(Eval eval)
 	{
 		int las = 0, uas = 0;
-		DEPArc<N> gold;
+		NLPArc<N> gold;
 		N node;
 		
 		for (int i=1; i<nodes.length; i++)

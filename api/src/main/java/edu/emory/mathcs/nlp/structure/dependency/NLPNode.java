@@ -44,6 +44,11 @@ public class NLPNode extends AbstractNLPNode<NLPNode>
 		super(token_id, word_form, lemma, syntactic_tag, feat_map);
 	}
 	
+	public NLPNode(int token_id, String word_form, String lemma, String syntactic_tag, String named_entity_tag, FeatMap feat_map)
+	{
+		super(token_id, word_form, lemma, syntactic_tag, named_entity_tag, feat_map);
+	}
+	
 	public NLPNode(int token_id, String word_form, String lemma, String syntactic_tag, FeatMap feat_map, NLPNode parent, String dependency_label)
 	{
 		super(token_id, word_form, lemma, syntactic_tag, feat_map, parent, dependency_label);

@@ -238,17 +238,19 @@ abstract public class C2DConverter
 	{
 		List<CTNode> tokens = tree.getTokens();
 		NLPGraph graph = new NLPGraph();
-		String form, pos, lemma;
+		String form, pos, lemma, nament;
 		NLPNode node, head;
 		int id;
 		
 		for (CTNode token : tokens)
 		{
-			id    = token.getTokenID() + 1;
-			form  = PatternUtils.revertSymbols(token.getForm());
-			lemma = token.getLemma();
-			pos   = token.getSyntacticTag();
-			graph.add(new NLPNode(id, form, lemma, pos, token.getFeatMap()));
+			id     = token.getTokenID() + 1;
+			form   = PatternUtils.revertSymbols(token.getForm());
+			lemma  = token.getLemma();
+			pos    = token.getSyntacticTag();
+			nament = token.getNamedEntityTag();
+			
+			graph.add(new NLPNode(id, form, lemma, pos, nament, token.getFeatMap()));
 		}
 		
 		for (CTNode token : tokens)
