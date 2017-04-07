@@ -87,20 +87,20 @@ public class DOCState<N extends AbstractNLPNode<N>> extends NLPState<N>
 //	============================== ORACLE ==============================
 	
 	@Override
-	public boolean saveOracle()
+	public boolean saveGold()
 	{
 		oracle = key_node.removeFeat(feat_key);
 		return oracle != null;
 	}
 	
 	@Override
-	public void resetOracle()
+	public void resetGold()
 	{
 		setLabel(oracle);
 	}
 
 	@Override
-	public String getOracle()
+	public String getGoldLabel()
 	{
 		return oracle;
 	}

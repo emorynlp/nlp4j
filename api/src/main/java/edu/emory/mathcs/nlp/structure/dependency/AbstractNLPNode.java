@@ -18,7 +18,9 @@ package edu.emory.mathcs.nlp.structure.dependency;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
@@ -45,18 +47,14 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	
 	// fields
 	protected String dependency_label;
-	protected List<NLPArc<N>> secondary_heads;
+	protected List<NLPArc<N>> secondary_parents;
     
 	// offsets
 	protected int start_offset;
 	protected int end_offset;
     
-	// lexica
-	protected byte[]  word_clusters;
-	protected float[] word_embedding;
-	protected float[] ambiguity_classes;
-	protected float[] named_entity_gazetteers;
-	protected boolean stop_word;
+	// lexicons
+	protected Map<Field, Object> lexicons;
 	
 //	============================== Constructors ==============================
 	
@@ -104,7 +102,8 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	protected void init(N parent, String dependency_label)
 	{
 		setParent(parent, dependency_label);
-		secondary_heads = new ArrayList<>();
+		secondary_parents = new ArrayList<>();
+		lexicons = new HashMap<>();
 	}
 	
 	public N toRoot()
@@ -126,7 +125,6 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	{
 		return DSUtils.binarySearch(list, node);
 	}
-	
 	
 //	============================== Fields ==============================
 
@@ -156,6 +154,24 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	public Set<String> getDependentFields(Field field)
 	{
 		return children.stream().map(n -> n.get(field)).collect(Collectors.toSet());
+	}
+	
+	/** @return true if the dependency label of this node equals to the specific label; otherwise, false. */
+	public boolean isDependencyLabel(String label)
+	{
+		return label.equals(dependency_label);
+	}
+	
+	/** @return true if the dependency label of this node equals to any of the specific labels; otherwise, false. */
+	public boolean isDependencyLabel(String... labels)
+	{
+		for (String label : labels)
+		{
+			if (isDependencyLabel(label))
+				return true;
+		}
+		
+		return false;
 	}
 	
 	/** @return true if the dependency label of this node matches the specific pattern; otherwise, false. */
@@ -194,75 +210,16 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	
 //	============================== Lexicons ==============================
 	
-	public byte[] getWordClusters()
-	{
-		return word_clusters;
-	}
-	
-	public float[] getWordEmbedding()
-	{
-		return word_embedding;
-	}
-	
-	public float[] getAmbiguityClasses()
-	{
-		return ambiguity_classes;
-	}
-	
-	public float[] getNamedEntityGazetteers()
-	{
-		return named_entity_gazetteers;
-	}
-	
-	public void setWordClusters(byte[] clusters)
-	{
-		word_clusters = clusters;
-	}
-	
-	public void setWordEmbedding(float[] embedding)
-	{
-		word_embedding = embedding;
-	}
-
-	public void setAmbiguityClasses(float[] classes)
-	{
-		ambiguity_classes = classes;
-	}
-	
-	public void setNamedEntityGazetteers(float[] gazetteers)
-	{
-		named_entity_gazetteers = gazetteers;
-	}
-	
-	public void setStopWord(boolean stopword)
-	{
-		stop_word = stopword;
-	}
-	
-	public boolean hasWordClusters()
-	{
-		return word_clusters != null;
-	}
-	
-	public boolean hasWordEmbedding()
-	{
-		return word_embedding != null;
-	}
-	
-	public boolean hasAmbiguityClasses()
-	{
-		return ambiguity_classes != null;
-	}
-	
-	public boolean hasNamedEntityGazetteers()
-	{
-		return named_entity_gazetteers != null;
-	}
-	
-	public boolean isStopWord()
-	{
-		return stop_word;
-	}
+    @SuppressWarnings("unchecked")
+	public <T>T getLexicon(Field field)
+    {
+    	return (T)lexicons.get(field);
+    }
+    
+    public <T>void addLexicon(Field field, T lexicon)
+    {
+    	lexicons.put(field, lexicon);
+    }
 	
 //	============================== Descendents ==============================
 	
@@ -273,10 +230,10 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 		setDependencyLabel(label);
 	}
 	
-	/** @return {@link #getLeftMostDependent(int)}, where {@code order = 0}. */
-	public N getLeftMostDependent()
+	/** @return {@link #getLeftMostChild(int)}, where {@code order = 0}. */
+	public N getLeftMostChild()
 	{
-		return getLeftMostDependent(0);
+		return getLeftMostChild(0);
 	}
 
 	/**
@@ -284,16 +241,16 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	 * @return the order'th leftmost dependent of this node if exists; otherwise, null.
 	 * The leftmost dependent must be on the left-hand side of this node.
 	 */
-	public N getLeftMostDependent(int order)
+	public N getLeftMostChild(int order)
 	{
 		N node = getFirstChild(order);
 		return node != null && compareTo(node) < 0 ? node : null;
 	}
 	
-	/** @return {@link #getRightMostDependent(int)}, where {@code order = 0}. */
-	public N getRightMostDependent()
+	/** @return {@link #getRightMostChild(int)}, where {@code order = 0}. */
+	public N getRightMostChild()
 	{
-		return getRightMostDependent(0);
+		return getRightMostChild(0);
 	}
 	
 	/**
@@ -301,16 +258,16 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	 * @return the order'th rightmost dependent of this node if exists; otherwise, null.
 	 * The rightmost dependent must be on the right-hand side of this node.
 	 */
-	public N getRightMostDependent(int order)
+	public N getRightMostChild(int order)
 	{
 		N node = getLastChild(order);
 		return node != null && compareTo(node) > 0 ? node : null;
 	}
 	
-	/** @return {@link #getLeftNearestDependent(int)}, where {@code order = 0}. */
-	public N getLeftNearestDependent()
+	/** @return {@link #getLeftNearestChild(int)}, where {@code order = 0}. */
+	public N getLeftNearestChild()
 	{
-		return getLeftNearestDependent(0);
+		return getLeftNearestChild(0);
 	}
 	
 	/**
@@ -318,15 +275,15 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	 * @return the order'th left-nearest dependent of this node if exists; otherwise, null.
 	 * The left-nearest dependent must be on the left-hand side of this node.
 	 */
-	public N getLeftNearestDependent(int order)
+	public N getLeftNearestChild(int order)
 	{
 		return getChild(getDefaultIndex(children, self()) - order - 1);
 	}
 	
-	/** @return {@link #getRightNearestDependent(int)}, where {@code order = 0}. */
-	public N getRightNearestDependent()
+	/** @return {@link #getRightNearestChild(int)}, where {@code order = 0}. */
+	public N getRightNearestChild()
 	{
-		return getRightNearestDependent(0);
+		return getRightNearestChild(0);
 	}
 	
 	/**
@@ -334,20 +291,20 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	 * @return the order'th right-nearest dependent of this node if exists; otherwise, null.
 	 * The right-nearest dependent must be on the right-hand side of this node.
 	 */
-	public N getRightNearestDependent(int order)
+	public N getRightNearestChild(int order)
 	{
 		return getChild(getDefaultIndex(children, self()) + order);
 	}
 
 	/** @return the list of dependents on the left-hand side of this node. */
-	public List<N> getLeftDependents()
+	public List<N> getLeftChildren()
 	{
 		int index = getDefaultIndex(children, self());
 		return children.subList(0, index);
 	}
 
 	/** @return the list of dependents on the right-hand side of this node. */
-	public List<N> getRightDependents()
+	public List<N> getRightChildren()
 	{
 		int index = getDefaultIndex(children, self());
 		return children.subList(index, children.size());
@@ -405,8 +362,8 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	 */
 	public String getLeftValency()
 	{
-		if (getLeftMostDependent(1) != null) return "<<";
-		if (getLeftMostDependent()  != null) return "<";
+		if (getLeftMostChild(1) != null) return "<<";
+		if (getLeftMostChild()  != null) return "<";
 		return null;
 	}
 	
@@ -417,8 +374,8 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 	 */
 	public String getRightValency()
 	{
-		if (getRightMostDependent(1) != null) return ">>";
-		if (getRightMostDependent()  != null) return ">";
+		if (getRightMostChild(1) != null) return ">>";
+		if (getRightMostChild()  != null) return ">";
 		return null;
 	}
 	
@@ -432,7 +389,7 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 		return l+r;
 	}
 	
-	public void adaptDependents(N from)
+	public void adaptChildren(N from)
 	{
 		for (N d : new ArrayList<>(from.children))
 			d.setParent(self());
@@ -446,213 +403,152 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 		setParent(parent);
 		setDependencyLabel(label);
 	}
-
-//	============================== DEPENDENCY BOOLEANS ==============================
-
-	/** @return true if the dependency label of this node equals to the specific label; otherwise, false. */
-	public boolean isDependencyLabel(String label)
-	{
-		return label.equals(dependency_label);
-	}
-	
-	/** @return true if the dependency label of this node equals to any of the specific labels; otherwise, false. */
-	public boolean isDependencyLabel(String... labels)
-	{
-		for (String label : labels)
-		{
-			if (isDependencyLabel(label))
-				return true;
-		}
-		
-		return false;
-	}
 	
 //	============================== SEMANTICS ==============================
 
 	/** @return a list of all semantic head arc of the node. */
-	public List<NLPArc<N>> getSecondaryHeads()
+	public List<NLPArc<N>> getSecondaryParents()
 	{
-		return secondary_heads;
+		return secondary_parents;
 	}
 	
 	/** @return a list of all semantic head arc of the node with the given label. */
-	public List<NLPArc<N>> getSecondaryHeadList(String label)
+	public List<NLPArc<N>> getSecondaryParents(String label)
 	{
-		List<NLPArc<N>> list = new ArrayList<>();
-		
-		for (NLPArc<N> arc : secondary_heads)
-		{
-			if (arc.isLabel(label))
-				list.add(arc);
-		}
-		
-		return list;
+		return secondary_parents.stream().filter(arc -> arc.isLabel(label)).collect(Collectors.toList());
 	}
 	
 	/** @return semantic arc relationship between the node and another given node. */
-	public NLPArc<N> getSecondaryHeadArc(N node)
+	public NLPArc<N> getSecondaryParent(N node)
 	{
-		for (NLPArc<N> arc : secondary_heads)
-		{
-			if (arc.isNode(node))
-				return arc;
-		}
-		
-		return null;
+		return secondary_parents.stream().filter(arc -> arc.isNode(node)).findAny().orElse(null);
 	}
 	
 	/** @return the semantic arc relationship between the node and another given node with a given label. */
-	public NLPArc<N> getSecondaryHeadArc(N node, String label)
+	public NLPArc<N> getSecondaryParent(N node, String label)
 	{
-		for (NLPArc<N> arc : secondary_heads)
-		{
-			if (arc.equals(node, label))
-				return arc;
-		}
-		
-		return null;
+		return secondary_parents.stream().filter(arc -> arc.equals(node, label)).findAny().orElse(null);
 	}
 	
 	/** @return the semantic arc relationship between the node and another given node with a given pattern. */
-	public NLPArc<N> getSecondaryHeadArc(N node, Pattern pattern)
+	public NLPArc<N> getSecondaryParent(N node, Pattern pattern)
 	{
-		for (NLPArc<N> arc : secondary_heads)
-		{
-			if (arc.equals(node, pattern))
-				return arc;
-		}
-		
-		return null;
+		return secondary_parents.stream().filter(arc -> arc.equals(node, pattern)).findAny().orElse(null);
+	}
+	
+	/** @return the first node that is found to have the semantic head of the given label from the node. */
+	public N getSecondaryParentAny(String label)
+	{
+		NLPArc<N> a = secondary_parents.stream().filter(arc -> arc.isLabel(label)).findAny().orElse(null);
+		return a != null ? a.getNode() : null;
+	}
+	
+	/** @return the first node that is found to have the semantic head of the given pattern from the node. */
+	public N getSecondaryParentAny(Pattern pattern)
+	{
+		NLPArc<N> a = secondary_parents.stream().filter(arc -> arc.isLabel(pattern)).findAny().orElse(null);
+		return a != null ? a.getNode() : null;
 	}
 	
 	/** @return the semantic label of the given in relation to the node. */
 	public String getSecondaryLabel(N node)
 	{
-		for (NLPArc<N> arc : secondary_heads)
-		{
-			if (arc.isNode(node))
-				return arc.getLabel();
-		}
-		
-		return null;
-	}
-	
-	/** @return the first node that is found to have the semantic head of the given label from the node. */
-	public N getFirstSecondaryHead(String label)
-	{
-		for (NLPArc<N> arc : secondary_heads)
-		{
-			if (arc.isLabel(label))
-				return arc.getNode();
-		}
-		
-		return null;
-	}
-	
-	/** @return the first node that is found to have the semantic head of the given pattern from the node. */
-	public N getFirstSecondaryHead(Pattern pattern)
-	{
-		for (NLPArc<N> arc : secondary_heads)
-		{
-			if (arc.isLabel(pattern))
-				return arc.getNode();
-		}
-		
-		return null;
+		NLPArc<N> arc = getSecondaryParent(node);
+		return arc != null ? arc.getLabel() : null;
 	}
 	
 	/** @param arcs {@code Collection<DEPArc>} of the semantic heads. */
-	public void addSecondaryHeads(Collection<NLPArc<N>> arcs)
+	public void addSecondaryParents(Collection<NLPArc<N>> arcs)
 	{
-		secondary_heads.addAll(arcs);
+		secondary_parents.addAll(arcs);
 	}
 	
 	/** Adds a node a give the given semantic label to the node. */
-	public void addSecondaryHead(N head, String label)
+	public void addSecondaryParent(N head, String label)
 	{
-		addSecondaryHead(new NLPArc<>(head, label));
+		addSecondaryParent(new NLPArc<>(head, label));
 	}
 	
 	/** Adds a semantic arc to the node. */
-	public void addSecondaryHead(NLPArc<N> arc)
+	public void addSecondaryParent(NLPArc<N> arc)
 	{
-		secondary_heads.add(arc);
+		secondary_parents.add(arc);
 	}
 	
 	/** Sets semantic heads of the node. */
-	public void setSecondaryHeads(List<NLPArc<N>> arcs)
+	public void setSecondaryParents(List<NLPArc<N>> arcs)
 	{
-		secondary_heads = arcs;
+		secondary_parents = arcs;
 	}
 	
 	/** Removes all semantic heads of the node in relation to a given node.
 	 * @return {@code true}, else {@code false} if nothing gets removed. 
 	 */
-	public boolean removeSecondaryHead(N node)
+	public boolean removeSecondaryParent(N node)
 	{
-		for (NLPArc<N> arc : secondary_heads)
+		for (NLPArc<N> arc : secondary_parents)
 		{
 			if (arc.isNode(node))
-				return secondary_heads.remove(arc);
+				return secondary_parents.remove(arc);
 		}
 		
 		return false;
 	}
 	
 	/** Removes a specific semantic head of the node. */
-	public boolean removeSecondaryHead(NLPArc<N> arc)
+	public boolean removeSecondaryParent(NLPArc<N> arc)
 	{
-		return secondary_heads.remove(arc);
+		return secondary_parents.remove(arc);
 	}
 	
 	/** Removes a collection of specific semantic heads of the node. */
-	public void removeSecondaryHeads(Collection<NLPArc<N>> arcs)
+	public void removeSecondaryParents(Collection<NLPArc<N>> arcs)
 	{
-		secondary_heads.removeAll(arcs);
+		secondary_parents.removeAll(arcs);
 	}
 	
 	/** Removes all semantic heads of the node that have the given label. */
-	public void removeSecondaryHeads(String label)
+	public void removeSecondaryParents(String label)
 	{
-		secondary_heads.removeAll(getSecondaryHeadList(label));
+		secondary_parents.removeAll(getSecondaryParents(label));
 	}
 	
 	/** Removes all semantic heads of the node. */
-	public List<NLPArc<N>> clearSecondaryHeads()
+	public List<NLPArc<N>> clearSecondaryParents()
 	{
-		List<NLPArc<N>> backup = secondary_heads.subList(0, secondary_heads.size());
-		secondary_heads.clear();
+		List<NLPArc<N>> backup = new ArrayList<>(secondary_parents);
+		secondary_parents.clear();
 		return backup;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc between the two nodes. */
-	public boolean isSecondaryDependentOf(N node)
+	public boolean isSecondaryChildOf(N node)
 	{
-		return getSecondaryHeadArc(node) != null;
+		return getSecondaryParent(node) != null;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc with the given label. */
-	public boolean isSecondaryDependentOf(String label)
+	public boolean isSecondaryChildOf(String label)
 	{
-		return getFirstSecondaryHead(label) != null;
+		return getSecondaryParentAny(label) != null;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc with the given pattern. */
-	public boolean isSecondaryDependentOf(Pattern pattern)
+	public boolean isSecondaryChildOf(Pattern pattern)
 	{
-		return getFirstSecondaryHead(pattern) != null;
+		return getSecondaryParentAny(pattern) != null;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc with the given label between the two node. */
-	public boolean isSecondaryDependentOf(N node, String label)
+	public boolean isSecondaryChildOf(N node, String label)
 	{
-		return getSecondaryHeadArc(node, label) != null;
+		return getSecondaryParent(node, label) != null;
 	}
 	
 	/** @return {@code true}, else {@code false} if there is no DEPArc with the given pattern between the two node. */
-	public boolean isSecondaryDependentOf(N node, Pattern pattern)
+	public boolean isSecondaryChildOf(N node, Pattern pattern)
 	{
-		return getSecondaryHeadArc(node, pattern) != null;
+		return getSecondaryParent(node, pattern) != null;
 	}
 
 	/**
@@ -699,8 +595,7 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 		return list;
 	}
 	
-//	============================== HELPERS ==============================
-	
+//	============================== Helpers ==============================
 
 	@Override
 	public String toString()
@@ -713,7 +608,7 @@ public abstract class AbstractNLPNode<N extends AbstractNLPNode<N>> extends Abst
 		join.add(toString(syntactic_tag));
 		join.add(feat_map.toString());
 		toStringDependency(join);
-		join.add(toString(secondary_heads));
+		join.add(toString(secondary_parents));
 		join.add(toString(named_entity_tag));
 		
 		return join.toString();

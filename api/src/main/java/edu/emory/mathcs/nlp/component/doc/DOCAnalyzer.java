@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.doc;
 
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DOCAnalyzer<N extends AbstractNLPNode<N>,S extends DOCState<N>> extends OnlineComponent<N,S>
+public class DOCAnalyzer<N extends AbstractNLPNode<N>,S extends DOCState<N>> extends MLComponent<N,S>
 {
 	private static final long serialVersionUID = 408764219381044191L;
 	public static final String FEAT_KEY = "doc_feat_key";

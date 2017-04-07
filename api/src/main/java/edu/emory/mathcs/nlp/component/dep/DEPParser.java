@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.dep;
 
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.learning.util.FeatureVector;
 import edu.emory.mathcs.nlp.learning.util.MLUtils;
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class DEPParser<N extends AbstractNLPNode<N>> extends OnlineComponent<N,DEPState<N>>
+public class DEPParser<N extends AbstractNLPNode<N>> extends MLComponent<N,DEPState<N>>
 {
 	private static final long serialVersionUID = 7031031976396726276L;
 	private DEPLabelCandidate<N> label_candidates;

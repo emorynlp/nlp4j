@@ -24,9 +24,6 @@ import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
  */
 public interface NLPComponent<N extends AbstractNLPNode<N>>
 {
-	/** Processes a sentence. */
-	void process(N[] nodes);
-	
-	/** Processes a document. */
-	void process(List<N[]> document);
+	/** Processes an array of NLP nodes. */
+	void process(List<N> nodes);
 }

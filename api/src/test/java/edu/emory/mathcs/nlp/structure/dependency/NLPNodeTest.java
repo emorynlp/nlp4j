@@ -48,28 +48,28 @@ public class NLPNodeTest
 		Assert.assertEquals(null    , nodes[5].getGrandParent());
 		
 		// Students_1 - will_2 - also_3 - be_4 <- selected_5 -> from_6
-		Assert.assertEquals(nodes[4], nodes[5].getLeftNearestDependent());
-		Assert.assertEquals(nodes[1], nodes[5].getLeftNearestDependent(3));
-		Assert.assertNull(nodes[5].getLeftNearestDependent(4));
-		Assert.assertNull(nodes[6].getLeftNearestDependent());
+		Assert.assertEquals(nodes[4], nodes[5].getLeftNearestChild());
+		Assert.assertEquals(nodes[1], nodes[5].getLeftNearestChild(3));
+		Assert.assertNull(nodes[5].getLeftNearestChild(4));
+		Assert.assertNull(nodes[6].getLeftNearestChild());
 		
 		// Students_1 - will_2 - also_3 - be_4 <- selected_5 -> from_6
-		Assert.assertEquals(nodes[1], nodes[5].getLeftMostDependent());
-		Assert.assertEquals(nodes[4], nodes[5].getLeftMostDependent(3));
-		Assert.assertNull(nodes[5].getLeftMostDependent(4));
-		Assert.assertNull(nodes[6].getLeftMostDependent());
+		Assert.assertEquals(nodes[1], nodes[5].getLeftMostChild());
+		Assert.assertEquals(nodes[4], nodes[5].getLeftMostChild(3));
+		Assert.assertNull(nodes[5].getLeftMostChild(4));
+		Assert.assertNull(nodes[6].getLeftMostChild());
 		
 		// selected_5 -> from_6 - ._21, whose_8 <- income_9
-		Assert.assertEquals(nodes[ 6], nodes[5].getRightNearestDependent());
-		Assert.assertEquals(nodes[21], nodes[5].getRightNearestDependent(1));
-		Assert.assertNull(nodes[5].getRightNearestDependent(2));
-		Assert.assertNull(nodes[9].getRightNearestDependent());
+		Assert.assertEquals(nodes[ 6], nodes[5].getRightNearestChild());
+		Assert.assertEquals(nodes[21], nodes[5].getRightNearestChild(1));
+		Assert.assertNull(nodes[5].getRightNearestChild(2));
+		Assert.assertNull(nodes[9].getRightNearestChild());
 		
 		// selected_5 -> from_6 - ._21, whose_8 <- income_9
-		Assert.assertEquals(nodes[21], nodes[5].getRightMostDependent());
-		Assert.assertEquals(nodes[ 6], nodes[5].getRightMostDependent(1));
-		Assert.assertNull(nodes[5].getRightMostDependent(2));
-		Assert.assertNull(nodes[9].getRightMostDependent());
+		Assert.assertEquals(nodes[21], nodes[5].getRightMostChild());
+		Assert.assertEquals(nodes[ 6], nodes[5].getRightMostChild(1));
+		Assert.assertNull(nodes[5].getRightMostChild(2));
+		Assert.assertNull(nodes[9].getRightMostChild());
 		
 		// Students_1 - will_2 - also_3 - be_4 <- selected_5 -> from_6
 		Assert.assertEquals(nodes[4], nodes[6].getLeftNearestSibling());

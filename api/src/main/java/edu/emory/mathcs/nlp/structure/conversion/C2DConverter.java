@@ -269,7 +269,7 @@ abstract public class C2DConverter
 			for (CTArc arc : token.getSecondaryHeads())
 			{
 				head = graph.get(arc.getNode().getTokenID() + 1);
-				if (!node.isChildOf(head)) node.addSecondaryHead(head, arc.getLabel());
+				if (!node.isChildOf(head)) node.addSecondaryParent(head, arc.getLabel());
 			}
 		}
 

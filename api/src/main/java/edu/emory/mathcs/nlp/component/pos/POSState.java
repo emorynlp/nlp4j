@@ -15,33 +15,65 @@
  */
 package edu.emory.mathcs.nlp.component.pos;
 
+import java.util.Arrays;
+import java.util.List;
+
 import edu.emory.mathcs.nlp.common.util.NLPUtils;
-import edu.emory.mathcs.nlp.component.template.state.L2RState;
+import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
+import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
+import edu.emory.mathcs.nlp.learning.util.MLUtils;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSState<N extends AbstractNLPNode<N>> extends L2RState<N>
+public class POSState<N extends AbstractNLPNode<N>> extends NLPState<N>
 {
-	public POSState(N[] nodes)
+	protected String[] golds;
+	protected int input;
+	
+	public POSState(List<N> nodes, boolean save_gold)
 	{
-		super(nodes);
+		super(nodes, save_gold);
+		input = 1;
+	}
+	
+//	============================== ORACLE ==============================
+	
+	@Override
+	public void saveGold(List<N> nodes)
+	{
+		golds = nodes.stream().map(n -> n.setSyntacticTag(null)).toArray(String[]::new);
 	}
 	
 	@Override
-	protected String getLabel(N node)
+	public String getGoldLabel()
 	{
-		return node.getSyntacticTag();
+		return golds[input];
+	}
+	
+//	============================== TRANSITION ==============================
+	
+	@Override
+	public void next(LabelMap map, float[] scores)
+	{
+		String label = map.getLabel(MLUtils.argmax(scores));
+		
+		setLabel(nodes[input++], map.getLabel(top2[0]));
 	}
 	
 	@Override
-	protected String setLabel(N node, String label)
+	public boolean isTerminate()
 	{
-		String s = node.getSyntacticTag();
-		node.setSyntacticTag(label);
-		return s;
+		return input >= nodes.length;
+	}
+	
+	@Override
+	public N getNode(FeatureItem item)
+	{
+		N node = getNode(input, item.window);
+		return getRelativeNode(item, node);
 	}
 	
 	@Override

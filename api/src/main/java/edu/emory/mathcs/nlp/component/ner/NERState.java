@@ -57,7 +57,7 @@ public class NERState<N extends AbstractNLPNode<N>> extends L2RState<N>
 	@Override
 	public void evaluate(Eval eval)
 	{
-		Int2ObjectMap<ObjectIntIntTriple<String>> gMap = BILOU.collectEntityMap(oracle, String::toString, 1, nodes.length);
+		Int2ObjectMap<ObjectIntIntTriple<String>> gMap = BILOU.collectEntityMap(golds, String::toString, 1, nodes.length);
 		Int2ObjectMap<ObjectIntIntTriple<String>> sMap = BILOU.collectEntityMap(nodes , this::getLabel  , 1, nodes.length);
 		((F1Eval)eval).add(countCorrect(sMap, gMap), sMap.size(), gMap.size());
 	}

@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.ner;
 
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class NERTagger<N extends AbstractNLPNode<N>> extends OnlineComponent<N,NERState<N>>
+public class NERTagger<N extends AbstractNLPNode<N>> extends MLComponent<N,NERState<N>>
 {
 	private static final long serialVersionUID = 87807440372806016L;
 

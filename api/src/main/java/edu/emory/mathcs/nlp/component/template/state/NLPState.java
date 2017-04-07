@@ -15,6 +15,9 @@
  */
 package edu.emory.mathcs.nlp.component.template.state;
 
+import java.util.List;
+
+import edu.emory.mathcs.nlp.common.util.DSUtils;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
@@ -24,63 +27,43 @@ import edu.emory.mathcs.nlp.component.template.feature.Relation;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
-import java.util.List;
-
 /**
  * This class consists of processing states 
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class NLPState<N extends AbstractNLPNode<N>>
 {
-	protected List<N[]> document;
-	protected N[] nodes;
+	protected List<N> nodes;
 
 	/**
-	 * For sentence-based NLP components.
-	 * @param nodes {@code node[0]} is reserved for the artificial root, {@code node[1]} represents the first token, and so on.
+	 * @param nodes the 0'th node is the root, 1st node is the 1st token, etc.
+	 * @param save_gold if true, save the gold tags (see {@link #saveGold()}.
 	 */
-	public NLPState(N[] nodes)
+	public NLPState(List<N> nodes, boolean save_gold)
 	{
+		if (save_gold) saveGold(nodes);
 		setNodes(nodes);
 	}
 	
-	/**
-	 * For document-based NLP components.
-	 * @param document each node array represents a sentence.
-	 */
-	public NLPState(List<N[]> document)
-	{
-		setDocument(document);
-	}
+//	============================== ORACLE ==============================
 	
-	/**
-	 * Saves and removes the gold labels from {@link #nodes} or {@link #document}.
-	 * @return {@code true} if any gold label was saved; otherwise, {@code false}. 
-	 */
-	public abstract boolean saveOracle();
+	/** Saves the clears the gold labels from {@link #nodes}. */
+	public abstract void saveGold(List<N> nodes);
 	
 	/** @return the gold label given the current state. */
-	public abstract String getOracle();
+	public abstract String getGoldLabel();
 	
-	/** Resets the oracle with gold information. */
-	public abstract void resetOracle();
+//	============================== TRANSITION ==============================
 	
 	/**
 	 * Applies the predictions to the current state, and moves onto the next state.
 	 * @param map to retrieve the string label from its index. 
-	 * @param top2 indices of the top 2 predications, where {@code top2[0]} is the best prediction and {@code top2[1]} is the 2nd best prediction.
 	 * @param scores scores of all labels.
 	 */
-	public abstract void next(LabelMap map, int[] top2, float[] scores);
+	public abstract void next(LabelMap map, float[] scores);
 	
 	/** @return {@code true} if no more state can be processed; otherwise, {@code false}. */
 	public abstract boolean isTerminate();
-	
-	/**
-	 * @return the node with respect to the feature item if exists; otherwise, {@code null}.
-	 * @see {@link FeatureTemplate}.
-	 */
-	public abstract N getNode(FeatureItem item);
 	
 	/**
 	 * Evaluates all predictions made for either {@link #nodes} or {@link #document} using the specific evaluator.
@@ -88,24 +71,22 @@ public abstract class NLPState<N extends AbstractNLPNode<N>>
 	 */
 	public abstract void evaluate(Eval eval);
 	
-	public N[] getNodes()
+//	============================== NODES ==============================
+	
+	/**
+	 * @return the node with respect to the feature item if exists; otherwise, {@code null}.
+	 * @see {@link FeatureTemplate}.
+	 */
+	public abstract N getNode(FeatureItem item);
+	
+	public List<N> getNodes()
 	{
 		return nodes;
 	}
 	
-	public void setNodes(N[] nodes)
+	public void setNodes(List<N> nodes)
 	{
 		this.nodes = nodes;
-	}
-	
-	public List<N[]> getDocument()
-	{
-		return document;
-	}
-	
-	public void setDocument(List<N[]> document)
-	{
-		this.document = document;
 	}
 	
 	public N getNode(int index)
@@ -134,7 +115,7 @@ public abstract class NLPState<N extends AbstractNLPNode<N>>
 	{
 		index += window;
 		int begin = includeRoot ? 0 : 1;
-		return begin <= index && index < nodes.length ? nodes[index] : null;
+		return begin <= index && index < nodes.size() ? nodes.get(index) : null;
 	}
 	
 	public N getRelativeNode(N node, Relation relation)
@@ -146,16 +127,16 @@ public abstract class NLPState<N extends AbstractNLPNode<N>>
 		{
 		case h   : return node.getParent();
 		case h2  : return node.getGrandParent();
-		case lmd : return node.getLeftMostDependent();
-		case lmd2: return node.getLeftMostDependent(1);
-		case lnd : return node.getLeftNearestDependent();
-		case lnd2: return node.getLeftNearestDependent(1);
+		case lmd : return node.getLeftMostChild();
+		case lmd2: return node.getLeftMostChild(1);
+		case lnd : return node.getLeftNearestChild();
+		case lnd2: return node.getLeftNearestChild(1);
 		case lns : return node.getLeftNearestSibling();
 		case lns2: return node.getLeftNearestSibling(1);
-		case rmd : return node.getRightMostDependent();
-		case rmd2: return node.getRightMostDependent(1);
-		case rnd : return node.getRightNearestDependent();
-		case rnd2: return node.getRightNearestDependent(1);
+		case rmd : return node.getRightMostChild();
+		case rmd2: return node.getRightMostChild(1);
+		case rnd : return node.getRightNearestChild();
+		case rnd2: return node.getRightNearestChild(1);
 		case rns : return node.getRightNearestSibling();
 		case rns2: return node.getRightNearestSibling(1);
 		}
@@ -176,12 +157,12 @@ public abstract class NLPState<N extends AbstractNLPNode<N>>
 	/** @return {@code true} if the node is the first node in the sentence. */
 	public boolean isFirst(N node)
 	{
-		return nodes[1] == node; 
+		return nodes.get(1) == node; 
 	}
 	
 	/** @return {@code true} if the node is the first node in the sentence. */
 	public boolean isLast(N node)
 	{
-		return nodes[nodes.length-1] == node;
+		return DSUtils.getLast(nodes) == node;
 	}
 }

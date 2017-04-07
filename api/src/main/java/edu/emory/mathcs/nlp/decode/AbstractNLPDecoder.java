@@ -22,7 +22,7 @@ import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.common.util.Language;
 import edu.emory.mathcs.nlp.component.morph.MorphologicalAnalyzer;
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
-import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
+import edu.emory.mathcs.nlp.component.template.lexicon.NLPLexiconMapper;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.tokenizer.Tokenizer;
 import edu.emory.mathcs.nlp.component.tokenizer.token.Token;
@@ -56,7 +56,7 @@ import java.util.function.Function;
  * or {@link #init(DecodeConfig)}. However, an application can have finer control over the process
  * by calling the no-args constructor and then calling {@link #setComponents(List)}, after
  * creating the component objects with the help of methods in {@link edu.emory.mathcs.nlp.common.util.NLPUtils}.
- * Applications should include {@link GlobalLexica} as the first component, and then other components as needed.
+ * Applications should include {@link NLPLexiconMapper} as the first component, and then other components as needed.
  * Note that if you do not initialize from a {@code DecodeConfig},
  * you must call {@link #setReaderFieldMap(Object2IntMap)} in order to use TSV files.
  *
@@ -93,7 +93,7 @@ public abstract class AbstractNLPDecoder<N extends AbstractNLPNode<N>>
 		Language language = decode_config.getLanguage();
 		readerFieldMap = decode_config.getReaderFieldMap();
 
-		components.add(new GlobalLexica<>(decode_config.getDocumentElement()));
+		components.add(new NLPLexiconMapper<>(decode_config.getDocumentElement()));
 		
 		LOG.info("Loading tokenizer");
 		setTokenizer(edu.emory.mathcs.nlp.common.util.NLPUtils.createTokenizer(language));

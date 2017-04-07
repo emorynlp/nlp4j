@@ -22,8 +22,8 @@ import edu.emory.mathcs.nlp.component.doc.DOCAnalyzer;
 import edu.emory.mathcs.nlp.component.it.ItClassifier;
 import edu.emory.mathcs.nlp.component.ner.NERTagger;
 import edu.emory.mathcs.nlp.component.pos.POSTagger;
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
+import edu.emory.mathcs.nlp.component.template.lexicon.NLPLexiconMapper;
 import edu.emory.mathcs.nlp.component.template.reader.NLPReader;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
@@ -82,15 +82,15 @@ public class NLPTrain
 		{
 			@Override
 			@SuppressWarnings("unchecked")
-			public OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config)
+			public MLComponent<N,S> createComponent(NLPMode mode, InputStream config)
 			{
 				switch (mode)
 				{
-				case pos: return (OnlineComponent<N,S>)new POSTagger<>(config);
-				case ner: return (OnlineComponent<N,S>)new NERTagger<>(config);
-				case dep: return (OnlineComponent<N,S>)new DEPParser<>(config);
-				case doc: return (OnlineComponent<N,S>)new DOCAnalyzer<>(config);
-				case  it: return (OnlineComponent<N,S>)new ItClassifier<>(config);
+				case pos: return (MLComponent<N,S>)new POSTagger<>(config);
+				case ner: return (MLComponent<N,S>)new NERTagger<>(config);
+				case dep: return (MLComponent<N,S>)new DEPParser<>(config);
+				case doc: return (MLComponent<N,S>)new DOCAnalyzer<>(config);
+				case  it: return (MLComponent<N,S>)new ItClassifier<>(config);
 //				case srl: return (OnlineComponent<N,S>)new SRLParser(config);
 				default : throw new IllegalArgumentException("Unsupported mode: "+mode);
 				}
@@ -104,9 +104,9 @@ public class NLPTrain
 			}
 
 			@Override
-			public GlobalLexica<N> createGlobalLexica(InputStream config)
+			public NLPLexiconMapper<N> createGlobalLexica(InputStream config)
 			{
-				return new GlobalLexica<>(config);
+				return new NLPLexiconMapper<>(config);
 			}
 		};
 	}

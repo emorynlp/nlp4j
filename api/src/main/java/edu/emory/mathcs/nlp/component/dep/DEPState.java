@@ -57,14 +57,14 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 //	====================================== ORACLE ======================================
 
 	@Override
-	public boolean saveOracle()
+	public boolean saveGold()
 	{
 		oracle = Arrays.stream(nodes).map(n -> n.clearDependencies()).collect(Collectors.toList());
 		return oracle.stream().filter(n -> n.getNode() != null).findFirst().isPresent();
 	}
 	
 	@Override
-	public void resetOracle()
+	public void resetGold()
 	{
 		for (int i=1; i<nodes.length; i++)
 			nodes[i].clearDependencies();
@@ -77,7 +77,7 @@ public class DEPState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	}
 	
 	@Override
-	public String getOracle()
+	public String getGoldLabel()
 	{
 		DEPLabel label = getOracleLabel();
 		return label.toString();

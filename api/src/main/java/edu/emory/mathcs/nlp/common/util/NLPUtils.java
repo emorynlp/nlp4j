@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
@@ -130,8 +130,8 @@ public class NLPUtils
 	static public <N extends AbstractNLPNode<N>,S extends NLPState<N>>NLPComponent<N> getComponent(String pathname)
 	{
 		try (ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(pathname)) {
-			OnlineComponent<N,S> component;
-			component = (OnlineComponent<N,S>)oin.readObject();
+			MLComponent<N,S> component;
+			component = (MLComponent<N,S>)oin.readObject();
 			component.setFlag(NLPFlag.DECODE);
 			return component;
 		} catch (Exception e) {
@@ -149,11 +149,11 @@ public class NLPUtils
 	static public <N extends AbstractNLPNode<N>,S extends NLPState<N>>NLPComponent<N> getComponent(InputStream in)
 	{
 		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(in);
-		OnlineComponent<N,S> component = null;
+		MLComponent<N,S> component = null;
 		
 		try
 		{
-			component = (OnlineComponent<N,S>)oin.readObject();
+			component = (MLComponent<N,S>)oin.readObject();
 			component.setFlag(NLPFlag.DECODE);
 			oin.close();
 		}
@@ -207,7 +207,7 @@ public class NLPUtils
 		{
 			N node = nodes[i];
 			
-			for (NLPArc<N> arc : node.getSecondaryHeads())
+			for (NLPArc<N> arc : node.getSecondaryParents())
 			{
 				args = list.get(arc.getNode().getTokenID());
 				args.add(new NLPArc<>(node, arc.getLabel()));
@@ -261,8 +261,8 @@ public class NLPUtils
     @SuppressWarnings("unchecked")
     static public <N extends AbstractNLPNode<N>, S extends NLPState<N>> NLPComponent<N> getComponent(Path pathname) throws IOException, ClassNotFoundException {
         try (ObjectInputStream oin = IOUtils.createArtifactObjectInputStream(pathname)) {
-            OnlineComponent<N, S> component;
-            component = (OnlineComponent<N, S>) oin.readObject();
+            MLComponent<N, S> component;
+            component = (MLComponent<N, S>) oin.readObject();
             component.setFlag(NLPFlag.DECODE);
             return component;
         }
@@ -280,8 +280,8 @@ public class NLPUtils
     static public <N extends AbstractNLPNode<N>, S extends NLPState<N>> NLPComponent<N>
     getComponentFromClasspath(String classpath, ClassLoader classLoader) throws IOException, ClassNotFoundException {
         try (ObjectInputStream oin = new ObjectInputStream(IOUtils.createArtifactInputStreamForClasspath(classpath, classLoader))) {
-            OnlineComponent<N, S> component;
-            component = (OnlineComponent<N, S>) oin.readObject();
+            MLComponent<N, S> component;
+            component = (MLComponent<N, S>) oin.readObject();
             component.setFlag(NLPFlag.DECODE);
             return component;
         }
@@ -299,8 +299,8 @@ public class NLPUtils
     static public <N extends AbstractNLPNode<N>, S extends NLPState<N>> NLPComponent<N>
     getComponentFromRawStream(InputStream inputStream) throws IOException, ClassNotFoundException {
         try (ObjectInputStream oin = new ObjectInputStream(inputStream)) {
-            OnlineComponent<N, S> component;
-            component = (OnlineComponent<N, S>) oin.readObject();
+            MLComponent<N, S> component;
+            component = (MLComponent<N, S>) oin.readObject();
             component.setFlag(NLPFlag.DECODE);
             return component;
         }

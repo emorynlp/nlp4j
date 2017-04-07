@@ -1286,7 +1286,7 @@ public class EnglishC2DConverter extends C2DConverter
 		String label = relabelAux(node.getParent(), node.getDependencyLabel());
 		if (label != null) node.setDependencyLabel(label);
 		
-		Iterator<NLPArc<NLPNode>> it = node.getSecondaryHeads().iterator();
+		Iterator<NLPArc<NLPNode>> it = node.getSecondaryParents().iterator();
 		
 		while (it.hasNext())
 		{
@@ -1398,8 +1398,8 @@ public class EnglishC2DConverter extends C2DConverter
 				{
 					// heads
 					obj.setParent(node.getParent(), node.getDependencyLabel());
-					obj.addSecondaryHeads(node.getSecondaryHeads());
-					node.clearSecondaryHeads();
+					obj.addSecondaryParents(node.getSecondaryParents());
+					node.clearSecondaryParents();
 					node.setParent(obj, DDGTag.LV);
 					
 					for (NLPNode d : node.getChildren())
@@ -1412,7 +1412,7 @@ public class EnglishC2DConverter extends C2DConverter
 					for (NLPNode d : graph)
 					{
 						if (d.isChildOf(node)) d.setParent(obj);
-						d.getSecondaryHeads().stream().filter(a -> a.isNode(node)).forEach(a -> a.setNode(obj));
+						d.getSecondaryParents().stream().filter(a -> a.isNode(node)).forEach(a -> a.setNode(obj));
 					}
 				}
 			}
@@ -1464,7 +1464,7 @@ public class EnglishC2DConverter extends C2DConverter
 			if (!node.hasParent() || node.getDependencyLabel() == null)
 				message = "Primary head error: "+node.getTokenID();
 			
-			for (NLPArc<NLPNode> arc : node.getSecondaryHeads())
+			for (NLPArc<NLPNode> arc : node.getSecondaryParents())
 			{
 				if (arc.getNode() == null || arc.getLabel() == null)
 					message = "Secondary head error: "+node.getTokenID();

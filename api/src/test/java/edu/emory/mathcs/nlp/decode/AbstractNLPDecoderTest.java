@@ -18,8 +18,8 @@ import com.google.common.io.Resources;
 
 import edu.emory.mathcs.nlp.component.template.NLPComponent;
 import edu.emory.mathcs.nlp.component.template.feature.Field;
-import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
-import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexicon;
+import edu.emory.mathcs.nlp.component.template.lexicon.NLPLexiconMapper;
+import edu.emory.mathcs.nlp.component.template.lexicon.NLPLexicon;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 
 import edu.emory.mathcs.nlp.component.tokenizer.EnglishTokenizer;
@@ -63,8 +63,8 @@ public class AbstractNLPDecoderTest {
         }
     }
 
-    private <T> GlobalLexicon<T> readLexiconItemFromStream(InputStream stream, Field field, String name) throws IOException, ClassNotFoundException {
-        return GlobalLexica.getGlobalLexicon(stream, field, name);
+    private <T> NLPLexicon<T> readLexiconItemFromStream(InputStream stream, Field field, String name) throws IOException, ClassNotFoundException {
+        return NLPLexiconMapper.getGlobalLexicon(stream, field, name);
     }
 
     private InputStream openTestResourceFromTarget(String pathname) throws IOException {
@@ -82,7 +82,7 @@ public class AbstractNLPDecoderTest {
     @Test
     public void initializeManually() throws Exception {
         List<NLPComponent<NLPNode>> components = new ArrayList<>();
-        GlobalLexica<NLPNode> lexica = new GlobalLexica<>();
+        NLPLexiconMapper<NLPNode> lexica = new NLPLexiconMapper<>();
         lexica.setAmbiguityClasses(readLexiconItemFromStream(openTestResourceFromTarget("edu/emory/mathcs/nlp/lexica/en-ambiguity-classes-simplified-lowercase.xz"),
                 Field.ambiguity_classes, "edu/emory/mathcs/nlp/lexica/en-ambiguity-classes-simplified-lowercase.xz"));
         lexica.setWordClusters(readLexiconItemFromStream(openTestResourceFromTarget("edu/emory/mathcs/nlp/lexica/en-brown-clusters-simplified-lowercase.xz"),

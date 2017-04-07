@@ -125,7 +125,7 @@ public class EnglishC2DConverterTest
 						}
 					}
 					
-					for (NLPArc<NLPNode> snd : node.getSecondaryHeads())
+					for (NLPArc<NLPNode> snd : node.getSecondaryParents())
 						FastUtils.increment(secondary, snd.getLabel());
 				}
 			}

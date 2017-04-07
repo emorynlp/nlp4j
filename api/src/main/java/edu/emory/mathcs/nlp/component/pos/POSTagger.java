@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.pos;
 
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class POSTagger<N extends AbstractNLPNode<N>> extends OnlineComponent<N,POSState<N>>
+public class POSTagger<N extends AbstractNLPNode<N>> extends MLComponent<N,POSState<N>>
 {
 	private static final long serialVersionUID = -7926217238116337203L;
 	

@@ -18,8 +18,8 @@ package edu.emory.mathcs.nlp.bin;
 import edu.emory.mathcs.nlp.bin.util.BinUtils;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
-import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
+import edu.emory.mathcs.nlp.component.template.lexicon.NLPLexiconMapper;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.OnlineTrainer;
@@ -44,23 +44,23 @@ public class ModelReduce extends NLPTrain
 		OnlineTrainer<N,S> trainer = createOnlineTrainer();
 		
 		List<String> developFiles  = FileUtils.getFileList(develop_path, develop_ext);
-		GlobalLexica<N> lexica = trainer.createGlobalLexica(IOUtils.createFileInputStream(configuration_file));
+		NLPLexiconMapper<N> lexica = trainer.createGlobalLexica(IOUtils.createFileInputStream(configuration_file));
 		
 		LOG.info("Loading the model");
-		OnlineComponent<N,S> component = readComponent(IOUtils.createFileInputStream(previous_model_file), IOUtils.createFileInputStream(configuration_file));
+		MLComponent<N,S> component = readComponent(IOUtils.createFileInputStream(previous_model_file), IOUtils.createFileInputStream(configuration_file));
 		TSVReader<N> reader = trainer.createTSVReader(component.getConfiguration().getReaderFieldMap());
 		trainer.reduceModel(reader, developFiles, component, lexica, previous_model_file, model_file);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>OnlineComponent<N,S> readComponent(InputStream model, InputStream config)
+	public <N extends AbstractNLPNode<N>, S extends NLPState<N>>MLComponent<N,S> readComponent(InputStream model, InputStream config)
 	{
 		ObjectInputStream oin = IOUtils.createObjectXZBufferedInputStream(model);
-		OnlineComponent<N,S> component = null;
+		MLComponent<N,S> component = null;
 		
 		try
 		{
-			component = (OnlineComponent<N,S>)oin.readObject();
+			component = (MLComponent<N,S>)oin.readObject();
 			component.setConfiguration(config);
 			oin.close();
 		}

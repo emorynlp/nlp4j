@@ -16,7 +16,9 @@
 package edu.emory.mathcs.nlp.component.template;
 
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
+import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
+import edu.emory.mathcs.nlp.component.template.eval.F1Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureTemplate;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.train.HyperParameter;
@@ -34,11 +36,10 @@ import java.util.List;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class OnlineComponent<N extends AbstractNLPNode<N>, S extends NLPState<N>> implements NLPComponent<N>, Serializable
+public abstract class MLComponent<N extends AbstractNLPNode<N>, S extends NLPState<N>> implements NLPComponent<N>, Serializable
 {
 	private static final long serialVersionUID = 59819173578703335L;
 	protected FeatureTemplate<N,S> feature_template;
-	protected boolean              document_based;
 	protected OnlineOptimizer      optimizer;
 	
 	// for training and development
@@ -49,12 +50,12 @@ public abstract class OnlineComponent<N extends AbstractNLPNode<N>, S extends NL
 
 //	============================== CONSTRUCTORS ==============================
 	
-	public OnlineComponent(boolean document)
+	public MLComponent(boolean document)
 	{
 		setDocumentBased(document);
 	}
 	
-	public OnlineComponent(boolean document, InputStream configuration)
+	public MLComponent(boolean document, InputStream configuration)
 	{
 		this(document);
 		setConfiguration(configuration);
@@ -183,7 +184,7 @@ public abstract class OnlineComponent<N extends AbstractNLPNode<N>, S extends NL
 	/** Process the sequence of the nodes given the state. */
 	public S process(S state)
 	{
-		if (!isDecode() && !state.saveOracle()) return state;
+		if (!isDecode() && !state.saveGold()) return state;
 		int[] top2 = {0,-1};
 		Instance instance;
 		FeatureVector x;
@@ -196,7 +197,7 @@ public abstract class OnlineComponent<N extends AbstractNLPNode<N>, S extends NL
 			
 			if (isTrain())
 			{
-				label = state.getOracle();
+				label = state.getGoldLabel();
 				instance = new Instance(label, x);
 				optimizer.train(instance);
 				scores = instance.getScores();

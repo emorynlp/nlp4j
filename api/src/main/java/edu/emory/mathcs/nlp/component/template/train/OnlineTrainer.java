@@ -22,10 +22,10 @@ import edu.emory.mathcs.nlp.common.random.XORShiftRandom;
 import edu.emory.mathcs.nlp.common.util.FileUtils;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.XMLUtils;
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
 import edu.emory.mathcs.nlp.component.template.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
-import edu.emory.mathcs.nlp.component.template.lexicon.GlobalLexica;
+import edu.emory.mathcs.nlp.component.template.lexicon.NLPLexiconMapper;
 import edu.emory.mathcs.nlp.component.template.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.template.state.NLPState;
 import edu.emory.mathcs.nlp.component.template.util.NLPFlag;
@@ -63,9 +63,9 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 //	=================================== COMPONENT ===================================
 	
 	@SuppressWarnings("unchecked")
-	public OnlineComponent<N,S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream, String name)
+	public MLComponent<N,S> initComponent(NLPMode mode, InputStream configStream, InputStream previousModelStream, String name)
 	{
-		OnlineComponent<N,S> component = null;
+		MLComponent<N,S> component = null;
 		NLPConfig<N> configuration = null;
 		
 		if (previousModelStream != null)
@@ -75,7 +75,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 			
 			try
 			{
-				component = (OnlineComponent<N,S>)oin.readObject();
+				component = (MLComponent<N,S>)oin.readObject();
 				configuration = component.setConfiguration(configStream);
 				oin.close();
 			}
@@ -103,7 +103,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		return component;
 	}
 	
-	public OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config, String name)
+	public MLComponent<N,S> createComponent(NLPMode mode, InputStream config, String name)
 	{
 		if (name != null) {
 			LOG.warn("Name not implemented for OnlineComponent. Input name - " + name + " will be ignored.");
@@ -111,9 +111,9 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		return createComponent(mode, config);
 	}
 	
-	public abstract OnlineComponent<N,S> createComponent(NLPMode mode, InputStream config);
+	public abstract MLComponent<N,S> createComponent(NLPMode mode, InputStream config);
 	public abstract TSVReader<N> createTSVReader(Object2IntMap<String> map);
-	public abstract GlobalLexica<N> createGlobalLexica(InputStream config);
+	public abstract NLPLexiconMapper<N> createGlobalLexica(InputStream config);
 	
 //	=================================== TRAIN ===================================
 	
@@ -200,11 +200,11 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	public double train(NLPMode mode, List<String> trainFiles, List<String> developFiles, String configurationFile, String modelFile, String previousModelFile, int index)
 	{
 		InputStream previousModelStream = (previousModelFile != null) ? IOUtils.createFileInputStream(previousModelFile) : null;
-		GlobalLexica<N> lexica = createGlobalLexica(IOUtils.createFileInputStream(configurationFile));
+		NLPLexiconMapper<N> lexica = createGlobalLexica(IOUtils.createFileInputStream(configurationFile));
 		String name = (modelFile != null) ? FileUtils.getBaseName(modelFile) : null;
-		OnlineComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream, name);
+		MLComponent<N,S> component = initComponent(mode, IOUtils.createFileInputStream(configurationFile), previousModelStream, name);
 		TSVReader<N> reader = createTSVReader(component.getConfiguration().getReaderFieldMap());
-		ObjectDoublePair<OnlineComponent<N,S>> p = null;
+		ObjectDoublePair<MLComponent<N,S>> p = null;
 		
 		try
 		{
@@ -217,7 +217,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ObjectDoublePair<OnlineComponent<N,S>> train(TSVReader<N> reader, List<String> trainFiles, List<String> developFiles, OnlineComponent<N,S> component, GlobalLexica<N> lexica, int index) throws Exception
+	public ObjectDoublePair<MLComponent<N,S>> train(TSVReader<N> reader, List<String> trainFiles, List<String> developFiles, MLComponent<N,S> component, NLPLexiconMapper<N> lexica, int index) throws Exception
 	{
 		OnlineOptimizer optimizer = component.getOptimizer();
 		HyperParameter hp = component.getHyperParameter();
@@ -260,13 +260,13 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		}
 		
 		if (bestComponent != null)
-			component = (OnlineComponent<N,S>)IOUtils.fromByteArray(bestComponent);
+			component = (MLComponent<N,S>)IOUtils.fromByteArray(bestComponent);
 		
 		LOG.info(String.format("%2d: Best: %5.2f, epoch = %d", index, bestScore, bestEpoch));
-		return new ObjectDoublePair<OnlineComponent<N,S>>(component, bestScore);
+		return new ObjectDoublePair<MLComponent<N,S>>(component, bestScore);
 	}
 	
-	public DoubleIntPair evaluate(List<String> developFiles, OnlineComponent<N,S> component, GlobalLexica<N> lexica, TSVReader<N> reader)
+	public DoubleIntPair evaluate(List<String> developFiles, MLComponent<N,S> component, NLPLexiconMapper<N> lexica, TSVReader<N> reader)
 	{
 		component.setFlag(NLPFlag.EVALUATE);
 		Eval eval = component.getEval();
@@ -277,7 +277,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	
 //	=================================== HELPERS ===================================
 	
-	protected double iterate(TSVReader<N> reader, List<String> inputFiles, OnlineComponent<N,S> component, GlobalLexica<N> lexica, boolean evaluate)
+	protected double iterate(TSVReader<N> reader, List<String> inputFiles, MLComponent<N,S> component, NLPLexiconMapper<N> lexica, boolean evaluate)
 	{
 		long st, et, time = 0, unit = 0;
 		List<N[]> document;
@@ -323,7 +323,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		return 1000d * unit / time;
 	}
 	
-	protected int update(OnlineComponent<N,S> component, int count, boolean last)
+	protected int update(MLComponent<N,S> component, int count, boolean last)
 	{
 		OnlineOptimizer optimizer = component.getOptimizer();
 		HyperParameter hp = component.getHyperParameter();
@@ -337,7 +337,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 		return count;
 	}
 	
-	public void saveModel(OnlineComponent<N,S> component, OutputStream stream)
+	public void saveModel(MLComponent<N,S> component, OutputStream stream)
 	{
 		ObjectOutputStream out = IOUtils.createObjectXZBufferedOutputStream(stream);
 		LOG.info("Saving the model");
@@ -351,7 +351,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void reduceModel(TSVReader<N> reader, List<String> filenames, OnlineComponent<N,S> component, GlobalLexica<N> lexica, String modelFile, String reducedModelFile)
+	public void reduceModel(TSVReader<N> reader, List<String> filenames, MLComponent<N,S> component, NLPLexiconMapper<N> lexica, String modelFile, String reducedModelFile)
 	{
 		LOG.info("Reducing:");
 		float rate = 0f;
@@ -385,7 +385,7 @@ public abstract class OnlineTrainer<N extends AbstractNLPNode<N>, S extends NLPS
 			}
 			else if (p.d < lowerBound)
 			{
-				component = (OnlineComponent<N,S>)IOUtils.fromByteArray(backup);
+				component = (MLComponent<N,S>)IOUtils.fromByteArray(backup);
 				rate -= inc;
 				inc /= 2;
 				iter--;

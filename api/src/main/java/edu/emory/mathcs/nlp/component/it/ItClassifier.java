@@ -15,7 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.it;
 
-import edu.emory.mathcs.nlp.component.template.OnlineComponent;
+import edu.emory.mathcs.nlp.component.template.MLComponent;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public class ItClassifier<N extends AbstractNLPNode<N>> extends OnlineComponent<N,ItState<N>>
+public class ItClassifier<N extends AbstractNLPNode<N>> extends MLComponent<N,ItState<N>>
 {
 	private static final long serialVersionUID = 3585863417135590906L;
 

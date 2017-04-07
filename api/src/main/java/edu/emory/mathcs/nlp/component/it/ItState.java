@@ -45,7 +45,7 @@ public class ItState<N extends AbstractNLPNode<N>> extends NLPState<N>
 //	====================================== ORACLE ======================================
 	
 	@Override
-	public boolean saveOracle()
+	public boolean saveGold()
 	{
 		oracle = new ArrayList<>();
 		boolean exist = false;
@@ -67,12 +67,12 @@ public class ItState<N extends AbstractNLPNode<N>> extends NLPState<N>
 	}
 
 	@Override
-	public String getOracle()
+	public String getGoldLabel()
 	{
 		return oracle.get(tree_id)[node_id];
 	}
 	
-	public void resetOracle()
+	public void resetGold()
 	{
 		for (int i=0; i<oracle.size(); i++)
 		{

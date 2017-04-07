@@ -15,47 +15,47 @@
  */
 package edu.emory.mathcs.nlp.component.template.state;
 
+import java.util.Arrays;
+import java.util.List;
+
 import edu.emory.mathcs.nlp.component.template.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.template.eval.Eval;
 import edu.emory.mathcs.nlp.component.template.feature.FeatureItem;
 import edu.emory.mathcs.nlp.learning.util.LabelMap;
 import edu.emory.mathcs.nlp.structure.dependency.AbstractNLPNode;
 
-import java.util.Arrays;
-
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public abstract class L2RState<N extends AbstractNLPNode<N>> extends NLPState<N>
 {
-	protected String[] oracle;
+	protected String[] golds;
 	protected int input = 1;
 	
-	public L2RState(N[] nodes)
+	public L2RState(List<N> nodes, boolean save_gold)
 	{
-		super(nodes);
+		super(nodes, save_gold);
+	}
+	
+	@Override
+	public void reset()
+	{
+		input = 1;
 	}
 	
 //	============================== ORACLE ==============================
 	
 	@Override
-	public boolean saveOracle()
+	public boolean saveGold()
 	{
-		oracle = Arrays.stream(nodes).map(n -> setLabel(n, null)).toArray(String[]::new);
-		return Arrays.stream(oracle).filter(o -> o != null).findFirst().isPresent();
+		golds = Arrays.stream(nodes).map(n -> setLabel(n, null)).toArray(String[]::new);
+		return Arrays.stream(golds).filter(o -> o != null).findFirst().isPresent();
 	}
 	
 	@Override
-	public String getOracle()
+	public String getGoldLabel()
 	{
-		return oracle[input];
-	}
-	
-	@Override
-	public void resetOracle()
-	{
-		for (int i=1; i<nodes.length; i++)
-			setLabel(nodes[i], oracle[i]);
+		return golds[input];
 	}
 	
 	protected abstract String setLabel(N node, String label);
@@ -101,7 +101,7 @@ public abstract class L2RState<N extends AbstractNLPNode<N>> extends NLPState<N>
 		
 		for (int i=1; i<nodes.length; i++)
 		{
-			if (oracle[i].equals(getLabel(nodes[i]))) correct++;
+			if (golds[i].equals(getLabel(nodes[i]))) correct++;
 			total++;
 		}
 		

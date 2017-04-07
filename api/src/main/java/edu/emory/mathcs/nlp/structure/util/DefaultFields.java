@@ -155,9 +155,12 @@ public class DefaultFields implements Serializable
 		this.lemma = lemma;
 	}
 	
-	public void setSyntacticTag(String tag)
+	/** @return the previosuly assigned tag if exists; otherwise, null. */
+	public String setSyntacticTag(String tag)
 	{
+		String old = tag;
 		this.syntactic_tag = tag;
+		return old;
 	}
 	
 	public void setNamedEntityTag(String tag)
